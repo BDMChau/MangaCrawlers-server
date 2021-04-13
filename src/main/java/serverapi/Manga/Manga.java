@@ -1,10 +1,13 @@
 package serverapi.Manga;
 
+import lombok.Data;
+import serverapi.Author.Author;
+
 import javax.persistence.*;
 import java.util.Calendar;
-import java.util.Date;
 
 @Entity
+@Data
 @Table(name = "manga")
 public class Manga {
     @Id
@@ -75,9 +78,11 @@ public class Manga {
     )
     private Calendar CreatedAt;
 
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private Author author_id;
 
-    public Manga() {
-    }
+
 
     public Manga(String manga_id2, String manga_name, String status, String description, float stars, Integer views, String thumbnail, Calendar date_publication, Calendar createdAt) {
         this.manga_id2 = manga_id2;
@@ -91,84 +96,4 @@ public class Manga {
         CreatedAt = createdAt;
     }
 
-
-    public void setManga_id(Long manga_id) {
-        this.manga_id = manga_id;
-    }
-
-    public void setManga_id2(String manga_id2) {
-        this.manga_id2 = manga_id2;
-    }
-
-    public void setManga_name(String manga_name) {
-        this.manga_name = manga_name;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setStars(float stars) {
-        this.stars = stars;
-    }
-
-    public void setViews(Integer views) {
-        this.views = views;
-    }
-
-    public void setThumbnail(String thumbnail) {
-        this.thumbnail = thumbnail;
-    }
-
-    public void setDate_publication(Calendar date_publication) {
-        this.date_publication = date_publication;
-    }
-
-    public void setCreatedAt(Calendar createdAt) {
-        CreatedAt = createdAt;
-    }
-
-    public Long getManga_id() {
-        return manga_id;
-    }
-
-    public String getManga_id2() {
-        return manga_id2;
-    }
-
-    public String getManga_name() {
-        return manga_name;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public float getStars() {
-        return stars;
-    }
-
-    public Integer getViews() {
-        return views;
-    }
-
-    public String getThumbnail() {
-        return thumbnail;
-    }
-
-    public Calendar getDate_publication() {
-        return date_publication;
-    }
-
-    public Calendar getCreatedAt() {
-        return CreatedAt;
-    }
 }

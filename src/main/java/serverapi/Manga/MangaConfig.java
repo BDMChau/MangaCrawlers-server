@@ -23,8 +23,6 @@ public class MangaConfig {
                 Calendar.getInstance(TimeZone.getTimeZone("UTC")),
                 Calendar.getInstance(TimeZone.getTimeZone("UTC"))
         );
-
-
         mangaRepository.save(newManga);
 
         return null;
