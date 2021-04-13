@@ -11,5 +11,6 @@ public class ServerApiApplication {
 		SpringApplication.run(ServerApiApplication.class, args);
 
 		System.out.println("Server is running at port 4000");
+		
 	}
 }
