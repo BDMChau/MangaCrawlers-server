@@ -3,6 +3,7 @@ package serverapi.Users;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import serverapi.Chapter.Chapter;
+import serverapi.ChapterComments.ChapterComments;
 import serverapi.Manga.Manga;
 
 import javax.persistence.*;
@@ -27,7 +28,7 @@ public class Users {
 
 
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-    private Collection<Users> users;
+    private Collection<ChapterComments> chapterComments;
 
     @ManyToMany(mappedBy = "user") // variable user in manga class
     private Collection<Manga> manga;
