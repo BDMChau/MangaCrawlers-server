@@ -49,10 +49,10 @@ public class Chapter {
 
 
 
-    @Column(columnDefinition = "float default 0")
+    @Column(columnDefinition = "float default 0", nullable = false)
     private float chapter_number;
 
-    @Column(columnDefinition = "varchar(150)")
+    @Column(columnDefinition = "varchar(150)", nullable = false)
     private String chapter_name;
 
     @Column( columnDefinition = "Integer default 0")

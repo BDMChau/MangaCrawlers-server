@@ -26,7 +26,7 @@ public class ImageChapter {
     private Long imgchapter_id;
 
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String imgchapter_url;
 
     @ManyToOne

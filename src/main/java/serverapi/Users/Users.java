@@ -38,19 +38,19 @@ public class Users {
 
 
 
-    @Column(columnDefinition = "varchar(100)")
+    @Column(columnDefinition = "varchar(100)", nullable = false)
     private String user_name;
 
-    @Column(columnDefinition = "varchar(50)")
+    @Column(columnDefinition = "varchar(50)", nullable = false)
     private String user_email;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String user_password;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String user_avatar;
 
-    @Column(columnDefinition = "tinyint(1) default 0")
+    @Column(nullable = false)
     private Boolean user_isAdmin;
 
 

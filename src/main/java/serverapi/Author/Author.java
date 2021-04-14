@@ -26,7 +26,7 @@ public class Author {
 
 
     @Column(
-            columnDefinition = "varchar(100)"
+            columnDefinition = "varchar(100)", nullable = false
     )
     private String author_name;
 

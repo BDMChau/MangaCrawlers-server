@@ -23,7 +23,7 @@ public class Genre {
     )
     private Long genre_id;
 
-    @Column(columnDefinition = "varchar(50)")
+    @Column(columnDefinition = "varchar(50)", nullable = false)
     private String genre_name;
 
     @ManyToMany(mappedBy = "genre") // variable genre in manga class

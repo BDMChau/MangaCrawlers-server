@@ -71,16 +71,19 @@ public class Manga {
 
 
     @Column(
+            nullable = false,
             columnDefinition = "varchar(150)"
     )
     private String manga_name;
 
     @Column(
+            nullable = false,
             columnDefinition = "varchar(20)"
     )
     private String status;
 
     @Column(
+            nullable = false,
             columnDefinition = "TEXT"
     )
     private String description;
@@ -93,6 +96,7 @@ public class Manga {
     private float stars;
 
     @Column(
+            nullable = false,
             columnDefinition = "Integer default 0"
     )
     private int views;

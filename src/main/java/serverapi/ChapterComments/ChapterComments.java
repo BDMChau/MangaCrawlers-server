@@ -31,9 +31,9 @@ public class ChapterComments {
     @JoinColumn(name = "chapter_id")
     private Chapter chapter;
 
-    @Column(columnDefinition = "timestamp with time zone")
+    @Column(columnDefinition = "timestamp with time zone", nullable = false)
     private Calendar chaptercmt_time;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String chaptercmt_content;
 }
