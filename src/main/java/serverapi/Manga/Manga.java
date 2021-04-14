@@ -1,13 +1,21 @@
 package serverapi.Manga;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import serverapi.Author.Author;
+import serverapi.Chapter.Chapter;
+import serverapi.Genre.Genre;
+import serverapi.TransGroup.TransGroup;
+import serverapi.Users.Users;
 
 import javax.persistence.*;
 import java.util.Calendar;
+import java.util.Collection;
+
 
 @Entity
 @Data
+@NoArgsConstructor
 @Table(name = "manga")
 public class Manga {
     @Id
@@ -16,13 +24,45 @@ public class Manga {
             sequenceName = "manga_sequence",
             allocationSize = 1
     )
-
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
             generator = "manga_sequence" // same as NAME in SequenceGenerator
     )
     private Long manga_id;
 
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private Author author;
+
+    @OneToMany(mappedBy = "chapter_id", cascade = CascadeType.ALL)
+    private Collection<Chapter> chapter;
+
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "manga_genre", // create a table manga_genre
+            joinColumns = @JoinColumn(name = "manga_id"), // foreign key of class manga
+            inverseJoinColumns = @JoinColumn(name = "genre_id") // foreign key of class genre
+    )
+    private Collection<Genre> genre;
+
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "manga_transgroup", // create a table manga_transgroup
+            joinColumns = @JoinColumn(name = "manga_id"), // foreign key of class manga
+            inverseJoinColumns = @JoinColumn(name = "transgroup_id") // foreign key of class transgroup
+    )
+    private Collection<TransGroup> transGroup;
+
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "following_manga", // create a table following_manga
+            joinColumns = @JoinColumn(name = "manga_id"), // foreign key of class manga
+            inverseJoinColumns = @JoinColumn(name = "user_id") // foreign key of class user
+    )
+    private Collection<Users> user;
+
+
+    /////////////////////////////
     @Column(
             nullable = false,
             columnDefinition = "varchar(50)"
@@ -55,7 +95,7 @@ public class Manga {
     @Column(
             columnDefinition = "Integer default 0"
     )
-    private Integer views;
+    private int views;
 
     @Column(
             nullable = true,
@@ -76,15 +116,11 @@ public class Manga {
             updatable = false,
             columnDefinition = "timestamp with time zone"
     )
-    private Calendar CreatedAt;
-
-    @ManyToOne
-    @JoinColumn(name = "author_id")
-    private Author author_id;
+    private Calendar createdAt;
 
 
-
-    public Manga(String manga_id2, String manga_name, String status, String description, float stars, Integer views, String thumbnail, Calendar date_publication, Calendar createdAt) {
+    public Manga(String manga_id2, String manga_name, String status, String description, float stars, Integer views,
+                 String thumbnail, Calendar date_publication, Calendar createdAt) {
         this.manga_id2 = manga_id2;
         this.manga_name = manga_name;
         this.status = status;
@@ -93,7 +129,8 @@ public class Manga {
         this.views = views;
         this.thumbnail = thumbnail;
         this.date_publication = date_publication;
-        CreatedAt = createdAt;
+        this.createdAt = createdAt;
+        this.author = author;
     }
 
 }
