@@ -1,4 +1,4 @@
-package serverapi.MangaGenre;
-
-public class MangaGenreId {
-}
+//package serverapi.MangaGenre;
+//
+//public class MangaGenreId {
+//}

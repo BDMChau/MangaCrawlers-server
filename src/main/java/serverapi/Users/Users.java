@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import serverapi.Chapter.Chapter;
 import serverapi.ChapterComments.ChapterComments;
+import serverapi.FollowingManga.FollowingManga;
 import serverapi.Manga.Manga;
 import serverapi.ReadingHistory.ReadingHistory;
 
@@ -33,8 +34,11 @@ public class Users {
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private Collection<ChapterComments> chapterComments;
 
-    @ManyToMany(mappedBy = "user")
-    private Collection<Manga> manga;
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    private Collection<FollowingManga> followingManga;
+
+//    @ManyToMany(mappedBy = "user")
+//    private Collection<Manga> manga;
 
 
     @Column(columnDefinition = "varchar(100)", nullable = false)

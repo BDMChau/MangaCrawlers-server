@@ -4,7 +4,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import serverapi.Author.Author;
 import serverapi.Chapter.Chapter;
+import serverapi.FollowingManga.FollowingManga;
 import serverapi.Genre.Genre;
+import serverapi.MangaGenre.MangaGenre;
+import serverapi.MangaTransGroup.MangaTransGroup;
 import serverapi.ReadingHistory.ReadingHistory;
 import serverapi.TransGroup.TransGroup;
 import serverapi.Users.Users;
@@ -39,30 +42,40 @@ public class Manga {
     private Collection<Chapter> chapter;
 
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
+    private Collection<MangaGenre> mangaGenre;
+
+    @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
+    private Collection<FollowingManga> followingManga;
+
+    @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
     private Collection<ReadingHistory> readingHistory;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "manga_genre", // create a table manga_genre
-            joinColumns = @JoinColumn(name = "manga_id"), // foreign key of class manga
-            inverseJoinColumns = @JoinColumn(name = "genre_id") // foreign key of class genre
-    )
-    private Collection<Genre> genre;
+    @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
+    private Collection<MangaTransGroup> mangaTransGroup;
 
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "manga_transgroup", // create a table manga_transgroup
-            joinColumns = @JoinColumn(name = "manga_id"), // foreign key of class manga
-            inverseJoinColumns = @JoinColumn(name = "transgroup_id") // foreign key of class transgroup
-    )
-    private Collection<TransGroup> transGroup;
-
-
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "following_manga", // create a table following_manga
-            joinColumns = @JoinColumn(name = "manga_id"), // foreign key of class manga
-            inverseJoinColumns = @JoinColumn(name = "user_id") // foreign key of class user
-    )
-    private Collection<Users> user;
+//    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    @JoinTable(name = "manga_genre", // create a table manga_genre
+//            joinColumns = @JoinColumn(name = "manga_id"), // foreign key of class manga
+//            inverseJoinColumns = @JoinColumn(name = "genre_id") // foreign key of class genre
+//    )
+//    private Collection<Genre> genre;
+//
+//
+//    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    @JoinTable(name = "manga_transgroup", // create a table manga_transgroup
+//            joinColumns = @JoinColumn(name = "manga_id"), // foreign key of class manga
+//            inverseJoinColumns = @JoinColumn(name = "transgroup_id") // foreign key of class transgroup
+//    )
+//    private Collection<TransGroup> transGroup;
+//
+//
+//    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    @JoinTable(name = "following_manga", // create a table following_manga
+//            joinColumns = @JoinColumn(name = "manga_id"), // foreign key of class manga
+//            inverseJoinColumns = @JoinColumn(name = "user_id") // foreign key of class user
+//    )
+//    private Collection<Users> user;
 
 
     /////////////////////////////

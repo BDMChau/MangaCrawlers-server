@@ -3,7 +3,9 @@ package serverapi.TransGroup;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import serverapi.Chapter.Chapter;
 import serverapi.Manga.Manga;
+import serverapi.MangaTransGroup.MangaTransGroup;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -26,8 +28,11 @@ public class TransGroup {
     private Long transgroup_id;
 
 
-    @ManyToMany(mappedBy = "transGroup") // variable transGroup in manga class
-    private Collection<Manga> manga;
+    @OneToMany(mappedBy = "transGroup", cascade = CascadeType.ALL)
+    private Collection<MangaTransGroup> mangaTransGroup;
+
+//    @ManyToMany(mappedBy = "transGroup") // variable transGroup in manga class
+//    private Collection<Manga> manga;
 
     @Column(columnDefinition = "varchar(100)", nullable = false)
     private String transgroup_name;

@@ -2,7 +2,10 @@ package serverapi.Genre;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import serverapi.Chapter.Chapter;
 import serverapi.Manga.Manga;
+import serverapi.MangaGenre.MangaGenre;
+
 import javax.persistence.*;
 import java.util.Collection;
 
@@ -23,9 +26,14 @@ public class Genre {
     )
     private Long genre_id;
 
+    @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
+    private Collection<Chapter> chapter;
+
+//    @ManyToMany(mappedBy = "genre") // variable genre in manga class
+//    private Collection<MangaGenre> mangaGenre;
+
+
     @Column(columnDefinition = "varchar(50)", nullable = false)
     private String genre_name;
 
-    @ManyToMany(mappedBy = "genre") // variable genre in manga class
-    private Collection<Manga> manga;
 }

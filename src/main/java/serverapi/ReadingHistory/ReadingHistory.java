@@ -10,10 +10,21 @@ import javax.persistence.*;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name="readinghistory")
+@Table(name="reading_history")
 public class ReadingHistory {
-    @EmbeddedId
-    private ReadingHistoryId readingHistoryId;
+    @Id
+    @SequenceGenerator(
+            name = "readinghistory_sequence",
+            sequenceName = "readinghistory_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "readinghistory_sequence" // same as NAME in SequenceGenerator
+    )
+    private Long readingHistory_id;
+
+
 
     @ManyToOne()
     @JoinColumn(name="manga_id", insertable = false, updatable = false)
