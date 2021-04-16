@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import serverapi.Author.Author;
 import serverapi.Chapter.Chapter;
 import serverapi.Genre.Genre;
+import serverapi.ReadingHistory.ReadingHistory;
 import serverapi.TransGroup.TransGroup;
 import serverapi.Users.Users;
 
@@ -30,13 +31,15 @@ public class Manga {
     )
     private Long manga_id;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "author_id")
     private Author author;
 
-    @OneToMany(mappedBy = "chapter_id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
     private Collection<Chapter> chapter;
 
+    @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
+    private Collection<ReadingHistory> readingHistory;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "manga_genre", // create a table manga_genre

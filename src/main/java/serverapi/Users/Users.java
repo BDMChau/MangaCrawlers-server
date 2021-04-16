@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import serverapi.Chapter.Chapter;
 import serverapi.ChapterComments.ChapterComments;
 import serverapi.Manga.Manga;
+import serverapi.ReadingHistory.ReadingHistory;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -26,16 +27,14 @@ public class Users {
     )
     private Long user_id;
 
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    private Collection<ReadingHistory> readingHistory;
 
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private Collection<ChapterComments> chapterComments;
 
-    @ManyToMany(mappedBy = "user") // variable user in manga class
+    @ManyToMany(mappedBy = "user")
     private Collection<Manga> manga;
-
-    @ManyToMany(mappedBy = "user") // variable user in chapter class
-    private Collection<Chapter> chapter;
-
 
 
     @Column(columnDefinition = "varchar(100)", nullable = false)

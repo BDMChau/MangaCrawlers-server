@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import serverapi.ChapterComments.ChapterComments;
 import serverapi.ImageChapter.ImageChapter;
 import serverapi.Manga.Manga;
+import serverapi.ReadingHistory.ReadingHistory;
 import serverapi.Users.Users;
 
 import javax.persistence.*;
@@ -31,15 +32,12 @@ public class Chapter {
 
     @ManyToOne
     @JoinColumn(name = "manga_id")
-    private Manga manga_id;
+    private Manga manga;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "historyread", // create a table historyread
-            joinColumns = @JoinColumn(name = "chapter_id"), // foreign key of class chapter
-            inverseJoinColumns = @JoinColumn(name = "user_id") // foreign key of class user
-    )
-    private Collection<Users> user;
 
+
+    @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
+    private Collection<ReadingHistory> readingHistory;
 
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
     private Collection<ImageChapter> imageChapter;
