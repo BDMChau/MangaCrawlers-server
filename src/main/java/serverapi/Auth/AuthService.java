@@ -80,8 +80,15 @@ public class AuthService {
         Long id = user.getUser_id();
         String name = user.getUser_name();
         String email = user.getUser_email();
-        Map<String, Serializable> userData = Map.of("id", id, "name", name, "email", email);
-
+        String avatar = user.getUser_avatar();
+        Boolean isAdmin = user.getUser_isAdmin();
+        Map<String, Serializable> userData = Map.of(
+                "user_id", id,
+                "user_name", name,
+                "user_email", email,
+                "user_avatar", avatar,
+                "user_isAdmin", isAdmin);
+        System.out.println("hey lo");
         String token = Jwts.builder()
                 .claim("user", userData)
                 .signWith(SignatureAlgorithm.HS256, System.getenv("JWT_KEY").getBytes(StandardCharsets.UTF_8))

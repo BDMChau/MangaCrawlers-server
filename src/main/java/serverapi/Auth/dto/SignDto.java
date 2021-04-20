@@ -13,7 +13,7 @@ public class SignDto {
     String user_email;
     String user_password;
     String user_avatar;
-    Boolean isAdmin;
+    Boolean isAdmin = false;
 
     public Boolean isNullAvatar() {
         if (user_avatar == null || user_avatar.equals("")) {
@@ -23,7 +23,21 @@ public class SignDto {
         }
     }
 
-    public isValidEnum isValid() {
+
+    public isValidEnum isValidSignIn() {
+        if (user_email == null
+                || user_password == null
+                || user_email.equals("")
+                || user_password.equals("")
+        ) {
+
+            return isValidEnum.missing_credentials;
+        }
+
+        return isValidEnum.everything_success;
+    }
+
+    public isValidEnum isValidSignUp() {
         if (user_name == null
                 || user_email == null
                 || user_password == null
