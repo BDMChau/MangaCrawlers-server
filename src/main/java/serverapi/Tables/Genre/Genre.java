@@ -25,7 +25,7 @@ public class Genre {
     private Long genre_id;
 
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
-    private Collection<Chapter> chapter;
+    private Collection<Chapter> chapters;
 
 //    @ManyToMany(mappedBy = "genre") // variable genre in manga class
 //    private Collection<MangaGenre> mangaGenre;

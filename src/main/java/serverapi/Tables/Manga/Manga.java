@@ -36,19 +36,19 @@ public class Manga {
     private Author author;
 
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
-    private Collection<Chapter> chapter;
+    private Collection<Chapter> chapters;
 
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
-    private Collection<MangaGenre> mangaGenre;
+    private Collection<MangaGenre> mangaGenres;
 
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
-    private Collection<FollowingManga> followingManga;
+    private Collection<FollowingManga> followingMangas;
 
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
-    private Collection<ReadingHistory> readingHistory;
+    private Collection<ReadingHistory> readingHistories;
 
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
-    private Collection<MangaTransGroup> mangaTransGroup;
+    private Collection<MangaTransGroup> mangaTransGroups;
 
 
 //    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

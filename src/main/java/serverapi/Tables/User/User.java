@@ -1,4 +1,4 @@
-package serverapi.Tables.Users;
+package serverapi.Tables.User;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +13,7 @@ import java.util.Collection;
 @Data
 @NoArgsConstructor
 @Table(name = "users")
-public class Users {
+public class User {
     @Id
     @SequenceGenerator(
             name = "users_sequence",
@@ -55,7 +55,7 @@ public class Users {
     private Boolean user_isAdmin;
 
 
-    public Users(String user_name, String user_email, String user_password, String user_avatar, Boolean user_isAdmin) {
+    public User(String user_name, String user_email, String user_password, String user_avatar, Boolean user_isAdmin) {
         this.user_name = user_name;
         this.user_email = user_email;
         this.user_password = user_password;

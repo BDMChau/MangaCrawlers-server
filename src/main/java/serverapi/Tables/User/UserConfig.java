@@ -1,9 +1,9 @@
-package serverapi.Tables.Users;
+package serverapi.Tables.User;
 
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class UsersConfig {
+public class UserConfig {
 
 //    @Bean
 //    Users commandLineUsers(UsersRepository usersRepository){

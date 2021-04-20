@@ -4,7 +4,7 @@ package serverapi.Tables.FollowingManga;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import serverapi.Tables.Manga.Manga;
-import serverapi.Tables.Users.Users;
+import serverapi.Tables.User.User;
 
 import javax.persistence.*;
 
@@ -31,6 +31,6 @@ public class FollowingManga {
 
     @ManyToOne()
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private Users users;
+    private User user;
 
 }

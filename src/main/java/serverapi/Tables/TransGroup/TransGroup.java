@@ -27,10 +27,8 @@ public class TransGroup {
 
 
     @OneToMany(mappedBy = "transGroup", cascade = CascadeType.ALL)
-    private Collection<MangaTransGroup> mangaTransGroup;
+    private Collection<MangaTransGroup> mangaTransGroups;
 
-//    @ManyToMany(mappedBy = "transGroup") // variable transGroup in manga class
-//    private Collection<Manga> manga;
 
     @Column(columnDefinition = "varchar(100)", nullable = false)
     private String transgroup_name;

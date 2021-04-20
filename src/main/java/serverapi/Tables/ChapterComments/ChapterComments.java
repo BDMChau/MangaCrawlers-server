@@ -2,7 +2,7 @@ package serverapi.Tables.ChapterComments;
 
 import lombok.Data;
 import serverapi.Tables.Chapter.Chapter;
-import serverapi.Tables.Users.Users;
+import serverapi.Tables.User.User;
 
 import javax.persistence.*;
 import java.util.Calendar;
@@ -25,7 +25,7 @@ public class ChapterComments {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users users;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "chapter_id")

@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.Manga.Manga;
-import serverapi.Tables.Users.Users;
+import serverapi.Tables.User.User;
 import javax.persistence.*;
 
 @Entity
@@ -32,7 +32,7 @@ public class ReadingHistory {
 
     @ManyToOne()
     @JoinColumn(name="user_id", insertable = false, updatable = false)
-    private Users users;
+    private User users;
 
     @ManyToOne()
     @JoinColumn(name="chapter_id", insertable = false, updatable = false)

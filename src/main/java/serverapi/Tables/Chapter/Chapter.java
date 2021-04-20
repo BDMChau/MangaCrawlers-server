@@ -36,10 +36,10 @@ public class Chapter {
 
 
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
-    private Collection<ReadingHistory> readingHistory;
+    private Collection<ReadingHistory> readingHistories;
 
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
-    private Collection<ImageChapter> imageChapter;
+    private Collection<ImageChapter> imageChapters;
 
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
     private Collection<ChapterComments> chapterComments;

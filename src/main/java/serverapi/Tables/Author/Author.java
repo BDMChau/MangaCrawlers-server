@@ -32,7 +32,7 @@ public class Author {
 
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private Collection<Manga> manga;
+    private Collection<Manga> mangas;
 
 
     public Author(String author_name) {
