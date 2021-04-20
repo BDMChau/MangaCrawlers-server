@@ -26,13 +26,13 @@ public class User {
     )
     private Long user_id;
 
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<ReadingHistory> readingHistory;
 
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<ChapterComments> chapterComments;
 
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<FollowingManga> followingManga;
 
 //    @ManyToMany(mappedBy = "user")

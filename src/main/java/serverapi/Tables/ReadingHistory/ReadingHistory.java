@@ -32,7 +32,7 @@ public class ReadingHistory {
 
     @ManyToOne()
     @JoinColumn(name="user_id", insertable = false, updatable = false)
-    private User users;
+    private User user;
 
     @ManyToOne()
     @JoinColumn(name="chapter_id", insertable = false, updatable = false)
