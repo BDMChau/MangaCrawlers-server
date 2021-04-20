@@ -2,6 +2,7 @@ package serverapi.Auth;
 
 import Helpers.HashSHA512;
 import Helpers.Response;
+import StaticFiles.UserAvatar;
 import io.jsonwebtoken.CompressionCodecs;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -32,23 +33,27 @@ public class AuthService {
 
 
     public ResponseEntity signUp(SignDto signDto) throws NoSuchAlgorithmException {
-        Optional<User> isExistEmail = authRepository.findByEmail(signDto.getEmail());
+        Optional<User> isExistEmail = authRepository.findByEmail(signDto.getUser_email());
         if (isExistEmail.isPresent()) {
             Map<String, String> error = Map.of("err", "Email is existed!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).jsonObject(), HttpStatus.ACCEPTED);
         }
 
         HashSHA512 hashingSHA512 = new HashSHA512();
-        String hashedPassword = hashingSHA512.hash(signDto.getPassword());
-        signDto.setPassword(hashedPassword);
+        String hashedPassword = hashingSHA512.hash(signDto.getUser_password());
+        signDto.setUser_password(hashedPassword);
 
-        User newUser = new User(
-                signDto.getName(),
-                signDto.getEmail(),
-                signDto.getPassword(),
-                null,
-                false
-        );
+
+        User newUser = new User();
+        newUser.setUser_name(signDto.getUser_name());
+        newUser.setUser_email(signDto.getUser_email());
+        newUser.setUser_password(signDto.getUser_password());
+        newUser.setUser_isAdmin(false);
+        UserAvatar userAvatar = new UserAvatar();
+        if (signDto.isNullAvatar() && !signDto.getIsAdmin()) {
+            newUser.setUser_avatar(userAvatar.getAvatar_member());
+        }
+
         authRepository.save(newUser);
 
         Map<String, String> msg = Map.of("msg", "Sign up success!");
@@ -57,7 +62,7 @@ public class AuthService {
 
 
     public ResponseEntity signIn(SignDto signDto) {
-        Optional<User> optionalUser = authRepository.findByEmail(signDto.getEmail());
+        Optional<User> optionalUser = authRepository.findByEmail(signDto.getUser_email());
         if (!optionalUser.isPresent()) {
             Map<String, String> error = Map.of("err", "Email is not existed!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).jsonObject(), HttpStatus.ACCEPTED);
@@ -65,7 +70,7 @@ public class AuthService {
         User user = optionalUser.get();
 
         HashSHA512 hashingSHA512 = new HashSHA512();
-        Boolean comparePass = hashingSHA512.compare(signDto.getPassword(), user.getUser_password());
+        Boolean comparePass = hashingSHA512.compare(signDto.getUser_password(), user.getUser_password());
         if (!comparePass) {
             Map<String, String> error = Map.of("err", "Password does not match!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).jsonObject(), HttpStatus.ACCEPTED);
@@ -75,7 +80,7 @@ public class AuthService {
         Long id = user.getUser_id();
         String name = user.getUser_name();
         String email = user.getUser_email();
-        Map<String, Serializable> userData = Map.of("id", id, "name", name,"email", email);
+        Map<String, Serializable> userData = Map.of("id", id, "name", name, "email", email);
 
         String token = Jwts.builder()
                 .claim("user", userData)

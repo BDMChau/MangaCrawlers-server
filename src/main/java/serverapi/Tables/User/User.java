@@ -12,7 +12,7 @@ import java.util.Collection;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "users")
+@Table(name = "user")
 public class User {
     @Id
     @SequenceGenerator(
