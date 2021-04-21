@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 
-public class VerifyToken implements Filter {
+public class TokenVerification implements Filter {
 
     private Gson gson = new Gson();
 
