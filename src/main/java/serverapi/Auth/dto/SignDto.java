@@ -23,6 +23,14 @@ public class SignDto {
         }
     }
 
+    public Boolean isNullEmail() {
+        if (user_email == null || user_email.equals("")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
     public isValidEnum isValidSignIn() {
         if (user_email == null

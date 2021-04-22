@@ -1,9 +1,13 @@
 package Helpers;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 
+@Data
+@NoArgsConstructor
 public class Response {
     private int httpCode;
     private HttpStatus httpStatus;
@@ -15,32 +19,7 @@ public class Response {
         this.content = content;
     }
 
-    public int getHttpCode() {
-        return httpCode;
-    }
-
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
-    }
-
-    public Object getContent() {
-        return content;
-    }
-
-    public void setHttpCode(int httpCode) {
-        this.httpCode = httpCode;
-    }
-
-    public void setHttpStatus(HttpStatus httpStatus) {
-        this.httpStatus = httpStatus;
-    }
-
-    public void setContent(Object content) {
-        this.content = content;
-    }
-
-
-    public HashMap jsonObject() {
+    public HashMap toJSON() {
         HashMap hashMap = new HashMap();
         hashMap.put("http_code", this.httpCode);
         hashMap.put("http_status", this.httpStatus);

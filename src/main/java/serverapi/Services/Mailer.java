@@ -22,7 +22,7 @@ public class Mailer{
         mail.setFrom(System.getenv("EMAIL_USERNAME"));
 
         mail.setSubject("This is title of email");
-        mail.setText("text???");
+        mail.setText("reset email di");
 
         javaMailSender.send(mail);
     }

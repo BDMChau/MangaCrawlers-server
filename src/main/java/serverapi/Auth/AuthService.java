@@ -1,9 +1,8 @@
 package serverapi.Auth;
 
-import Security.HashSHA512;
 import Helpers.Response;
+import Security.HashSHA512;
 import StaticFiles.UserAvatar;
-import serverapi.Services.Mailer;
 import io.jsonwebtoken.CompressionCodecs;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -12,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Auth.dto.SignDto;
+import serverapi.Services.Mailer;
 import serverapi.Tables.User.User;
 
 import java.io.Serializable;
@@ -26,19 +26,18 @@ public class AuthService {
     private final AuthRepository authRepository;
 
     @Autowired
-    private Mailer mailer;
-
-    @Autowired
     public AuthService(AuthRepository authRepository) {
         this.authRepository = authRepository;
     }
 
+    @Autowired
+    Mailer mailer;
 
     public ResponseEntity signUp(SignDto signDto) throws NoSuchAlgorithmException {
         Optional<User> isExistEmail = authRepository.findByEmail(signDto.getUser_email());
         if (isExistEmail.isPresent()) {
             Map<String, String> error = Map.of("err", "Email is existed!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).jsonObject(), HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
         }
 
         HashSHA512 hashingSHA512 = new HashSHA512();
@@ -59,7 +58,7 @@ public class AuthService {
         authRepository.save(newUser);
 
         Map<String, String> msg = Map.of("msg", "Sign up success!");
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).jsonObject(), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
 
@@ -67,7 +66,7 @@ public class AuthService {
         Optional<User> optionalUser = authRepository.findByEmail(signDto.getUser_email());
         if (!optionalUser.isPresent()) {
             Map<String, String> error = Map.of("err", "Email is not existed!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).jsonObject(), HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
         }
         User user = optionalUser.get();
 
@@ -75,7 +74,7 @@ public class AuthService {
         Boolean comparePass = hashingSHA512.compare(signDto.getUser_password(), user.getUser_password());
         if (!comparePass) {
             Map<String, String> error = Map.of("err", "Password does not match!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).jsonObject(), HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
         }
 
 
@@ -98,14 +97,18 @@ public class AuthService {
                 .compressWith(CompressionCodecs.DEFLATE)
                 .compact();
 
-
-        mailer.sendMail("bdmchau105@gmail.com");
-
         Map<String, Object> msg = Map.of(
                 "msg", "Sign in success",
                 "token", token,
                 "user", userData
         );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).jsonObject(), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    public ResponseEntity resetPassword(SignDto signDto) {
+        mailer.sendMail(signDto.getUser_email());
+
+        Map<String, String> msg = Map.of("msg", "A mail is sent, please check your email!");
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 }
