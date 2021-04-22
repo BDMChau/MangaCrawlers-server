@@ -1,6 +1,6 @@
 package serverapi.Auth.dto;
 
-import Enums.isValidEnum;
+import serverapi.Enums.isValidEnum;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

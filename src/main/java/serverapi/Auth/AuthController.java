@@ -1,6 +1,6 @@
 package serverapi.Auth;
 
-import Enums.isValidEnum;
+import serverapi.Enums.isValidEnum;
 import Helpers.Response;
 import serverapi.Auth.dto.SignDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +15,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-
-
     private final AuthService authService;
 
     @Autowired

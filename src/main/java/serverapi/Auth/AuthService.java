@@ -1,8 +1,9 @@
 package serverapi.Auth;
 
-import Helpers.HashSHA512;
+import Security.HashSHA512;
 import Helpers.Response;
 import StaticFiles.UserAvatar;
+import serverapi.Services.Mailer;
 import io.jsonwebtoken.CompressionCodecs;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -22,9 +23,10 @@ import java.util.Optional;
 
 @Service
 public class AuthService {
-
-
     private final AuthRepository authRepository;
+
+    @Autowired
+    private Mailer mailer;
 
     @Autowired
     public AuthService(AuthRepository authRepository) {
@@ -96,6 +98,8 @@ public class AuthService {
                 .compressWith(CompressionCodecs.DEFLATE)
                 .compact();
 
+
+        mailer.sendMail("bdmchau105@gmail.com");
 
         Map<String, Object> msg = Map.of(
                 "msg", "Sign in success",

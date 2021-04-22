@@ -1,4 +1,4 @@
-package Enums;
+package serverapi.Enums;
 
 public enum isValidEnum {
     everything_success,
