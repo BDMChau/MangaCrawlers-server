@@ -2,10 +2,8 @@ package serverapi.Auth;
 
 import Helpers.Response;
 import Security.HashSHA512;
+import Security.TokenService;
 import StaticFiles.UserAvatar;
-import io.jsonwebtoken.CompressionCodecs;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +13,6 @@ import serverapi.Services.Mailer;
 import serverapi.Tables.User.User;
 
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.Optional;
@@ -89,13 +86,17 @@ public class AuthService {
                 "user_email", email,
                 "user_avatar", avatar,
                 "user_isAdmin", isAdmin);
-        System.out.println("hey lo");
-        String token = Jwts.builder()
-                .claim("user", userData)
-                .signWith(SignatureAlgorithm.HS256, System.getenv("JWT_KEY").getBytes(StandardCharsets.UTF_8))
-                //.setExpiration(new Date(System.currentTimeMillis() + 600000))
-                .compressWith(CompressionCodecs.DEFLATE)
-                .compact();
+
+
+        TokenService tokenService = new TokenService();
+        String token = tokenService.genHS256(userData);
+
+//        String token = Jwts.builder()
+//                .claim("user", userData)
+//                .signWith(SignatureAlgorithm.HS256, System.getenv("JWT_KEY").getBytes(StandardCharsets.UTF_8))
+//                //.setExpiration(new Date(System.currentTimeMillis() + 600000))
+//                .compressWith(CompressionCodecs.DEFLATE)
+//                .compact();
 
         Map<String, Object> msg = Map.of(
                 "msg", "Sign in success",
