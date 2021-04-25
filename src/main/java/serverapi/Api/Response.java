@@ -1,4 +1,4 @@
-package Helpers;
+package serverapi.Api;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,6 +1,6 @@
 package serverapi.Middleware;
 
-import Helpers.Response;
+import serverapi.Api.Response;
 import com.google.gson.Gson;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;

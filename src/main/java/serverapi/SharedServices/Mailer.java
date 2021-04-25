@@ -1,4 +1,4 @@
-package serverapi.Services;
+package serverapi.SharedServices;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;

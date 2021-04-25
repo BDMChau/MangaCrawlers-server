@@ -1,4 +1,4 @@
-package StaticFiles;
+package serverapi.StaticFiles;
 
 import lombok.Getter;
 

@@ -1,15 +1,15 @@
-package serverapi.Auth;
+package serverapi.Authentication;
 
-import Helpers.Response;
-import Security.HashSHA512;
-import Security.TokenService;
-import StaticFiles.UserAvatar;
+import serverapi.Api.Response;
+import serverapi.Security.HashSHA512;
+import serverapi.Security.TokenService;
+import serverapi.StaticFiles.UserAvatar;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import serverapi.Auth.dto.SignDto;
-import serverapi.Services.Mailer;
+import serverapi.Authentication.dto.SignDto;
+import serverapi.SharedServices.Mailer;
 import serverapi.Tables.User.User;
 
 import java.io.Serializable;

@@ -1,4 +1,4 @@
-package Security;
+package serverapi.Security;
 
 import io.jsonwebtoken.CompressionCodecs;
 import io.jsonwebtoken.Jwts;

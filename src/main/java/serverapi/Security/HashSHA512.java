@@ -1,4 +1,4 @@
-package Security;
+package serverapi.Security;
 
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;

@@ -1,8 +1,9 @@
-package serverapi.Auth.dto;
+package serverapi.Authentication.dto;
 
 import serverapi.Enums.isValidEnum;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import serverapi.Security.RegexString;
 
 import java.util.regex.Pattern;
 
@@ -46,6 +47,8 @@ public class SignDto {
     }
 
     public isValidEnum isValidSignUp() {
+        RegexString regexString = new RegexString();
+
         if (user_name == null
                 || user_email == null
                 || user_password == null
@@ -56,13 +59,13 @@ public class SignDto {
 
             return isValidEnum.missing_credentials;
         } else if (!Pattern.matches(
-                "^([\\w-\\.]+){1,64}@([\\w&&[^_]]+){2,255}.[a-z]{2,}$",
+                regexString.getEmail(),
                 user_email)) {
 
             return isValidEnum.email_invalid;
 
         } else if (!Pattern.matches(
-                "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$",
+                regexString.getPassword01(),
                 user_password
         )) {
 

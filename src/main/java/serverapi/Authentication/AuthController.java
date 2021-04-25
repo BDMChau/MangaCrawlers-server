@@ -1,12 +1,12 @@
-package serverapi.Auth;
+package serverapi.Authentication;
 
-import Helpers.Response;
+import serverapi.Api.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
 import org.springframework.web.bind.annotation.*;
-import serverapi.Auth.dto.SignDto;
+import serverapi.Authentication.dto.SignDto;
 import serverapi.Enums.isValidEnum;
 
 import java.security.NoSuchAlgorithmException;
