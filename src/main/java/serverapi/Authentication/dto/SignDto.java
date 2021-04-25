@@ -1,9 +1,9 @@
 package serverapi.Authentication.dto;
 
-import serverapi.Enums.isValidEnum;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import serverapi.Security.RegexString;
+import serverapi.Enums.isValidEnum;
+import serverapi.Helpers.ReadJSONFileAndGetValue;
 
 import java.util.regex.Pattern;
 
@@ -15,6 +15,16 @@ public class SignDto {
     String user_password;
     String user_avatar;
     Boolean isAdmin = false;
+
+
+    private String getRegexStr(String objKey) {
+        ReadJSONFileAndGetValue readJSONFileAndGetValue = new ReadJSONFileAndGetValue("src/main/java/serverapi/Security/RegexString.json", objKey);
+        readJSONFileAndGetValue.read();
+
+        String value = readJSONFileAndGetValue.getValue();
+        return value;
+    }
+
 
     public Boolean isNullAvatar() {
         if (user_avatar == null || user_avatar.equals("")) {
@@ -46,9 +56,8 @@ public class SignDto {
         return isValidEnum.everything_success;
     }
 
-    public isValidEnum isValidSignUp() {
-        RegexString regexString = new RegexString();
 
+    public isValidEnum isValidSignUp() {
         if (user_name == null
                 || user_email == null
                 || user_password == null
@@ -59,13 +68,13 @@ public class SignDto {
 
             return isValidEnum.missing_credentials;
         } else if (!Pattern.matches(
-                regexString.getEmail(),
+                getRegexStr("email"),
                 user_email)) {
 
             return isValidEnum.email_invalid;
 
         } else if (!Pattern.matches(
-                regexString.getPassword01(),
+                getRegexStr("passwordLength8Letter1Number1"),
                 user_password
         )) {
 
