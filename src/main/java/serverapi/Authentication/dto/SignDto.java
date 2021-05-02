@@ -74,7 +74,7 @@ public class SignDto {
             return isValidEnum.email_invalid;
 
         } else if (!Pattern.matches(
-                getRegexStr("passwordLength8Letter1Number1"),
+                getRegexStr("passwordLength8Number1"),
                 user_password
         )) {
 
