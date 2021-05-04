@@ -25,10 +25,10 @@ public class MangaGenre {
     private Long mangagenre_id;
 
     @ManyToOne()
-    @JoinColumn(name = "manga_id", insertable = false, updatable = false)
+    @JoinColumn(name = "manga_id")
     private Manga manga;
 
     @ManyToOne()
-    @JoinColumn(name = "genre_id", insertable = false, updatable = false)
+    @JoinColumn(name = "genre_id" )
     private Genre genre;
 }

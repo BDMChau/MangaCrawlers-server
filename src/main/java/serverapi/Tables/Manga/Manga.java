@@ -76,11 +76,7 @@ public class Manga {
 
 
     /////////////////////////////
-    @Column(
-            nullable = false,
-            columnDefinition = "varchar(50)"
-    )
-    private String manga_id2;
+
 
 
     @Column(
@@ -136,9 +132,9 @@ public class Manga {
     private Calendar createdAt;
 
 
-    public Manga(String manga_id2, String manga_name, String status, String description, float stars, Integer views,
+    public Manga( String manga_name, String status, String description, float stars, Integer views,
                  String thumbnail, Calendar date_publication, Calendar createdAt) {
-        this.manga_id2 = manga_id2;
+
         this.manga_name = manga_name;
         this.status = status;
         this.description = description;
@@ -147,7 +143,7 @@ public class Manga {
         this.thumbnail = thumbnail;
         this.date_publication = date_publication;
         this.createdAt = createdAt;
-        this.author = author;
+
     }
 
 }
