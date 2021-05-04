@@ -2,12 +2,7 @@ package serverapi.Tables.Manga;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.Query;
-import serverapi.Tables.Author.Author;
 import serverapi.Tables.Author.AuthorRepository;
-import serverapi.Tables.Chapter.ChapterRepository;
-
-import java.util.*;
 
 @Configuration
 public class MangaConfig {
@@ -44,6 +39,7 @@ public class MangaConfig {
 ////
 //        for (int i = 0; i < 1; i++) {
 //
+
 //
 //
 //            Scanner sc = new Scanner(System.in);
@@ -76,6 +72,9 @@ public class MangaConfig {
 //            System.out.println("----------------------------");
 //        }
 
+
+
+   
 
             return null;
         }
