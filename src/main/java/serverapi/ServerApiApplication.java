@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ServerApiApplication {
 	public static void main(String[] args) {
 		try{
-			System.out.println("Server is running at port 4000");
+			System.out.println("Server is running at port 4000 ");
 
 			SpringApplication.run(ServerApiApplication.class, args);
 
