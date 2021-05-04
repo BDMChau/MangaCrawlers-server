@@ -14,7 +14,6 @@ import java.sql.Time;
 import java.util.*;
 
 @Configuration
-@RequiredArgsConstructor
 public class ChapterConfig {
 
 
@@ -25,18 +24,29 @@ public class ChapterConfig {
     Chapter commandLineChapter(ChapterRepository chapterRepository, MangaRepository mangaRepository) {
 
 
+
+//        String arr [] ={"Chapter 10 : An Incident At The Castle Town",
+//                "Chapter 9 : The Boy's Vow Version 002",
+//                "Chapter 8 : The Protectors",
+//                "Chapter 7 : Beast",
+//                "Chapter 6 : Go Go, First Misson !!!",
+//                "Chapter 5 : The Other Noob",
+//                "Chapter 4 : The Black Sheep's Crook",
+//                "Chapter 3 : The Road To The Magic Emperor",
+//                "Chapter 2 : The Magic Knights Entrance Exam",
+//                "Chapter 1 : The Boy's Vow",
+//                "Chapter 0: Oneshot: Who Will The World Smile At?"};
+//        Optional<Manga> manga = mangaRepository.findById(1L);
+//        for(int i=10; i>=0;i--){
 //
-//        for(int i=0; i<=10;i++){
 //
 //
-//            Optional<Manga> manga = mangaRepository.findById(1L);
 //            Scanner sc = new Scanner(System.in);
 //            Manga getmanga = manga.get();
 //
 //            Chapter chapter = new Chapter();
 //            chapter.setChapter_number(0+i);
-//            System.out.println("Nhập tên chapter:");
-//            chapter.setChapter_name(sc.nextLine());
+//            chapter.setChapter_name(arr[i]);
 //            chapter.setCreatedAt(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
 //            chapter.setViews(3000);
 //            chapter.setManga(getmanga);

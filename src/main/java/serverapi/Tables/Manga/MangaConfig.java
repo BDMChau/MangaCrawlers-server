@@ -4,6 +4,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import serverapi.Tables.Author.AuthorRepository;
 
+import java.util.Calendar;
+import java.util.Scanner;
+import java.util.TimeZone;
+
 @Configuration
 public class MangaConfig {
 
@@ -36,10 +40,10 @@ public class MangaConfig {
 //        mangaRepository.save(newmanga1);
 
 //        Optional<Author> author = authorRepository.findById(7L);
-////
+//////
 //        for (int i = 0; i < 1; i++) {
 //
-
+//
 //
 //
 //            Scanner sc = new Scanner(System.in);
@@ -69,6 +73,7 @@ public class MangaConfig {
 //
 //
 //            mangaRepository.save(newmanga);
+//
 //            System.out.println("----------------------------");
 //        }
 

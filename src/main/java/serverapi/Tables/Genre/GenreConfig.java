@@ -13,7 +13,7 @@ public class GenreConfig {
     Genre commandlineGenre(GenreRepository genreRepository){
 
 
-//
+
 //        for(int i=0;i<3;i++){
 //
 //            Genre genre = new Genre();
