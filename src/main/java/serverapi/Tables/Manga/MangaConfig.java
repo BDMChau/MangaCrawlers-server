@@ -41,7 +41,7 @@ public class MangaConfig {
 //        mangaRepository.save(newmanga1);
 
 //        Optional<Author> author = authorRepository.findById(7L);
-
+//
         for (int i = 0; i < 1; i++) {
 
 
