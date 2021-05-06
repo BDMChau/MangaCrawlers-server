@@ -11,7 +11,7 @@ public class GenreConfig {
 
     @Bean
     Genre commandlineGenre(GenreRepository genreRepository){
-//
+
 //        String arr[] ={"Action", "Adapted to Anime", "Adapted to Drama CD", "Adapted to Manga",
 //                "Adult", "Adventure","Comedy","Cooking","Drama","Ecchi","English Novel","Fantasy",
 //                "Game","Gender Bender","Harem","Historical","Horror","Incest","Isekai","Josei",

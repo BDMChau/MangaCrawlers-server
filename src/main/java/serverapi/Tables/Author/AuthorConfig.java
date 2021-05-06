@@ -14,7 +14,7 @@ public class AuthorConfig {
     @Bean
     Author commandLineAuthor(AuthorRepository authorRepository) {
 
-
+//
 //        String arr []={"Hiiragiboshi Takumi","Akizuki Sorata","Kusanagi Mizuho","Isayama Hajime","Tabata Yuuki",
 //                "Tsutsui Taishi","Inagaki Riichiro - Boichi","Oomori Fujino - Kunieda","Fushimi Tsukasa - Rin",
 //                "Mashima Hiro","Type-Moon - Nishiwaki Datto","Miyazaki Yuu","Park Yong-Je","Haruba Negi",
