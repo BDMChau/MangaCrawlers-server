@@ -2,9 +2,11 @@ package serverapi.Tables.Manga;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import serverapi.Tables.Author.Author;
 import serverapi.Tables.Author.AuthorRepository;
 
 import java.util.Calendar;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.TimeZone;
 
@@ -39,10 +41,9 @@ public class MangaConfig {
 //
 //        mangaRepository.save(newmanga1);
 
-//        Optional<Author> author = authorRepository.findById(7L);
-//////
-//        for (int i = 0; i < 1; i++) {
-//
+
+
+//        for (int i = 0; i < 13; i++) {
 //
 //
 //
@@ -68,16 +69,17 @@ public class MangaConfig {
 //            newmanga.setThumbnail(sc.nextLine());
 //
 //            newmanga.setDate_publication(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
-//            newmanga.setCreatedAt(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+ //           newmanga.setCreatedAt(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
 //
 //
 //
 //            mangaRepository.save(newmanga);
 //
-//            System.out.println("----------------------------");
+//
 //        }
-
-
+//        System.out.println("----------------------------");
+//
+//
 
    
 

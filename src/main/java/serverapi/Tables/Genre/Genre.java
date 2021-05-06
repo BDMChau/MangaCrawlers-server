@@ -3,6 +3,7 @@ package serverapi.Tables.Genre;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import serverapi.Tables.Chapter.Chapter;
+import serverapi.Tables.MangaGenre.MangaGenre;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -25,7 +26,7 @@ public class Genre {
     private Long genre_id;
 
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
-    private Collection<Chapter> chapters;
+    private Collection<MangaGenre> mangaGenres;
 
 //    @ManyToMany(mappedBy = "genre") // variable genre in manga class
 //    private Collection<MangaGenre> mangaGenre;

@@ -24,7 +24,7 @@ public class ChapterConfig {
     Chapter commandLineChapter(ChapterRepository chapterRepository, MangaRepository mangaRepository) {
 
 
-
+//
 //        String arr [] ={"Chapter 10 : An Incident At The Castle Town",
 //                "Chapter 9 : The Boy's Vow Version 002",
 //                "Chapter 8 : The Protectors",
@@ -36,10 +36,8 @@ public class ChapterConfig {
 //                "Chapter 2 : The Magic Knights Entrance Exam",
 //                "Chapter 1 : The Boy's Vow",
 //                "Chapter 0: Oneshot: Who Will The World Smile At?"};
-//        Optional<Manga> manga = mangaRepository.findById(1L);
+//        Optional<Manga> manga = mangaRepository.findById(5L);
 //        for(int i=10; i>=0;i--){
-//
-//
 //
 //            Scanner sc = new Scanner(System.in);
 //            Manga getmanga = manga.get();
