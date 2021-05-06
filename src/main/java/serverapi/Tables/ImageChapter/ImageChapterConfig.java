@@ -19,80 +19,83 @@ public class ImageChapterConfig {
     {
 
 
-//        String arr[] ={"https://cm.blazefast.co/4c/95/4c9553d74b3a12617e6fb3893698ef75.jpg",
-//                "https://cm.blazefast.co/39/b1/39b11eee10a2e854ef25f7fab442c1ce.jpg",
-//                "https://cm.blazefast.co/05/a8/05a881317dc03b18441ab8c2a6e4a019.jpg",
-//                "https://cm.blazefast.co/8d/98/8d9825accd5c01e04f28267fe1e80f9c.jpg",
-//                "https://cm.blazefast.co/66/9c/669c6f2b3ae12f15c2898cc8ee277212.jpg",
-//                "https://cm.blazefast.co/39/7f/397f26a290398e2923568a14ecaf75e8.jpg",
-//                "https://cm.blazefast.co/0f/b1/0fb1e574994bc8c4af0e2c50b92dc290.jpg",
-//                "https://cm.blazefast.co/a9/2c/a92c8a227986225eafcc5a79161ff139.jpg",
-//                "https://cm.blazefast.co/41/5f/415f54bb11ba7b9a5a4a101f54d77923.jpg",
-//                "https://cm.blazefast.co/4a/36/4a3649877fe7a918b34d4dfdf67d04aa.jpg",
-//                "https://cm.blazefast.co/58/d3/58d361d390190fc63cb9a6e1798da343.jpg",
-//                "https://cm.blazefast.co/24/aa/24aa1a88e886bae3c396ae0172241e5a.jpg",
-//                "https://cm.blazefast.co/d4/0e/d40ec95e3154760f3454d8296a4869cc.jpg",
-//                "https://cm.blazefast.co/c3/16/c316283165e7f64a6bd9271d46d8cad5.jpg",
-//                "https://cm.blazefast.co/a9/99/a9992adfb2b78a64ebeb0d7d380ede05.jpg",
-//                "https://cm.blazefast.co/c2/6c/c26cae69ed6a8e038451697960518490.jpg",
-//                "https://cm.blazefast.co/28/9c/289c88c3f6f0715249b07be149f7065a.jpg",
-//                "https://cm.blazefast.co/63/a5/63a5d45c060fd3e3ca1e9956c9d01181.jpg",
-//                "https://cm.blazefast.co/cb/fd/cbfd89b8724253d176a0e37345cc32ad.jpg",
-//                "https://cm.blazefast.co/59/a1/59a1a90a4c9ecf3f1f3f7baad017b77d.jpg",
-//                "https://cm.blazefast.co/38/99/389998808416a13da5b9e03258b33374.jpg",
-//                "https://cm.blazefast.co/86/af/86afde93405223492ecd550b04d6fa1e.jpg",
-//                "https://cm.blazefast.co/36/dd/36dd44237e50ecb13b720c313d9405f3.jpg",
-//                "https://cm.blazefast.co/d9/98/d998a38cb537186bddb11762c1ff4a52.jpg",
-//                "https://cm.blazefast.co/ab/7b/ab7bab1e4dd5669b77697dc9f5946d75.jpg",
-//                "https://cm.blazefast.co/5c/4a/5c4ac28ce94331b956d13d81e2f69287.jpg",
-//                "https://cm.blazefast.co/a4/b1/a4b1577af2281560440517d88a2644b5.jpg",
-//                "https://cm.blazefast.co/4e/f5/4ef5325f763acd00f251beb6590915c6.jpg",
-//                "https://cm.blazefast.co/17/35/17354eb83ab23dc8e7bd4fd18299c104.jpg",
-//                "https://cm.blazefast.co/9e/cd/9ecda15b961c054f16b2c215f30c499a.jpg",
-//                "https://cm.blazefast.co/68/54/68542bad0e0cf6b240d9c8d9e3c769a5.jpg",
-//                "https://cm.blazefast.co/c4/59/c459decfc057fde02d3a3a2c8a17d754.jpg",
-//                "https://cm.blazefast.co/96/ce/96ce147beb355b92fbb4dec276671dea.jpg",
-//                "https://cm.blazefast.co/8e/b6/8eb69bf95b2c3ef220e967996214e557.jpg",
-//                "https://cm.blazefast.co/b1/b3/b1b330ea5efd22dfc9b4effd63d949a3.jpg",
-//                "https://cm.blazefast.co/7c/fc/7cfc55c2cf5e7936323ac54b437ef47e.jpg",
-//                "https://cm.blazefast.co/38/00/3800f4aa098ef2791f50b00861fc975f.jpg",
-//                "https://cm.blazefast.co/ee/cf/eecf73c752015b633d5f5a91be508cab.jpg",
-//                "https://cm.blazefast.co/cd/26/cd26e1ffa4703fa203365c4211655fa3.jpg",
-//                "https://cm.blazefast.co/04/1c/041c5c7e95e49082057add0cdd0a1e24.jpg",
-//                "https://cm.blazefast.co/d2/e2/d2e24244a1dbaca7f8ad811adec123e4.jpg",
-//                "https://cm.blazefast.co/38/54/38543315efc4ac516976a4e0af19f773.jpg",
-//                "https://cm.blazefast.co/8e/f4/8ef484356d4a61d7bcca6c0cd846221f.jpg",
-//                "https://cm.blazefast.co/1b/8e/1b8e68c28fc1d19d8378f9deec1fdea4.jpg",
-//                "https://cm.blazefast.co/9b/29/9b29026b42e2e4ece3354925e033265d.jpg",
-//                "https://cm.blazefast.co/1f/a7/1fa7e4588016cc66b425d833a015ab67.jpg",
-//                "https://cm.blazefast.co/88/ba/88ba449fcbddd43f8f981857fdc3b584.jpg",
-//                "https://cm.blazefast.co/ca/ed/caedefa85693df2875842151c16603b9.jpg",
-//                "https://cm.blazefast.co/ff/2e/ff2e62926a35cfc571bec72b09135c29.jpg",
-//                "https://cm.blazefast.co/d6/2b/d62b1e8b4c60db4d5343b44a1dcd107f.jpg",};
-//
-//        Optional<Chapter> chapter = chapterRepository.findById(2L);
-//        Scanner sc = new Scanner(System.in);
-//
-//        for(int i=0; i<arr.length; i++){
-//
-//
-//            Chapter getchapter = chapter.get();
-//
-//
-//            ImageChapter imageChapter = new ImageChapter();
-//
-//            imageChapter.setImgchapter_url(arr[i]);
-//
-//           imageChapter.setChapter(getchapter);
-//
-//            imageChapterRepository.save(imageChapter);
-//
-//
-//        }
-//        System.out.println("----------------------------------");
-//
-//
-//
+        String arr[] ={      "https://cm.blazefast.co/31/94/319406ca4eabd11878cfbe2da4b44b14.jpg",
+                "https://cm.blazefast.co/18/fb/18fb43ed8ca4b89385a2d1963a529eee.jpg",
+                "https://cm.blazefast.co/70/a2/70a222edfdb2866c246eed3fed20169e.jpg",
+                "https://cm.blazefast.co/19/c8/19c8eeb1b775ce49a3257f50d75177c6.jpg",
+                "https://cm.blazefast.co/ed/a1/eda14a7781ddb3b0d4dd0616abf34719.jpg",
+                "https://cm.blazefast.co/d5/a4/d5a4ab69b250295ac00a9c73fce96bda.jpg",
+                "https://cm.blazefast.co/0f/28/0f28c6d02a70491290f547866f2e057c.jpg",
+                "https://cm.blazefast.co/e6/72/e67264fec8f8808e7c58c7cdab14ac77.jpg",
+                "https://cm.blazefast.co/a7/d8/a7d84140e62fc15118dc22ea79060417.jpg",
+                "https://cm.blazefast.co/c0/dd/c0dd067f953977fd74713b8a0ae8ff80.jpg",
+                "https://cm.blazefast.co/e6/99/e69994c40f16a7d20709daa2c84d8072.jpg",
+                "https://cm.blazefast.co/17/0b/170b994f9634bc06e259d8176b2e4cf1.jpg",
+                "https://cm.blazefast.co/9b/7d/9b7db5d2ad9e47d1775993cdaf9d113c.jpg",
+                "https://cm.blazefast.co/bb/d3/bbd3f9487d96e0793324d94890ccb380.jpg",
+                "https://cm.blazefast.co/df/7b/df7b9549eb767f21291eb73ec374c5e9.jpg",
+                "https://cm.blazefast.co/6a/ac/6aacb5a9edf32789a6eb4d8f2da4a55f.jpg",
+                "https://cm.blazefast.co/b6/84/b6848cce0d1b8f65e56d9c6621d4a3fb.jpg",
+                "https://cm.blazefast.co/a5/8c/a58c06f562ab0a3e407a283dbb9afb4b.jpg",
+                "https://cm.blazefast.co/94/97/9497c79247a68e4017c957dbf78933f8.jpg",
+                "https://cm.blazefast.co/29/3b/293ba863a3fcd4997897ac72117b7c9a.jpg",
+                "https://cm.blazefast.co/49/b3/49b32c8c9e677e0c048b37eb29550d47.jpg",
+                "https://cm.blazefast.co/0f/47/0f471708af68d00c84f292a3a5140e7e.jpg",
+                "https://cm.blazefast.co/ad/fc/adfc219ca0f3257c052454c5122c727b.jpg",
+                "https://cm.blazefast.co/a2/ba/a2bab00e9b1c7b23a43c694a7d91db1a.jpg",
+                "https://cm.blazefast.co/c5/da/c5da3ab4a2a068ab16c34b68d5c61f85.jpg",
+                "https://cm.blazefast.co/42/cf/42cf7f4233a0f00e46047d2345f04645.jpg",
+                "https://cm.blazefast.co/14/5b/145b3a1b8c357267ef3cfe6e55f719cb.jpg",
+                "https://cm.blazefast.co/f4/fd/f4fd2d213d000da34643402c3f3358c0.jpg",
+                "https://cm.blazefast.co/0c/23/0c23fec4336cde365536631b468cb759.jpg",
+                "https://cm.blazefast.co/71/01/710147554ce42a705325e4261a78b261.jpg",
+                "https://cm.blazefast.co/0e/75/0e755b23e531784165ae5f66e5eb46d8.jpg",
+                "https://cm.blazefast.co/90/c5/90c5cfd596f5a0e3e348263120cce014.jpg",
+                "https://cm.blazefast.co/15/9c/159cd9c7eb09ef07f99e0d26c19e4f8c.jpg",
+                "https://cm.blazefast.co/af/f3/aff361ea6018ff380bf767857f3b3333.jpg",
+                "https://cm.blazefast.co/15/e0/15e047ebe9146f43475c6c6a3e51231c.jpg",
+                "https://cm.blazefast.co/14/4d/144dd340f9f9e024fd9aa01cdbc1ce72.jpg",
+                "https://cm.blazefast.co/9d/f2/9df2639c99ebb38bdbeb6f396826151f.jpg",
+                "https://cm.blazefast.co/27/9a/279a22a56487fa02385c954ca0801f9f.jpg",
+                "https://cm.blazefast.co/95/37/95377da6a3a60aa53f066c79e4d45366.jpg",
+                "https://cm.blazefast.co/4d/be/4dbe131fb6f08ae5555f1ed0605cb6fc.jpg",
+                "https://cm.blazefast.co/5b/24/5b24b01df38146657e3b709f772cc96f.jpg",
+                "https://cm.blazefast.co/00/76/00764b30e8f8880f5099eee3954f4754.jpg",
+                "https://cm.blazefast.co/9c/4c/9c4c67e1ebd69a7a0a49059aa39644ee.jpg",
+                "https://cm.blazefast.co/91/4b/914b3045691b6dde35cf11a9d442c688.jpg",
+                "https://cm.blazefast.co/3f/31/3f313257cd15b7bd0e262698b7d88721.jpg",
+                "https://cm.blazefast.co/aa/19/aa1974b07d53f3c64510f53d39c34c80.jpg",
+                "https://cm.blazefast.co/e6/90/e6907eeecac974446659499bd0ac6d0f.jpg",
+                "https://cm.blazefast.co/aa/63/aa63a127418df6f070b8b040e7f8d301.jpg",
+                "https://cm.blazefast.co/93/54/9354a4a24378b07eba8be33deaa03849.jpg",
+                "https://cm.blazefast.co/c1/73/c1737aca8138d40e36a0aabd60ee2059.jpg",
+                "https://cm.blazefast.co/52/83/5283014df583601632b019f39978c3c4.jpg",
+                "https://cm.blazefast.co/ef/e3/efe3d5009461a7f07fe8b53da0ab3cc9.jpg",};
+
+        Optional<Chapter> chapter = chapterRepository.findById(46L);
+        Scanner sc = new Scanner(System.in);
+
+        for(int i=0; i<arr.length; i++){
+
+
+            Chapter getchapter = chapter.get();
+
+
+            ImageChapter imageChapter = new ImageChapter();
+
+            imageChapter.setImgchapter_url(arr[i]);
+
+           imageChapter.setChapter(getchapter);
+
+
+            imageChapterRepository.save(imageChapter);
+
+
+        }
+        System.out.println("----------------------------------");
+
+
+
 
 
 

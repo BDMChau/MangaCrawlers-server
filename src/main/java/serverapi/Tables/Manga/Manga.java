@@ -2,6 +2,7 @@ package serverapi.Tables.Manga;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.type.descriptor.sql.SmallIntTypeDescriptor;
 import serverapi.Tables.Author.Author;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.FollowingManga.FollowingManga;
@@ -10,8 +11,10 @@ import serverapi.Tables.MangaTransGroup.MangaTransGroup;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
 
 import javax.persistence.*;
+import java.time.Year;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 
 
 @Entity
@@ -118,22 +121,22 @@ public class Manga {
     private String thumbnail;
 
     @Column(
-            nullable = false,
-            updatable = false,
-            columnDefinition = "timestamp with time zone"
+            nullable = true,
+            updatable = true,
+            columnDefinition = "int "
     )
-    private Calendar date_publication;
+    private int date_publications;
 
     @Column(
             nullable = false,
-            updatable = false,
+            updatable = true,
             columnDefinition = "timestamp with time zone"
     )
     private Calendar createdAt;
 
 
-    public Manga( String manga_name, String status, String description, float stars, Integer views,
-                 String thumbnail, Calendar date_publication, Calendar createdAt) {
+    public Manga(String manga_name, String status, String description, float stars, Integer views,
+                 String thumbnail, int date_publications, Calendar createdAt) {
 
         this.manga_name = manga_name;
         this.status = status;
@@ -141,7 +144,7 @@ public class Manga {
         this.stars = stars;
         this.views = views;
         this.thumbnail = thumbnail;
-        this.date_publication = date_publication;
+        this.date_publications = date_publications;
         this.createdAt = createdAt;
 
     }
