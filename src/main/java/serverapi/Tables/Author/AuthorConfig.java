@@ -8,9 +8,7 @@ public class AuthorConfig {
 
     @Bean
     Author commandLineAuthor(AuthorRepository authorRepository) {
-        Author author1 = new Author("Chau");
 
-        authorRepository.save(author1);
         return null;
     }
 }

@@ -122,6 +122,13 @@ public class Manga {
     private String thumbnail;
 
     @Column(
+            nullable = true,
+            updatable = true,
+            columnDefinition = "TEXT"
+    )
+    private String wallpaper;
+
+    @Column(
             nullable = false,
             updatable = false,
             columnDefinition = "timestamp with time zone"
