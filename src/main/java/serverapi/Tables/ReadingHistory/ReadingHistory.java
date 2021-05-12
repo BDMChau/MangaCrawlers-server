@@ -1,14 +1,18 @@
 package serverapi.Tables.ReadingHistory;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.Manga.Manga;
 import serverapi.Tables.User.User;
+
 import javax.persistence.*;
 
 @Entity
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @Table(name="reading_history")
 public class ReadingHistory {
@@ -25,7 +29,7 @@ public class ReadingHistory {
     private Long readingHistory_id;
 
 
-
+    @JsonManagedReference
     @ManyToOne()
     @JoinColumn(name="manga_id", insertable = false, updatable = false)
     private Manga manga;

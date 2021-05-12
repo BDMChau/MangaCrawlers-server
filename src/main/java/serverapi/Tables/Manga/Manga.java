@@ -1,7 +1,10 @@
 package serverapi.Tables.Manga;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import serverapi.Tables.Author.Author;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.FollowingManga.FollowingManga;
@@ -15,7 +18,8 @@ import java.util.Collection;
 
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "manga")
 public class Manga {
@@ -31,22 +35,28 @@ public class Manga {
     )
     private Long manga_id;
 
+    @JsonManagedReference
     @ManyToOne()
     @JoinColumn(name = "author_id")
     private Author author;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
     private Collection<Chapter> chapters;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
     private Collection<MangaGenre> mangaGenres;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
     private Collection<FollowingManga> followingMangas;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
     private Collection<ReadingHistory> readingHistories;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
     private Collection<MangaTransGroup> mangaTransGroups;
 
@@ -76,11 +86,7 @@ public class Manga {
 
 
     /////////////////////////////
-    @Column(
-            nullable = false,
-            columnDefinition = "varchar(50)"
-    )
-    private String manga_id2;
+
 
 
     @Column(
@@ -124,37 +130,30 @@ public class Manga {
     @Column(
             nullable = true,
             updatable = true,
-            columnDefinition = "TEXT"
+            columnDefinition = "int "
     )
-    private String wallpaper;
+    private int date_publications;
 
     @Column(
             nullable = false,
-            updatable = false,
-            columnDefinition = "int"
-    )
-    private int date_publication;
-
-    @Column(
-            nullable = false,
-            updatable = false,
+            updatable = true,
             columnDefinition = "timestamp with time zone"
     )
     private Calendar createdAt;
 
 
-    public Manga(String manga_id2, String manga_name, String status, String description, float stars, Integer views,
-                 String thumbnail, int date_publication, Calendar createdAt) {
-        this.manga_id2 = manga_id2;
+    public Manga(String manga_name, String status, String description, float stars, Integer views,
+                 String thumbnail, int date_publications, Calendar createdAt) {
+
         this.manga_name = manga_name;
         this.status = status;
         this.description = description;
         this.stars = stars;
         this.views = views;
         this.thumbnail = thumbnail;
-        this.date_publication = date_publication;
+        this.date_publications = date_publications;
         this.createdAt = createdAt;
-        this.author = author;
+
     }
 
 }

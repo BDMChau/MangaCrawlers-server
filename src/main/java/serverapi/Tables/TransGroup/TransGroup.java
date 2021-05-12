@@ -1,15 +1,17 @@
 package serverapi.Tables.TransGroup;
 
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import serverapi.Tables.MangaTransGroup.MangaTransGroup;
 
 import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "transgroup")
 public class TransGroup {

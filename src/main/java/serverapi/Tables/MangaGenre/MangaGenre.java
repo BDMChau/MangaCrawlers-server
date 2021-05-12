@@ -1,14 +1,17 @@
 package serverapi.Tables.MangaGenre;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import serverapi.Tables.Genre.Genre;
 import serverapi.Tables.Manga.Manga;
 
 import javax.persistence.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "manga_genre")
 public class MangaGenre {
@@ -24,6 +27,7 @@ public class MangaGenre {
     )
     private Long mangagenre_id;
 
+    @JsonManagedReference
     @ManyToOne()
     @JoinColumn(name = "manga_id", insertable = false, updatable = false)
     private Manga manga;

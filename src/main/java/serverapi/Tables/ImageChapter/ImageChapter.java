@@ -1,13 +1,15 @@
 package serverapi.Tables.ImageChapter;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import serverapi.Tables.Chapter.Chapter;
 
 import javax.persistence.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Table(name="imageschapter")
 public class ImageChapter {

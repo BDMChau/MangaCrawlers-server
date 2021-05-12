@@ -1,5 +1,6 @@
 package serverapi.Tables.Author;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import serverapi.Tables.Manga.Manga;
@@ -30,7 +31,7 @@ public class Author {
     )
     private String author_name;
 
-
+    @JsonBackReference
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private Collection<Manga> mangas;
 

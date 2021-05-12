@@ -1,14 +1,18 @@
 package serverapi.Tables.MangaTransGroup;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import serverapi.Tables.Manga.Manga;
 import serverapi.Tables.TransGroup.TransGroup;
+
 import javax.persistence.*;
 
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "manga_transgroup")
 public class MangaTransGroup {
@@ -24,6 +28,7 @@ public class MangaTransGroup {
     )
     private Long mangatransgroup_id;
 
+    @JsonManagedReference
     @ManyToOne()
     @JoinColumn(name = "manga_id", insertable = false, updatable = false)
     private Manga manga;

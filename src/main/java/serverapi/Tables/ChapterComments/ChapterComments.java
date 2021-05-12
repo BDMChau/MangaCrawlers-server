@@ -1,6 +1,7 @@
 package serverapi.Tables.ChapterComments;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.User.User;
 
@@ -8,7 +9,8 @@ import javax.persistence.*;
 import java.util.Calendar;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "chaptercomments")
 public class ChapterComments {
     @Id

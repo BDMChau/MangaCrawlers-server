@@ -1,8 +1,10 @@
 package serverapi.Tables.Chapter;
 
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import serverapi.Tables.ChapterComments.ChapterComments;
 import serverapi.Tables.ImageChapter.ImageChapter;
 import serverapi.Tables.Manga.Manga;
@@ -13,7 +15,8 @@ import java.util.Calendar;
 import java.util.Collection;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "chapter")
 public class Chapter {
@@ -29,6 +32,7 @@ public class Chapter {
     )
     private Long chapter_id;
 
+    @JsonManagedReference
     @ManyToOne
     @JoinColumn(name = "manga_id")
     private Manga manga;
