@@ -22,7 +22,7 @@ public class MangaGenreConfig {
     @Bean
     MangaGenre commandlineMangaGenre(MangaGenreRepository mangaGenreRepository, MangaRepository mangaRepository, GenreRepository genreRepository) {
 
-
+//fsdfsdfgsdfsd
 //        Optional<Manga> manga = mangaRepository.findById(10L);
 //
 //        Optional<Genre> genre = genreRepository.findById(39L);
