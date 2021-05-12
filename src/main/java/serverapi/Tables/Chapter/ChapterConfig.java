@@ -24,20 +24,23 @@ public class ChapterConfig {
     Chapter commandLineChapter(ChapterRepository chapterRepository, MangaRepository mangaRepository) {
 
 
+
+//        String arr [] ={
 //
-//        String arr [] ={"Chapter 10 : An Incident At The Castle Town",
-//                "Chapter 9 : The Boy's Vow Version 002",
-//                "Chapter 8 : The Protectors",
-//                "Chapter 7 : Beast",
-//                "Chapter 6 : Go Go, First Misson !!!",
-//                "Chapter 5 : The Other Noob",
-//                "Chapter 4 : The Black Sheep's Crook",
-//                "Chapter 3 : The Road To The Magic Emperor",
-//                "Chapter 2 : The Magic Knights Entrance Exam",
-//                "Chapter 1 : The Boy's Vow",
-//                "Chapter 0: Oneshot: Who Will The World Smile At?"};
-//        Optional<Manga> manga = mangaRepository.findById(5L);
-//        for(int i=10; i>=0;i--){
+//                "Chapter 10 : Armor Maga",
+//                "Chapter 9 : Dear Kaby",
+//                "Chapter 8 : Lucy Vs The Duke Of Evaroo",
+//                "Chapter 7 : The Weak Point Of Maga",
+//                "Chapter 6 : Infiltrating The Duke Of Evaroo S Mansion",
+//                "Chapter 5 : Day Break",
+//                "Chapter 4 : Stellar Spirit Of The Canis Minor",
+//                "Chapter 3 : The Sala,ander, The Monkey, And The Bull",
+//                "Chapter 2 : The Master Appears",
+//                "Chapter 1 : Fairy Tail",};
+//
+//
+//        Optional<Manga> manga = mangaRepository.findById(10L);
+//        for(int i=9; i>=0;i--){
 //
 //            Scanner sc = new Scanner(System.in);
 //            Manga getmanga = manga.get();
@@ -52,9 +55,10 @@ public class ChapterConfig {
 //
 //            chapterRepository.save(chapter);
 //
-//            System.out.println("-------------------");
+//
 //
 //        }
+//        System.out.println("-------------------");
 
 
 

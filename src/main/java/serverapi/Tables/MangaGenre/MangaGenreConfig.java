@@ -22,10 +22,10 @@ public class MangaGenreConfig {
     @Bean
     MangaGenre commandlineMangaGenre(MangaGenreRepository mangaGenreRepository, MangaRepository mangaRepository, GenreRepository genreRepository) {
 
+
+//        Optional<Manga> manga = mangaRepository.findById(10L);
 //
-//        Optional<Manga> manga = mangaRepository.findById(2L);
-//
-//        Optional<Genre> genre = genreRepository.findById(41L);
+//        Optional<Genre> genre = genreRepository.findById(39L);
 //
 //
 //
@@ -44,9 +44,9 @@ public class MangaGenreConfig {
 //            mangaGenreRepository.save(mangaGenre);
 //
 //            System.out.println("----------------------------------");
-//
-//
-//
+
+
+
 
         return null;
     }

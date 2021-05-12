@@ -11,7 +11,7 @@ public class GenreConfig {
 
     @Bean
     Genre commandlineGenre(GenreRepository genreRepository){
-
+//
 //        String arr[] ={"Action", "Adapted to Anime", "Adapted to Drama CD", "Adapted to Manga",
 //                "Adult", "Adventure","Comedy","Cooking","Drama","Ecchi","English Novel","Fantasy",
 //                "Game","Gender Bender","Harem","Historical","Horror","Incest","Isekai","Josei",
@@ -24,7 +24,8 @@ public class GenreConfig {
 //
 //
 //
-//        String brr[] ={"Action genre, usually about fighting, violence, chaos, with fast evolving",
+//        String brr[] ={
+//                "Action genre, usually about fighting, violence, chaos, with fast evolving",
 //                "The story has been adapted into Anime","The story has been adapted into Drama CD",
 //                "The story has been adapted into Manga","Sensitive content",
 //                "Adventure, adventure, is often the journey of the characters",
