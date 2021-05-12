@@ -131,9 +131,9 @@ public class Manga {
     @Column(
             nullable = false,
             updatable = false,
-            columnDefinition = "timestamp with time zone"
+            columnDefinition = "int"
     )
-    private Calendar date_publication;
+    private int date_publication;
 
     @Column(
             nullable = false,
@@ -144,7 +144,7 @@ public class Manga {
 
 
     public Manga(String manga_id2, String manga_name, String status, String description, float stars, Integer views,
-                 String thumbnail, Calendar date_publication, Calendar createdAt) {
+                 String thumbnail, int date_publication, Calendar createdAt) {
         this.manga_id2 = manga_id2;
         this.manga_name = manga_name;
         this.status = status;
