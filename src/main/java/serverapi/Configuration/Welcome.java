@@ -11,7 +11,6 @@ public class Welcome {
 
         System.out.println("Welcome to my manga application!");
         System.out.println("Server is running at port 4000");
-        System.out.println("Server is running at port 4000");
 
     }
 }
