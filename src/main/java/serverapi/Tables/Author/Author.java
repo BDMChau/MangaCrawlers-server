@@ -1,15 +1,17 @@
 package serverapi.Tables.Author;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import serverapi.Tables.Manga.Manga;
 
 import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "author")
 public class Author {

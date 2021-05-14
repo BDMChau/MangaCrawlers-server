@@ -18,8 +18,8 @@ public class MangaController {
     }
 
 
-    @PostMapping("/test")
-    public ResponseEntity test(@RequestBody String name){
+    @PostMapping("/getone")
+    public ResponseEntity getOne(@RequestBody String name){
 
         return mangaService.test(name);
     }

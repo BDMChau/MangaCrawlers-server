@@ -7,10 +7,8 @@ import org.springframework.context.annotation.Configuration;
 public class Welcome {
 
     @Bean
-    public void welcomeCommand(){
-
+    public void welcome(){
         System.out.println("Welcome to my manga application!");
         System.out.println("Server is running at port 4000");
-
     }
 }
