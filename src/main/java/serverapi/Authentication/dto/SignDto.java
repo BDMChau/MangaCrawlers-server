@@ -14,7 +14,6 @@ public class SignDto {
     String user_email;
     String user_password;
     String user_avatar;
-    Boolean isAdmin = false;
 
 
     private String getRegexStr(String objKey) {
@@ -87,14 +86,6 @@ public class SignDto {
     }
 
 
-    @Override
-    public String toString() {
-        return "SignUpDto{" +
-                "userName='" + user_name + '\'' +
-                ", userEmail='" + user_email + '\'' +
-                ", password='" + user_password + '\'' +
-                '}';
-    }
 
 
 }

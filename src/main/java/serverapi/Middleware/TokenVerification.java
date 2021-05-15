@@ -1,12 +1,12 @@
 package serverapi.Middleware;
 
-import serverapi.Api.Response;
 import com.google.gson.Gson;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import org.springframework.http.HttpStatus;
+import serverapi.Api.Response;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -44,7 +44,15 @@ public class TokenVerification implements Filter {
                     .parseClaimsJws(token);
 
             Claims tokenBody = tokenParsed.getBody();
-            req.setAttribute("user", tokenBody);
+            Object tokenPayload = tokenBody.get("payload");
+
+//            Map<String, String> tokenDetails = new HashMap<>();
+//            tokenDetails.put("username", (String)tokenBody.get("user_name"));
+//            tokenDetails.put("email", (String)tokenBody.get("user_email"));
+//            tokenDetails.put("user_id", tokenBody.get("user_id").toString());
+
+
+            req.setAttribute("user", tokenPayload);
 
             chain.doFilter(request, response);
         } catch (IOException | ServletException | JwtException e) {
@@ -73,7 +81,8 @@ public class TokenVerification implements Filter {
                 }
             }
 
-            e.printStackTrace();
+            System.out.println(e);
+            //e.printStackTrace();
         }
     }
 

@@ -7,7 +7,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ServerApiApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ServerApiApplication.class, args);
+        try {
+            SpringApplication.run(ServerApiApplication.class, args);
+        } catch (Exception ex) {
+            if(ex.getClass().getName().contains("SilentExitException"))
+            {
+//                System.out.println(ex);
+            } else{
+                ex.printStackTrace();
+            }
+
+        }
 
     }
 }

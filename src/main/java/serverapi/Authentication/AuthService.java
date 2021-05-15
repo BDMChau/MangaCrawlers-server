@@ -47,9 +47,13 @@ public class AuthService {
         newUser.setUser_email(signDto.getUser_email());
         newUser.setUser_password(signDto.getUser_password());
         newUser.setUser_isAdmin(false);
+        newUser.setUser_isVerified(false);
+
         UserAvatar userAvatar = new UserAvatar();
-        if (signDto.isNullAvatar() && !signDto.getIsAdmin()) {
+        if (signDto.isNullAvatar()) {
             newUser.setUser_avatar(userAvatar.getAvatar_member());
+        } else {
+            newUser.setUser_avatar(signDto.getUser_avatar());
         }
 
         authRepository.save(newUser);
