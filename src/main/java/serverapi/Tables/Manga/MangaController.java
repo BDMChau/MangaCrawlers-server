@@ -2,10 +2,9 @@ package serverapi.Tables.Manga;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/manga")
@@ -18,9 +17,16 @@ public class MangaController {
     }
 
 
-    @PostMapping("/getone")
-    public ResponseEntity getOne(@RequestBody String name){
+    @GetMapping("/getall")
+    public ResponseEntity getAllManga(){
 
-        return mangaService.test(name);
+        return mangaService.getAllManga();
+    }
+
+
+    @PostMapping("/getbymanganame")
+    public ResponseEntity getByMangaName(@RequestBody Map<String, Object> body){
+
+        return mangaService.getByMangaName(body);
     }
 }

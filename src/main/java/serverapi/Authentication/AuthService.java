@@ -84,12 +84,15 @@ public class AuthService {
         String email = user.getUser_email();
         String avatar = user.getUser_avatar();
         Boolean isAdmin = user.getUser_isAdmin();
+        Boolean isVerified = user.getUser_isVerified();
         Map<String, Serializable> userData = Map.of(
                 "user_id", id,
                 "user_name", name,
                 "user_email", email,
                 "user_avatar", avatar,
-                "user_isAdmin", isAdmin);
+                "user_isAdmin", isAdmin,
+                "user_isVerified", isVerified
+        );
 
 
         TokenService tokenService = new TokenService();

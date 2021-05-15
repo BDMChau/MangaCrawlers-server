@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Queries.Repositories.MangaRepos;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -20,15 +21,25 @@ public class MangaService {
         this.mangaRepository = mangaRepository;
     }
 
-    public ResponseEntity test(String name){
+    public ResponseEntity getAllManga() {
 
-            Optional<Manga> manga = mangaRepository.findById(5L);
-            System.out.println(manga.get().getChapters());
-            System.out.println(manga.get().getManga_name());
+        List<Manga> mangas = mangaRepository.findAll();
+
+        Map<String, Object> msg = Map.of("msg", mangas);
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
 
 
-        Map<String, Object> error = Map.of("msg", manga);
+    public ResponseEntity getByMangaName(Map<String, Object> body) {
+        System.out.println(body.get("name"));
+        Optional<Manga> manga = mangaRepository.findByName((String) body.get("name"));
 
-        return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
+        if(!manga.isPresent()){
+            Map<String, Object> err = Map.of("err", "This manga doesn't exist");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+        }
+
+        Map<String, Object> msg = Map.of("msg", manga);
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 }
