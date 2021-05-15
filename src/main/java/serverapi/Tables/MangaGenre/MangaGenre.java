@@ -32,6 +32,7 @@ public class MangaGenre {
     @JoinColumn(name = "manga_id", insertable = false, updatable = false)
     private Manga manga;
 
+    @JsonManagedReference
     @ManyToOne()
     @JoinColumn(name = "genre_id", insertable = false, updatable = false)
     private Genre genre;

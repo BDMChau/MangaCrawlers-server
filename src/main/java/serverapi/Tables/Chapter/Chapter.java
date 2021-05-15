@@ -1,6 +1,7 @@
 package serverapi.Tables.Chapter;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,12 +40,15 @@ public class Chapter {
 
 
 
+    @JsonBackReference
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
     private Collection<ReadingHistory> readingHistories;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
     private Collection<ImageChapter> imageChapters;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
     private Collection<ChapterComments> chapterComments;
 

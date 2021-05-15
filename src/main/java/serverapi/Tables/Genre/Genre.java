@@ -1,5 +1,6 @@
 package serverapi.Tables.Genre;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,6 +27,7 @@ public class Genre {
     )
     private Long genre_id;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
     private Collection<Chapter> chapters;
 

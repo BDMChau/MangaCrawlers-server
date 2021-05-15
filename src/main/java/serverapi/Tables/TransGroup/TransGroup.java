@@ -1,6 +1,7 @@
 package serverapi.Tables.TransGroup;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,6 +29,7 @@ public class TransGroup {
     private Long transgroup_id;
 
 
+    @JsonBackReference
     @OneToMany(mappedBy = "transGroup", cascade = CascadeType.ALL)
     private Collection<MangaTransGroup> mangaTransGroups;
 

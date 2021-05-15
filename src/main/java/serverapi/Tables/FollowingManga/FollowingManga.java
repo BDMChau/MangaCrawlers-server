@@ -33,6 +33,7 @@ public class FollowingManga {
     @JoinColumn(name = "manga_id", insertable = false, updatable = false)
     private Manga manga;
 
+    @JsonManagedReference
     @ManyToOne()
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;

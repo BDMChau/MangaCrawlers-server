@@ -36,8 +36,8 @@ public class Manga {
     private Long manga_id;
 
     @JsonManagedReference
-    @ManyToOne()
-    @JoinColumn(name = "author_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name ="author_id")
     private Author author;
 
     @JsonBackReference

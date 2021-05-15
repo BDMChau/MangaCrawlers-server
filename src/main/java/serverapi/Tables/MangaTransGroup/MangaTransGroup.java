@@ -33,6 +33,7 @@ public class MangaTransGroup {
     @JoinColumn(name = "manga_id", insertable = false, updatable = false)
     private Manga manga;
 
+    @JsonManagedReference
     @ManyToOne()
     @JoinColumn(name = "transgroup_id", insertable = false, updatable = false)
     private TransGroup transGroup;

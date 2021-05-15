@@ -1,5 +1,6 @@
 package serverapi.Tables.ImageChapter;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,6 +30,7 @@ public class ImageChapter {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String imgchapter_url;
 
+    @JsonManagedReference
     @ManyToOne
     @JoinColumn(name = "chapter_id")
     private Chapter chapter;

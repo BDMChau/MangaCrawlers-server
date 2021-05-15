@@ -1,5 +1,6 @@
 package serverapi.Tables.ChapterComments;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 import serverapi.Tables.Chapter.Chapter;
@@ -25,10 +26,12 @@ public class ChapterComments {
     )
     private Long chaptercmt_id;
 
+    @JsonManagedReference
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
+    @JsonManagedReference
     @ManyToOne
     @JoinColumn(name = "chapter_id")
     private Chapter chapter;

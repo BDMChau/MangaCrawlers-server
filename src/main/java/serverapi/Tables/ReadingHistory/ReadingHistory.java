@@ -34,10 +34,12 @@ public class ReadingHistory {
     @JoinColumn(name="manga_id", insertable = false, updatable = false)
     private Manga manga;
 
+    @JsonManagedReference
     @ManyToOne()
     @JoinColumn(name="user_id", insertable = false, updatable = false)
     private User user;
 
+    @JsonManagedReference
     @ManyToOne()
     @JoinColumn(name="chapter_id", insertable = false, updatable = false)
     private Chapter chapter;
