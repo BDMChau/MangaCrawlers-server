@@ -23,9 +23,12 @@ public class MangaService {
 
     public ResponseEntity getAllManga() {
 
-        List<Manga> mangas = mangaRepository.findAll();
+        List<Manga> mangas = mangaRepository.findAllManga();
 
-        Map<String, Object> msg = Map.of("msg", mangas);
+        Map<String, Object> msg = Map.of(
+                "msg", "Get all mangas successfully!",
+                "data", mangas
+        );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
