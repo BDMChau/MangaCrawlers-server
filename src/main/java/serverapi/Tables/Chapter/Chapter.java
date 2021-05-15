@@ -34,7 +34,7 @@ public class Chapter {
     private Long chapter_id;
 
     @JsonManagedReference
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manga_id")
     private Manga manga;
 

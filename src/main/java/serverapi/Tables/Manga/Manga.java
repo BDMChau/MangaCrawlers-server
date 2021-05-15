@@ -36,7 +36,7 @@ public class Manga {
     private Long manga_id;
 
     @JsonManagedReference
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="author_id")
     private Author author;
 

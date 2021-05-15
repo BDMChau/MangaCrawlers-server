@@ -29,12 +29,12 @@ public class MangaTransGroup {
     private Long mangatransgroup_id;
 
     @JsonManagedReference
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manga_id", insertable = false, updatable = false)
     private Manga manga;
 
     @JsonManagedReference
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "transgroup_id", insertable = false, updatable = false)
     private TransGroup transGroup;
 }

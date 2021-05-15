@@ -30,12 +30,12 @@ public class ReadingHistory {
 
 
     @JsonManagedReference
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="manga_id", insertable = false, updatable = false)
     private Manga manga;
 
     @JsonManagedReference
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="user_id", insertable = false, updatable = false)
     private User user;
 

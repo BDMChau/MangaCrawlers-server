@@ -16,4 +16,8 @@ public interface MangaRepos extends JpaRepository<Manga, Long> {
 
     @Query(value = "SELECT * FROM manga", nativeQuery = true)
     List<Manga> findAllManga();
+
+
+    @Query(value = "SELECT author_id FROM manga,author where manga.author_id = author.author_id", nativeQuery = true)
+    List<Manga> findAuthorId();
 }

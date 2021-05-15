@@ -31,7 +31,7 @@ public class ImageChapter {
     private String imgchapter_url;
 
     @JsonManagedReference
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chapter_id")
     private Chapter chapter;
 

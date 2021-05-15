@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.Tables.Chapter.Chapter;
+import serverapi.Tables.MangaGenre.MangaGenre;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -28,8 +28,8 @@ public class Genre {
     private Long genre_id;
 
     @JsonBackReference
-    @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
-    private Collection<Chapter> chapters;
+    @OneToMany(mappedBy = "genre", cascade = CascadeType.ALL)
+    private Collection<MangaGenre> mangaGenres;
 
 //    @ManyToMany(mappedBy = "genre") // variable genre in manga class
 //    private Collection<MangaGenre> mangaGenre;
