@@ -1,20 +1,20 @@
-package serverapi.Configuration;
+package serverapi.Configuration.Middleware;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import serverapi.Middleware.TokenVerification;
 
 @Configuration
 public class TokenVerificationConfig {
 
 
     @Bean
-    public FilterRegistrationBean<TokenVerification> verifyToken(){
-        FilterRegistrationBean<TokenVerification> registrationBean
+    public FilterRegistrationBean<serverapi.Middleware.TokenVerification> verifyToken(){
+        FilterRegistrationBean<serverapi.Middleware.TokenVerification> registrationBean
                 = new FilterRegistrationBean<>();
 
-        registrationBean.setFilter(new TokenVerification());
+        registrationBean.setFilter(new serverapi.Middleware.TokenVerification());
         registrationBean.addUrlPatterns("/api/user/*");
+        registrationBean.addUrlPatterns("/api/manga/*");
 
         return registrationBean;
     }

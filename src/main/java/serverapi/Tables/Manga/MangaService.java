@@ -6,16 +6,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
+import serverapi.Queries.Repositories.MangaRepos;
 
 import java.util.Map;
 import java.util.Optional;
 
 @Service
 public class MangaService {
-    private final MangaRepository mangaRepository;
+    private final MangaRepos mangaRepository;
 
     @Autowired
-    public MangaService(MangaRepository mangaRepository) {
+    public MangaService(MangaRepos mangaRepository) {
         this.mangaRepository = mangaRepository;
     }
 
