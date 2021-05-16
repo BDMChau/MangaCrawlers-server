@@ -1,5 +1,6 @@
 package serverapi.Tables.MangaTransGroup;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "manga_transgroup")
 public class MangaTransGroup {
     @Id
@@ -29,12 +31,12 @@ public class MangaTransGroup {
     private Long mangatransgroup_id;
 
     @JsonManagedReference
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manga_id", insertable = false, updatable = false)
     private Manga manga;
 
     @JsonManagedReference
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "transgroup_id", insertable = false, updatable = false)
     private TransGroup transGroup;
 }

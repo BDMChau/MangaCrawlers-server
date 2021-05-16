@@ -1,6 +1,7 @@
 package serverapi.Tables.Manga;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,17 +11,20 @@ import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.FollowingManga.FollowingManga;
 import serverapi.Tables.MangaGenre.MangaGenre;
 import serverapi.Tables.MangaTransGroup.MangaTransGroup;
+import serverapi.Tables.RatingManga.RatingManga;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
 
 import javax.persistence.*;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.List;
 
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "manga")
 public class Manga {
     @Id
@@ -36,13 +40,13 @@ public class Manga {
     private Long manga_id;
 
     @JsonManagedReference
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="author_id")
     private Author author;
 
     @JsonBackReference
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
-    private Collection<Chapter> chapters;
+    private List<Chapter> chapters;
 
     @JsonBackReference
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
@@ -60,6 +64,9 @@ public class Manga {
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
     private Collection<MangaTransGroup> mangaTransGroups;
 
+    @JsonBackReference
+    @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
+    private Collection<RatingManga> ratingMangas;
 
 //    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //    @JoinTable(name = "manga_genre", // create a table manga_genre

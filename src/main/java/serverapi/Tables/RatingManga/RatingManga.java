@@ -1,48 +1,47 @@
-package serverapi.Tables.ReadingHistory;
+package serverapi.Tables.RatingManga;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.Manga.Manga;
 import serverapi.Tables.User.User;
 
 import javax.persistence.*;
+import java.util.Collection;
 
 @Entity
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@Table(name="reading_history")
-public class ReadingHistory {
+@Table(name = "rating_manga")
+public class RatingManga {
     @Id
     @SequenceGenerator(
-            name = "readinghistory_sequence",
-            sequenceName = "readinghistory_sequence",
+            name = "ratingmanga_sequence",
+            sequenceName = "ratingmanga_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "readinghistory_sequence" // same as NAME in SequenceGenerator
+            generator = "ratingmanga_sequence" // same as NAME in SequenceGenerator
     )
-    private Long readingHistory_id;
+    private Long ratingmanga_id;
 
+    @JsonBackReference
+    @OneToMany(mappedBy = "ratingManga", cascade = CascadeType.ALL)
+    private Collection<User> users;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="manga_id", insertable = false, updatable = false)
     private Manga manga;
 
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id", insertable = false, updatable = false)
-    private User user;
 
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="chapter_id", insertable = false, updatable = false)
-    private Chapter chapter;
+    @Column(columnDefinition = "int", nullable = true)
+    private Integer value;
+
 }
