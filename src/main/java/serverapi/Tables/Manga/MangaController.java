@@ -18,10 +18,16 @@ public class MangaController {
 
 
     @GetMapping("/getall")
-    public ResponseEntity getAllManga(){
+    public ResponseEntity findMangabyId(){
 
-        return mangaService.getAllManga();
+        return mangaService.findMangabyId();
     }
+
+//    @GetMapping("/getidauthor")
+//    public ResponseEntity findAuthorId(){
+//        return mangaService.findAuthorId();
+//
+//    }
 
 
     @PostMapping("/getbymanganame")

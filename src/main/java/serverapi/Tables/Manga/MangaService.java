@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Queries.Repositories.MangaRepos;
+import serverapi.Tables.Chapter.Chapter;
 
 import java.util.List;
 import java.util.Map;
@@ -21,13 +22,17 @@ public class MangaService {
         this.mangaRepository = mangaRepository;
     }
 
-    public ResponseEntity getAllManga() {
+    public ResponseEntity findMangabyId() {
 
-        List<Manga> mangas = mangaRepository.findAllManga();
+        Optional<Manga> mangas = mangaRepository.findById(5L);
+        Manga mangalist = mangas.get();
+        List<Chapter> chapterList = (List<Chapter>) mangalist.getChapters();
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get all mangas successfully!",
-                "data", mangas
+                "data", mangas,
+                "data1", chapterList
+
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
@@ -45,4 +50,17 @@ public class MangaService {
         Map<String, Object> msg = Map.of("msg", manga);
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
+
+//
+//    public ResponseEntity findAuthorId(){
+//        List<Manga> mangas = mangaRepository.findAuthorId();
+//
+//        Map<String, Object> msg = Map.of(
+//                "msg", "Get all mangas successfully!",
+//                "data", mangas
+//
+//
+//        );
+//       return new  ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+//    }
 }
