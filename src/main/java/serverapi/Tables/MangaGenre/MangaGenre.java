@@ -1,5 +1,6 @@
 package serverapi.Tables.MangaGenre;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "manga_genre")
 public class MangaGenre {
     @Id
@@ -28,12 +30,12 @@ public class MangaGenre {
     private Long mangagenre_id;
 
     @JsonManagedReference
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manga_id", insertable = false, updatable = false)
     private Manga manga;
 
     @JsonManagedReference
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "genre_id", insertable = false, updatable = false)
     private Genre genre;
 }

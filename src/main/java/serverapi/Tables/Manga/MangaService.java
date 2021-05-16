@@ -29,6 +29,8 @@ public class MangaService {
         Manga mangalist = mangas.get();
         List<Chapter> chapterList = (List<Chapter>) mangalist.getChapters();
 
+
+
         Map<String, Object> msg = Map.of(
                 "msg", "Get all mangas successfully!",
                 "data", mangas,

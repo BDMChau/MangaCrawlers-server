@@ -1,10 +1,11 @@
 package serverapi.Tables.Genre;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.Tables.Chapter.Chapter;
+import serverapi.Tables.MangaGenre.MangaGenre;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -13,6 +14,7 @@ import java.util.Collection;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "genre")
 public class Genre {
     @Id
@@ -28,8 +30,8 @@ public class Genre {
     private Long genre_id;
 
     @JsonBackReference
-    @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
-    private Collection<Chapter> chapters;
+    @OneToMany(mappedBy = "genre", cascade = CascadeType.ALL)
+    private Collection<MangaGenre> mangaGenres;
 
 //    @ManyToMany(mappedBy = "genre") // variable genre in manga class
 //    private Collection<MangaGenre> mangaGenre;
