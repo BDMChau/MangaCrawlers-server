@@ -1,5 +1,6 @@
 package serverapi.Tables.ReadingHistory;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import javax.persistence.*;
 @Setter
 @Getter
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name="reading_history")
 public class ReadingHistory {
     @Id

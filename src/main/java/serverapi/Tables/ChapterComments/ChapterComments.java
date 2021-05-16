@@ -1,7 +1,9 @@
 package serverapi.Tables.ChapterComments;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.User.User;
@@ -12,6 +14,8 @@ import java.util.Calendar;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "chaptercomments")
 public class ChapterComments {
     @Id
