@@ -11,6 +11,7 @@ import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.FollowingManga.FollowingManga;
 import serverapi.Tables.MangaGenre.MangaGenre;
 import serverapi.Tables.MangaTransGroup.MangaTransGroup;
+import serverapi.Tables.RatingManga.RatingManga;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
 
 import javax.persistence.*;
@@ -63,6 +64,9 @@ public class Manga {
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
     private Collection<MangaTransGroup> mangaTransGroups;
 
+    @JsonBackReference
+    @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
+    private Collection<RatingManga> ratingMangas;
 
 //    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //    @JoinTable(name = "manga_genre", // create a table manga_genre

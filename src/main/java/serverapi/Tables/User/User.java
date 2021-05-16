@@ -2,11 +2,13 @@ package serverapi.Tables.User;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import serverapi.Tables.ChapterComments.ChapterComments;
 import serverapi.Tables.FollowingManga.FollowingManga;
+import serverapi.Tables.RatingManga.RatingManga;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
 
 import javax.persistence.*;
@@ -43,8 +45,10 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<FollowingManga> followingManga;
 
-//    @ManyToMany(mappedBy = "user")
-//    private Collection<Manga> manga;
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="ratingmanga_id")
+    private RatingManga ratingManga;
 
 
     @Column(columnDefinition = "varchar(100)", nullable = false)
