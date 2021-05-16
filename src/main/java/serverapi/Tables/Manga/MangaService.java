@@ -24,9 +24,8 @@ public class MangaService {
     public ResponseEntity getAllManga() {
 
         List<Manga> mangas = mangaRepository.findAllManga();
-        mangas.forEach(n ->{
-            System.out.println(n);
-        });
+
+
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get all mangas successfully!",

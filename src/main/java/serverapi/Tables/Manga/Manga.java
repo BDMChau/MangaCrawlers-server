@@ -16,6 +16,7 @@ import serverapi.Tables.ReadingHistory.ReadingHistory;
 import javax.persistence.*;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.List;
 
 
 @Entity
@@ -44,7 +45,7 @@ public class Manga {
 
     @JsonBackReference
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
-    private Collection<Chapter> chapters;
+    private List<Chapter> chapters;
 
     @JsonBackReference
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
