@@ -25,10 +25,13 @@ public class ChapterController {
     }
 
 
-    @GetMapping("/getmaxid")
-    public ResponseEntity findmaxid(){
+//    @GetMapping("/getmaxid")
+//    public ResponseEntity findmaxid(){
+//         return chapterService.findmaxid();
+//
+//    }
 
-    }
+
 
 
 

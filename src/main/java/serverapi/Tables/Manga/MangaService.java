@@ -9,6 +9,7 @@ import serverapi.Api.Response;
 import serverapi.Queries.Repositories.MangaRepos;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.dto.LatestManga;
+import serverapi.Tables.dto.SumViewChapter;
 
 import java.util.List;
 import java.util.Map;
@@ -68,17 +69,41 @@ public class MangaService {
 //    }
 
 
-//    public ResponseEntity getlatestmanga(){
-//        List<LatestManga> latestMangas = mangaRepository.getlatestmanga();
-//
-//
-//        Map<String, Object> msg = Map.of(
-//                "msg", "Get all mangas, chapters successfully!",
-//                "data", latestMangas
-//
-//
-//        );
-//        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-//    }
+    public ResponseEntity getLatestManga(){
+        List<LatestManga> latestMangas = mangaRepository.getLatestManga();
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get all mangas, chapters successfully!",
+                "data", latestMangas
+
+
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    public ResponseEntity getAllManga(){
+        List<Manga> getallmanga = mangaRepository.getAllManga();
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get all mangas successfully!",
+                "data", getallmanga
+
+
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    public ResponseEntity getTopManga(){
+        List<Manga> gettopmanga = mangaRepository.getTopManga();
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get all mangas successfully!",
+                "data", gettopmanga
+
+
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
 
 }

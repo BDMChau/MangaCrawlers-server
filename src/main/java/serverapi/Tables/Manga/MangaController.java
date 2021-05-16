@@ -36,13 +36,24 @@ public class MangaController {
         return mangaService.getByMangaName(body);
     }
 
-//
-//    @GetMapping("/getlatestmanga")
-//    public ResponseEntity Max()
-//    {
-//
-//        return mangaService.getlatestmanga();
-//
-//
-//    }
+
+    @GetMapping("/getlatestmanga")
+    public ResponseEntity getLatestManga()
+    {
+
+        return mangaService.getLatestManga();
+
+
+    }
+
+    @GetMapping("/getallmanga")
+    public ResponseEntity getallmanga(){
+        return mangaService.getAllManga();
+
+    }
+
+    @GetMapping("/gettopmanga")
+    public ResponseEntity getTopManga(){
+     return   mangaService.getTopManga();
+    }
 }

@@ -12,6 +12,7 @@ import serverapi.Tables.dto.LatestManga;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class ChapterService {
@@ -48,12 +49,15 @@ public class ChapterService {
 //        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 //    }
 
-    public ResponseEntity findmaxid(){
-        List<Chapter> chapters = chapterRepos.findmaxid();
-        Map<String, Object> msg = Map.of(
-                "msg", "Get all chapters successfully!",
-                "data", chapters
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
+//    public ResponseEntity findmaxid(){
+//        List<Chapter> chapters = chapterRepos.findmaxid();
+//
+//
+//
+//        Map<String, Object> msg = Map.of(
+//                "msg", "Get all chapters successfully!",
+//                "data", chapters
+//        );
+//        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+//    }
 }
