@@ -35,4 +35,14 @@ public class MangaController {
 
         return mangaService.getByMangaName(body);
     }
+
+//
+//    @GetMapping("/getlatestmanga")
+//    public ResponseEntity Max()
+//    {
+//
+//        return mangaService.getlatestmanga();
+//
+//
+//    }
 }

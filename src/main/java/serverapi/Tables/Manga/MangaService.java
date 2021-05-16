@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Queries.Repositories.MangaRepos;
 import serverapi.Tables.Chapter.Chapter;
+import serverapi.Tables.dto.LatestManga;
 
 import java.util.List;
 import java.util.Map;
@@ -63,4 +64,19 @@ public class MangaService {
 //        );
 //       return new  ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 //    }
+
+
+//    public ResponseEntity getlatestmanga(){
+//        List<LatestManga> latestMangas = mangaRepository.getlatestmanga();
+//
+//
+//        Map<String, Object> msg = Map.of(
+//                "msg", "Get all mangas, chapters successfully!",
+//                "data", latestMangas
+//
+//
+//        );
+//        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+//    }
+
 }
