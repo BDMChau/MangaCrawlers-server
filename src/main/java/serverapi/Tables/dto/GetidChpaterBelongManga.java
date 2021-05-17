@@ -8,13 +8,13 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class SumViewChapter {
+public class GetidChpaterBelongManga {
 
     private String manga_name;
 
-    private String manga_id;
+    private String chapter_name;
 
-    private int views;
+
 
 
 

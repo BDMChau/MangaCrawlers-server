@@ -17,10 +17,13 @@ public class MangaController {
     }
 
 
-    @GetMapping("/getall")
-    public ResponseEntity findMangabyId(){
+    @PostMapping("/getall")
+    public ResponseEntity findChapters(@RequestBody Long manga_id, @RequestParam Long chapter_id){
+        System.out.println(manga_id.getClass().getName());
+        System.out.println(manga_id);
 
-        return mangaService.findMangabyId();
+
+        return mangaService.findChapters(manga_id, chapter_id);
     }
 
 //    @GetMapping("/getidauthor")

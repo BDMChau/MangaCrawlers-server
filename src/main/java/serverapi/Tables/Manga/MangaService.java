@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Queries.Repositories.MangaRepos;
 import serverapi.Tables.Chapter.Chapter;
+import serverapi.Tables.dto.GetidChpaterBelongManga;
 import serverapi.Tables.dto.LatestManga;
-import serverapi.Tables.dto.SumViewChapter;
 
 import java.util.List;
 import java.util.Map;
@@ -24,18 +24,17 @@ public class MangaService {
         this.mangaRepository = mangaRepository;
     }
 
-    public ResponseEntity findMangabyId() {
+    public ResponseEntity findChapters(Long manga_id, Long chapter_id) {
 
-        Optional<Manga> mangas = mangaRepository.findById(5L);
-        Manga mangalist = mangas.get();
-        List<Chapter> chapterList = (List<Chapter>) mangalist.getChapters();
+        Optional<Manga> manga=mangaRepository.findChapters(manga_id, chapter_id);
+//
 
 
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get all mangas successfully!",
-                "data", mangas,
-                "data1", chapterList
+                "data", manga
+
 
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);

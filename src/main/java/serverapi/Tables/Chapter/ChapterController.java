@@ -21,6 +21,7 @@ public class ChapterController {
     @GetMapping("/getall")
     public ResponseEntity getAllChapter(){
 
+
         return chapterService.getAllChapter();
     }
 
