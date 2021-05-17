@@ -6,15 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Queries.Repositories.AuthorRepos;
-import serverapi.Queries.Repositories.MangaRepos;
-import serverapi.Tables.Chapter.Chapter;
-import serverapi.Tables.Manga.Manga;
-import serverapi.Tables.dto.AuthorManga;
+import serverapi.Queries.DTO.AuthorManga;
 
-import java.lang.management.OperatingSystemMXBean;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class AuthorService {

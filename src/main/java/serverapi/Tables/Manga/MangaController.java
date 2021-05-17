@@ -3,8 +3,7 @@ package serverapi.Tables.Manga;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
+import serverapi.Tables.Manga.POJO.MangaPOJO;
 
 @RestController
 @RequestMapping("/api/manga")
@@ -17,46 +16,20 @@ public class MangaController {
     }
 
 
-    @PostMapping("/getall")
-    public ResponseEntity findChapters(@RequestBody Long manga_id, @RequestParam Long chapter_id){
-        System.out.println(manga_id.getClass().getName());
-        System.out.println(manga_id);
+    @PostMapping("/updateViewsChapter")
+    public ResponseEntity updateViewsChapter(@RequestBody MangaPOJO mangaPOJO){
+        System.out.println(mangaPOJO);
+        System.out.println(mangaPOJO.getManga_id());
 
-
-        return mangaService.findChapters(manga_id, chapter_id);
+        return mangaService.updateViewsChapter(mangaPOJO);
     }
 
-//    @GetMapping("/getidauthor")
-//    public ResponseEntity findAuthorId(){
-//        return mangaService.findAuthorId();
-//
-//    }
+    @GetMapping("/getlastest")
+    public ResponseEntity getLatest(){
 
 
-    @PostMapping("/getbymanganame")
-    public ResponseEntity getByMangaName(@RequestBody Map<String, Object> body){
-
-        return mangaService.getByMangaName(body);
+        return mangaService.getLatest();
     }
 
 
-    @GetMapping("/getlatestmanga")
-    public ResponseEntity getLatestManga()
-    {
-
-        return mangaService.getLatestManga();
-
-
-    }
-
-    @GetMapping("/getallmanga")
-    public ResponseEntity getallmanga(){
-        return mangaService.getAllManga();
-
-    }
-
-    @GetMapping("/gettopmanga")
-    public ResponseEntity getTopManga(){
-     return   mangaService.getTopManga();
-    }
 }

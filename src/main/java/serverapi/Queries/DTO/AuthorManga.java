@@ -1,11 +1,10 @@
-package serverapi.Tables.dto;
+package serverapi.Queries.DTO;
 
 
 import lombok.*;
 
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthorManga {
