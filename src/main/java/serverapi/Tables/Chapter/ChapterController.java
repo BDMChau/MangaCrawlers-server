@@ -21,7 +21,19 @@ public class ChapterController {
     @GetMapping("/getall")
     public ResponseEntity getAllChapter(){
 
+
         return chapterService.getAllChapter();
     }
+
+
+//    @GetMapping("/getmaxid")
+//    public ResponseEntity findmaxid(){
+//         return chapterService.findmaxid();
+//
+//    }
+
+
+
+
 
 }

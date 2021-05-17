@@ -3,8 +3,7 @@ package serverapi.Tables.Manga;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
+import serverapi.Tables.Manga.POJO.MangaPOJO;
 
 @RestController
 @RequestMapping("/api/manga")
@@ -17,16 +16,20 @@ public class MangaController {
     }
 
 
-    @GetMapping("/getall")
-    public ResponseEntity getAllManga(){
+    @PostMapping("/updateViewsChapter")
+    public ResponseEntity updateViewsChapter(@RequestBody MangaPOJO mangaPOJO){
+        System.out.println(mangaPOJO);
+        System.out.println(mangaPOJO.getManga_id());
 
-        return mangaService.getAllManga();
+        return mangaService.updateViewsChapter(mangaPOJO);
+    }
+
+    @GetMapping("/getlastest")
+    public ResponseEntity getLatest(){
+
+
+        return mangaService.getLatest();
     }
 
 
-    @PostMapping("/getbymanganame")
-    public ResponseEntity getByMangaName(@RequestBody Map<String, Object> body){
-
-        return mangaService.getByMangaName(body);
-    }
 }
