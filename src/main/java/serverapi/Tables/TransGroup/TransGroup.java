@@ -1,6 +1,5 @@
 package serverapi.Tables.TransGroup;
 
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
@@ -11,6 +10,7 @@ import serverapi.Tables.MangaTransGroup.MangaTransGroup;
 import javax.persistence.*;
 import java.util.Collection;
 
+
 @Entity
 @Getter
 @Setter
@@ -18,33 +18,37 @@ import java.util.Collection;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "transgroup")
 public class TransGroup {
-    @Id
-    @SequenceGenerator(
-            name = "transgroup_sequence",
-            sequenceName = "transgroup_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "transgroup_sequence" // same as NAME in SequenceGenerator
-    )
-    private Long transgroup_id;
 
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "transGroup", cascade = CascadeType.ALL)
-    private Collection<MangaTransGroup> mangaTransGroups;
+        @Id
+        @SequenceGenerator(
+                name = "transgroup_sequence",
+                sequenceName = "transgroup_sequence",
+                allocationSize = 1
+        )
+        @GeneratedValue(
+                strategy = GenerationType.SEQUENCE,
+                generator = "transgroup_sequence" // same as NAME in SequenceGenerator
+        )
+        private Long transgroup_id;
 
 
-    @Column(columnDefinition = "varchar(100)", nullable = false)
-    private String transgroup_name;
-
-    @Column(columnDefinition = "varchar(50)", nullable = false)
-    private String transgroup_email;
+        @JsonBackReference
+        @OneToMany(mappedBy = "transGroup", cascade = CascadeType.ALL)
+        private Collection<MangaTransGroup> mangaTransGroups;
 
 
-    public TransGroup(String transgroup_name, String transgroup_email) {
-        this.transgroup_name = transgroup_name;
-        this.transgroup_email = transgroup_email;
-    }
+        @Column(columnDefinition = "varchar(100)", nullable = false)
+        private String transgroup_name;
+
+        @Column(columnDefinition = "varchar(50)", nullable = false)
+        private String transgroup_email;
+
+
+        public TransGroup(String transgroup_name, String transgroup_email) {
+            this.transgroup_name = transgroup_name;
+            this.transgroup_email = transgroup_email;
+        }
+
+
 }

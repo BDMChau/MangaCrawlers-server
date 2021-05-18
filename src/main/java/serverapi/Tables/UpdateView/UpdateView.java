@@ -21,15 +21,15 @@ public class UpdateView {
 
     @Id
     @SequenceGenerator(
-            name = "updateview_sequence",
-            sequenceName = "updateview_sequence",
+            name = "updated_view_sequence",
+            sequenceName = "updated_view_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "updateview_sequence" // same as NAME in SequenceGenerator
+            generator = "updated_view_sequence" // same as NAME in SequenceGenerator
     )
-    private Long updateview_id;
+    private Long updatedview_id;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
