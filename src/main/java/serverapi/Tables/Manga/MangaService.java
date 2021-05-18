@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Queries.DTO.MangaChapterDTO;
-import serverapi.Queries.DTO.GetMangaInOneGenreDTO;
+import serverapi.Queries.DTO.MangaChapterGenreDTO;
 import serverapi.Queries.Repositories.ChapterRepos;
 import serverapi.Queries.Repositories.MangaRepos;
 import serverapi.Tables.Chapter.Chapter;
@@ -57,7 +57,7 @@ public class MangaService {
     }
     public ResponseEntity findMangaFromGenre(MangaPOJO mangaPOJO) {
 
-        List<GetMangaInOneGenreDTO> manga=mangaRepository.findMangaByOneGenre (Long.parseLong(mangaPOJO.getGenre_id ()));
+        List<MangaChapterGenreDTO> manga=mangaRepository.findMangaByOneGenre (Long.parseLong(mangaPOJO.getGenre_id ()));
 
 
         if(manga.isEmpty ()){

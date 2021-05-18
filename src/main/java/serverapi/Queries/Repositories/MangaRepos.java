@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import serverapi.Queries.DTO.GetMangaInOneGenreDTO;
+import serverapi.Queries.DTO.MangaChapterGenreDTO;
 import serverapi.Tables.Manga.Manga;
 import serverapi.Queries.DTO.MangaChapterDTO;
 
@@ -40,7 +40,7 @@ public interface MangaRepos extends JpaRepository<Manga, Long> {
             "Manga m JOIN m.chapters c JOIN m.mangaGenres mg ON mg.manga = m.manga_id JOIN Genre g ON g.genre_id = mg.genre  " +
             "WHERE c.chapter_id = (SELECT MAX(ct.chapter_id) FROM Manga mg INNER JOIN mg.chapters ct WHERE mg.manga_id = m.manga_id " +
             "AND g.genre_id =?1) Order by c.chapter_id Desc")
-    List<GetMangaInOneGenreDTO> findMangaByOneGenre(Long genre_id);
+    List<MangaChapterGenreDTO> findMangaByOneGenre(Long genre_id);
 
 
 }

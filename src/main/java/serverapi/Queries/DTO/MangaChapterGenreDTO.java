@@ -9,7 +9,7 @@ import java.util.Calendar;
 @Getter
 @Setter
 @NoArgsConstructor
-public class GetMangaInOneGenreDTO {
+public class MangaChapterGenreDTO {
 
     private Long chapter_id;
     private String chapter_name;
@@ -23,7 +23,7 @@ public class GetMangaInOneGenreDTO {
     private String genre_name;
     private String description;
 
-    public GetMangaInOneGenreDTO(Long chapter_id, String chapter_name, Calendar createdAt, Long manga_id, String manga_name, String thumbnail, Long genre_id, String genre_name, String description) {
+    public MangaChapterGenreDTO(Long chapter_id, String chapter_name, Calendar createdAt, Long manga_id, String manga_name, String thumbnail, Long genre_id, String genre_name, String description) {
         this.chapter_id = chapter_id;
         this.chapter_name = chapter_name;
         this.createdAt = createdAt;
