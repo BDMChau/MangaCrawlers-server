@@ -153,7 +153,7 @@ public class MangaService {
 
 
     public ResponseEntity getWeeklyTop(){
-        List<Manga> getweeklymanga = mangaRepository.getWeeklyTop(5);
+        List<Manga> getweeklymanga = mangaRepository.getWeeklyTop();
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get total views manga successfully!",

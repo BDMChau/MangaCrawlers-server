@@ -45,7 +45,7 @@ public interface MangaRepos extends JpaRepository<Manga, Long> {
     List<MangaViewDTO> getTotalView();
 
 
-    @Query(value = "SELECT m FROM Manga m JOIN m.updateViews u WHERE u.createdAt = CURRENT_DATE -7 Order By u.totalviews Desc limit :quantity",nativeQuery = true)
-    List<Manga> getWeeklyTop(@Param("quantity") Integer quantity);
+    @Query(value = "SELECT m FROM Manga m JOIN m.updateViews u WHERE u.createdAt > current_date - 7    Order By u.totalviews Desc ")
+    List<Manga> getWeeklyTop();
 
 }
