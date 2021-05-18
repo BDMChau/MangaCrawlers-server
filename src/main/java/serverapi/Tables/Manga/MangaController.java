@@ -18,8 +18,10 @@ public class MangaController {
 
     @PostMapping("/updateViewsChapter")
     public ResponseEntity updateViewsChapter(@RequestBody MangaPOJO mangaPOJO){
-        System.out.println(mangaPOJO);
+        System.out.println("pojoaaaaa"+mangaPOJO);
         System.out.println(mangaPOJO.getManga_id());
+
+        System.out.println ("chapteriddddd"+mangaPOJO.getChapter_id ());
 
         return mangaService.updateViewsChapter(mangaPOJO);
     }
@@ -31,5 +33,12 @@ public class MangaController {
         return mangaService.getLatest();
     }
 
+    @PostMapping("/findMangaFromGenre")
+    public ResponseEntity findMangaFromGenre(@RequestBody MangaPOJO mangaPOJO){
+
+
+
+        return mangaService.findMangaFromGenre(mangaPOJO);
+    }
 
 }
