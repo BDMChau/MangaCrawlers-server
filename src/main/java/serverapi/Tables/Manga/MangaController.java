@@ -27,10 +27,12 @@ public class MangaController {
         return mangaService.getLatest();
     }
 
+
     @GetMapping("/gettop")
     public ResponseEntity getTop(){
         return mangaService.getTop();
     }
+
 
     @PostMapping("/getmangapage")
     public ResponseEntity getMangaPage(@RequestBody MangaPOJO mangaPOJO){

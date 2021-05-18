@@ -6,10 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
+import serverapi.Queries.DTO.MangaChapterDTO;
 import serverapi.Queries.Repositories.ChapterRepos;
 import serverapi.Queries.Repositories.MangaRepos;
+import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
-import serverapi.Queries.DTO.MangaChapterDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -28,15 +29,15 @@ public class MangaService {
 
     public ResponseEntity updateViewsChapter(MangaPOJO mangaPOJO) {
 
-        Optional<Manga> manga=mangaRepository.findById(Long.parseLong(mangaPOJO.getManga_id()));
+        Optional<Manga> manga = mangaRepository.findById(Long.parseLong(mangaPOJO.getManga_id()));
 
         Manga manga1 = manga.get();
 
-        manga1.getChapters().forEach(item ->{
-            if(item.getChapter_id().equals(Long.parseLong(mangaPOJO.getChapter_id()))){
+        manga1.getChapters().forEach(item -> {
+            if (item.getChapter_id().equals(Long.parseLong(mangaPOJO.getChapter_id()))) {
                 System.out.println(item.getViews());
                 int views = item.getViews();
-                item.setViews(views+1);
+                item.setViews(views + 1);
                 chapterRepos.save(item);
             }
 
@@ -55,7 +56,7 @@ public class MangaService {
     public ResponseEntity getLatest() {
         List<MangaChapterDTO> latestChapterFromManga = mangaRepository.getLatestChapterFromManga();
 
-        if(latestChapterFromManga.isEmpty()){
+        if (latestChapterFromManga.isEmpty()) {
             Map<String, Object> err = Map.of(
                     "msg", "Nothing of latest mangas!"
             );
@@ -71,10 +72,10 @@ public class MangaService {
     }
 
 
-    public ResponseEntity getTop(){
+    public ResponseEntity getTop() {
         List<Manga> topfiveMangas = mangaRepository.getTop(10);
 
-        if(topfiveMangas.isEmpty()){
+        if (topfiveMangas.isEmpty()) {
             Map<String, Object> err = Map.of(
                     "msg", "Nothing of top six mangas!"
             );
@@ -90,15 +91,33 @@ public class MangaService {
     }
 
 
-    public ResponseEntity getMangaPage(Long mangaId){
+    public ResponseEntity getMangaPage(Long mangaId) {
         Optional<Manga> manga = mangaRepository.findById(mangaId);
+
+        if(!manga.isPresent()){
+            Map<String, Object> err = Map.of(
+                    "msg", "No content from manga page successfully!"
+            );
+            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
+        }
+
+        List<Chapter> chapters = manga.get().getChapters();
+
+        chapters.forEach(chapter ->{
+            chapter.setManga(null);
+        });
+
 
 
 
         Map<String, Object> msg = Map.of(
-                "msg", "Get top six mangas successfully!",
-                "data", "topfiveMangas"
+                "msg", "Get manga page successfully!",
+                "manga", manga,
+                "chapters", chapters
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
+
+
+
 }
