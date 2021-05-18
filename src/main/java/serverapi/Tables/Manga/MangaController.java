@@ -33,6 +33,13 @@ public class MangaController {
         return mangaService.getTop();
     }
 
+    @PostMapping("/findMangaFromGenre")
+    public ResponseEntity findMangaFromGenre(@RequestBody MangaPOJO mangaPOJO){
+
+
+
+        return mangaService.findMangaFromGenre(mangaPOJO);
+    }
 
     @PostMapping("/getmangapage")
     public ResponseEntity getMangaPage(@RequestBody MangaPOJO mangaPOJO){
