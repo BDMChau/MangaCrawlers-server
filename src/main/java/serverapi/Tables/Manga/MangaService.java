@@ -14,10 +14,7 @@ import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Queries.DTO.MangaChapterDTO;
 import serverapi.Tables.UpdateView.UpdateView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class MangaService {
@@ -117,20 +114,29 @@ public class MangaService {
 
     public ResponseEntity getTotalView(){
 
-        List<TotalViews> totalViews = mangaRepository.getTotalView();
+        List<TotalViews> totalViewsManga = mangaRepository.getTotalView();
 
-        List<UpdateView> updateViewList = new ArrayList<>();
+        List<UpdateView> updatedViewList = new ArrayList<>();
 
-        totalViews.forEach(item->{
-             updateViewList.add(item.getManga_id())
+        totalViewsManga.forEach(item->{
+            Long mangaId = item.getManga_id();
+            Long totalViews = item.getViews();
+            Calendar createdAt = Time
 
+            Map<String, Object> element = Map.of(
+                    "manga_id", mangaId,
+                    "total_views", totalViews,
+                    "created_at", totalViews
+            );
+
+            updatedViewList.add(element);
 
         });
 
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get total views manga successfully!",
-                "data", totalViews
+                "data", totalViewsManga
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
