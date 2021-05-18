@@ -1,9 +1,11 @@
 package serverapi.Queries.Repositories;
 
+import org.hibernate.annotations.Formula;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import serverapi.Queries.DTO.TotalViews;
 import serverapi.Tables.Manga.Manga;
 import serverapi.Queries.DTO.MangaChapterDTO;
 
@@ -34,5 +36,13 @@ public interface MangaRepos extends JpaRepository<Manga, Long> {
     @Query(value = "SELECT * FROM Manga Order By views Desc limit :quantity", nativeQuery = true)
     List<Manga> getTop(@Param("quantity") Integer quantity);
 
+
+
+//    @Query("SELECT new serverapi.Queries.DTO.TotalViews(c.views,m.manga_id,m.manga_name ) FROM  Manga m JOIN m.chapters c WHERE c.views = (SELECT SUM(ct.views)  FROM Manga mg INNER JOIN mg.chapters ct WHERE mg.manga_id = m.manga_id  ) GROUP BY c.views, m.manga_id,m.manga_name")
+//    List<TotalViews> getTotalViews ();
+
+
+    @Query(value ="SELECT new serverapi.Queries.DTO.TotalViews(Sum(c.views),m.manga_id,m.manga_name) FROM Manga m JOIN m.chapters c  GROUP BY m.manga_id,m.manga_name ")
+    List<TotalViews> getTotalView();
 
 }

@@ -6,8 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
+import serverapi.Queries.DTO.TotalViews;
 import serverapi.Queries.Repositories.ChapterRepos;
 import serverapi.Queries.Repositories.MangaRepos;
+import serverapi.Queries.Repositories.UpdateViewRepos;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Queries.DTO.MangaChapterDTO;
 
@@ -19,11 +21,13 @@ import java.util.Optional;
 public class MangaService {
     private final MangaRepos mangaRepository;
     private final ChapterRepos chapterRepos;
+    private final UpdateViewRepos updateViewRepos;
 
     @Autowired
-    public MangaService(MangaRepos mangaRepository, ChapterRepos chapterRepos) {
+    public MangaService(MangaRepos mangaRepository, ChapterRepos chapterRepos, UpdateViewRepos updateViewRepos) {
         this.mangaRepository = mangaRepository;
         this.chapterRepos = chapterRepos;
+        this.updateViewRepos = updateViewRepos;
     }
 
     public ResponseEntity updateViewsChapter(MangaPOJO mangaPOJO) {
@@ -37,11 +41,12 @@ public class MangaService {
                 System.out.println(item.getViews());
                 int views = item.getViews();
                 item.setViews(views+1);
-                chapterRepos.save(item);
+
             }
 
 
         });
+        mangaRepository.save(manga1);
 
 
         Map<String, Object> msg = Map.of(
@@ -76,14 +81,14 @@ public class MangaService {
 
         if(topfiveMangas.isEmpty()){
             Map<String, Object> err = Map.of(
-                    "msg", "Nothing of top six mangas!"
+                    "msg", "Nothing of top five mangas!"
             );
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
         }
 
 
         Map<String, Object> msg = Map.of(
-                "msg", "Get top six mangas successfully!",
+                "msg", "Get top five mangas successfully!",
                 "data", topfiveMangas
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
@@ -93,12 +98,38 @@ public class MangaService {
     public ResponseEntity getMangaPage(Long mangaId){
         Optional<Manga> manga = mangaRepository.findById(mangaId);
 
+        if(!manga.isPresent()){
+            Map<String, Object> err = Map.of(
+                    "err", "Nothing manga!"
+            );
+            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
+        }
 
 
         Map<String, Object> msg = Map.of(
-                "msg", "Get top six mangas successfully!",
-                "data", "topfiveMangas"
+                "msg", "Get top five mangas successfully!",
+                "data", manga
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
+
+    public ResponseEntity getTotalView(){
+
+        List<TotalViews> getTotalView = mangaRepository.getTotalView();
+
+        getTotalView.forEach(item->{
+            Long views = item.getViews();
+            
+
+        });
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get total views manga successfully!",
+                "data", getTotalView
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
 }
