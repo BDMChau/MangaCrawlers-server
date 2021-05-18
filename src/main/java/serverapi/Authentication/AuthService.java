@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import serverapi.Authentication.dto.SignDto;
+import serverapi.Authentication.POJO.SignPOJO;
 import serverapi.SharedServices.Mailer;
 import serverapi.Tables.User.User;
 
@@ -30,30 +30,30 @@ public class AuthService {
     @Autowired
     Mailer mailer;
 
-    public ResponseEntity signUp(SignDto signDto) throws NoSuchAlgorithmException {
-        Optional<User> isExistEmail = authRepository.findByEmail(signDto.getUser_email());
+    public ResponseEntity signUp(SignPOJO signPOJO) throws NoSuchAlgorithmException {
+        Optional<User> isExistEmail = authRepository.findByEmail(signPOJO.getUser_email());
         if (isExistEmail.isPresent()) {
             Map<String, String> error = Map.of("err", "Email is existed!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
         }
 
         HashSHA512 hashingSHA512 = new HashSHA512();
-        String hashedPassword = hashingSHA512.hash(signDto.getUser_password());
-        signDto.setUser_password(hashedPassword);
+        String hashedPassword = hashingSHA512.hash(signPOJO.getUser_password());
+        signPOJO.setUser_password(hashedPassword);
 
 
         User newUser = new User();
-        newUser.setUser_name(signDto.getUser_name());
-        newUser.setUser_email(signDto.getUser_email());
-        newUser.setUser_password(signDto.getUser_password());
+        newUser.setUser_name(signPOJO.getUser_name());
+        newUser.setUser_email(signPOJO.getUser_email());
+        newUser.setUser_password(signPOJO.getUser_password());
         newUser.setUser_isAdmin(false);
         newUser.setUser_isVerified(false);
 
         UserAvatar userAvatar = new UserAvatar();
-        if (signDto.isNullAvatar()) {
+        if (signPOJO.isNullAvatar()) {
             newUser.setUser_avatar(userAvatar.getAvatar_member());
         } else {
-            newUser.setUser_avatar(signDto.getUser_avatar());
+            newUser.setUser_avatar(signPOJO.getUser_avatar());
         }
 
         authRepository.save(newUser);
@@ -63,8 +63,8 @@ public class AuthService {
     }
 
 
-    public ResponseEntity signIn(SignDto signDto) {
-        Optional<User> optionalUser = authRepository.findByEmail(signDto.getUser_email());
+    public ResponseEntity signIn(SignPOJO signPOJO) {
+        Optional<User> optionalUser = authRepository.findByEmail(signPOJO.getUser_email());
         if (!optionalUser.isPresent()) {
             Map<String, String> error = Map.of("err", "Email is not existed!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
@@ -72,7 +72,7 @@ public class AuthService {
         User user = optionalUser.get();
 
         HashSHA512 hashingSHA512 = new HashSHA512();
-        Boolean comparePass = hashingSHA512.compare(signDto.getUser_password(), user.getUser_password());
+        Boolean comparePass = hashingSHA512.compare(signPOJO.getUser_password(), user.getUser_password());
         if (!comparePass) {
             Map<String, String> error = Map.of("err", "Password does not match!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
@@ -113,8 +113,8 @@ public class AuthService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
-    public ResponseEntity resetPassword(SignDto signDto) {
-        mailer.sendMail(signDto.getUser_email());
+    public ResponseEntity resetPassword(SignPOJO signPOJO) {
+        mailer.sendMail(signPOJO.getUser_email());
 
         Map<String, String> msg = Map.of("msg", "A mail is sent, please check your email!");
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);

@@ -2,9 +2,10 @@ package serverapi.Queries.Repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import serverapi.Tables.Manga.Manga;
-import serverapi.Queries.DTO.LatestManga;
+import serverapi.Queries.DTO.MangaChapterDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,18 +21,18 @@ public interface MangaRepos extends JpaRepository<Manga, Long> {
 //    Optional<Manga> findChapter(@Param("manga_id") Long manga_id, @Param("chapter_id") Long chapter_id);
 
 
-    @Query("SELECT new serverapi.Queries.DTO.LatestManga(c.chapter_id, c.chapter_name, c.createdAt, m.manga_id, m" +
-            ".manga_name) FROM " +
+    @Query("SELECT new serverapi.Queries.DTO.MangaChapterDTO(c.chapter_id, c.chapter_name, c.createdAt, m.manga_id, m" +
+            ".manga_name, m.thumbnail) FROM " +
             "Manga m JOIN m.chapters c WHERE c.chapter_id = (SELECT MAX(ct.chapter_id) FROM Manga mg INNER JOIN mg.chapters ct WHERE mg.manga_id = m.manga_id ) Order by c.chapter_id Desc")
-    List<LatestManga> getLatestChapterFromManga();
+    List<MangaChapterDTO> getLatestChapterFromManga();
 
 
     @Query(value = "select * from manga", nativeQuery = true)
     List<Manga> getAllMangas();
 
 
-    @Query(value = "SELECT * FROM Manga Order By views Desc limit 5", nativeQuery = true)
-    List<Manga> getTop5Mangas();
+    @Query(value = "SELECT * FROM Manga Order By views Desc limit :quantity", nativeQuery = true)
+    List<Manga> getTop(@Param("quantity") Integer quantity);
 
 
 }

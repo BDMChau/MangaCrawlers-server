@@ -1,4 +1,4 @@
-package serverapi.Authentication.dto;
+package serverapi.Authentication.POJO;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 @Data
 @NoArgsConstructor
-public class SignDto {
+public class SignPOJO {
     String user_name;
     String user_email;
     String user_password;

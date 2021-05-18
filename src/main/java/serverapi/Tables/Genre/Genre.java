@@ -43,4 +43,7 @@ public class Genre {
     @Column(columnDefinition = "TEXT", nullable = true)
     private String genre_description;
 
+    @Column(columnDefinition = "varchar(30)", nullable = true)
+    private String genre_color;
+
 }

@@ -9,7 +9,7 @@ import serverapi.Api.Response;
 import serverapi.Queries.Repositories.ChapterRepos;
 import serverapi.Queries.Repositories.MangaRepos;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
-import serverapi.Queries.DTO.LatestManga;
+import serverapi.Queries.DTO.MangaChapterDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -51,20 +51,53 @@ public class MangaService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
-    public ResponseEntity getLatest() {
-        List<LatestManga> latestChapterFromManga = mangaRepository.getLatestChapterFromManga();
 
-//        List chapter = chapterRepos.findById();
-//
-//        mangas.forEach(manga->{
-//            List<Chapter> chapters
-//        });
+    public ResponseEntity getLatest() {
+        List<MangaChapterDTO> latestChapterFromManga = mangaRepository.getLatestChapterFromManga();
+
+        if(latestChapterFromManga.isEmpty()){
+            Map<String, Object> err = Map.of(
+                    "msg", "Nothing of latest mangas!"
+            );
+            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
+        }
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get latest mangas successfully!",
+                "data", latestChapterFromManga
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
+    public ResponseEntity getTop(){
+        List<Manga> topfiveMangas = mangaRepository.getTop(10);
+
+        if(topfiveMangas.isEmpty()){
+            Map<String, Object> err = Map.of(
+                    "msg", "Nothing of top six mangas!"
+            );
+            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
+        }
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get top six mangas successfully!",
+                "data", topfiveMangas
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
+    public ResponseEntity getMangaPage(Long mangaId){
+        Optional<Manga> manga = mangaRepository.findById(mangaId);
 
 
 
         Map<String, Object> msg = Map.of(
-                "msg", "Get all mangas successfully!",
-                "data", latestChapterFromManga
+                "msg", "Get top six mangas successfully!",
+                "data", "topfiveMangas"
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }

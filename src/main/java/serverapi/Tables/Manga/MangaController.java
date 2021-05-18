@@ -16,20 +16,27 @@ public class MangaController {
     }
 
 
-    @PostMapping("/updateViewsChapter")
+
     public ResponseEntity updateViewsChapter(@RequestBody MangaPOJO mangaPOJO){
-        System.out.println(mangaPOJO);
-        System.out.println(mangaPOJO.getManga_id());
 
         return mangaService.updateViewsChapter(mangaPOJO);
     }
 
     @GetMapping("/getlastest")
     public ResponseEntity getLatest(){
-
-
         return mangaService.getLatest();
     }
 
+    @GetMapping("/gettop")
+    public ResponseEntity getTop(){
+        return mangaService.getTop();
+    }
+
+    @PostMapping("/getmangapage")
+    public ResponseEntity getMangaPage(@RequestBody MangaPOJO mangaPOJO){
+        Long mangaId = Long.parseLong(mangaPOJO.getManga_id());
+
+        return mangaService.getMangaPage(mangaId);
+    }
 
 }
