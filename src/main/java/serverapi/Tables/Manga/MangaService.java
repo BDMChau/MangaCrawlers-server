@@ -12,7 +12,9 @@ import serverapi.Queries.Repositories.MangaRepos;
 import serverapi.Queries.Repositories.UpdateViewRepos;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Queries.DTO.MangaChapterDTO;
+import serverapi.Tables.UpdateView.UpdateView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -115,18 +117,20 @@ public class MangaService {
 
     public ResponseEntity getTotalView(){
 
-        List<TotalViews> getTotalView = mangaRepository.getTotalView();
+        List<TotalViews> totalViews = mangaRepository.getTotalView();
 
-        getTotalView.forEach(item->{
-            Long views = item.getViews();
-            
+        List<UpdateView> updateViewList = new ArrayList<>();
+
+        totalViews.forEach(item->{
+             updateViewList.add(item.getManga_id())
+
 
         });
 
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get total views manga successfully!",
-                "data", getTotalView
+                "data", totalViews
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
