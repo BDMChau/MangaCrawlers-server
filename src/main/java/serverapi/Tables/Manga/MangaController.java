@@ -46,6 +46,11 @@ public class MangaController {
         return mangaService.getTotalView();
     }
 
+    @GetMapping("/getweeklytop")
+    public ResponseEntity getWeeklyTop(){
+        return mangaService.getWeeklyTop();
+    }
+
 
 
 }

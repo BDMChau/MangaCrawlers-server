@@ -1,11 +1,10 @@
 package serverapi.Queries.Repositories;
 
-import org.hibernate.annotations.Formula;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import serverapi.Queries.DTO.TotalViews;
+import serverapi.Queries.DTO.MangaViewDTO;
 import serverapi.Tables.Manga.Manga;
 import serverapi.Queries.DTO.MangaChapterDTO;
 
@@ -42,7 +41,11 @@ public interface MangaRepos extends JpaRepository<Manga, Long> {
 //    List<TotalViews> getTotalViews ();
 
 
-    @Query(value ="SELECT new serverapi.Queries.DTO.TotalViews(Sum(c.views),m.manga_id,m.manga_name) FROM Manga m JOIN m.chapters c  GROUP BY m.manga_id,m.manga_name ")
-    List<TotalViews> getTotalView();
+    @Query(value ="SELECT new serverapi.Queries.DTO.MangaViewDTO(Sum(c.views),m.manga_id,m.manga_name) FROM Manga m JOIN m.chapters c  GROUP BY m.manga_id,m.manga_name ")
+    List<MangaViewDTO> getTotalView();
+
+
+    @Query(value = "SELECT m FROM Manga m JOIN m.updateViews u WHERE u.createdAt = CURRENT_DATE -7 Order By u.totalviews Desc limit :quantity",nativeQuery = true)
+    List<Manga> getWeeklyTop(@Param("quantity") Integer quantity);
 
 }

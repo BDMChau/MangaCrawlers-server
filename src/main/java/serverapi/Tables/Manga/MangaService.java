@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
-import serverapi.Queries.DTO.TotalViews;
+import serverapi.Queries.DTO.MangaViewDTO;
 import serverapi.Queries.Repositories.ChapterRepos;
 import serverapi.Queries.Repositories.MangaRepos;
 import serverapi.Queries.Repositories.UpdateViewRepos;
@@ -114,31 +114,54 @@ public class MangaService {
 
     public ResponseEntity getTotalView(){
 
-        List<TotalViews> totalViewsManga = mangaRepository.getTotalView();
+        List<MangaViewDTO> mangaViewDTOManga = mangaRepository.getTotalView();
 
-        List<UpdateView> updatedViewList = new ArrayList<>();
 
-        totalViewsManga.forEach(item->{
+        mangaViewDTOManga.forEach(item->{
             Long mangaId = item.getManga_id();
             Long totalViews = item.getViews();
-            Calendar createdAt = Time
+            Calendar createdAt = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
             Map<String, Object> element = Map.of(
                     "manga_id", mangaId,
                     "total_views", totalViews,
-                    "created_at", totalViews
+                    "created_at", createdAt
             );
 
-            updatedViewList.add(element);
+            UpdateView view = new UpdateView();
+            view.setTotalviews(totalViews);
+            view.setCreatedAt(createdAt);
 
+
+            Manga manga = new Manga();
+            manga.setManga_id(mangaId);
+
+
+            view.setManga(manga);
+
+
+            updateViewRepos.save(view);
         });
 
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get total views manga successfully!",
-                "data", totalViewsManga
+                "data", mangaViewDTOManga
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
+    public ResponseEntity getWeeklyTop(){
+        List<Manga> getweeklymanga = mangaRepository.getWeeklyTop(5);
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get total views manga successfully!",
+                "data", getweeklymanga
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+
+
     }
 
 
