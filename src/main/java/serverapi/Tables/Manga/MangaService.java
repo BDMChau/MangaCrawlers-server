@@ -13,6 +13,7 @@ import serverapi.Queries.Repositories.ChapterRepos;
 import serverapi.Queries.Repositories.MangaRepos;
 import serverapi.Queries.Repositories.UpdateViewRepos;
 import serverapi.Tables.Chapter.Chapter;
+import serverapi.Tables.Genre.Genre;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.UpdateView.UpdateView;
 
@@ -111,14 +112,35 @@ public class MangaService {
             Map<String, Object> err = Map.of("msg", "No content from manga page!");
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
         }
+        manga.get().getAuthor().getAuthor_name();
+
+        List<Object> genres = new ArrayList<>();
+        manga.get().getMangaGenres().forEach(genre ->{
+            Long genreId = genre.getGenre().getGenre_id();
+            String genreName = genre.getGenre().getGenre_name();
+            String genreColor = genre.getGenre().getGenre_color();
+            String genreDesc = genre.getGenre().getGenre_description();
+
+            Map<String, Object> genreObj = Map.of(
+                    "genre_id", genreId,
+                    "genre_name", genreName,
+                    "genre_desc", genreDesc,
+                    "genre_color", genreColor
+                    );
+            genres.add(genreObj);
+        });
+
 
         List<Chapter> chapters = manga.get().getChapters();
-
         chapters.forEach(chapter -> {
             chapter.setManga(null);
         });
 
-        Map<String, Object> msg = Map.of("msg", "Get manga page successfully!", "manga", manga, "chapters", chapters);
+        Map<String, Object> msg = Map.of("msg", "Get manga page successfully!",
+                "manga", manga,
+                "chapters", chapters,
+                "genres", genres
+        );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 

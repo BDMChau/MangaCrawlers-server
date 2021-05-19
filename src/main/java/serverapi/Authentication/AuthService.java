@@ -151,15 +151,15 @@ public class AuthService {
 
         Optional<User> userOptional= authRepository.findByTokenResetPass(token);
         if(userOptional.isEmpty()){
-            Map<String, String> err = Map.of("msg", "Verify token failed!");
+            Map<String, String> err = Map.of("err", "Token verification is failed!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
         User user = userOptional.get();
 
 
         Long tokenExpiredAt = Long.parseLong(user.getToken_reset_pass_createdAt());
-        if(currentTime >= tokenExpiredAt){
-            Map<String, String> err = Map.of("msg", "Token has expired, try another request!");
+        if(currentTime >= tokenExpiredAt || tokenExpiredAt == null){
+            Map<String, String> err = Map.of("err", "Token has expired!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
 
@@ -167,6 +167,8 @@ public class AuthService {
         String hashedNewPassword = new HashSHA512().hash(newPasswrod);
         user.setUser_password(hashedNewPassword);
 
+        user.setToken_reset_pass_createdAt(null);
+        user.setToken_reset_pass(null);
         authRepository.save(user);
 
         Map<String, String> msg = Map.of("msg", "Change password successfully");

@@ -65,7 +65,7 @@ public class AuthController {
     @ResponseBody
     public ResponseEntity requestChangePassword(@RequestBody SignPOJO signPOJO) throws MailException, MessagingException, NoSuchAlgorithmException {
         if (signPOJO.isNullEmail()) {
-            Map<String, String> error = Map.of("err", "Missing email, please fill out your email!");
+            Map<String, String> error = Map.of("err", "Missing credentials!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(), HttpStatus.BAD_REQUEST);
         }
 
@@ -77,7 +77,7 @@ public class AuthController {
     public ResponseEntity changePassword(@RequestBody SignPOJO signPOJO) throws MailException, MessagingException,
             NoSuchAlgorithmException {
         if (signPOJO.isValidChangePassword()) {
-            Map<String, String> error = Map.of("err", "Body request wrong, missing or password strength isn't enough ," +
+            Map<String, String> error = Map.of("err", "Body request wrong!" +
                     " please try " +
                     "again!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(), HttpStatus.BAD_REQUEST);
