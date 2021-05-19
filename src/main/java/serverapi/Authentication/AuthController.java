@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import serverapi.Authentication.POJO.SignPOJO;
 import serverapi.Enums.isValidEnum;
 
+import javax.mail.MessagingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
@@ -60,14 +61,28 @@ public class AuthController {
         return authService.signIn(signPOJO);
     }
 
-    @PostMapping("/resetpassword")
+    @PostMapping("/requestchangepass")
     @ResponseBody
-    public ResponseEntity resetPassword(@RequestBody SignPOJO signPOJO) throws NoSuchAlgorithmException, MailException {
+    public ResponseEntity requestChangePassword(@RequestBody SignPOJO signPOJO) throws MailException, MessagingException, NoSuchAlgorithmException {
         if (signPOJO.isNullEmail()) {
             Map<String, String> error = Map.of("err", "Missing email, please fill out your email!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(), HttpStatus.BAD_REQUEST);
         }
 
-        return authService.resetPassword(signPOJO);
+        return authService.requestChangePassword(signPOJO);
+    }
+
+    @PutMapping("/changepass")
+    @ResponseBody
+    public ResponseEntity changePassword(@RequestBody SignPOJO signPOJO) throws MailException, MessagingException,
+            NoSuchAlgorithmException {
+        if (signPOJO.isValidChangePassword()) {
+            Map<String, String> error = Map.of("err", "Body request wrong, missing or password strength isn't enough ," +
+                    " please try " +
+                    "again!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+
+        return authService.changePassword(signPOJO);
     }
 }

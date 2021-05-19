@@ -1,19 +1,22 @@
 package serverapi.Authentication;
 
-import serverapi.Api.Response;
-import serverapi.Security.HashSHA512;
-import serverapi.Security.TokenService;
-import serverapi.StaticFiles.UserAvatar;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import serverapi.Api.Response;
 import serverapi.Authentication.POJO.SignPOJO;
+import serverapi.Security.HashSHA512;
+import serverapi.Security.RandomBytes;
+import serverapi.Security.TokenService;
 import serverapi.SharedServices.Mailer;
+import serverapi.StaticFiles.UserAvatar;
 import serverapi.Tables.User.User;
 
+import javax.mail.MessagingException;
 import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
 import java.util.Map;
 import java.util.Optional;
 
@@ -113,10 +116,60 @@ public class AuthService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
-    public ResponseEntity resetPassword(SignPOJO signPOJO) {
-        mailer.sendMail(signPOJO.getUser_email());
+
+    public ResponseEntity requestChangePassword(SignPOJO signPOJO) throws MessagingException, NoSuchAlgorithmException {
+        Optional<User> userOptional = authRepository.findByEmail(signPOJO.getUser_email());
+        if (!userOptional.isPresent()) {
+            Map<String, String> error = Map.of("err", "Email is not existed!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
+        }
+
+        User user = userOptional.get();
+
+
+        String timeExpired = String.valueOf(Calendar.getInstance().getTimeInMillis() + 600000); // 10 minutes
+
+        String token = new RandomBytes().randomBytes(32);
+        String hashedToken = new HashSHA512().hash(token);
+        user.setToken_reset_pass(hashedToken);
+        user.setToken_reset_pass_createdAt(timeExpired);
+
+        String userEmail = user.getUser_email();
+        String userName = user.getUser_name();
+        mailer.sendMailToChangePass(userName, userEmail, hashedToken);
+
+        authRepository.save(user);
 
         Map<String, String> msg = Map.of("msg", "A mail is sent, please check your email!");
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
+    public ResponseEntity changePassword(SignPOJO signPOJO) throws NoSuchAlgorithmException {
+        Long currentTime = Calendar.getInstance().getTimeInMillis();
+        String token = signPOJO.getUser_change_pass_token();
+
+        Optional<User> userOptional= authRepository.findByTokenResetPass(token);
+        if(userOptional.isEmpty()){
+            Map<String, String> err = Map.of("msg", "Verify token failed!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get();
+
+
+        Long tokenExpiredAt = Long.parseLong(user.getToken_reset_pass_createdAt());
+        if(currentTime >= tokenExpiredAt){
+            Map<String, String> err = Map.of("msg", "Token has expired, try another request!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+
+        String newPasswrod = signPOJO.getUser_password();
+        String hashedNewPassword = new HashSHA512().hash(newPasswrod);
+        user.setUser_password(hashedNewPassword);
+
+        authRepository.save(user);
+
+        Map<String, String> msg = Map.of("msg", "Change password successfully");
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 }

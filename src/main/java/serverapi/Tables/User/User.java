@@ -69,6 +69,12 @@ public class User {
     @Column(nullable = false)
     private Boolean user_isVerified;
 
+    @Column(columnDefinition = "TEXT", nullable = true)
+    private String token_reset_pass;
+
+    @Column(nullable = true)
+    private String token_reset_pass_createdAt;
+
 
     public User(String user_name, String user_email, String user_password, String user_avatar, Boolean user_isAdmin) {
         this.user_name = user_name;

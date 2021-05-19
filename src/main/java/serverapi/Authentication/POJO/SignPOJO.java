@@ -13,6 +13,7 @@ public class SignPOJO {
     String user_name;
     String user_email;
     String user_password;
+    String user_change_pass_token;
     String user_avatar;
 
 
@@ -35,6 +36,22 @@ public class SignPOJO {
 
     public Boolean isNullEmail() {
         if (user_email == null || user_email.equals("")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public Boolean isValidChangePassword() {
+        if (user_password == null
+                || user_password.equals("")
+                || user_change_pass_token == null
+                || user_change_pass_token.equals("")
+                || !Pattern.matches(
+                getRegexStr("passwordLength8Number1"),
+                user_password
+        )
+        ) {
             return true;
         } else {
             return false;
@@ -84,8 +101,6 @@ public class SignPOJO {
 
         return isValidEnum.everything_success;
     }
-
-
 
 
 }
