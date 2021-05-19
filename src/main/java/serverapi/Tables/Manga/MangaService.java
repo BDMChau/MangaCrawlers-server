@@ -13,7 +13,6 @@ import serverapi.Queries.Repositories.ChapterRepos;
 import serverapi.Queries.Repositories.MangaRepos;
 import serverapi.Queries.Repositories.UpdateViewRepos;
 import serverapi.Tables.Chapter.Chapter;
-import serverapi.Tables.Genre.Genre;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.UpdateView.UpdateView;
 
@@ -69,11 +68,11 @@ public class MangaService {
         List<MangaChapterGenreDTO> manga = mangaRepository.findMangaByOneGenre(genreId);
 
         if (manga.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "Cannot get manga from this genre!", "data", manga);
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
+            Map<String, Object> err = Map.of("err", "Cannot get manga from this genre!");
+            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
         }
 
-        Map<String, Object> msg = Map.of("msg", "Get all mangas successfully!", "data", manga);
+        Map<String, Object> msg = Map.of("msg", "Get mangas from this genre successfully!", "data", manga);
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 

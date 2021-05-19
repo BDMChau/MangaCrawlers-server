@@ -22,8 +22,11 @@ public class MangaChapterGenreDTO {
     private Long genre_id;
     private String genre_name;
     private String description;
+    private String genre_color;
 
-    public MangaChapterGenreDTO(Long chapter_id, String chapter_name, Calendar createdAt, Long manga_id, String manga_name, String thumbnail, Long genre_id, String genre_name, String description) {
+    public MangaChapterGenreDTO(Long chapter_id, String chapter_name, Calendar createdAt, Long manga_id,
+                                String manga_name, String thumbnail, Long genre_id, String genre_name,
+                                String description, String genre_color) {
         this.chapter_id = chapter_id;
         this.chapter_name = chapter_name;
         this.createdAt = createdAt;
@@ -35,6 +38,7 @@ public class MangaChapterGenreDTO {
         this.genre_id = genre_id;
         this.genre_name = genre_name;
         this.description = description;
+        this.genre_color = genre_color;
     }
 
 
