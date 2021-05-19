@@ -1,18 +1,19 @@
 package serverapi.Tables.Manga;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
+import serverapi.Queries.DTO.MangaChapterDTO;
 import serverapi.Queries.DTO.MangaChapterGenreDTO;
-import serverapi.Tables.Chapter.Chapter;
 import serverapi.Queries.DTO.MangaViewDTO;
 import serverapi.Queries.Repositories.ChapterRepos;
 import serverapi.Queries.Repositories.MangaRepos;
 import serverapi.Queries.Repositories.UpdateViewRepos;
+import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
-import serverapi.Queries.DTO.MangaChapterDTO;
 import serverapi.Tables.UpdateView.UpdateView;
 
 import java.util.*;
@@ -91,10 +92,10 @@ public class MangaService {
 
 
     public ResponseEntity getTop() {
-        List<Manga> topfiveMangas = mangaRepository.getTop(6);
+        List<Manga> topfiveMangas = mangaRepository.getTop(5);
 
         if (topfiveMangas.isEmpty()) {
-            Map<String, Object> err = Map.of("msg", "Nothing of top five mangas!");
+            Map<String, Object> err = Map.of("msg", "Nothing of top mangas!");
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
         }
 
@@ -138,6 +139,11 @@ public class MangaService {
 
             Manga manga = new Manga();
             manga.setManga_id(mangaId);
+            if(totalViews.equals(0L)){
+                manga.setViews(0L);
+            } else{
+                manga.setViews(totalViews);
+            }
 
             UpdateView view = new UpdateView();
             view.setTotalviews(totalViews);
@@ -156,8 +162,8 @@ public class MangaService {
     }
 
 
-    public ResponseEntity getTopWeekly() {
-        List<Manga> listWeeklyMangasRanking = mangaRepository.getTopWeekly();
+    public ResponseEntity getWeeklyMangas() {
+        List<Manga> listWeeklyMangasRanking = mangaRepository.getWeekly(PageRequest.of(0,5));
 
         if (listWeeklyMangasRanking.isEmpty()) {
             Map<String, Object> err = Map.of(

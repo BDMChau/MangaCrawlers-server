@@ -25,6 +25,7 @@ public class MangaController {
         return mangaService.updateViewsChapter(mangaId, chapterId, mangaPOJO);
     }
 
+
     @GetMapping("/getlastest")
     public ResponseEntity getLatest(){
         return mangaService.getLatest();
@@ -36,12 +37,14 @@ public class MangaController {
         return mangaService.getTop();
     }
 
-    @PostMapping("/findMangaFromGenre")
+
+    @PostMapping("/findmangafromgenre")
     public ResponseEntity findMangaFromGenre(@RequestBody MangaPOJO mangaPOJO){
         Long genreId = Long.parseLong(mangaPOJO.getGenre_id());
 
         return mangaService.findMangaFromGenre(genreId);
     }
+
 
     @PostMapping("/getmangapage")
     public ResponseEntity getMangaPage(@RequestBody MangaPOJO mangaPOJO){
@@ -56,11 +59,10 @@ public class MangaController {
         return mangaService.getTotalView();
     }
 
-    @GetMapping("/gettopweekly")
-    public ResponseEntity getTopWeekly(){
-        return mangaService.getTopWeekly();
+    @GetMapping("/getweekly")
+    public ResponseEntity getWeeklyMangas(){
+        return mangaService.getWeeklyMangas();
     }
-
 
 
 }

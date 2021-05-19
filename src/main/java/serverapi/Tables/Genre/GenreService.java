@@ -33,7 +33,7 @@ public class GenreService {
 
 
         Map<String, Object> msg = Map.of(
-                "msg", "Get manga page successfully!",
+                "msg", "Get all genres successfully!",
                 "genres", genres
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);

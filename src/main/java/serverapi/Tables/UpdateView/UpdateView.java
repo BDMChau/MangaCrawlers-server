@@ -31,17 +31,18 @@ public class UpdateView {
     )
     private Long updatedview_id;
 
+
     @JsonManagedReference
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "manga_id")
     private Manga manga;
 
-    @Column(columnDefinition = "Integer default 0")
+
+    @Column(columnDefinition = "bigint(20) default 0")
     private Long totalviews;
 
 
     @Column(
-            nullable = false,
             updatable = false,
             columnDefinition = "timestamp with time zone"
     )
@@ -50,7 +51,5 @@ public class UpdateView {
     public UpdateView(Long totalviews, Calendar createdAt) {
         this.totalviews = totalviews;
         this.createdAt = createdAt;
-
-
     }
 }

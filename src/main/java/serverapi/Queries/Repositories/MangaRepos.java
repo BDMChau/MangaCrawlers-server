@@ -1,5 +1,6 @@
 package serverapi.Queries.Repositories;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -50,11 +51,13 @@ public interface MangaRepos extends JpaRepository<Manga, Long> {
 //    List<TotalViews> getTotalViews ();
 
 
-    @Query(value ="SELECT new serverapi.Queries.DTO.MangaViewDTO(Sum(c.views),m.manga_id,m.manga_name) FROM Manga m JOIN m.chapters c  GROUP BY m.manga_id,m.manga_name ")
+    @Query(value ="SELECT new serverapi.Queries.DTO.MangaViewDTO(Sum(c.views),m.manga_id,m.manga_name) FROM Manga m " +
+            "JOIN m.chapters c  GROUP BY m.manga_id, m.manga_name ")
     List<MangaViewDTO> getTotalView();
 
 
-    @Query(value = "SELECT m FROM Manga m JOIN m.updateViews u WHERE u.createdAt > current_date - 7    Order By u.totalviews Desc ")
-    List<Manga> getTopWeekly();
+    @Query(value = "SELECT m FROM Manga m JOIN m.updateViews u WHERE u.createdAt > current_date - 7 Order By u" +
+            ".totalviews Desc")
+    List<Manga> getWeekly(PageRequest pageable);
 
 }
