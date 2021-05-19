@@ -56,4 +56,16 @@ public class ChapterService {
 //        );
 //        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 //    }
+
+
+//    public ResponseEntity getTotalView(){
+//
+//        List<Chapter> chapters = chapterRepos.getTotalView();
+//
+//        Map<String, Object> msg = Map.of(
+//                "msg", "Get all total views chapters successfully!",
+//                "data", chapters
+//        );
+//        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+//    }
 }

@@ -28,7 +28,7 @@ public class FollowingManga {
             strategy = GenerationType.SEQUENCE,
             generator = "readinghistory_sequence" // same as NAME in SequenceGenerator
     )
-    private Long readinghistory_id;
+    private Long followingmanga_id;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)

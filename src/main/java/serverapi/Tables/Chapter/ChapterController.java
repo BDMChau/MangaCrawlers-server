@@ -26,9 +26,10 @@ public class ChapterController {
     }
 
 
-//    @GetMapping("/getmaxid")
-//    public ResponseEntity findmaxid(){
-//         return chapterService.findmaxid();
+//    @GetMapping("/gettotalview")
+//    public ResponseEntity getTotalView(){
+//
+//         return chapterService.getTotalView();
 //
 //    }
 

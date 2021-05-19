@@ -17,6 +17,7 @@ public class MangaController {
 
 
 
+    @PutMapping("/updateviewchapter")
     public ResponseEntity updateViewsChapter(@RequestBody MangaPOJO mangaPOJO){
 
         return mangaService.updateViewsChapter(mangaPOJO);
@@ -47,5 +48,18 @@ public class MangaController {
 
         return mangaService.getMangaPage(mangaId);
     }
+
+    @GetMapping("/gettotalviews")
+    public ResponseEntity getTotalView(){
+
+        return mangaService.getTotalView();
+    }
+
+    @GetMapping("/getweeklytop")
+    public ResponseEntity getWeeklyTop(){
+        return mangaService.getWeeklyTop();
+    }
+
+
 
 }
