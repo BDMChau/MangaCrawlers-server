@@ -6,10 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
-import serverapi.Queries.DTO.MangaChapterDTO;
-import serverapi.Queries.DTO.MangaChapterGenreDTO;
-import serverapi.Queries.DTO.MangaViewDTO;
-import serverapi.Queries.DTO.SearchCriteriaDTO;
+import serverapi.Queries.DTO.*;
 import serverapi.Queries.Repositories.ChapterRepos;
 import serverapi.Queries.Repositories.MangaRepos;
 import serverapi.Queries.Repositories.UpdateViewRepos;
@@ -106,41 +103,22 @@ public class MangaService {
     }
 
 
-    public ResponseEntity getMangaPage(Long mangaId) {
-        Optional<Manga> manga = mangaRepository.findById(mangaId);
+    public ResponseEntity getAllByMangaId(Long mangaId) {
+        Optional<AuthorMangaDTO> manga = mangaRepository.getAllByMangId (mangaId);
+        List<GenreDTO> genres = mangaRepository.findGenByMangId (mangaId);
+        List<ChapterDTO> chapters = mangaRepository.findChapterbyMangaId (mangaId);
 
-        if (manga.isEmpty()) {
+        if (manga.isEmpty()|| genres.isEmpty () || chapters.isEmpty ()) {
             Map<String, Object> err = Map.of("msg", "No content from manga page!");
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
         }
-        manga.get().getAuthor().getAuthor_name();
-
-        List<Object> genres = new ArrayList<>();
-        manga.get().getMangaGenres().forEach(genre -> {
-            Long genreId = genre.getGenre().getGenre_id();
-            String genreName = genre.getGenre().getGenre_name();
-            String genreColor = genre.getGenre().getGenre_color();
-            String genreDesc = genre.getGenre().getGenre_description();
-
-            Map<String, Object> genreObj = Map.of(
-                    "genre_id", genreId,
-                    "genre_name", genreName,
-                    "genre_desc", genreDesc,
-                    "genre_color", genreColor
-            );
-            genres.add(genreObj);
-        });
 
 
-        List<Chapter> chapters = manga.get().getChapters();
-        chapters.forEach(chapter -> {
-            chapter.setManga(null);
-        });
-
-        Map<String, Object> msg = Map.of("msg", "Get manga page successfully!",
+        Map<String, Object> msg = Map.of(
+                "msg", "Get manga page successfully!",
                 "manga", manga,
-                "chapters", chapters,
-                "genres", genres
+                "genres", genres,
+                "chapters",chapters
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
