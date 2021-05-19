@@ -5,10 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import serverapi.Queries.DTO.MangaChapterGenreDTO;
-import serverapi.Queries.DTO.MangaViewDTO;
+import serverapi.Queries.DTO.*;
 import serverapi.Tables.Manga.Manga;
-import serverapi.Queries.DTO.MangaChapterDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -59,5 +57,25 @@ public interface MangaRepos extends JpaRepository<Manga, Long> {
     @Query(value = "SELECT m FROM Manga m JOIN m.updateViews u WHERE u.createdAt > current_date - 7 Order By u" +
             ".totalviews Desc")
     List<Manga> getWeekly(PageRequest pageable);
+
+    @Query("SELECT new serverapi.Queries.DTO.AuthorMangaDTO( a.author_id, a.author_name," +
+            " m.manga_id, m.manga_name, m.status, m.description, m.stars, " +
+            "m.views, m.thumbnail, m.date_publications, m.createdAt " +
+            ") FROM Author a JOIN a.mangas m WHERE m.manga_id = ?1")
+    Optional<AuthorMangaDTO> getAllByMangId(Long manga_id);
+
+    @Query("SELECT new serverapi.Queries.DTO.GenreDTO(g.genre_id, g.genre_name, g.genre_description, g.genre_color) FROM " +
+            "Manga m JOIN m.mangaGenres mg ON mg.manga = m.manga_id JOIN Genre g ON g.genre_id = mg.genre  " +
+            "WHERE m.manga_id =?1")
+    List<GenreDTO> findGenByMangId(Long manga_id);
+
+    @Query("SELECT new serverapi.Queries.DTO.ChapterDTO(c.chapter_id, c.chapter_name, c.createdAt) FROM " +
+            "Manga m JOIN m.chapters c "+
+            "WHERE m.manga_id = ?1")
+    List<ChapterDTO> findChapterbyMangaId(Long manga_id);
+
+
+
+
 
 }

@@ -46,11 +46,11 @@ public class MangaController {
     }
 
 
-    @PostMapping("/getmangapage")
+    @PostMapping("/getallbymangaid")
     public ResponseEntity getMangaPage(@RequestBody MangaPOJO mangaPOJO){
-        Long mangaId = Long.parseLong(mangaPOJO.getManga_id());
+        Long mangaId = Long.parseLong(mangaPOJO.getManga_id ());
 
-        return mangaService.getMangaPage(mangaId);
+        return mangaService.getAllByMangaId (mangaId);
     }
 
     @GetMapping("/gettotalviews")
@@ -63,6 +63,8 @@ public class MangaController {
     public ResponseEntity getWeeklyMangas(){
         return mangaService.getWeeklyMangas();
     }
+
+
 
 
 }
