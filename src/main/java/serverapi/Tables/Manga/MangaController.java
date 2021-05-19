@@ -64,5 +64,11 @@ public class MangaController {
         return mangaService.getWeeklyMangas();
     }
 
+    @PostMapping("/searchmangas")
+    public ResponseEntity searchMangasByName(@RequestBody MangaPOJO mangaPOJO){
+        String mangaName = mangaPOJO.getManga_name();
+
+        return mangaService.searchMangasByName(mangaName);
+    }
 
 }

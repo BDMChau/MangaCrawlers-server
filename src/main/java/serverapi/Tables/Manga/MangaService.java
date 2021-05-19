@@ -9,9 +9,11 @@ import serverapi.Api.Response;
 import serverapi.Queries.DTO.MangaChapterDTO;
 import serverapi.Queries.DTO.MangaChapterGenreDTO;
 import serverapi.Queries.DTO.MangaViewDTO;
+import serverapi.Queries.DTO.SearchCriteriaDTO;
 import serverapi.Queries.Repositories.ChapterRepos;
 import serverapi.Queries.Repositories.MangaRepos;
 import serverapi.Queries.Repositories.UpdateViewRepos;
+import serverapi.Queries.Specification.MangaSpecification;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.UpdateView.UpdateView;
@@ -114,7 +116,7 @@ public class MangaService {
         manga.get().getAuthor().getAuthor_name();
 
         List<Object> genres = new ArrayList<>();
-        manga.get().getMangaGenres().forEach(genre ->{
+        manga.get().getMangaGenres().forEach(genre -> {
             Long genreId = genre.getGenre().getGenre_id();
             String genreName = genre.getGenre().getGenre_name();
             String genreColor = genre.getGenre().getGenre_color();
@@ -125,7 +127,7 @@ public class MangaService {
                     "genre_name", genreName,
                     "genre_desc", genreDesc,
                     "genre_color", genreColor
-                    );
+            );
             genres.add(genreObj);
         });
 
@@ -144,7 +146,7 @@ public class MangaService {
     }
 
 
-//    set interval task
+    //    set interval task
     public ResponseEntity getTotalView() {
         List<MangaViewDTO> listViewsMangas = mangaRepository.getTotalView();
 
@@ -160,9 +162,9 @@ public class MangaService {
 
             Manga manga = new Manga();
             manga.setManga_id(mangaId);
-            if(totalViews.equals(0L)){
+            if (totalViews.equals(0L)) {
                 manga.setViews(0L);
-            } else{
+            } else {
                 manga.setViews(totalViews);
             }
 
@@ -184,7 +186,7 @@ public class MangaService {
 
 
     public ResponseEntity getWeeklyMangas() {
-        List<Manga> listWeeklyMangasRanking = mangaRepository.getWeekly(PageRequest.of(0,5));
+        List<Manga> listWeeklyMangasRanking = mangaRepository.getWeekly(PageRequest.of(0, 5));
 
         if (listWeeklyMangasRanking.isEmpty()) {
             Map<String, Object> err = Map.of(
@@ -199,7 +201,25 @@ public class MangaService {
                 "data", listWeeklyMangasRanking
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-
     }
 
+    public ResponseEntity searchMangasByName(String mangaName) {
+        MangaSpecification specific =
+                new MangaSpecification(new SearchCriteriaDTO("manga_name", ":", mangaName));
+
+        List<Manga> searchingResults = mangaRepository.findAll(specific);
+
+        if(searchingResults.isEmpty()){
+            Map<String, Object> err = Map.of(
+                    "err", "No manga!"
+            );
+            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
+        }
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get weekly mangas ranking successfully!",
+                "data", searchingResults
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
 }
