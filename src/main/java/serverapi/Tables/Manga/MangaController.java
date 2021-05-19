@@ -19,8 +19,10 @@ public class MangaController {
 
     @PutMapping("/updateviewchapter")
     public ResponseEntity updateViewsChapter(@RequestBody MangaPOJO mangaPOJO){
+        Long mangaId = Long.parseLong(mangaPOJO.getManga_id());
+        Long chapterId = Long.parseLong(mangaPOJO.getChapter_id());
 
-        return mangaService.updateViewsChapter(mangaPOJO);
+        return mangaService.updateViewsChapter(mangaId, chapterId, mangaPOJO);
     }
 
     @GetMapping("/getlastest")
@@ -36,10 +38,9 @@ public class MangaController {
 
     @PostMapping("/findMangaFromGenre")
     public ResponseEntity findMangaFromGenre(@RequestBody MangaPOJO mangaPOJO){
+        Long genreId = Long.parseLong(mangaPOJO.getGenre_id());
 
-
-
-        return mangaService.findMangaFromGenre(mangaPOJO);
+        return mangaService.findMangaFromGenre(genreId);
     }
 
     @PostMapping("/getmangapage")
@@ -55,9 +56,9 @@ public class MangaController {
         return mangaService.getTotalView();
     }
 
-    @GetMapping("/getweeklytop")
-    public ResponseEntity getWeeklyTop(){
-        return mangaService.getWeeklyTop();
+    @GetMapping("/gettopweekly")
+    public ResponseEntity getTopWeekly(){
+        return mangaService.getTopWeekly();
     }
 
 

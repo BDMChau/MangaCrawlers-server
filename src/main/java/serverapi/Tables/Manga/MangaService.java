@@ -30,31 +30,41 @@ public class MangaService {
         this.updateViewRepos = updateViewRepos;
     }
 
-    public ResponseEntity updateViewsChapter(MangaPOJO mangaPOJO) {
+    public ResponseEntity updateViewsChapter(Long mangaId, Long chapterId, MangaPOJO mangaPOJO) {
 
-        Optional<Manga> manga = mangaRepository.findById(Long.parseLong(mangaPOJO.getManga_id()));
+        Optional<Manga> manga = mangaRepository.findById(mangaId);
 
-        Manga manga1 = manga.get();
+        if (manga.isEmpty()) {
+            Map<String, Object> msg = Map.of("msg", "No mangas!");
+            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
+        }
 
-        manga1.getChapters().forEach(item -> {
-            if (item.getChapter_id().equals(Long.parseLong(mangaPOJO.getChapter_id()))) {
-                System.out.println(item.getViews());
+        List<Chapter> chapters = manga.get().getChapters();
 
-                mangaPOJO.setChapter_name(item.getChapter_name());
+        chapters.forEach(item -> {
+            if (item.getChapter_id().equals(chapterId)) {
+                String chapterName = item.getChapter_name();
+                mangaPOJO.setChapter_name(chapterName);
+
                 int views = item.getViews();
                 item.setViews(views + 1);
+
                 chapterRepos.save(item);
             }
         });
 
-        Map<String, Object> msg = Map.of("msg", "Get all mangas successfully!", "data", manga, "data2",
-                manga1.getChapters());
+        Map<String, Object> msg = Map.of(
+                "msg", "Get all mangas successfully!",
+                "data", manga,
+                "data2", chapters
+        );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
-    public ResponseEntity findMangaFromGenre(MangaPOJO mangaPOJO) {
 
-        List<MangaChapterGenreDTO> manga = mangaRepository.findMangaByOneGenre(Long.parseLong(mangaPOJO.getGenre_id()));
+    public ResponseEntity findMangaFromGenre(Long genreId) {
+
+        List<MangaChapterGenreDTO> manga = mangaRepository.findMangaByOneGenre(genreId);
 
         if (manga.isEmpty()) {
             Map<String, Object> msg = Map.of("msg", "Cannot get manga from this genre!", "data", manga);
@@ -65,6 +75,7 @@ public class MangaService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
+
     public ResponseEntity getLatest() {
         List<MangaChapterDTO> latestChapterFromManga = mangaRepository.getLatestChapterFromManga();
 
@@ -73,12 +84,14 @@ public class MangaService {
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
         }
 
+
         Map<String, Object> msg = Map.of("msg", "Get latest mangas successfully!", "data", latestChapterFromManga);
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
+
     public ResponseEntity getTop() {
-        List<Manga> topfiveMangas = mangaRepository.getTop(10);
+        List<Manga> topfiveMangas = mangaRepository.getTop(6);
 
         if (topfiveMangas.isEmpty()) {
             Map<String, Object> err = Map.of("msg", "Nothing of top five mangas!");
@@ -89,11 +102,12 @@ public class MangaService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
+
     public ResponseEntity getMangaPage(Long mangaId) {
         Optional<Manga> manga = mangaRepository.findById(mangaId);
 
-        if (!manga.isPresent()) {
-            Map<String, Object> err = Map.of("msg", "No content from manga page successfully!");
+        if (manga.isEmpty()) {
+            Map<String, Object> err = Map.of("msg", "No content from manga page!");
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
         }
 
@@ -108,38 +122,55 @@ public class MangaService {
     }
 
 
+//    set interval task
     public ResponseEntity getTotalView() {
+        List<MangaViewDTO> listViewsMangas = mangaRepository.getTotalView();
 
-        List<MangaViewDTO> mangaViewDTOManga = mangaRepository.getTotalView();
+        if (listViewsMangas.isEmpty()) {
+            Map<String, Object> err = Map.of("msg", "Nothing from total views mangas successfully!");
+            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
+        }
 
-        mangaViewDTOManga.forEach(item -> {
+        listViewsMangas.forEach(item -> {
             Long mangaId = item.getManga_id();
             Long totalViews = item.getViews();
             Calendar createdAt = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
-            Map<String, Object> element = Map.of("manga_id", mangaId, "total_views", totalViews, "created_at",
-                    createdAt);
+            Manga manga = new Manga();
+            manga.setManga_id(mangaId);
 
             UpdateView view = new UpdateView();
             view.setTotalviews(totalViews);
             view.setCreatedAt(createdAt);
-
-            Manga manga = new Manga();
-            manga.setManga_id(mangaId);
-
             view.setManga(manga);
 
             updateViewRepos.save(view);
         });
 
-        Map<String, Object> msg = Map.of("msg", "Get total views manga successfully!", "data", mangaViewDTOManga);
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get total views mangas successfully!",
+                "data", listViewsMangas
+        );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
-    public ResponseEntity getWeeklyTop() {
-        List<Manga> getweeklymanga = mangaRepository.getWeeklyTop();
 
-        Map<String, Object> msg = Map.of("msg", "Get total views manga successfully!", "data", getweeklymanga);
+    public ResponseEntity getTopWeekly() {
+        List<Manga> listWeeklyMangasRanking = mangaRepository.getTopWeekly();
+
+        if (listWeeklyMangasRanking.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "msg", "Nothing from weekly mangas ranking!"
+            );
+            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
+        }
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get weekly mangas ranking successfully!",
+                "data", listWeeklyMangasRanking
+        );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
     }
