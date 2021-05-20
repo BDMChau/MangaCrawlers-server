@@ -6,11 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
-import serverapi.Queries.DTO.*;
-import serverapi.Queries.Repositories.ChapterRepos;
-import serverapi.Queries.Repositories.MangaRepos;
-import serverapi.Queries.Repositories.UpdateViewRepos;
-import serverapi.Queries.Specification.MangaSpecification;
+import serverapi.Query.DTO.*;
+import serverapi.Query.Repository.ChapterRepos;
+import serverapi.Query.Repository.MangaRepos;
+import serverapi.Query.Repository.UpdateViewRepos;
+import serverapi.Query.Specification.MangaSpecification;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.UpdateView.UpdateView;
@@ -104,11 +104,11 @@ public class MangaService {
 
 
     public ResponseEntity getMangaPage(Long mangaId) {
-        Optional<AuthorMangaDTO> manga = mangaRepository.getAllByMangaId (mangaId);
-        List<GenreDTO> genres = mangaRepository.findGenresByMangId (mangaId);
-        List<ChapterDTO> chapters = mangaRepository.findChaptersbyMangaId (mangaId);
+        Optional<AuthorMangaDTO> manga = mangaRepository.getAllByMangaId(mangaId);
+        List<GenreDTO> genres = mangaRepository.findGenresByMangId(mangaId);
+        List<ChapterDTO> chapters = mangaRepository.findChaptersbyMangaId(mangaId);
 
-        if (manga.isEmpty()|| genres.isEmpty () || chapters.isEmpty ()) {
+        if (manga.isEmpty() || genres.isEmpty() || chapters.isEmpty()) {
             Map<String, Object> err = Map.of("msg", "No content from manga page!");
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
         }
@@ -118,7 +118,7 @@ public class MangaService {
                 "msg", "Get manga page successfully!",
                 "manga", manga,
                 "genres", genres,
-                "chapters",chapters
+                "chapters", chapters
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
@@ -188,7 +188,7 @@ public class MangaService {
 
         List<Manga> searchingResults = mangaRepository.findAll(specific);
 
-        if(searchingResults.isEmpty()){
+        if (searchingResults.isEmpty()) {
             Map<String, Object> err = Map.of(
                     "err", "No manga!"
             );

@@ -1,4 +1,4 @@
-package serverapi.Queries.Repositories;
+package serverapi.Query.Repository;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import serverapi.Queries.DTO.*;
+import serverapi.Query.DTO.*;
 import serverapi.Tables.Manga.Manga;
 
 import java.util.List;
@@ -45,12 +45,11 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
     List<MangaChapterGenreDTO> findMangaByOneGenre(Long genre_id);
 
 
-
 //    @Query("SELECT new serverapi.Queries.DTO.TotalViews(c.views,m.manga_id,m.manga_name ) FROM  Manga m JOIN m.chapters c WHERE c.views = (SELECT SUM(ct.views)  FROM Manga mg INNER JOIN mg.chapters ct WHERE mg.manga_id = m.manga_id  ) GROUP BY c.views, m.manga_id,m.manga_name")
 //    List<TotalViews> getTotalViews ();
 
 
-    @Query(value ="SELECT new serverapi.Queries.DTO.MangaViewDTO(Sum(c.views),m.manga_id,m.manga_name) FROM Manga m " +
+    @Query(value = "SELECT new serverapi.Queries.DTO.MangaViewDTO(Sum(c.views),m.manga_id,m.manga_name) FROM Manga m " +
             "JOIN m.chapters c  GROUP BY m.manga_id, m.manga_name ")
     List<MangaViewDTO> getTotalView();
 
@@ -74,12 +73,9 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
 
 
     @Query("SELECT new serverapi.Queries.DTO.ChapterDTO(c.chapter_id, c.chapter_name, c.createdAt) FROM " +
-            "Manga m JOIN m.chapters c "+
+            "Manga m JOIN m.chapters c " +
             "WHERE m.manga_id = ?1")
     List<ChapterDTO> findChaptersbyMangaId(Long manga_id);
-
-
-
 
 
 }

@@ -3,8 +3,8 @@ package serverapi.Tables.Manga;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import serverapi.Queries.Repositories.MangaRepos;
-import serverapi.Queries.Repositories.UpdateViewRepos;
+import serverapi.Query.Repository.MangaRepos;
+import serverapi.Query.Repository.UpdateViewRepos;
 
 @Configuration
 @EnableScheduling

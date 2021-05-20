@@ -45,6 +45,7 @@ public class AuthController {
         return authService.signUp(signPOJO);
     }
 
+
     @PostMapping("/signin")
     @ResponseBody
     public ResponseEntity signIn(@RequestBody SignPOJO signPOJO) throws NoSuchAlgorithmException {
@@ -61,6 +62,7 @@ public class AuthController {
         return authService.signIn(signPOJO);
     }
 
+
     @PostMapping("/requestchangepass")
     @ResponseBody
     public ResponseEntity requestChangePassword(@RequestBody SignPOJO signPOJO) throws MailException, MessagingException, NoSuchAlgorithmException {
@@ -71,6 +73,7 @@ public class AuthController {
 
         return authService.requestChangePassword(signPOJO);
     }
+
 
     @PutMapping("/changepass")
     @ResponseBody

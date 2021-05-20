@@ -1,4 +1,4 @@
-package serverapi.Queries.Repositories;
+package serverapi.Query.Repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import serverapi.Tables.User.User;

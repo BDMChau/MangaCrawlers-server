@@ -2,7 +2,7 @@ package serverapi.Tables.Author;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import serverapi.Queries.Repositories.AuthorRepos;
+import serverapi.Query.Repository.AuthorRepos;
 
 @Configuration
 public class AuthorConfig {

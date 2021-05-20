@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
-import serverapi.Queries.Repositories.GenreRepos;
+import serverapi.Query.Repository.GenreRepos;
 
 import java.util.List;
 import java.util.Map;

@@ -2739,5 +2739,5 @@ org.springframework.boot.devtools.restart.classloader.RestartClassLoader@5433dab
 2021-05-17 19:45:05.167 DEBUG 10432 --- [restartedMain] o.s.b.f.s.DefaultListableBeanFactory     : Creating shared instance of singleton bean 'chapterService'
 2021-05-17 19:45:05.167 DEBUG 10432 --- [restartedMain] o.s.b.f.s.DefaultListableBeanFactory     : Creating shared instance of singleton bean 'chapterRepos'
 2021-05-17 19:45:05.171 DEBUG 10432 --- [restartedMain] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
-2021-05-17 19:45:05.171 DEBUG 10432 --- [restartedMain] o.s.d.r.c.s.RepositoryFactorySupport     : Initializing repository instance for serverapi.Queries.Repositories.ChapterRepos…
+2021-05-17 19:45:05.171 DEBUG 10432 --- [restartedMain] o.s.d.r.c.s.RepositoryFactorySupport     : Initializing repository instance for serverapi.Query.Repository.ChapterRepos…
 2021-05-17 19:45:05.172 DEBUG 10432 --- [restartedMain] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation

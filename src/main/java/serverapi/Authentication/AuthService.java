@@ -126,7 +126,6 @@ public class AuthService {
 
         User user = userOptional.get();
 
-
         String timeExpired = String.valueOf(Calendar.getInstance().getTimeInMillis() + 600000); // 10 minutes
 
         String token = new RandomBytes().randomBytes(32);
@@ -155,7 +154,6 @@ public class AuthService {
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
         User user = userOptional.get();
-
 
         Long tokenExpiredAt = Long.parseLong(user.getToken_reset_pass_createdAt());
         if(currentTime >= tokenExpiredAt || tokenExpiredAt == null){

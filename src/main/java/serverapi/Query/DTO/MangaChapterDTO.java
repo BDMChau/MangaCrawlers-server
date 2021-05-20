@@ -1,4 +1,4 @@
-package serverapi.Queries.DTO;
+package serverapi.Query.DTO;
 
 
 import lombok.Getter;

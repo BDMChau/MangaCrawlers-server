@@ -1,9 +1,9 @@
-package serverapi.Queries.Repositories;
+package serverapi.Query.Repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import serverapi.Queries.DTO.AuthorManga;
+import serverapi.Query.DTO.AuthorManga;
 import serverapi.Tables.Author.Author;
 
 import java.util.List;
