@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Query.DTO.*;
 import serverapi.Query.Repository.ChapterRepos;
+import serverapi.Query.Repository.GenreRepos;
 import serverapi.Query.Repository.MangaRepos;
 import serverapi.Query.Repository.UpdateViewRepos;
 import serverapi.Query.Specification.MangaSpecification;
@@ -20,14 +21,16 @@ import java.util.*;
 @Service
 public class MangaService {
     private final MangaRepos mangaRepository;
-    private final ChapterRepos chapterRepos;
+    private final ChapterRepos chapterRepository;
     private final UpdateViewRepos updateViewRepos;
+    private final GenreRepos genreRepository;
 
     @Autowired
-    public MangaService(MangaRepos mangaRepository, ChapterRepos chapterRepos, UpdateViewRepos updateViewRepos) {
+    public MangaService(MangaRepos mangaRepository, ChapterRepos chapterRepository, UpdateViewRepos updateViewRepos, GenreRepos genreRepository) {
         this.mangaRepository = mangaRepository;
-        this.chapterRepos = chapterRepos;
+        this.chapterRepository = chapterRepository;
         this.updateViewRepos = updateViewRepos;
+        this.genreRepository = genreRepository;
     }
 
     public ResponseEntity updateViewsChapter(Long mangaId, Long chapterId, MangaPOJO mangaPOJO) {
@@ -49,7 +52,7 @@ public class MangaService {
                 int views = item.getViews();
                 item.setViews(views + 1);
 
-                chapterRepos.save(item);
+                chapterRepository.save(item);
             }
         });
 
@@ -105,8 +108,8 @@ public class MangaService {
 
     public ResponseEntity getMangaPage(Long mangaId) {
         Optional<AuthorMangaDTO> manga = mangaRepository.getAllByMangaId(mangaId);
-        List<GenreDTO> genres = mangaRepository.findGenresByMangId(mangaId);
-        List<ChapterDTO> chapters = mangaRepository.findChaptersbyMangaId(mangaId);
+        List<GenreDTO> genres = genreRepository.findGenresByMangId(mangaId);
+        List<ChapterDTO> chapters = chapterRepository.findChaptersbyMangaId(mangaId);
 
         if (manga.isEmpty() || genres.isEmpty() || chapters.isEmpty()) {
             Map<String, Object> err = Map.of("msg", "No content from manga page!");
