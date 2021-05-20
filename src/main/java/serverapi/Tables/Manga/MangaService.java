@@ -193,13 +193,14 @@ public class MangaService {
 
         if (searchingResults.isEmpty()) {
             Map<String, Object> err = Map.of(
-                    "err", "No manga!"
+                    "err", "No manga!",
+                    "data", searchingResults
             );
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
 
         Map<String, Object> msg = Map.of(
-                "msg", "Get weekly mangas ranking successfully!",
+                "msg", "Get search results successfully!",
                 "data", searchingResults
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
