@@ -2,9 +2,8 @@ package serverapi.Tables.Chapter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import serverapi.Tables.Manga.POJO.MangaPOJO;
 
 @RestController
 @RequestMapping("/api/chapter")
@@ -33,6 +32,15 @@ public class ChapterController {
 //
 //    }
 
+    @PostMapping("/getimgchapter")
+
+    public ResponseEntity findImgByChapter(@RequestBody MangaPOJO mangaPOJO){
+
+        Long chapterId = Long.parseLong(mangaPOJO.getChapter_id());
+        Long mangaId = Long.parseLong(mangaPOJO.getManga_id());
+
+        return chapterService.findImgByChapter(chapterId, mangaId);
+    }
 
 
 
