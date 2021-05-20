@@ -103,10 +103,10 @@ public class MangaService {
     }
 
 
-    public ResponseEntity getAllByMangaId(Long mangaId) {
-        Optional<AuthorMangaDTO> manga = mangaRepository.getAllByMangId (mangaId);
-        List<GenreDTO> genres = mangaRepository.findGenByMangId (mangaId);
-        List<ChapterDTO> chapters = mangaRepository.findChapterbyMangaId (mangaId);
+    public ResponseEntity getMangaPage(Long mangaId) {
+        Optional<AuthorMangaDTO> manga = mangaRepository.getAllByMangaId (mangaId);
+        List<GenreDTO> genres = mangaRepository.findGenresByMangId (mangaId);
+        List<ChapterDTO> chapters = mangaRepository.findChaptersbyMangaId (mangaId);
 
         if (manga.isEmpty()|| genres.isEmpty () || chapters.isEmpty ()) {
             Map<String, Object> err = Map.of("msg", "No content from manga page!");
@@ -180,6 +180,7 @@ public class MangaService {
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
+
 
     public ResponseEntity searchMangasByName(String mangaName) {
         MangaSpecification specific =

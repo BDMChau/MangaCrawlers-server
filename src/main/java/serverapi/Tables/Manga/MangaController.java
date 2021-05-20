@@ -46,11 +46,11 @@ public class MangaController {
     }
 
 
-    @PostMapping("/getallbymangaid")
+    @PostMapping("/getmangapage")
     public ResponseEntity getMangaPage(@RequestBody MangaPOJO mangaPOJO){
         Long mangaId = Long.parseLong(mangaPOJO.getManga_id ());
 
-        return mangaService.getAllByMangaId (mangaId);
+        return mangaService.getMangaPage (mangaId);
     }
 
     @GetMapping("/gettotalviews")
