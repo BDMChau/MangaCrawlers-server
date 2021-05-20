@@ -76,7 +76,7 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
     @Query("SELECT new serverapi.Queries.DTO.ChapterDTO(c.chapter_id, c.chapter_name, c.createdAt) FROM " +
             "Manga m JOIN m.chapters c "+
             "WHERE m.manga_id = ?1")
-    List<ChapterDTO> findChapterbyMangaId(Long manga_id);
+    List<ChapterDTO> findChaptersbyMangaId(Long manga_id);
 
 
 
