@@ -11,24 +11,6 @@ import java.util.Calendar;
 @NoArgsConstructor
 public class AuthorMangaDTO {
 
-    public AuthorMangaDTO(Long author_id, String author_name, Long manga_id, String manga_name, String status, String description,
-                                           float stars, Long views, String thumbnail, int date_publications, Calendar manga_createdAt
-                                          ) {
-        this.author_id = author_id;
-        this.author_name = author_name;
-        this.manga_id = manga_id;
-        this.manga_name = manga_name;
-        this.status = status;
-        this.description = description;
-        this.stars = stars;
-        this.views = views;
-        this.thumbnail = thumbnail;
-        this.date_publications = date_publications;
-        this.manga_createdAt = manga_createdAt;
-
-
-    }
-
     private Long author_id;
     private String author_name;
 
@@ -43,8 +25,27 @@ public class AuthorMangaDTO {
     private Calendar manga_createdAt;
 
 
+    public AuthorMangaDTO(String author_name, String manga_name) {
+        this.author_name = author_name;
+        this.manga_name = manga_name;
+    }
+
+    public AuthorMangaDTO(Long author_id, String author_name, Long manga_id, String manga_name, String status, String description,
+                          float stars, Long views, String thumbnail, int date_publications, Calendar manga_createdAt) {
+        this.author_id = author_id;
+        this.author_name = author_name;
+        this.manga_id = manga_id;
+        this.manga_name = manga_name;
+        this.status = status;
+        this.description = description;
+        this.stars = stars;
+        this.views = views;
+        this.thumbnail = thumbnail;
+        this.date_publications = date_publications;
+        this.manga_createdAt = manga_createdAt;
 
 
+    }
 
 
 

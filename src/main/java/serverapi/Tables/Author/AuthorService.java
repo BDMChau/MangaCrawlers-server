@@ -5,8 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
+import serverapi.Query.DTO.AuthorMangaDTO;
 import serverapi.Query.Repository.AuthorRepos;
-import serverapi.Query.DTO.AuthorManga;
 
 import java.util.List;
 import java.util.Map;
@@ -32,7 +32,7 @@ public class AuthorService {
     }
 
     public ResponseEntity getnameAuthorManga() {
-        List<AuthorManga> authors = authorRepos.getnameAuthorManga();
+        List<AuthorMangaDTO> authors = authorRepos.getNameAuthorManga();
 //         Author author = authors.get();
 //         List<Manga> mangaList = (List<Manga>) author.getMangas();
 
