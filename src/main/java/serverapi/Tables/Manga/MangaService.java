@@ -135,18 +135,22 @@ public class MangaService {
             Map<String, Object> err = Map.of("msg", "Nothing from total views mangas successfully!");
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
         }
-
+//
         listViewsMangas.forEach(item -> {
             Long mangaId = item.getManga_id();
             Long totalViews = item.getViews();
             Calendar createdAt = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
-            Manga manga = new Manga();
-            manga.setManga_id(mangaId);
+            Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
+
+            Manga manga = mangaOptional.get();
+
             if (totalViews.equals(0L)) {
                 manga.setViews(0L);
+                mangaRepository.save(manga);
             } else {
                 manga.setViews(totalViews);
+                mangaRepository.saveAndFlush(manga);
             }
 
             UpdateView view = new UpdateView();
@@ -156,7 +160,6 @@ public class MangaService {
 
             updateViewRepos.save(view);
         });
-
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get total views mangas successfully!",

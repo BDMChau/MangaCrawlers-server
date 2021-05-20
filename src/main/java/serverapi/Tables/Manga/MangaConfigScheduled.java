@@ -22,33 +22,44 @@ public class MangaConfigScheduled {
 
 //    @Async
 //    @Scheduled(cron = "* 12 * * * ?")
-//    public void setTotalView() {
-//        List<MangaViewDTO> listViewsMangas = mangaRepos.getTotalView();
+//public ResponseEntity getTotalView() {
+//    List<MangaViewDTO> listViewsMangas = mangaRepository.getTotalView();
 //
-//        if (listViewsMangas.isEmpty()) {
-//            System.out.println("Cannot schedule task Set Total Views for Mangas!");
-//            return;
+//    if (listViewsMangas.isEmpty()) {
+//        Map<String, Object> err = Map.of("msg", "Nothing from total views mangas successfully!");
+//        return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
+//    }
+//
+//    listViewsMangas.forEach(item -> {
+//        Long mangaId = item.getManga_id();
+//        Long totalViews = item.getViews();
+//        Calendar createdAt = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+//
+//        Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
+//
+//        Manga manga = mangaOptional.get();
+//
+//        if (totalViews.equals(0L)) {
+//            manga.setViews(0L);
+//            mangaRepository.save(manga);
+//        } else {
+//            manga.setViews(totalViews);
+//            mangaRepository.saveAndFlush(manga);
 //        }
 //
-//        listViewsMangas.forEach(item -> {
-//            Long mangaId = item.getManga_id();
-//            Long totalViews = item.getViews();
-//            Calendar createdAt = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+//        UpdateView view = new UpdateView();
+//        view.setTotalviews(totalViews);
+//        view.setCreatedAt(createdAt);
+//        view.setManga(manga);
 //
-//            Manga manga = new Manga();
-//            manga.setManga_id(mangaId);
+//        updateViewRepos.save(view);
+//    });
 //
-//            UpdateView view = new UpdateView();
-//            view.setTotalviews(totalViews);
-//            view.setCreatedAt(createdAt);
-//            view.setManga(manga);
-//
-//            updateViewRepos.save(view);
-//        });
-//
-//
-//        System.out.println("Done schedule task Set Total Views for Mangas: " + new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(Calendar.getInstance().getTime()));
-//        return;
-//    }
+//    Map<String, Object> msg = Map.of(
+//            "msg", "Get total views mangas successfully!",
+//            "data", listViewsMangas
+//    );
+//    return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+//}
 
 }
