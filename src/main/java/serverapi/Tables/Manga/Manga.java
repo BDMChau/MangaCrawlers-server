@@ -10,9 +10,10 @@ import serverapi.Tables.Author.Author;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.FollowingManga.FollowingManga;
 import serverapi.Tables.MangaGenre.MangaGenre;
-import serverapi.Tables.MangaTransGroup.MangaTransGroup;
+
 import serverapi.Tables.RatingManga.RatingManga;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
+import serverapi.Tables.TransGroup.TransGroup;
 import serverapi.Tables.UpdateView.UpdateView;
 
 import javax.persistence.*;
@@ -45,6 +46,12 @@ public class Manga {
     @JoinColumn(name ="author_id")
     private Author author;
 
+
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "transgroup_id")
+    private TransGroup transgroup;
+
     @JsonBackReference
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
     private List<Chapter> chapters;
@@ -61,9 +68,6 @@ public class Manga {
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
     private Collection<ReadingHistory> readingHistories;
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
-    private Collection<MangaTransGroup> mangaTransGroups;
 
     @JsonBackReference
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)

@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.Tables.MangaTransGroup.MangaTransGroup;
+import serverapi.Tables.Manga.Manga;
+
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.List;
 
 
 @Entity
@@ -34,8 +36,8 @@ public class TransGroup {
 
 
         @JsonBackReference
-        @OneToMany(mappedBy = "transGroup", cascade = CascadeType.ALL)
-        private Collection<MangaTransGroup> mangaTransGroups;
+        @OneToMany(mappedBy = "transgroup", cascade = CascadeType.ALL)
+        private List<Manga> mangas;
 
 
         @Column(columnDefinition = "varchar(100)", nullable = false)
