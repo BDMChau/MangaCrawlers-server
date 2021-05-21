@@ -11,13 +11,13 @@ import java.util.Calendar;
 @NoArgsConstructor
 public class ChapterDTO {
 
-    public ChapterDTO(Long chapter_id, String chapter_name, Calendar chapter_createdAT) {
+    public ChapterDTO(Long chapter_id, String chapter_name, Calendar createdAt) {
         this.chapter_id = chapter_id;
         this.chapter_name = chapter_name;
-        this.chapter_createdAT = chapter_createdAT;
+        this.createdAt = createdAt;
     }
 
     private Long chapter_id;
     private String chapter_name;
-    private Calendar chapter_createdAT;
+    private Calendar createdAt;
 }

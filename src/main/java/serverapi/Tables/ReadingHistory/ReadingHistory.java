@@ -10,6 +10,7 @@ import serverapi.Tables.Manga.Manga;
 import serverapi.Tables.User.User;
 
 import javax.persistence.*;
+import java.util.Calendar;
 
 @Entity
 @Setter
@@ -45,4 +46,10 @@ public class ReadingHistory {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="chapter_id", insertable = false, updatable = false)
     private Chapter chapter;
+
+    @Column(
+            updatable = false,
+            columnDefinition = "timestamp with time zone"
+    )
+    private Calendar reading_history_time;
 }

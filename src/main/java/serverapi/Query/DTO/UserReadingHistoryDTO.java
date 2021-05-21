@@ -11,12 +11,13 @@ import java.util.Calendar;
 @NoArgsConstructor
 public class UserReadingHistoryDTO {
 
-    private String user_id;
-    private Long reading_history_id;
-    private Calendar reading_historytime;
+    private Long user_id;
+    private Long readingHistory_id;
+    private Calendar reading_history_time;
 
-    public UserReadingHistoryDTO(String user_id, Calendar reading_historytime) {
+    public UserReadingHistoryDTO(Long user_id, Long readingHistory_id, Calendar reading_history_time) {
         this.user_id = user_id;
-        this.reading_historytime = reading_historytime;
+        this.readingHistory_id = readingHistory_id;
+        this.reading_history_time = reading_history_time;
     }
 }
