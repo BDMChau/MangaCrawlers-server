@@ -16,9 +16,8 @@ public class MangaController {
     }
 
 
-
     @PutMapping("/updateviewchapter")
-    public ResponseEntity updateViewsChapter(@RequestBody MangaPOJO mangaPOJO){
+    public ResponseEntity updateViewsChapter(@RequestBody MangaPOJO mangaPOJO) {
         Long mangaId = Long.parseLong(mangaPOJO.getManga_id());
         Long chapterId = Long.parseLong(mangaPOJO.getChapter_id());
 
@@ -27,50 +26,48 @@ public class MangaController {
 
 
     @GetMapping("/getlastest")
-    public ResponseEntity getLatest(){
+    public ResponseEntity getLatest() {
         return mangaService.getLatest();
     }
 
 
     @GetMapping("/gettop")
-    public ResponseEntity getTop(){
+    public ResponseEntity getTop() {
         return mangaService.getTop();
     }
 
 
     @PostMapping("/findmangafromgenre")
-    public ResponseEntity findMangaFromGenre(@RequestBody MangaPOJO mangaPOJO){
+    public ResponseEntity findMangaFromGenre(@RequestBody MangaPOJO mangaPOJO) {
         Long genreId = Long.parseLong(mangaPOJO.getGenre_id());
 
         return mangaService.findMangaFromGenre(genreId);
     }
 
 
-    @PostMapping("/getmangapage")
-    public ResponseEntity getMangaPage(@RequestBody MangaPOJO mangaPOJO){
-        Long mangaId = Long.parseLong(mangaPOJO.getManga_id ());
+    @GetMapping("/getmangapage")
+    public ResponseEntity getMangaPage(@RequestParam(required = false) String manga_id) {
 
-        return mangaService.getMangaPage (mangaId);
+        return mangaService.getMangaPage(Long.parseLong(manga_id));
     }
 
     @GetMapping("/gettotalviews")
-    public ResponseEntity getTotalView(){
+    public ResponseEntity getTotalView() {
 
         return mangaService.getTotalView();
     }
 
     @GetMapping("/getweekly")
-    public ResponseEntity getWeeklyMangas(){
+    public ResponseEntity getWeeklyMangas() {
         return mangaService.getWeeklyMangas();
     }
 
     @PostMapping("/searchmangas")
-    public ResponseEntity searchMangasByName(@RequestBody MangaPOJO mangaPOJO){
+    public ResponseEntity searchMangasByName(@RequestBody MangaPOJO mangaPOJO) {
         String mangaName = mangaPOJO.getManga_name();
 
         return mangaService.searchMangasByName(mangaName);
     }
-
 
 
 }
