@@ -111,7 +111,7 @@ public class MangaService {
         List<GenreDTO> genres = genreRepository.findGenresByMangId(mangaId);
         List<ChapterDTO> chapters = chapterRepository.findChaptersbyMangaId(mangaId);
 
-        if (manga.isEmpty() || genres.isEmpty() || chapters.isEmpty()) {
+        if (manga.isEmpty()) {
             Map<String, Object> err = Map.of("msg", "No content from manga page!");
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
         }
