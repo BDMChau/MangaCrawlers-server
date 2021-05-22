@@ -34,21 +34,21 @@ public class ReadingHistory {
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="manga_id", insertable = false, updatable = false)
+    @JoinColumn(name="manga_id", insertable = true, updatable = true)
     private Manga manga;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id", insertable = false, updatable = false)
+    @JoinColumn(name="user_id", insertable = true, updatable = true)
     private User user;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="chapter_id", insertable = false, updatable = false)
+    @JoinColumn(name="chapter_id", insertable = true, updatable = true)
     private Chapter chapter;
 
     @Column(
-            updatable = false,
+            updatable = true,
             columnDefinition = "timestamp with time zone"
     )
     private Calendar reading_history_time;

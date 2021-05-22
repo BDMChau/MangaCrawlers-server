@@ -11,13 +11,36 @@ import java.util.Calendar;
 @NoArgsConstructor
 public class UserReadingHistoryDTO {
 
-    private Long user_id;
-    private Long readingHistory_id;
-    private Calendar reading_history_time;
 
-    public UserReadingHistoryDTO(Long user_id, Long readingHistory_id, Calendar reading_history_time) {
-        this.user_id = user_id;
+    private Long readingHistory_id;
+    private Calendar reading_History_time;
+
+    private Long user_id;
+
+    private Long manga_id;
+    private String manga_name;
+    private String thumbnail;
+    private float stars;
+    private Long views;
+    private int date_publications;
+
+
+    private Long chapter_id;
+    private String chapter_name;
+    private Calendar createdAt;
+
+    public UserReadingHistoryDTO(Long readingHistory_id, Calendar reading_History_time, Long user_id, Long manga_id, String manga_name, String thumbnail, float stars, Long views, int date_publications, Long chapter_id, String chapter_name, Calendar createdAt) {
         this.readingHistory_id = readingHistory_id;
-        this.reading_history_time = reading_history_time;
+        this.reading_History_time = reading_History_time;
+        this.user_id = user_id;
+        this.manga_id = manga_id;
+        this.manga_name = manga_name;
+        this.thumbnail = thumbnail;
+        this.stars = stars;
+        this.views = views;
+        this.date_publications = date_publications;
+        this.chapter_id = chapter_id;
+        this.chapter_name = chapter_name;
+        this.createdAt = createdAt;
     }
 }

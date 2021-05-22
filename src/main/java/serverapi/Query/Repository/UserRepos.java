@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import serverapi.Query.DTO.ChapterDTO;
 import serverapi.Query.DTO.MangaDTO;
 import serverapi.Query.DTO.UserReadingHistoryDTO;
+import serverapi.Tables.ReadingHistory.ReadingHistory;
 import serverapi.Tables.User.User;
 
 import java.util.List;
@@ -19,6 +20,5 @@ public interface UserRepos extends JpaRepository<User, Long> {
     @Query("SELECT new serverapi.Query.DTO.MangaDTO(m.manga_id, m.manga_name, m.thumbnail) FROM Manga m JOIN m.readingHistories rd WHERE m.manga_id =?1 ")
     List<MangaDTO> findMangaByReadingHistory(Long manga_id);
 
-    @Query("SELECT new serverapi.Query.DTO.UserReadingHistoryDTO(u.user_id, rd.readingHistory_id,rd.reading_history_time) FROM User u JOIN u.readingHistory rd  WHERE u.user_id =?1")
-    List<UserReadingHistoryDTO> findUserByReadingHistory();
+
 }

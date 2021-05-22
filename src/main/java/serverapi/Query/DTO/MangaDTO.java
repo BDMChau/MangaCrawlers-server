@@ -19,6 +19,6 @@ public class MangaDTO {
     private String manga_name;
     private String thumbnail;
     private float stars;
-    private int views;
+    private Long views;
     private int date_publications;
 }

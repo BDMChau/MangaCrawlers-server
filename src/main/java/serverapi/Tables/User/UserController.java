@@ -35,16 +35,32 @@ public class UserController {
         return "Get user route";
     }
 
-    @PutMapping("/updatetimehistory")
-    public ResponseEntity updatetime(@RequestBody UserPOJO userPOJO, ServletRequest request){
+    @GetMapping("/gethistorymanga")
+    public ResponseEntity findUserByReadingHistory(ServletRequest request){
+        String text = getUserAttribute(request).get("user_id").toString();
 
-        Long manga_id = Long.parseLong(userPOJO.getManga_id());
-        Long chapter_id = Long.parseLong(userPOJO.getChapter_id());
-        Long user_id = Long.parseLong(userPOJO.getUser_id());
+        Long user_id = Long.parseLong(text);
 
 
-        return userService.updatetime(manga_id,chapter_id,user_id);
+        return userService.GetUserByReadingHistory(user_id);
+
     }
+
+    @PutMapping("/updatetimehistory")
+    public ResponseEntity updatetime(@RequestBody UserPOJO userPOJO,ServletRequest request){
+        String text = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(text);
+        Long mangaId = Long.parseLong(userPOJO.getManga_id());
+        Long chapterId = Long.parseLong(userPOJO.getChapter_id());
+
+        return userService.updatetime(userId,mangaId,userPOJO,chapterId);
+
+
+    }
+
+
+
+
 
 
 }
