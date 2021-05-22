@@ -1,32 +1,39 @@
 package serverapi.Tables.User;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Query.DTO.FollowingDTO;
-import serverapi.Query.Repository.FollowingRepos;
-import serverapi.Query.Repository.MangaRepos;
-import serverapi.Query.Repository.UserRepos;
+import serverapi.Query.DTO.UserReadingHistoryDTO;
+import serverapi.Query.Repository.*;
+import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.FollowingManga.FollowingManga;
 import serverapi.Tables.Manga.Manga;
+import serverapi.Tables.ReadingHistory.ReadingHistory;
+import serverapi.Tables.User.POJO.UserPOJO;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     private final MangaRepos mangaRepository;
     private final FollowingRepos followingRepos;
     private final UserRepos userRepos;
+    private  final ReadingHistoryRepos readingHistoryRepos;
+    private final  ChapterRepos chapterRepos;
 
-    public UserService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos) {
+    @Autowired
+    public UserService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos, ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos) {
         this.mangaRepository = mangaRepository;
         this.followingRepos = followingRepos;
         this.userRepos = userRepos;
+        this.readingHistoryRepos = readingHistoryRepos;
+        this.chapterRepos = chapterRepos;
     }
 
     public ResponseEntity getFollowManga(Long UserId) {
@@ -145,30 +152,12 @@ public class UserService {
 
 
 
-    private final MangaRepos mangaRepos;
-    private final ChapterRepos chapterRepos;
-    private final UserRepos userRepos;
-    private final ReadingHistoryRepos readingHistoryRepos;
-
-    @Autowired
-    public UserService(MangaRepos mangaRepos, ChapterRepos chapterRepos, UserRepos userRepos, ReadingHistoryRepos readingHistoryRepos) {
-        this.mangaRepos = mangaRepos;
-        this.chapterRepos = chapterRepos;
-        this.userRepos = userRepos;
-        this.readingHistoryRepos = readingHistoryRepos;
-    }
-
     public ResponseEntity GetUserByReadingHistory(Long userId) {
 
 
         List<UserReadingHistoryDTO> readingHistoryDTOS = readingHistoryRepos.GetUserByReadingHistor(userId);
-
-       readingHistoryDTOS.stream().sorted(Comparator.comparing(UserReadingHistoryDTO ::getReading_History_time).reversed()).collect(Collectors.toList());
-
-
-
+        readingHistoryDTOS.stream().sorted(Comparator.comparing(UserReadingHistoryDTO::getReading_History_time).reversed()).collect(Collectors.toList());
 //
-
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get reading history mangas successfully!",
@@ -200,7 +189,7 @@ public class UserService {
                 Chapter chapter = chapterOptional.get();
 
 
-                Optional<Manga> mangaOptional = mangaRepos.findById(mangaId);
+                Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
                 Manga manga = mangaOptional.get();
 
                 readingHistory.setChapter(chapter);
@@ -222,7 +211,7 @@ public class UserService {
         Optional<Chapter> chapterOptional = chapterRepos.findById(chapterId);
         Chapter chapter = chapterOptional.get();
 
-        Optional<Manga> mangaOptional = mangaRepos.findById(mangaId);
+        Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
         Manga manga = mangaOptional.get();
 
         Optional<User> userOptional = userRepos.findById(userId);

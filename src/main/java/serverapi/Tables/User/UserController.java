@@ -1,8 +1,10 @@
 package serverapi.Tables.User;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import serverapi.Tables.Manga.MangaService;
+import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.User.POJO.UserPOJO;
 
 import javax.servlet.ServletRequest;
@@ -17,7 +19,8 @@ public class UserController {
 
     private final UserService userService;
 
-@Autowired
+
+    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
