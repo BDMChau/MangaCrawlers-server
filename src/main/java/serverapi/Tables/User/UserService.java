@@ -156,7 +156,7 @@ public class UserService {
 
 
         List<UserReadingHistoryDTO> readingHistoryDTOS = readingHistoryRepos.GetUserByReadingHistor(userId);
-        readingHistoryDTOS.stream().sorted(Comparator.comparing(UserReadingHistoryDTO::getReading_History_time)).collect(Collectors.toList());
+        readingHistoryDTOS.sort(Comparator.comparing(UserReadingHistoryDTO::getReading_History_time).reversed());
 //
 
         Map<String, Object> msg = Map.of(
