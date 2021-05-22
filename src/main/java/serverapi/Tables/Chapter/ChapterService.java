@@ -10,7 +10,6 @@ import serverapi.Query.DTO.ChapterImgDTO;
 import serverapi.Query.Repository.ChapterRepos;
 import serverapi.Query.Repository.ImgChapterRepos;
 import serverapi.Query.Repository.MangaRepos;
-import serverapi.Tables.Manga.Manga;
 
 import java.util.List;
 import java.util.Map;
@@ -83,6 +82,7 @@ public class ChapterService {
         Optional<Chapter> chapter = chapterRepos.findById(chapterId);
         chapter.get().getManga().getManga_id();
         chapter.get().getManga().getManga_name();
+
         List<ChapterDTO> chapterDTOS = chapterRepos.findChaptersbyMangaId(mangaId);
 
         List<ChapterImgDTO> chapterImgDTOS = imgChapterRepos.findImgsByChapterId(chapterId);
