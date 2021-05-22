@@ -15,8 +15,9 @@ import java.util.Map;
 @RequestMapping("/api/user")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
 
+@Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -29,7 +30,8 @@ public class UserController {
 
     @GetMapping("/test")
     public String getUser(ServletRequest request) {
-        System.out.println(getUserAttribute(request));
+        System.out.println("dasdasdasd"+getUserAttribute(request).get ("user_id"));
+
 
 
         return "Get user route";
@@ -62,5 +64,33 @@ public class UserController {
 
 
 
+    @GetMapping("/getfollowingmangas")
+    public ResponseEntity getFollowingMangas(ServletRequest request) {
+
+       String text= getUserAttribute(request).get ("user_id").toString ();
+       Long userId = Long.parseLong (text);
+
+        return userService.getFollowManga (userId);
+    }
+
+    @DeleteMapping("/deletefollowingmangas")
+    public ResponseEntity deleteFollowingMangas(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
+
+        String text= getUserAttribute(request).get ("user_id").toString ();
+        Long userId = Long.parseLong (text);
+        Long mangaId = Long.parseLong(mangaPOJO.getManga_id());
+
+        return userService.deleteFollowManga (mangaId,userId);
+    }
+
+    @PostMapping("/addfollowingmangas")
+    public ResponseEntity addFollowingMangas(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
+
+        String text= getUserAttribute(request).get ("user_id").toString ();
+        Long userId = Long.parseLong (text);
+        Long mangaId = Long.parseLong(mangaPOJO.getManga_id());
+
+        return userService.addFollowManga (mangaId,userId);
+    }
 
 }
