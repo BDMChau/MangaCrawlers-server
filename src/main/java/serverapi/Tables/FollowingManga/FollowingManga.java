@@ -20,24 +20,24 @@ import javax.persistence.*;
 public class FollowingManga {
     @Id
     @SequenceGenerator(
-            name = "readinghistory_sequence",
-            sequenceName = "readinghistory_sequence",
+            name = "following_sequence",
+            sequenceName = "following_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "readinghistory_sequence" // same as NAME in SequenceGenerator
+            generator = "following_sequence" // same as NAME in SequenceGenerator
     )
     private Long followingmanga_id;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manga_id", insertable = false, updatable = false)
+    @JoinColumn(name = "manga_id", insertable = true, updatable = true)
     private Manga manga;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", insertable = true, updatable = true)
     private User user;
 
 }

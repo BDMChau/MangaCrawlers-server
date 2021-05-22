@@ -8,5 +8,5 @@ import serverapi.Tables.User.User;
 @Repository
 public interface UserRepos extends JpaRepository<User, Long> {
 
-    @Query("SELECT new serverapi.Query.DTO. ")
+    //@Query("SELECT new serverapi.Query.DTO. ")
 }
