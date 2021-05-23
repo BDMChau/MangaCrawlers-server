@@ -27,7 +27,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     @ResponseBody
-    public ResponseEntity signUp(@RequestBody SignPOJO signPOJO) throws NoSuchAlgorithmException {
+    public ResponseEntity signUp(@RequestBody SignPOJO signPOJO) throws NoSuchAlgorithmException, MessagingException {
         if (signPOJO.isValidSignUp() == isValidEnum.missing_credentials) {
             Map<String, String> error = Map.of("err", "Missing credentials!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(), HttpStatus.BAD_REQUEST);
@@ -87,5 +87,19 @@ public class AuthController {
         }
 
         return authService.changePassword(signPOJO);
+    }
+
+    @PostMapping("/confirmverification")
+    @ResponseBody
+    public ResponseEntity confirmVerification(@RequestBody SignPOJO signPOJO) throws MailException, MessagingException,
+            NoSuchAlgorithmException {
+        if (signPOJO.isValidTokenVerifyAccount()) {
+            Map<String, String> error = Map.of("err", "Body request wrong!" +
+                    " please try " +
+                    "again!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+
+        return authService.confirmVerification(signPOJO);
     }
 }

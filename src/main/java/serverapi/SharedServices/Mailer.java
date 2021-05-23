@@ -28,11 +28,11 @@ public class Mailer {
 
         mail.setTo(userEmail);
         mail.setFrom(System.getenv("EMAIL_USERNAME"));
-        mail.setSubject("Reset password for MangaCrawlers");
+        mail.setSubject("Reset password");
 
-        String htmlMsg = "<h3>Hello " + userName + ", follow this email to reset your password ^^</h3>"
-                + "<br/> This link will be expired in 10 minutes "
-                + "<a href=" + link + ">Reset password</a>";
+        String htmlMsg = "<h3>Hello " + userName + ", follow this email to change your password ^^</h3>"
+                + "<br/> This link will be expired in 10 minutes  "
+                + "<h3> <a href=" + link + ">Reset password</a> </h3>";
 
         mail.setText(htmlMsg, true);
 
@@ -40,4 +40,25 @@ public class Mailer {
         javaMailSender.send(mimeMessage);
     }
 
+    @Async
+    public void sendMailToVerifyAccount(String userName, String userEmail, String token) throws MailException,
+            MessagingException {
+        String link = System.getenv("CLIENT_POINT_VERIFY_ACCOUNT") + "/" + token;
+
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mail = new MimeMessageHelper(mimeMessage, "utf-8");
+
+        mail.setTo(userEmail);
+        mail.setFrom(System.getenv("EMAIL_USERNAME"));
+        mail.setSubject("Verify your account");
+
+        String htmlMsg = "<h3>Hello " + userName + ", follow this email to verify your account ^^</h3>"
+                + "<br/> Your account will be deprecated after 3 days if you don't confirm this email  "
+                + "<h3> <a href=" + link + ">Verify Account</a> </h3>";
+
+        mail.setText(htmlMsg, true);
+
+
+        javaMailSender.send(mimeMessage);
+    }
 }

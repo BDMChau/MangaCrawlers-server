@@ -20,5 +20,7 @@ public interface AuthRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.token_reset_pass = :token")
     Optional<User> findByTokenResetPass(@Param("token") String token);
 
+    @Query("SELECT u FROM User u WHERE u.token_verify = :token")
+    Optional<User> findByTokenVerify(@Param("token") String token);
 
 }

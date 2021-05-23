@@ -14,6 +14,7 @@ public class SignPOJO {
     String user_email;
     String user_password;
     String user_change_pass_token;
+    String user_verify_token;
     String user_avatar;
 
 
@@ -28,6 +29,14 @@ public class SignPOJO {
 
     public Boolean isNullAvatar() {
         if (user_avatar == null || user_avatar.equals("")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public Boolean isValidTokenVerifyAccount() {
+        if (user_verify_token == null || user_verify_token.equals("")) {
             return true;
         } else {
             return false;

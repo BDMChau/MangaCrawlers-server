@@ -33,9 +33,10 @@ public class AuthService {
     @Autowired
     Mailer mailer;
 
-    public ResponseEntity signUp(SignPOJO signPOJO) throws NoSuchAlgorithmException {
-        Optional<User> isExistEmail = authRepository.findByEmail(signPOJO.getUser_email());
-        if (isExistEmail.isPresent()) {
+
+    public ResponseEntity signUp(SignPOJO signPOJO) throws NoSuchAlgorithmException, MessagingException {
+        Optional<User> userOptional = authRepository.findByEmail(signPOJO.getUser_email());
+        if (userOptional.isPresent()) {
             Map<String, String> error = Map.of("err", "Email is existed!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
         }
@@ -59,23 +60,25 @@ public class AuthService {
             newUser.setUser_avatar(signPOJO.getUser_avatar());
         }
 
+        // send mail to verify account
+        Integer ThreeDays = (1000 * 60 * 60 * 24) * 3; // 3 days in miliseconds
+        String timeExpired = String.valueOf(Calendar.getInstance().getTimeInMillis() + Long.parseLong(String.valueOf(ThreeDays)));
+        String token = new RandomBytes().randomBytes(32);
+        String hashedToken = new HashSHA512().hash(token);
+        newUser.setToken_verify(hashedToken);
+        newUser.setToken_verify_createdAt(timeExpired);
+
+
+        String userName = signPOJO.getUser_name();
+        String userEmail = signPOJO.getUser_email();
+        mailer.sendMailToVerifyAccount(userName, userEmail, hashedToken);
+
+
         authRepository.save(newUser);
-
-        String email = signPOJO.getUser_email();
-        String timeExpired = String.valueOf(Calendar.getInstance().getTimeInMillis() + 600000); // 10 minutes
-
-//        String token = new RandomBytes().randomBytes(32);
-//        String hashedToken = new HashSHA512().hash(token);
-//        user.setToken_reset_pass(hashedToken);
-//        user.setToken_reset_pass_createdAt(timeExpired);
-//
-//        String userEmail = user.getUser_email();
-//        String userName = user.getUser_name();
-//        mailer.sendMailToChangePass(userName, userEmail, hashedToken);
 
         Map<String, String> msg = Map.of(
                 "msg", "Sign up success!",
-                "msg2", "Go to email to verify the account!"
+                "msg2", "Check email to verify the account!"
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
@@ -160,20 +163,22 @@ public class AuthService {
 
 
     public ResponseEntity changePassword(SignPOJO signPOJO) throws NoSuchAlgorithmException {
-        Long currentTime = Calendar.getInstance().getTimeInMillis();
+        Long currentTime = Calendar.getInstance().getTimeInMillis(); // by miliseconds
         String token = signPOJO.getUser_change_pass_token();
 
-        Optional<User> userOptional= authRepository.findByTokenResetPass(token);
-        if(userOptional.isEmpty()){
+        Optional<User> userOptional = authRepository.findByTokenResetPass(token);
+        if (userOptional.isEmpty()) {
             Map<String, String> err = Map.of("err", "Token verification is failed!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
         }
         User user = userOptional.get();
 
         Long tokenExpiredAt = Long.parseLong(user.getToken_reset_pass_createdAt());
-        if(currentTime >= tokenExpiredAt || tokenExpiredAt == null){
+        if (currentTime >= tokenExpiredAt || tokenExpiredAt == null) {
             Map<String, String> err = Map.of("err", "Token has expired!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
         }
 
         String newPasswrod = signPOJO.getUser_password();
@@ -185,6 +190,40 @@ public class AuthService {
         authRepository.save(user);
 
         Map<String, String> msg = Map.of("msg", "Change password successfully");
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
+    public ResponseEntity confirmVerification(SignPOJO signPOJO) {
+        long currentTime = Calendar.getInstance().getTimeInMillis(); // by miliseconds
+        String token = signPOJO.getUser_verify_token();
+
+        Optional<User> userOptional = authRepository.findByTokenVerify(token);
+        if (userOptional.isEmpty()) {
+            Map<String, String> err = Map.of("err", "Token verification is failed!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get();
+
+
+        Long tokenExpiredAt = Long.parseLong(user.getToken_verify_createdAt());
+        if (currentTime >= tokenExpiredAt || tokenExpiredAt == null) {
+            Map<String, String> err = Map.of(
+                    "err", "Token has expired!",
+                    "err2", "Contact the admin for more information!"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+
+        user.setUser_isVerified(true);
+        user.setToken_verify(null);
+        user.setToken_verify_createdAt(null);
+        authRepository.save(user);
+
+        Map<String, String> msg = Map.of("msg", "Verify account successfully!");
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 }
