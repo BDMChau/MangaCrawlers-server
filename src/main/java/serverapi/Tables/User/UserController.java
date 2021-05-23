@@ -83,4 +83,11 @@ public class UserController {
         return userService.addFollowManga(mangaId, userId);
     }
 
+    @DeleteMapping("/deleteuser")
+    public ResponseEntity deleteUserById(ServletRequest request){
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+        return userService.DeleteUserById(userId);
+    }
 }

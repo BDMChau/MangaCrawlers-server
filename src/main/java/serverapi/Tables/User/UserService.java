@@ -134,7 +134,7 @@ public class UserService {
                 followingRepos.save(followingManga);
 
                 Map<String, Object> msg = Map.of(
-                        "msg", "add Follow successfully!"
+                        "msg", "add follow successfully!"
                 );
                 return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
@@ -216,6 +216,28 @@ public class UserService {
 
         Map<String, Object> msg = Map.of(
                 "msg", "Add reading history successfully!"
+
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
+    public ResponseEntity DeleteUserById(Long userId){
+        Optional<User> userOptional = userRepos.findById (userId);
+
+        if(userOptional.isEmpty ()){
+
+            Map<String, Object> msg = Map.of(
+                    "msg", "user not found!"
+
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get ();
+        userRepos.delete (user);
+
+        Map<String, Object> msg = Map.of(
+                "msg", "delete user successfully!"
 
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
