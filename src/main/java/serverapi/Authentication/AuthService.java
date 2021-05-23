@@ -61,7 +61,22 @@ public class AuthService {
 
         authRepository.save(newUser);
 
-        Map<String, String> msg = Map.of("msg", "Sign up success!");
+        String email = signPOJO.getUser_email();
+        String timeExpired = String.valueOf(Calendar.getInstance().getTimeInMillis() + 600000); // 10 minutes
+
+//        String token = new RandomBytes().randomBytes(32);
+//        String hashedToken = new HashSHA512().hash(token);
+//        user.setToken_reset_pass(hashedToken);
+//        user.setToken_reset_pass_createdAt(timeExpired);
+//
+//        String userEmail = user.getUser_email();
+//        String userName = user.getUser_name();
+//        mailer.sendMailToChangePass(userName, userEmail, hashedToken);
+
+        Map<String, String> msg = Map.of(
+                "msg", "Sign up success!",
+                "msg2", "Go to email to verify the account!"
+        );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
