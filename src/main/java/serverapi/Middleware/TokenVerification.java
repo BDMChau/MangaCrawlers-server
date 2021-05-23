@@ -6,7 +6,9 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import serverapi.Api.Response;
+import serverapi.Security.AccountVerification;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -14,9 +16,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 
-
+@Component
 public class TokenVerification implements Filter {
 
     private Gson gson = new Gson();
@@ -25,8 +28,7 @@ public class TokenVerification implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
-        System.out.println("reqascdfnfnfngfnmffnfnmfgnfgnfm");
-        System.out.println(req.getHeader("Authorization"));
+
         try {
             if (req.getHeader("Authorization") == null || req.getHeader("Authorization").equals("")) {
                 res.setStatus(403);
@@ -38,19 +40,20 @@ public class TokenVerification implements Filter {
                         HttpStatus.FORBIDDEN, error);
                 return;
             }
-            String   token = req.getHeader("Authorization");
 
+            String token = req.getHeader("Authorization");
             Jws<Claims> tokenParsed = Jwts.parser()
                     .setSigningKey(System.getenv("JWT_KEY").getBytes(StandardCharsets.UTF_8))
                     .parseClaimsJws(token);
-
             Claims tokenBody = tokenParsed.getBody();
-            Object tokenPayload = tokenBody.get("payload");
+            Map<String, Object> tokenPayload = (HashMap<String, Object>) tokenBody.get("payload");
 
-//            Map<String, String> tokenDetails = new HashMap<>();
-//            tokenDetails.put("username", (String)tokenBody.get("user_name"));
-//            tokenDetails.put("email", (String)tokenBody.get("user_email"));
-//            tokenDetails.put("user_id", tokenBody.get("user_id").toString());
+
+            // Account verification checking
+            Boolean accountStatus = (Boolean) tokenPayload.get("user_isVerified");
+            Boolean isVerified = new AccountVerification(accountStatus).cheking();
+            System.out.println(isVerified);
+
 
 
             req.setAttribute("user", tokenPayload);
