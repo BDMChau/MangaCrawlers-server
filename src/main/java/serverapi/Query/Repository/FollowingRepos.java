@@ -1,11 +1,17 @@
 package serverapi.Query.Repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import serverapi.Query.DTO.FollowingDTO;
 import serverapi.Tables.FollowingManga.FollowingManga;
+import serverapi.Tables.User.User;
+
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -15,7 +21,12 @@ public interface FollowingRepos extends JpaRepository<FollowingManga, Long> {
            "m.manga_id, m.manga_name, m.status, m.description, m.stars, m.views, m.thumbnail, m.date_publications, m.createdAt) FROM " +
            "FollowingManga f JOIN f.user u ON u.user_id = f.user JOIN f.manga m ON f.manga = m.manga_id "+
            "WHERE u.user_id =?1")
-   List<FollowingDTO> FindByUserId(Long UserId);
+   List<FollowingDTO> FindByUserId(Long userId);
+
+  @Transactional
+  @Modifying
+   @Query("DELETE FROM FollowingManga f WHERE f.user =:user")
+   void deleteAllFollowByUserId(@Param("user") User user);
 
 
 //   "SELECT new serverapi.Query.DTO.MangaChapterGenreDTO(c.chapter_id, c.chapter_name, c.createdAt, m" +
