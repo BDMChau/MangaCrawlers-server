@@ -74,7 +74,7 @@ public class UserController {
         return userService.deleteFollowManga(mangaId, userId);
     }
 
-    @PostMapping("/addfollowingmangas")
+    @PostMapping("/addfollowingmanga")
     public ResponseEntity addFollowingMangas(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);

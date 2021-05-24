@@ -99,13 +99,18 @@ public class AuthService {
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
         }
 
+        Boolean isVerified = user.getUser_isVerified();
+        if(Boolean.FALSE.equals(isVerified)){
+            Map<String, String> error = Map.of("err", "Check email to verify the account!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
+        }
+
 
         Long id = user.getUser_id();
         String name = user.getUser_name();
         String email = user.getUser_email();
         String avatar = user.getUser_avatar();
         Boolean isAdmin = user.getUser_isAdmin();
-        Boolean isVerified = user.getUser_isVerified();
         Map<String, Serializable> userData = Map.of(
                 "user_id", id,
                 "user_name", name,

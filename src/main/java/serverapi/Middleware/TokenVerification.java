@@ -28,7 +28,7 @@ public class TokenVerification implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
-
+        System.out.println(req.getHeader("Authorization"));
         try {
             if (req.getHeader("Authorization") == null || req.getHeader("Authorization").equals("")) {
                 res.setStatus(401);
