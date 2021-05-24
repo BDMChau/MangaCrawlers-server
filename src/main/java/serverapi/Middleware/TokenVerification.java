@@ -31,13 +31,13 @@ public class TokenVerification implements Filter {
 
         try {
             if (req.getHeader("Authorization") == null || req.getHeader("Authorization").equals("")) {
-                res.setStatus(403);
+                res.setStatus(401);
                 res.setContentType("application/json");
                 res.setCharacterEncoding("UTF-8");
 
                 Map<String, String> error = Map.of("err", "Missing Token!");
                 ResJsonMiddleware(res, res.getContentType(), res.getCharacterEncoding(), res.getStatus(),
-                        HttpStatus.FORBIDDEN, error);
+                        HttpStatus.UNAUTHORIZED, error);
                 return;
             }
 

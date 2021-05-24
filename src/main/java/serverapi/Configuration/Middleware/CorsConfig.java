@@ -9,12 +9,12 @@ public class CorsConfig {
 
 
     @Bean
-    public FilterRegistrationBean<serverapi.Middleware.Cors> verifyToken(){
+    public FilterRegistrationBean<serverapi.Middleware.Cors> corsFilterRegistrationBean(){
         FilterRegistrationBean<serverapi.Middleware.Cors> registrationBean
                 = new FilterRegistrationBean<>();
 
         registrationBean.setFilter(new serverapi.Middleware.Cors());
-        registrationBean.addUrlPatterns("/api/*");
+        registrationBean.addUrlPatterns("/api/user/*");
 
         return registrationBean;
     }
