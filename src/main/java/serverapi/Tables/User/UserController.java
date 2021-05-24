@@ -65,6 +65,7 @@ public class UserController {
         return userService.getFollowManga(userId);
     }
 
+
     @DeleteMapping("/deletefollowingmangas")
     public ResponseEntity deleteFollowingMangas(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -74,7 +75,8 @@ public class UserController {
         return userService.deleteFollowManga(mangaId, userId);
     }
 
-    @PostMapping("/addfollowingmanga")
+
+    @PostMapping("/addfollowingmangas")
     public ResponseEntity addFollowingMangas(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
@@ -83,4 +85,24 @@ public class UserController {
         return userService.addFollowManga(mangaId, userId);
     }
 
+    @GetMapping("/getchaptercomment")
+    public ResponseEntity getChapterComments(ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long user_id = Long.parseLong(StrUserId);
+
+        return userService.getChapterComments(user_id);
+    }
+
+    // Delete User by userId
+    @DeleteMapping("/deleteallbyuserid")
+    public ResponseEntity deleteUserById(@RequestBody UserPOJO userPOJO){
+        Long userId = Long.parseLong(userPOJO.getUser_id ());
+        return userService.DeleteUserById (userId);
+    }
+
+    @PutMapping("/deprecateuserbyuserid")
+    public ResponseEntity deprecateUserByUserId(@RequestBody UserPOJO userPOJO){
+        Long userId = Long.parseLong(userPOJO.getUser_id ());
+        return userService.DeprecateUserById (userId);
+    }
 }
