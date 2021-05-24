@@ -145,7 +145,7 @@ public class UserService {
 
 
     public ResponseEntity GetReadingHistory(Long userId) {
-        List<UserReadingHistoryDTO> readingHistoryDTO = readingHistoryRepos.GetUserByReadingHistor(userId);
+        List<UserReadingHistoryDTO> readingHistoryDTO = readingHistoryRepos.GetUserByReadingHistory(userId);
         readingHistoryDTO.sort(Comparator.comparing(UserReadingHistoryDTO::getReading_History_time).reversed());
 
 
@@ -158,7 +158,7 @@ public class UserService {
 
     public ResponseEntity updateReadingHistory(Long userId, Long mangaId, Long chapterId) {
 
-        List<UserReadingHistoryDTO> readingHistoryDTO = readingHistoryRepos.GetUserByReadingHistor(userId);
+        List<UserReadingHistoryDTO> readingHistoryDTO = readingHistoryRepos.GetUserByReadingHistory(userId);
         Calendar updatetime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
 

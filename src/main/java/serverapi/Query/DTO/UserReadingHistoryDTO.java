@@ -23,13 +23,14 @@ public class UserReadingHistoryDTO {
     private float stars;
     private Long views;
     private int date_publications;
+    private String status;
 
 
     private Long chapter_id;
     private String chapter_name;
     private Calendar createdAt;
 
-    public UserReadingHistoryDTO(Long readingHistory_id, Calendar reading_History_time, Long user_id, Long manga_id, String manga_name, String thumbnail, float stars, Long views, int date_publications, Long chapter_id, String chapter_name, Calendar createdAt) {
+    public UserReadingHistoryDTO(Long readingHistory_id, Calendar reading_History_time, Long user_id, Long manga_id, String manga_name, String thumbnail, float stars, Long views, int date_publications, String status, Long chapter_id, String chapter_name, Calendar createdAt) {
         this.readingHistory_id = readingHistory_id;
         this.reading_History_time = reading_History_time;
         this.user_id = user_id;
@@ -39,6 +40,7 @@ public class UserReadingHistoryDTO {
         this.stars = stars;
         this.views = views;
         this.date_publications = date_publications;
+        this.status = status;
         this.chapter_id = chapter_id;
         this.chapter_name = chapter_name;
         this.createdAt = createdAt;
