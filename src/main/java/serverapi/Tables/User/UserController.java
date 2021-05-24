@@ -81,6 +81,8 @@ public class UserController {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
         Long mangaId = Long.parseLong(mangaPOJO.getManga_id());
+        System.out.println("dfbdcb xcvnfgnmvgjgnbnf");
+        System.out.println(mangaId);
 
         return userService.addFollowManga(mangaId, userId);
     }

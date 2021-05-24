@@ -49,7 +49,7 @@ public class UserService {
         }
         Map<String, Object> msg = Map.of(
                 "msg", "Get following mangas successfully!",
-                "Info", followingDTOList,
+                "mangas", followingDTOList,
                 "user_id", UserId
 
         );
@@ -162,7 +162,7 @@ public class UserService {
                 Map<String, Object> msg = Map.of(
                         "msg", "add follow successfully!"
                 );
-                return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+                return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
 
             }
 
