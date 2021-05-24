@@ -3,6 +3,7 @@ package serverapi.Tables.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import serverapi.Tables.Manga.MangaService;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.User.POJO.UserPOJO;
 
@@ -18,11 +19,11 @@ public class UserController {
 
     private final UserService userService;
 
+
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
 
     public Map getUserAttribute(ServletRequest request) {
         HttpServletRequest req = (HttpServletRequest) request;
@@ -32,55 +33,67 @@ public class UserController {
 
     @GetMapping("/test")
     public String getUser(ServletRequest request) {
-        System.out.println("dasdasdasd" + getUserAttribute(request).get("user_id"));
+        System.out.println("dasdasdasd"+getUserAttribute(request).get ("user_id"));
+
+
 
         return "Get user route";
     }
 
     @GetMapping("/gethistorymanga")
-    public ResponseEntity GetReadingHistory(ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long user_id = Long.parseLong(StrUserId);
+    public ResponseEntity findUserByReadingHistory(ServletRequest request){
+        String text = getUserAttribute(request).get("user_id").toString();
 
-        return userService.GetReadingHistory(user_id);
+        Long user_id = Long.parseLong(text);
+
+
+        return userService.GetUserByReadingHistory(user_id);
+
     }
 
-    // update reading history of user by chapters in a manga
-    @PutMapping("/updatereadinghistory")
-    public ResponseEntity updateReadingHistory(@RequestBody UserPOJO userPOJO, ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
+    @PutMapping("/updatetimehistory")
+    public ResponseEntity updatetime(@RequestBody UserPOJO userPOJO,ServletRequest request){
+        String text = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(text);
         Long mangaId = Long.parseLong(userPOJO.getManga_id());
         Long chapterId = Long.parseLong(userPOJO.getChapter_id());
 
-        return userService.updateReadingHistory(userId, mangaId, chapterId);
+        return userService.updatetime(userId,mangaId,userPOJO,chapterId);
+
+
     }
+
+
+
 
 
     @GetMapping("/getfollowingmangas")
     public ResponseEntity getFollowingMangas(ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
 
-        return userService.getFollowManga(userId);
+       String text= getUserAttribute(request).get ("user_id").toString ();
+       Long userId = Long.parseLong (text);
+
+        return userService.getFollowManga (userId);
     }
 
     @DeleteMapping("/deletefollowingmangas")
     public ResponseEntity deleteFollowingMangas(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
+
+        String text= getUserAttribute(request).get ("user_id").toString ();
+        Long userId = Long.parseLong (text);
         Long mangaId = Long.parseLong(mangaPOJO.getManga_id());
 
-        return userService.deleteFollowManga(mangaId, userId);
+        return userService.deleteFollowManga (mangaId,userId);
     }
 
     @PostMapping("/addfollowingmangas")
     public ResponseEntity addFollowingMangas(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
+
+        String text= getUserAttribute(request).get ("user_id").toString ();
+        Long userId = Long.parseLong (text);
         Long mangaId = Long.parseLong(mangaPOJO.getManga_id());
 
-        return userService.addFollowManga(mangaId, userId);
+        return userService.addFollowManga (mangaId,userId);
     }
 
 }

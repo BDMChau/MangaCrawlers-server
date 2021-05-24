@@ -13,21 +13,22 @@ import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.FollowingManga.FollowingManga;
 import serverapi.Tables.Manga.Manga;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
+import serverapi.Tables.User.POJO.UserPOJO;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     private final MangaRepos mangaRepository;
     private final FollowingRepos followingRepos;
     private final UserRepos userRepos;
-    private final ReadingHistoryRepos readingHistoryRepos;
-    private final ChapterRepos chapterRepos;
+    private  final ReadingHistoryRepos readingHistoryRepos;
+    private final  ChapterRepos chapterRepos;
 
     @Autowired
-    public UserService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos,
-                       ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos) {
+    public UserService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos, ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos) {
         this.mangaRepository = mangaRepository;
         this.followingRepos = followingRepos;
         this.userRepos = userRepos;
@@ -37,106 +38,112 @@ public class UserService {
 
     public ResponseEntity getFollowManga(Long UserId) {
 
-        List<FollowingDTO> Follow = followingRepos.FindByUserId(UserId);
+        List<FollowingDTO> Follow = followingRepos.FindByUserId (UserId);
 
-        Map<String, Object> msg = Map.of(
-                "msg", "Get following mangas successfully!",
-                "mangas", Follow,
-                "user_id", UserId
+        if (Follow.isEmpty ()) {
+            Map<String, Object> msg = Map.of ("msg", "No mangas!");
+            return new ResponseEntity<> (new Response (204, HttpStatus.NO_CONTENT, msg).toJSON (), HttpStatus.NO_CONTENT);
+        }
+
+        Map<String, Object> msg = Map.of (
+                "msg", "Get all mangas successfully!",
+                "Following Info", Follow,
+                "UserID", UserId
 
         );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        return new ResponseEntity<> (new Response (200, HttpStatus.OK, msg).toJSON (), HttpStatus.OK);
     }
 
 
     public ResponseEntity deleteFollowManga(Long mangaId, Long userId) {
-        List<FollowingDTO> Follow = followingRepos.FindByUserId(userId);
-        System.out.println("mangaID" + mangaId);
-        System.out.println("userID" + userId);
+        List<FollowingDTO> Follow = followingRepos.FindByUserId (userId);
+        System.out.println ("mangaID" + mangaId);
+        System.out.println ("userID" + userId);
 
-        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-        if (Follow.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "No mangas!");
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
+        AtomicBoolean atomicBoolean = new AtomicBoolean (false);
+        if (Follow.isEmpty ()) {
+            Map<String, Object> msg = Map.of ("msg", "No mangas!");
+            return new ResponseEntity<> (new Response (204, HttpStatus.NO_CONTENT, msg).toJSON (), HttpStatus.NO_CONTENT);
 
         } else {
 
-            Follow.forEach(item -> {
-                System.out.println(item.getManga_id());
-                System.out.println(item.getManga_id().equals(mangaId));
-                if (item.getManga_id().equals(mangaId)) {
-                    Long FollowId = item.getFollowId();
+            Follow.forEach (item -> {
+                System.out.println (item.getManga_id ());
+                System.out.println (item.getManga_id ().equals (mangaId));
+                if (item.getManga_id ().equals (mangaId)) {
+                    Long FollowId = item.getFollowId ();
 
-                    System.out.println("follow id: " + FollowId);
-                    followingRepos.deleteById(FollowId);
-                    atomicBoolean.set(true);
+                    System.out.println ("follow id: " + FollowId);
+                    followingRepos.deleteById (FollowId);
+                    atomicBoolean.set (true);
                 }
             });
-            if (atomicBoolean.get() == true) {
-                Map<String, Object> msg = Map.of(
+            if (atomicBoolean.get () == true) {
+                Map<String, Object> msg = Map.of (
                         "msg", "delete follow successfully!"
                 );
-                return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+                return new ResponseEntity<> (new Response (200, HttpStatus.OK, msg).toJSON (), HttpStatus.OK);
             }
 
-            Map<String, Object> msg = Map.of("msg", "Cannot delete");
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
+            Map<String, Object> msg = Map.of ("msg", "Cannot delete");
+            return new ResponseEntity<> (new Response (204, HttpStatus.NO_CONTENT, msg).toJSON (), HttpStatus.NO_CONTENT);
         }
     }
+
 
 
     public ResponseEntity addFollowManga(Long mangaId, Long userId) {
-        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-        List<FollowingDTO> follows = followingRepos.FindByUserId(userId);
+        AtomicBoolean atomicBoolean = new AtomicBoolean (false);
+        List<FollowingDTO> follows = followingRepos.FindByUserId (userId);
 
-        if (follows.isEmpty()) {
-            Optional<User> userOptional = userRepos.findById(userId);
-            User user = userOptional.get();
+        if (follows.isEmpty ()) {
 
-            Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
-            Manga manga = mangaOptional.get();
+            Optional<User> user = userRepos.findById (userId);
+            User user1 = user.get ();
 
-            FollowingManga followingManga = new FollowingManga();
-            followingManga.setUser(user);
-            followingManga.setManga(manga);
+            Optional<Manga> manga = mangaRepository.findById (mangaId);
+            Manga manga1 = manga.get ();
 
-            followingRepos.save(followingManga);
+            FollowingManga followingManga = new FollowingManga ();
+            followingManga.setUser (user1);
+            followingManga.setManga (manga1);
 
-            Map<String, Object> msg = Map.of(
+            followingRepos.save (followingManga);
+
+            Map<String, Object> msg = Map.of (
                     "msg", "add Follow successfully!"
 
             );
-            return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
+            return new ResponseEntity<> (new Response (200, HttpStatus.OK, msg).toJSON (), HttpStatus.OK);
 
         } else {
-            follows.forEach(item -> {
-                if (item.getManga_id().equals(mangaId)) {
+            follows.forEach (item -> {
+                if (item.getManga_id ().equals (mangaId)) {
 
-                    atomicBoolean.set(true);
+                    atomicBoolean.set (true);
                 }
             });
-            if (atomicBoolean.get() == true) {
-                Map<String, Object> err = Map.of("err", "Cannot ADD to database!");
-                return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-                        HttpStatus.BAD_REQUEST);
+            if (atomicBoolean.get () == true) {
+                Map<String, Object> msg = Map.of ("msg", "Cannot ADD to database!");
+                return new ResponseEntity<> (new Response (204, HttpStatus.NO_CONTENT, msg).toJSON (), HttpStatus.NO_CONTENT);
 
             } else {
-                Optional<User> userOptional = userRepos.findById(userId);
-                User user = userOptional.get();
+                Optional<User> user = userRepos.findById (userId);
+                User user1 = user.get ();
 
-                Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
-                Manga manga = mangaOptional.get();
+                Optional<Manga> manga = mangaRepository.findById (mangaId);
+                Manga manga1 = manga.get ();
 
-                FollowingManga followingManga = new FollowingManga();
-                followingManga.setUser(user);
-                followingManga.setManga(manga);
+                FollowingManga followingManga = new FollowingManga ();
+                followingManga.setUser (user1);
+                followingManga.setManga (manga1);
 
-                followingRepos.save(followingManga);
+                followingRepos.save (followingManga);
 
-                Map<String, Object> msg = Map.of(
+                Map<String, Object> msg = Map.of (
                         "msg", "add Follow successfully!"
                 );
-                return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+                return new ResponseEntity<> (new Response (200, HttpStatus.OK, msg).toJSON (), HttpStatus.OK);
 
             }
 
@@ -144,19 +151,25 @@ public class UserService {
     }
 
 
-    public ResponseEntity GetReadingHistory(Long userId) {
-        List<UserReadingHistoryDTO> readingHistoryDTO = readingHistoryRepos.GetUserByReadingHistor(userId);
-        readingHistoryDTO.sort(Comparator.comparing(UserReadingHistoryDTO::getReading_History_time).reversed());
 
+    public ResponseEntity GetUserByReadingHistory(Long userId) {
+
+
+        List<UserReadingHistoryDTO> readingHistoryDTOS = readingHistoryRepos.GetUserByReadingHistor(userId);
+        readingHistoryDTOS.sort(Comparator.comparing(UserReadingHistoryDTO::getReading_History_time).reversed());
+//
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get reading history mangas successfully!",
-                "mangas", readingHistoryDTO
+
+                "chapterInfo", readingHistoryDTOS
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+
+
     }
 
-    public ResponseEntity updateReadingHistory(Long userId, Long mangaId, Long chapterId) {
+    public ResponseEntity updatetime(Long userId, Long mangaId, UserPOJO userPOJO, Long chapterId) {
 
         List<UserReadingHistoryDTO> readingHistoryDTO = readingHistoryRepos.GetUserByReadingHistor(userId);
         Calendar updatetime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -186,8 +199,7 @@ public class UserService {
 
             }
         });
-
-        if (atomicBoolean.get() == true) {
+        if(atomicBoolean.get() == true){
             Map<String, Object> msg = Map.of(
                     "msg", "Update readinghistory successfully!"
 
@@ -215,7 +227,7 @@ public class UserService {
         readingHistoryRepos.save(readingHistory);
 
         Map<String, Object> msg = Map.of(
-                "msg", "Add reading history successfully!"
+                "msg", "Add readinghistory successfully!"
 
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
