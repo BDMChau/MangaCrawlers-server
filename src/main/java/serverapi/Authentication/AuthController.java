@@ -1,5 +1,6 @@
 package serverapi.Authentication;
 
+import org.springframework.cache.annotation.CacheEvict;
 import serverapi.Api.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ public class AuthController {
         this.authService = authService;
     }
 
-
+    @CacheEvict(allEntries = true, value = {"allusers"})
     @PostMapping("/signup")
     @ResponseBody
     public ResponseEntity signUp(@RequestBody SignPOJO signPOJO) throws NoSuchAlgorithmException, MessagingException {

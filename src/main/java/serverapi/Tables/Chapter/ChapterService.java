@@ -20,7 +20,7 @@ public class ChapterService {
 
     private final ChapterRepos chapterRepos;
     private final ImgChapterRepos imgChapterRepos;
-    private  final MangaRepos mangaRepos;
+    private final MangaRepos mangaRepos;
 
     @Autowired
     public ChapterService(ChapterRepos chapterRepos, ImgChapterRepos imgChapterRepos, MangaRepos mangaRepos) {
@@ -30,8 +30,7 @@ public class ChapterService {
     }
 
 
-
-    public ResponseEntity getAllChapter(){
+    public ResponseEntity getAllChapter() {
         List<Chapter> chapters = chapterRepos.findAllChapter();
 
         Map<String, Object> msg = Map.of(
@@ -68,7 +67,7 @@ public class ChapterService {
 //    }
 
 
-//    public ResponseEntity getTotalView(){
+    //    public ResponseEntity getTotalView(){
 //
 //        List<Chapter> chapters = chapterRepos.getTotalView();
 //
@@ -78,24 +77,39 @@ public class ChapterService {
 //        );
 //        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 //    }
-    public ResponseEntity findImgByChapter(Long chapterId, Long mangaId){
-        Optional<Chapter> chapter = chapterRepos.findById(chapterId);
-        chapter.get().getManga().getManga_id();
-        chapter.get().getManga().getManga_name();
-
-        List<ChapterDTO> chapterDTOS = chapterRepos.findChaptersbyMangaId(mangaId);
-
-        List<ChapterImgDTO> chapterImgDTOS = imgChapterRepos.findImgsByChapterId(chapterId);
-
-        Map<String, Object> msg = Map.of(
-                "msg", "Get all chapters successfully!",
-                "chapterInfo",chapter,
-                "listChapter", chapterDTOS,
-                "listImg", chapterImgDTOS
+    public ResponseEntity findImgByChapter(Long chapterId, Long mangaId) {
+        Optional<Chapter> chapterInfo = chapterRepos.findById(chapterId);
+        if (chapterInfo.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "err", "No chapter to present!"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        Long mangaIdOfChapter = chapterInfo.get().getManga().getManga_id();
+        chapterInfo.get().getManga().getManga_name();
 
 
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        if (mangaIdOfChapter.equals(mangaId)) {
+            List<ChapterDTO> listChapter = chapterRepos.findChaptersbyMangaId(mangaId);
 
+            List<ChapterImgDTO> listImgs = imgChapterRepos.findImgsByChapterId(chapterId);
+            Map<String, Object> msg = Map.of(
+                    "msg", "Get all chapters successfully!",
+                    "chapterInfo", chapterInfo,
+                    "listChapter", listChapter,
+                    "listImg", listImgs
+
+
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+
+        } else {
+            Map<String, Object> err = Map.of(
+                    "err", "No chapter to present!"
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(),
+                    HttpStatus.ACCEPTED);
+        }
     }
 }

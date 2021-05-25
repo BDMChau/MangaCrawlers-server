@@ -44,9 +44,11 @@ public class UserService {
         this.chapterCommentsRepos = chapterCommentsRepos;
     }
 
-    public ResponseEntity getFollowManga(Long UserId) {
 
-        List<FollowingDTO> followingDTOList = followingRepos.FindByUserId(UserId);
+
+    public ResponseEntity getFollowingMangas(Long UserId) {
+
+        List<FollowingDTO> followingDTOList = followingRepos.findByUserId(UserId);
 
         if (followingDTOList.isEmpty()) {
 
@@ -61,6 +63,7 @@ public class UserService {
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
+
 
     public ResponseEntity getChapterComments(Long userId) {
 
@@ -82,7 +85,7 @@ public class UserService {
 
 
     public ResponseEntity deleteFollowManga(Long mangaId, Long userId) {
-        List<FollowingDTO> Follow = followingRepos.FindByUserId(userId);
+        List<FollowingDTO> Follow = followingRepos.findByUserId(userId);
         System.out.println("mangaID" + mangaId);
         System.out.println("userID" + userId);
 
@@ -97,10 +100,10 @@ public class UserService {
                 System.out.println(item.getManga_id());
                 System.out.println(item.getManga_id().equals(mangaId));
                 if (item.getManga_id().equals(mangaId)) {
-                    Long FollowId = item.getFollowId();
+                    Long followId = item.getFollowId();
 
-                    System.out.println("follow id: " + FollowId);
-                    followingRepos.deleteById(FollowId);
+                    System.out.println("follow id: " + followId);
+                    followingRepos.deleteById(followId);
                     atomicBoolean.set(true);
                 }
             });
@@ -119,7 +122,7 @@ public class UserService {
 
     public ResponseEntity addFollowManga(Long mangaId, Long userId) {
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-        List<FollowingDTO> follows = followingRepos.FindByUserId(userId);
+        List<FollowingDTO> follows = followingRepos.findByUserId(userId);
 
         if (follows.isEmpty()) {
             Optional<User> userOptional = userRepos.findById(userId);
@@ -317,7 +320,7 @@ public class UserService {
 
 
     public ResponseEntity DeleteFollowsUsersByUserId(Long userId) {
-        List<FollowingDTO> followingDTOList = followingRepos.FindByUserId(userId);
+        List<FollowingDTO> followingDTOList = followingRepos.findByUserId(userId);
         Optional<User> userOptional = userRepos.findById(userId);
 
         if (userOptional.isEmpty()) {

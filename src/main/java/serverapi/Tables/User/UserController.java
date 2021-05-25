@@ -2,6 +2,8 @@ package serverapi.Tables.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,14 +38,9 @@ public class UserController {
         return user;
     }
 
-    @GetMapping("/test")
-    public String getUser(ServletRequest request) {
-        System.out.println("dasdasdasd" + getUserAttribute(request).get("user_id"));
-
-        return "Get user route";
-    }
 
 
+    @Cacheable(value = "historymangas", key = "#root.method")
     @GetMapping("/gethistorymanga")
     public ResponseEntity GetReadingHistory(ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -52,7 +49,9 @@ public class UserController {
         return userService.GetReadingHistory(user_id);
     }
 
+
     // update reading history of user by chapters in a manga
+    @CacheEvict(allEntries = true, value = {"historymangas"})
     @PutMapping("/updatereadinghistory")
     public ResponseEntity updateReadingHistory(@RequestBody UserPOJO userPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -64,15 +63,17 @@ public class UserController {
     }
 
 
+    @Cacheable(value = "followingmangas", key = "#root.method")
     @GetMapping("/getfollowingmangas")
     public ResponseEntity getFollowingMangas(ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
-        return userService.getFollowManga(userId);
+        return userService.getFollowingMangas(userId);
     }
 
 
+    @CacheEvict(allEntries = true, value = {"followingmangas"})
     @DeleteMapping("/deletefollowingmanga")
     public ResponseEntity deleteFollowingMangas(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -83,6 +84,8 @@ public class UserController {
     }
 
 
+
+    @CacheEvict(allEntries = true, value = {"followingmangas"})
     @PostMapping("/addfollowingmanga")
     public ResponseEntity addFollowingMangas(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -92,6 +95,8 @@ public class UserController {
         return userService.addFollowManga(mangaId, userId);
     }
 
+
+
     @GetMapping("/getchaptercomment")
     public ResponseEntity getChapterComments(ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -99,6 +104,8 @@ public class UserController {
 
         return userService.getChapterComments(user_id);
     }
+
+
 
     // Delete User by userId
     @DeleteMapping("/deleteuser")
@@ -113,7 +120,7 @@ public class UserController {
         return userService.deprecateUser(userId);
     }
 
-
+    @Cacheable(value = "allusers", key = "#root.method")
     @GetMapping("/getallusers")
     public ResponseEntity getAllUsers(ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -121,6 +128,7 @@ public class UserController {
 
         return userService.getAllUsers(user_id);
     }
+
 
     @PutMapping("/updateavatar")
     public ResponseEntity updateAvatar(

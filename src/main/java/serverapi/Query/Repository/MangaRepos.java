@@ -82,4 +82,5 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
     List<ChapterDTO> findChaptersbyMangaId(Long manga_id);
 
 
+
 }

@@ -52,7 +52,6 @@ public class TokenVerification implements Filter {
             // Account verification checking
             Boolean accountStatus = (Boolean) tokenPayload.get("user_isVerified");
             Boolean isVerified = new AccountVerification(accountStatus).cheking();
-            System.out.println(isVerified);
 
 
 

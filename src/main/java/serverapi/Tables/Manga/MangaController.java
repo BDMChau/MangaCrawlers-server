@@ -29,20 +29,21 @@ public class MangaController {
     }
 
 
-    @Cacheable("latestMangas")
+    @Cacheable(value = "latestMangas", key = "#root.method")
     @GetMapping("/getlastest")
     public ResponseEntity getLatest() {
         return mangaService.getLatest();
     }
 
 
-    @Cacheable("topMangas")
+    @Cacheable(value = "topMangas", key = "#root.method")
     @GetMapping("/gettop")
     public ResponseEntity getTop() {
         return mangaService.getTop();
     }
 
 
+    @Cacheable(value = "findmangafromgenre", key = "#mangaPOJO.getGenre_id()")
     @PostMapping("/findmangafromgenre")
     public ResponseEntity findMangaFromGenre(@RequestBody MangaPOJO mangaPOJO) {
         Long genreId = Long.parseLong(mangaPOJO.getGenre_id());
@@ -50,7 +51,8 @@ public class MangaController {
         return mangaService.findMangaFromGenre(genreId);
     }
 
-    @Cacheable("mangaPage")
+
+    @Cacheable(value = "mangaPage", key = "#manga_id")
     @GetMapping("/getmangapage")
     public ResponseEntity getMangaPage(@RequestParam(required = false) String manga_id) {
 
