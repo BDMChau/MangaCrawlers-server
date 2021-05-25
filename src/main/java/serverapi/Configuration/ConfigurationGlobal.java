@@ -3,11 +3,10 @@ package serverapi.Configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
-@Configuration
-public class Welcome {
+@org.springframework.context.annotation.Configuration
+public class ConfigurationGlobal {
 
     @Bean
     public void greeting(){
@@ -24,5 +23,6 @@ public class Welcome {
 
         return jsonConverter;
     }
+
 
 }

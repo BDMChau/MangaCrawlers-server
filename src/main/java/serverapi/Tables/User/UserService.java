@@ -10,11 +10,16 @@ import serverapi.Query.DTO.ChapterCommentsDTO;
 import serverapi.Query.DTO.FollowingDTO;
 import serverapi.Query.DTO.UserReadingHistoryDTO;
 import serverapi.Query.Repository.*;
+import serverapi.SharedServices.CloudinaryUploader;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.FollowingManga.FollowingManga;
 import serverapi.Tables.Manga.Manga;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
 
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -430,6 +435,28 @@ public class UserService {
         Map<String, Object> msg = Map.of(
                 "msg", "Get all users successfully!",
                 "users", users
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
+
+    public ResponseEntity updateAvatar(String fileName, byte[] fileBytes, Long userId) throws IOException, ParseException {
+
+
+        CloudinaryUploader cloudinaryUploader = new CloudinaryUploader();
+        Map uploadRes = cloudinaryUploader.uploadImg(fileBytes, fileName);
+
+        String createdAt = (String) uploadRes.get("created_at");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+        Date date = dateFormat.parse(createdAt);
+        System.out.println(date.getTime());
+
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Update avatar successfully!",
+                "user_avatar", uploadRes
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }

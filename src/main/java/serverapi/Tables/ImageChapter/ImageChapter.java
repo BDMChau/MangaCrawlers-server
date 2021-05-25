@@ -32,6 +32,9 @@ public class ImageChapter {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String imgchapter_url;
 
+    @Column(columnDefinition = "TEXT", nullable = true)
+    private String imgchapter_public_id_cloudinary;
+
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chapter_id")

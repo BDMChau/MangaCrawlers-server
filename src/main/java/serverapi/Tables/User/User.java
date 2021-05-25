@@ -63,6 +63,9 @@ public class User {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String user_avatar;
 
+    @Column(columnDefinition = "TEXT", nullable = true)
+    private String avatar_public_id_cloudinary;
+
     @Column(nullable = false)
     private Boolean user_isAdmin;
 

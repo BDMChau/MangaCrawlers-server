@@ -4,18 +4,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.User.POJO.UserPOJO;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 
 @RestController
 @RequestMapping("/api/user")
-@CacheConfig(cacheNames={"user"})
+@CacheConfig(cacheNames = {"user"})
 public class UserController {
 
     private final UserService userService;
@@ -98,15 +102,15 @@ public class UserController {
 
     // Delete User by userId
     @DeleteMapping("/deleteuser")
-    public ResponseEntity deleteUser(@RequestBody UserPOJO userPOJO){
-        Long userId = Long.parseLong(userPOJO.getUser_id ());
-        return userService.deleteUser (userId);
+    public ResponseEntity deleteUser(@RequestBody UserPOJO userPOJO) {
+        Long userId = Long.parseLong(userPOJO.getUser_id());
+        return userService.deleteUser(userId);
     }
 
     @PutMapping("/deprecateuser")
-    public ResponseEntity deprecateUser(@RequestBody UserPOJO userPOJO){
-        Long userId = Long.parseLong(userPOJO.getUser_id ());
-        return userService.deprecateUser (userId);
+    public ResponseEntity deprecateUser(@RequestBody UserPOJO userPOJO) {
+        Long userId = Long.parseLong(userPOJO.getUser_id());
+        return userService.deprecateUser(userId);
     }
 
 
@@ -116,5 +120,21 @@ public class UserController {
         Long user_id = Long.parseLong(StrUserId);
 
         return userService.getAllUsers(user_id);
+    }
+
+    @PutMapping("/updateavatar")
+    public ResponseEntity updateAvatar(
+            ServletRequest request,
+            @RequestParam(required = false) MultipartFile file
+    ) throws IOException, ParseException {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+        String[] splitedFileName = file.getOriginalFilename().split(Pattern.quote("."));
+        String fileName = splitedFileName[0];
+        byte[] fileBytes = file.getBytes();
+
+
+        return userService.updateAvatar(fileName, fileBytes, userId);
     }
 }
