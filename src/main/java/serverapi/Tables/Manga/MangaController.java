@@ -67,7 +67,7 @@ public class MangaController {
     }
 
 
-    @Cacheable("weeklyMangas")
+    @Cacheable(value = "weeklyMangas", key = "#root.method")
     @GetMapping("/getweekly")
     public ResponseEntity getWeeklyMangas() {
         return mangaService.getWeeklyMangas();
