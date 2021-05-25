@@ -32,8 +32,8 @@ public class ChapterController {
 //
 //    }
 
-    @PostMapping("/getimgchapter")
 
+    @PostMapping("/getimgchapter")
     public ResponseEntity findImgByChapter(@RequestBody MangaPOJO mangaPOJO){
 
         Long chapterId = Long.parseLong(mangaPOJO.getChapter_id());

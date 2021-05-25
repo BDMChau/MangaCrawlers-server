@@ -1,6 +1,7 @@
 package serverapi.Tables.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
@@ -14,6 +15,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
+@CacheConfig(cacheNames={"user"})
 public class UserController {
 
     private final UserService userService;
@@ -36,6 +38,7 @@ public class UserController {
 
         return "Get user route";
     }
+
 
     @GetMapping("/gethistorymanga")
     public ResponseEntity GetReadingHistory(ServletRequest request) {
@@ -66,7 +69,7 @@ public class UserController {
     }
 
 
-    @DeleteMapping("/deletefollowingmangas")
+    @DeleteMapping("/deletefollowingmanga")
     public ResponseEntity deleteFollowingMangas(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
@@ -76,13 +79,11 @@ public class UserController {
     }
 
 
-    @PostMapping("/addfollowingmangas")
+    @PostMapping("/addfollowingmanga")
     public ResponseEntity addFollowingMangas(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
         Long mangaId = Long.parseLong(mangaPOJO.getManga_id());
-        System.out.println("dfbdcb xcvnfgnmvgjgnbnf");
-        System.out.println(mangaId);
 
         return userService.addFollowManga(mangaId, userId);
     }
@@ -96,15 +97,24 @@ public class UserController {
     }
 
     // Delete User by userId
-    @DeleteMapping("/deleteallbyuserid")
-    public ResponseEntity deleteUserById(@RequestBody UserPOJO userPOJO){
+    @DeleteMapping("/deleteuser")
+    public ResponseEntity deleteUser(@RequestBody UserPOJO userPOJO){
         Long userId = Long.parseLong(userPOJO.getUser_id ());
-        return userService.DeleteUserById (userId);
+        return userService.deleteUser (userId);
     }
 
-    @PutMapping("/deprecateuserbyuserid")
-    public ResponseEntity deprecateUserByUserId(@RequestBody UserPOJO userPOJO){
+    @PutMapping("/deprecateuser")
+    public ResponseEntity deprecateUser(@RequestBody UserPOJO userPOJO){
         Long userId = Long.parseLong(userPOJO.getUser_id ());
-        return userService.DeprecateUserById (userId);
+        return userService.deprecateUser (userId);
+    }
+
+
+    @GetMapping("/getallusers")
+    public ResponseEntity getAllUsers(ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long user_id = Long.parseLong(StrUserId);
+
+        return userService.getAllUsers(user_id);
     }
 }

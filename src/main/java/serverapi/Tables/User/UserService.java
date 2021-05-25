@@ -29,20 +29,21 @@ public class UserService {
 
     @Autowired
     public UserService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos,
-                       ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos, ChapterCommentsRepos chapterCommentsRepos) {
+                       ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos,
+                       ChapterCommentsRepos chapterCommentsRepos) {
         this.mangaRepository = mangaRepository;
         this.followingRepos = followingRepos;
         this.userRepos = userRepos;
         this.readingHistoryRepos = readingHistoryRepos;
         this.chapterRepos = chapterRepos;
-        this.chapterCommentsRepos=chapterCommentsRepos;
+        this.chapterCommentsRepos = chapterCommentsRepos;
     }
 
     public ResponseEntity getFollowManga(Long UserId) {
 
         List<FollowingDTO> followingDTOList = followingRepos.FindByUserId(UserId);
 
-        if(followingDTOList.isEmpty ()){
+        if (followingDTOList.isEmpty()) {
 
             Map<String, Object> msg = Map.of("msg", "No manga follow found!");
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
@@ -58,9 +59,9 @@ public class UserService {
 
     public ResponseEntity getChapterComments(Long userId) {
 
-        List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsByUserId (userId);
+        List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsByUserId(userId);
 
-        if(chapterCommentsDTOList.isEmpty ()){
+        if (chapterCommentsDTOList.isEmpty()) {
             Map<String, Object> msg = Map.of("msg", "No comment found!");
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
         }
@@ -82,8 +83,8 @@ public class UserService {
 
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
         if (Follow.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "No mangas!");
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
+            Map<String, Object> err = Map.of("err", "No following manga to delete!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
 
         } else {
 
@@ -100,13 +101,13 @@ public class UserService {
             });
             if (atomicBoolean.get() == true) {
                 Map<String, Object> msg = Map.of(
-                        "msg", "delete follow successfully!"
+                        "msg", "Delete following manga successfully!"
                 );
                 return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
             }
 
-            Map<String, Object> msg = Map.of("msg", "Cannot delete");
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
+            Map<String, Object> err = Map.of("err", "Cannot delete");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
     }
 
@@ -171,7 +172,7 @@ public class UserService {
 
 
     public ResponseEntity GetReadingHistory(Long userId) {
-        List<UserReadingHistoryDTO> readingHistoryDTO = readingHistoryRepos.GetHistoriesByUserId (userId);
+        List<UserReadingHistoryDTO> readingHistoryDTO = readingHistoryRepos.GetHistoriesByUserId(userId);
         readingHistoryDTO.sort(Comparator.comparing(UserReadingHistoryDTO::getReading_History_time).reversed());
 
 
@@ -185,7 +186,7 @@ public class UserService {
 
     public ResponseEntity updateReadingHistory(Long userId, Long mangaId, Long chapterId) {
 
-        List<UserReadingHistoryDTO> readingHistoryDTO = readingHistoryRepos.GetHistoriesByUserId (userId);
+        List<UserReadingHistoryDTO> readingHistoryDTO = readingHistoryRepos.GetHistoriesByUserId(userId);
         Calendar updatetime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
 
@@ -249,116 +250,123 @@ public class UserService {
     }
 
 
-    public ResponseEntity DeleteUserById(Long userId){
+    public ResponseEntity deleteUser(Long userId) {
         //get user info
-        Optional<User> userOptional = userRepos.findById (userId);
+        Optional<User> userOptional = userRepos.findById(userId);
 
-        if(userOptional.isEmpty ()){
+        if (userOptional.isEmpty()) {
 
-            Map<String, Object> msg = Map.of(
-                    "msg", "user not found!"
+            Map<String, Object> err = Map.of(
+                    "err", "User not found!"
 
             );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
         }
-        User user = userOptional.get ();
-        userRepos.delete (user);
+        User user = userOptional.get();
+        userRepos.delete(user);
+
+        List<User> users = userRepos.findAll();
 
         Map<String, Object> msg = Map.of(
                 "msg", "delete user successfully!",
-                "user deleted info: ",user
-
+                "users", users
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
     }
 
 
-    public ResponseEntity DeprecateUserById(Long userId){
+    public ResponseEntity deprecateUser(Long userId) {
         //get user info
-        Optional<User> userOptional = userRepos.findById (userId);
+        Optional<User> userOptional = userRepos.findById(userId);
 
-        if(userOptional.isEmpty ()){
+        if (userOptional.isEmpty()) {
 
-            Map<String, Object> msg = Map.of(
-                    "msg", "user not found!"
+            Map<String, Object> err = Map.of(
+                    "err", "User not found!"
 
             );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
         }
-        User user = userOptional.get ();
-        user.setUser_isVerified (false);
-        userRepos.save (user);
+        User user = userOptional.get();
+        user.setUser_isVerified(false);
+        userRepos.save(user);
+
+        List<User> users = userRepos.findAll();
 
         Map<String, Object> msg = Map.of(
                 "msg", "Deprecate user successfully!",
-                "user deprecate info: ",user
-
+                "users", users
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
     }
 
 
-    public ResponseEntity DeleteFollowsUsersByUserId(Long userId){
+    public ResponseEntity DeleteFollowsUsersByUserId(Long userId) {
         List<FollowingDTO> followingDTOList = followingRepos.FindByUserId(userId);
-        Optional<User> userOptional = userRepos.findById (userId);
+        Optional<User> userOptional = userRepos.findById(userId);
 
-        if(userOptional.isEmpty ()){
+        if (userOptional.isEmpty()) {
 
             Map<String, Object> msg = Map.of(
                     "msg", "user not found!"
 
             );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
-        }if(followingDTOList.isEmpty ()){
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        if (followingDTOList.isEmpty()) {
             Map<String, Object> msg = Map.of("msg", "No Follows!");
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
         }
-        User user = userOptional.get ();
-        followingRepos.deleteAllFollowByUserId (user);
+        User user = userOptional.get();
+        followingRepos.deleteAllFollowByUserId(user);
 
         Map<String, Object> msg = Map.of(
                 "msg", "delete all user's follows successfully!",
-                "user deleted info: ",user
+                "user deleted info: ", user
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
 
-    public ResponseEntity DeleteHitoriesUsersByUserId(Long userId){
+    public ResponseEntity DeleteHitoriesUsersByUserId(Long userId) {
 
-        List<UserReadingHistoryDTO> userReadingHistoryDTOList = readingHistoryRepos.GetHistoriesByUserId (userId);
-        Optional<User> userOptional = userRepos.findById (userId);
+        List<UserReadingHistoryDTO> userReadingHistoryDTOList = readingHistoryRepos.GetHistoriesByUserId(userId);
+        Optional<User> userOptional = userRepos.findById(userId);
 
-        if(userOptional.isEmpty ()){
+        if (userOptional.isEmpty()) {
 
             Map<String, Object> msg = Map.of(
                     "msg", "user not found!"
 
             );
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
-        }if(userReadingHistoryDTOList.isEmpty ()){
+        }
+        if (userReadingHistoryDTOList.isEmpty()) {
             Map<String, Object> msg = Map.of("msg", "No history found!");
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
         }
-        User user = userOptional.get ();
-        readingHistoryRepos.deleteAllHistoryByUserId (user);
+        User user = userOptional.get();
+        readingHistoryRepos.deleteAllHistoryByUserId(user);
 
         Map<String, Object> msg = Map.of(
                 "msg", "delete all user's histories successfully!",
-                "user deleted info: ",user
+                "user deleted info: ", user
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
 
-    public ResponseEntity DeleteCommentsUsersByUserId(Long userId){
+    public ResponseEntity DeleteCommentsUsersByUserId(Long userId) {
 
-        List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsByUserId (userId);
-        Optional<User> userOptional = userRepos.findById (userId);
+        List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsByUserId(userId);
+        Optional<User> userOptional = userRepos.findById(userId);
 
-        if(userOptional.isEmpty ()){
+        if (userOptional.isEmpty()) {
 
             Map<String, Object> msg = Map.of(
                     "msg", "user not found!"
@@ -366,17 +374,57 @@ public class UserService {
             );
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
 
-        }if(chapterCommentsDTOList.isEmpty ()){
+        }
+        if (chapterCommentsDTOList.isEmpty()) {
 
             Map<String, Object> msg = Map.of("msg", "No comment found!");
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
         }
-        User user = userOptional.get ();
-        chapterCommentsRepos.deleteAllCommentsByUserId (user);
+        User user = userOptional.get();
+        chapterCommentsRepos.deleteAllCommentsByUserId(user);
 
         Map<String, Object> msg = Map.of(
                 "msg", "delete all user's comments successfully!",
-                "user deleted info: ",user
+                "user deleted info: ", user
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
+    public ResponseEntity getAllUsers(Long userId) {
+        Optional<User> userOptional = userRepos.findById(userId);
+        if (userOptional.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "err", "Missing creadential to access this resource"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get();
+
+        Boolean isAdmin = user.getUser_isAdmin();
+        if (Boolean.FALSE.equals(isAdmin)) {
+            Map<String, Object> err = Map.of(
+                    "err", "You are not allowed to access this resource!"
+            );
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
+
+        List<User> users = userRepos.findAll();
+        if (users.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Empty users!",
+                    "users", users
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
+
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get all users successfully!",
+                "users", users
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }

@@ -1,12 +1,15 @@
 package serverapi.Tables.Manga;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 
 @RestController
 @RequestMapping("/api/manga")
+@CacheConfig(cacheNames={"manga"})
 public class MangaController {
     private final MangaService mangaService;
 
@@ -14,6 +17,7 @@ public class MangaController {
     public MangaController(MangaService mangaService) {
         this.mangaService = mangaService;
     }
+
 
 
     @PutMapping("/updateviewchapter")
@@ -25,12 +29,14 @@ public class MangaController {
     }
 
 
+    @Cacheable("latestMangas")
     @GetMapping("/getlastest")
     public ResponseEntity getLatest() {
         return mangaService.getLatest();
     }
 
 
+    @Cacheable("topMangas")
     @GetMapping("/gettop")
     public ResponseEntity getTop() {
         return mangaService.getTop();
@@ -44,12 +50,13 @@ public class MangaController {
         return mangaService.findMangaFromGenre(genreId);
     }
 
-
+    @Cacheable("mangaPage")
     @GetMapping("/getmangapage")
     public ResponseEntity getMangaPage(@RequestParam(required = false) String manga_id) {
 
         return mangaService.getMangaPage(Long.parseLong(manga_id));
     }
+
 
     @GetMapping("/gettotalviews")
     public ResponseEntity getTotalView() {
@@ -57,10 +64,13 @@ public class MangaController {
         return mangaService.getTotalView();
     }
 
+
+    @Cacheable("weeklyMangas")
     @GetMapping("/getweekly")
     public ResponseEntity getWeeklyMangas() {
         return mangaService.getWeeklyMangas();
     }
+
 
     @PostMapping("/searchmangas")
     public ResponseEntity searchMangasByName(@RequestBody MangaPOJO mangaPOJO) {

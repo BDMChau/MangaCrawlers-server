@@ -22,13 +22,13 @@ public class ChapterService {
     private final ImgChapterRepos imgChapterRepos;
     private  final MangaRepos mangaRepos;
 
+    @Autowired
     public ChapterService(ChapterRepos chapterRepos, ImgChapterRepos imgChapterRepos, MangaRepos mangaRepos) {
         this.chapterRepos = chapterRepos;
         this.imgChapterRepos = imgChapterRepos;
         this.mangaRepos = mangaRepos;
     }
 
-    @Autowired
 
 
     public ResponseEntity getAllChapter(){
