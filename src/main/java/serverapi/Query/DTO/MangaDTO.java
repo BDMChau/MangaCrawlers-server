@@ -30,4 +30,6 @@ public class MangaDTO {
     private float stars;
     private Long views;
     private int date_publications;
+
+
 }
