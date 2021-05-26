@@ -440,6 +440,47 @@ public class UserService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
+    public ResponseEntity getAllMangas(Long userId) {
+        Optional<User> userOptional = userRepos.findById(userId);
+        if (userOptional.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "err", "Missing creadential to access this resource"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get();
+
+        Boolean isAdmin = user.getUser_isAdmin();
+        if (Boolean.FALSE.equals(isAdmin)) {
+            Map<String, Object> err = Map.of(
+                    "err", "You are not allowed to access this resource!"
+            );
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
+
+        List<Manga> mangas = mangaRepository.findAll();
+        if (mangas.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Empty mangas!",
+                    "mangas", mangas
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
+        mangas.forEach(manga ->{
+            manga.getAuthor().getAuthor_name();
+            System.out.println(manga.getChapters().size());
+        });
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get all mangas successfully!",
+                "users", mangas
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
 
     public ResponseEntity updateAvatar(String fileName, byte[] fileBytes, Long userId) throws IOException,
             ParseException {

@@ -124,9 +124,18 @@ public class UserController {
     @GetMapping("/getallusers")
     public ResponseEntity getAllUsers(ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long user_id = Long.parseLong(StrUserId);
+        Long userId = Long.parseLong(StrUserId);
 
-        return userService.getAllUsers(user_id);
+        return userService.getAllUsers(userId);
+    }
+
+//    @Cacheable(value = "allmangas", key = "#root.method")
+    @GetMapping("/getallmangas")
+    public ResponseEntity getAllMangas(ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+        return userService.getAllMangas(userId);
     }
 
 
@@ -145,6 +154,7 @@ public class UserController {
 
         return userService.updateAvatar(fileName, fileBytes, userId);
     }
+
 
     @DeleteMapping("/removeavatar")
     public ResponseEntity removeAvatar(ServletRequest request) throws IOException {
