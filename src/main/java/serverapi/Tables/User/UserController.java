@@ -145,4 +145,12 @@ public class UserController {
 
         return userService.updateAvatar(fileName, fileBytes, userId);
     }
+
+    @DeleteMapping("/removeavatar")
+    public ResponseEntity removeAvatar(ServletRequest request) throws IOException {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+        return userService.removeAvatar(userId);
+    }
 }

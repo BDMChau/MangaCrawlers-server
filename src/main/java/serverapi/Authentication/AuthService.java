@@ -10,7 +10,7 @@ import serverapi.Security.HashSHA512;
 import serverapi.Security.RandomBytes;
 import serverapi.Security.TokenService;
 import serverapi.SharedServices.Mailer;
-import serverapi.StaticFiles.UserAvatar;
+import serverapi.StaticFiles.UserAvatarCollection;
 import serverapi.Tables.User.User;
 
 import javax.mail.MessagingException;
@@ -53,9 +53,9 @@ public class AuthService {
         newUser.setUser_isAdmin(false);
         newUser.setUser_isVerified(false);
 
-        UserAvatar userAvatar = new UserAvatar();
+        UserAvatarCollection userAvatarCollection = new UserAvatarCollection();
         if (signPOJO.isNullAvatar()) {
-            newUser.setUser_avatar(userAvatar.getAvatar_member());
+            newUser.setUser_avatar(userAvatarCollection.getAvatar_member());
         } else {
             newUser.setUser_avatar(signPOJO.getUser_avatar());
         }

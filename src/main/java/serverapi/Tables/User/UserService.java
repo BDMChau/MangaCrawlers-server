@@ -11,15 +11,14 @@ import serverapi.Query.DTO.FollowingDTO;
 import serverapi.Query.DTO.UserReadingHistoryDTO;
 import serverapi.Query.Repository.*;
 import serverapi.SharedServices.CloudinaryUploader;
+import serverapi.StaticFiles.UserAvatarCollection;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.FollowingManga.FollowingManga;
 import serverapi.Tables.Manga.Manga;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
 
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -43,7 +42,6 @@ public class UserService {
         this.chapterRepos = chapterRepos;
         this.chapterCommentsRepos = chapterCommentsRepos;
     }
-
 
 
     public ResponseEntity getFollowingMangas(Long UserId) {
@@ -443,25 +441,83 @@ public class UserService {
     }
 
 
-
-    public ResponseEntity updateAvatar(String fileName, byte[] fileBytes, Long userId) throws IOException, ParseException {
-
+    public ResponseEntity updateAvatar(String fileName, byte[] fileBytes, Long userId) throws IOException,
+            ParseException {
+        Optional<User> userOptional = userRepos.findById(userId);
+        if (userOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "User not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get();
 
         CloudinaryUploader cloudinaryUploader = new CloudinaryUploader();
-        Map uploadRes = cloudinaryUploader.uploadImg(fileBytes, fileName);
 
-        String createdAt = (String) uploadRes.get("created_at");
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-        Date date = dateFormat.parse(createdAt);
-        System.out.println(date.getTime());
+        // delete previous avatar on cloudinary
+        String publicIdAvatar = user.getAvatar_public_id_cloudinary();
+        if (publicIdAvatar != null) {
+            cloudinaryUploader.deleteImg(publicIdAvatar);
+        }
 
+        // upload new avatar to cloudinary
+        Map cloudinaryResponse = cloudinaryUploader.uploadImg(fileBytes, fileName, "users_avatar");
 
+//        String createdAt = (String) cloudinaryResponse.get("created_at");
+//        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+//        Date date = dateFormat.parse(createdAt);
+//        System.out.println(date.getTime());
+
+        user.setAvatar_public_id_cloudinary((String) cloudinaryResponse.get("public_id"));
+        user.setUser_avatar((String) cloudinaryResponse.get("secure_url")); // secure_url is https, url is http
+
+        userRepos.save(user);
 
         Map<String, Object> msg = Map.of(
                 "msg", "Update avatar successfully!",
-                "user_avatar", uploadRes
+                "avatar_url", user.getUser_avatar()
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
+
+
+    public ResponseEntity removeAvatar(Long userId) throws IOException {
+        Optional<User> userOptional = userRepos.findById(userId);
+        if (userOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "User not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get();
+
+        String publicIdAvatar = user.getAvatar_public_id_cloudinary();
+        if (publicIdAvatar == null) {
+            Map<String, Object> err = Map.of("err", "Avatar has already set to default!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(),
+                    HttpStatus.ACCEPTED);
+        } else {
+            Map responseFromCloudinary = new CloudinaryUploader().deleteImg(publicIdAvatar);
+        }
+
+
+        UserAvatarCollection userAvatarCollection = new UserAvatarCollection();
+        Boolean isAdmin = user.getUser_isAdmin();
+        if (Boolean.FALSE.equals(isAdmin)) {
+            user.setUser_avatar(userAvatarCollection.getAvatar_member());
+        } else {
+            user.setUser_avatar(userAvatarCollection.getAvatar_admin());
+        }
+        user.setAvatar_public_id_cloudinary(null);
+
+        userRepos.save(user);
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Remove avatar successfully!",
+                "avatar_url", user.getUser_avatar()
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                HttpStatus.OK);
+    }
+
+
 }
 

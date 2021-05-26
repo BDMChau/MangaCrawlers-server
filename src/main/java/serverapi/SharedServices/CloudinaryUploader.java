@@ -17,13 +17,12 @@ public class CloudinaryUploader {
     );
     private Cloudinary cloudinary = new Cloudinary(paramsConfig);
 
-
-    public Map uploadImg(byte[] fileBytes, String fileName) throws IOException {
+    public Map uploadImg(byte[] fileBytes, String fileName, String folder) throws IOException {
         Map params = ObjectUtils.asMap(
-                "public_id", fileName,
-                "folder", "manga",
+//                "public_id", fileName, set this when upload manga
+                "folder", folder,
                 "use_filename", true,
-                "unique_filename", false,
+                "unique_filename", true,
                 "resource_type", "auto"
         );
 
@@ -33,14 +32,14 @@ public class CloudinaryUploader {
     }
 
 
-    public void deleteImg(String publicId) throws IOException {
+    public Map deleteImg(String publicId) throws IOException {
         Map params = ObjectUtils.asMap(
                 "invalidate", true
         );
 
-        Map uploadResult = cloudinary.uploader().destroy(publicId, params);
+        Map deleteResult = cloudinary.uploader().destroy(publicId, params);
 
-        System.out.println(uploadResult);
+        return deleteResult;
     }
 
 }
