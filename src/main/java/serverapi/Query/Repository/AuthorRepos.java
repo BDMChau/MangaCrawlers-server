@@ -2,6 +2,7 @@ package serverapi.Query.Repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 import serverapi.Query.DTO.AuthorMangaDTO;
 import serverapi.Tables.Author.Author;
@@ -21,7 +22,8 @@ public interface AuthorRepos extends JpaRepository<Author, Long> {
 
 
 
-
+    @Async
+    public <S extends Author> S save(S entity);
 
 
 
