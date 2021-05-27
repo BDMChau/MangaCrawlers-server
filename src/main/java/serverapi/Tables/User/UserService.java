@@ -248,7 +248,7 @@ public class UserService {
     public ResponseEntity getCommentsChapter(int from, int to, Long chapterId) {
 
         //get list comments in 1 chapter
-        List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsChapter(from, to, chapterId);
+        List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsChapter(chapterId, from, to);
 
         if (chapterCommentsDTOList.isEmpty()) {
             Map<String, Object> msg = Map.of("msg", "No comment found!");
