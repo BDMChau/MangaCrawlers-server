@@ -38,7 +38,7 @@ public class UserController {
         return user;
     }
 
-
+//////////////////////History parts//////////////////////
 
     @Cacheable(value = "historymangas", key = "#root.method")
     @GetMapping("/gethistorymanga")
@@ -63,6 +63,11 @@ public class UserController {
     }
 
 
+
+
+//////////////////////Follow parts//////////////////////
+
+    ///Get user's follows
     @Cacheable(value = "followingmangas", key = "#root.method")
     @GetMapping("/getfollowingmangas")
     public ResponseEntity getFollowingMangas(ServletRequest request) {
@@ -72,19 +77,7 @@ public class UserController {
         return userService.getFollowingMangas(userId);
     }
 
-
-    @CacheEvict(allEntries = true, value = {"followingmangas"})
-    @DeleteMapping("/deletefollowingmanga")
-    public ResponseEntity deleteFollowingMangas(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
-        Long mangaId = Long.parseLong(mangaPOJO.getManga_id());
-
-        return userService.deleteFollowManga(mangaId, userId);
-    }
-
-
-
+    ///Add manga to list user's follows
     @CacheEvict(allEntries = true, value = {"followingmangas"})
     @PostMapping("/addfollowingmanga")
     public ResponseEntity addFollowingMangas(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
@@ -95,31 +88,51 @@ public class UserController {
         return userService.addFollowManga(mangaId, userId);
     }
 
-
-
-    @GetMapping("/getchaptercomment")
-    public ResponseEntity getChapterComments(ServletRequest request) {
+    ///Delete manga following from user's follows( Unfollow)
+    @CacheEvict(allEntries = true, value = {"followingmangas"})
+    @DeleteMapping("/deletefollowingmanga")
+    public ResponseEntity deleteFollowingMangas(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long user_id = Long.parseLong(StrUserId);
+        Long userId = Long.parseLong(StrUserId);
 
-        return userService.getChapterComments(user_id);
+        Long mangaId = Long.parseLong(mangaPOJO.getManga_id());
+
+        return userService.deleteFollowManga(mangaId, userId);
+    }
+
+
+//////////////////////History parts//////////////////////
+
+    ///sai
+    @PostMapping("/getcommentschapter")
+    public ResponseEntity getChapterComments(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long adminId= Long.parseLong(StrUserId);
+
+        Long chapterId = Long.parseLong(mangaPOJO.getChapter_id ());
+
+        return userService.getCommentsChapter(chapterId, adminId);
     }
 
 
 
-    // Delete User by userId
-    @DeleteMapping("/deleteuser")
-    public ResponseEntity deleteUser(@RequestBody UserPOJO userPOJO) {
-        Long userId = Long.parseLong(userPOJO.getUser_id());
-        return userService.deleteUser(userId);
-    }
+//////////////////////Admin parts//////////////////////
 
+    //////Interact with users
+
+    //Set user's verify = false
     @PutMapping("/deprecateuser")
-    public ResponseEntity deprecateUser(@RequestBody UserPOJO userPOJO) {
+    public ResponseEntity deprecateUser(@RequestBody UserPOJO userPOJO, ServletRequest request) {
+
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long adminId = Long.parseLong(StrUserId);
+
         Long userId = Long.parseLong(userPOJO.getUser_id());
-        return userService.deprecateUser(userId);
+
+        return userService.deprecateUser(userId, adminId);
     }
 
+    //Get all users
     @Cacheable(value = "allusers", key = "#root.method")
     @GetMapping("/getallusers")
     public ResponseEntity getAllUsers(ServletRequest request) {
@@ -129,13 +142,16 @@ public class UserController {
         return userService.getAllUsers(userId);
     }
 
-//    @Cacheable(value = "allmangas", key = "#root.method")
-    @GetMapping("/getallmangas")
-    public ResponseEntity getAllMangas(ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
+    // Delete User by userId
+    @DeleteMapping("/deleteuser")
+    public ResponseEntity deleteUser(@RequestBody UserPOJO userPOJO, ServletRequest request) {
 
-        return userService.getAllMangas(userId);
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long adminId = Long.parseLong(StrUserId);
+
+        Long userId = Long.parseLong(userPOJO.getUser_id());
+
+        return userService.deleteUser(userId, adminId);
     }
 
 
@@ -163,4 +179,19 @@ public class UserController {
 
         return userService.removeAvatar(userId);
     }
+
+
+    /////Interact with mangas
+
+    //Get all mangas in admin page
+    //    @Cacheable(value = "allmangas", key = "#root.method")
+    @GetMapping("/getallmangas")
+    public ResponseEntity getAllMangas(ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+        return userService.getAllMangas(userId);
+    }
+
+
 }

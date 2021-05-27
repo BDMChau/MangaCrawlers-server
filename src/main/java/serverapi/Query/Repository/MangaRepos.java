@@ -30,8 +30,8 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
     List<MangaChapterDTO> getLatestChapterFromManga();
 
 
-    @Query(value = "select * from manga", nativeQuery = true)
-    List<Manga> getAllMangas();
+//    @Query(value = "select * from manga", nativeQuery = true)
+//    List<Manga> getAllMangas();
 
 
     @Query(value = "SELECT * FROM Manga Order By views Desc limit :quantity", nativeQuery = true)
@@ -68,6 +68,11 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
             " FROM Author a JOIN a.mangas m WHERE m.manga_id = ?1")
     Optional<AuthorMangaDTO> getAllByMangaId(Long manga_id);
 
+    @Query("SELECT new serverapi.Query.DTO.AuthorMangaDTO( a.author_id, a.author_name," +
+            " m.manga_id, m.manga_name, m.status, m.description, m.stars, " +
+            "m.views, m.thumbnail, m.date_publications, m.createdAt)" +
+            " FROM Author a JOIN a.mangas m")
+    List<AuthorMangaDTO> getAllMangas();
 
     @Query("SELECT new serverapi.Query.DTO.GenreDTO(g.genre_id, g.genre_name, g.genre_color, g.genre_description) " +
             "FROM" +
