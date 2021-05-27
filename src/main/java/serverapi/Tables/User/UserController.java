@@ -105,13 +105,11 @@ public class UserController {
 
     ///sai
     @PostMapping("/getcommentschapter")
-    public ResponseEntity getChapterComments(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long adminId= Long.parseLong(StrUserId);
+    public ResponseEntity getChapterComments(@RequestBody int from, int to, MangaPOJO mangaPOJO) {
 
         Long chapterId = Long.parseLong(mangaPOJO.getChapter_id ());
 
-        return userService.getCommentsChapter(chapterId, adminId);
+        return userService.getCommentsChapter(from, to, chapterId);
     }
 
 

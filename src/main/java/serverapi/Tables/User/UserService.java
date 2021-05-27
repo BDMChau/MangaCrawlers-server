@@ -245,29 +245,10 @@ public class UserService {
 
 //////////////////////Comment parts//////////////////////
 
-    public ResponseEntity getCommentsChapter(Long chapterId, Long adminId) {
-        //check admin
-        Optional<User> adminOptional = userRepos.findById(adminId);
-        if (adminOptional.isEmpty()) {
-            Map<String, Object> err = Map.of(
-                    "err", "Missing creadential to access this resource"
-            );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-                    HttpStatus.BAD_REQUEST);
-        }
-        User admin = adminOptional.get();
-
-        Boolean isAdmin = admin.getUser_isAdmin();
-        if (Boolean.FALSE.equals(isAdmin)) {
-            Map<String, Object> err = Map.of(
-                    "err", "You are not allowed to access this resource!"
-            );
-            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
-                    HttpStatus.FORBIDDEN);
-        }
+    public ResponseEntity getCommentsChapter(int from, int to, Long chapterId) {
 
         //get list comments in 1 chapter
-        List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsChapter(chapterId);
+        List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsChapter(from, to, chapterId);
 
         if (chapterCommentsDTOList.isEmpty()) {
             Map<String, Object> msg = Map.of("msg", "No comment found!");
