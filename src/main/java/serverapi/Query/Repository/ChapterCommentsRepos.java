@@ -21,8 +21,8 @@ public interface ChapterCommentsRepos extends JpaRepository<ChapterComments,Long
             "m.manga_id, m.manga_name, m.status, m.description, m.stars, m.views, m.thumbnail, m.date_publications, m.createdAt, " +
             "c.chapter_id, c.chapter_name, c.createdAt, " +
             "cm.chaptercmt_id, cm.chaptercmt_time, cm.chaptercmt_content) " +
-            " FROM ChapterComments cm JOIN cm.chapter c JOIN cm.user u JOIN Manga m ON m.manga_id = c.manga WHERE c.chapter_id =?1 LIMIT :from, :to")
-    List<ChapterCommentsDTO> getCommentsChapter(@Param ("from") int from, @Param ("to") int to, Long chapter_id);
+            " FROM ChapterComments cm JOIN cm.chapter c JOIN cm.user u JOIN Manga m ON m.manga_id = c.manga WHERE c.chapter_id =?1 LIMIT :from,:to")
+    List<ChapterCommentsDTO> getCommentsChapter(@Param("from")int from, @Param("to")int to, Long chapter_id);
 
     @Query("SELECT new serverapi.Query.DTO.ChapterCommentsDTO(u.user_id, u.user_name, u.user_email, u.user_avatar, " +
             "m.manga_id, m.manga_name, m.status, m.description, m.stars, m.views, m.thumbnail, m.date_publications, m.createdAt, " +
