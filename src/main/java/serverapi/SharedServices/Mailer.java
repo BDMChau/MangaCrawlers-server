@@ -34,7 +34,7 @@ public class Mailer {
                 + "<br/> This link will be expired in 10 minutes  "
                 + "<h3> <a href=" + link + ">Reset password</a> </h3>" + "<br/> If you have any questions, please let" +
                 " " +
-                "us know via bdmchau10005@gmail.com" + "<br/> Thank You!";
+                "us know via mangacrawlers123@gmail.com" + "<br/> Thank You!";
 
         mail.setText(htmlMsg, true);
 
@@ -58,7 +58,7 @@ public class Mailer {
                 + "<br/> Your account will be deprecated after 3 days if you don't confirm this email  "
                 + "<h3> <a href=" + link + ">Verify Account</a> </h3>" + "<br/> After verified, if you can't login, " +
                 "it's mean your account being disapproved, contact administrator to confirm and reopen your account " +
-                "<br/>" + "If you have any questions, please let us know via bdmchau10005@gmail.com" + "<br/> Thank " +
+                "<br/>" + "If you have any questions, please let us know via mangacrawlers123@gmail.com" + "<br/> Thank " +
                 "You!";
 
         mail.setText(htmlMsg, true);
