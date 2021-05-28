@@ -101,16 +101,9 @@ public class UserController {
     }
 
 
-//////////////////////History parts//////////////////////
+//////////////////////comment parts//////////////////////
 
-    ///sai
-    @PostMapping("/getcommentschapter")
-    public ResponseEntity getChapterComments(@RequestBody int from, int to, MangaPOJO mangaPOJO) {
 
-        Long chapterId = Long.parseLong(mangaPOJO.getChapter_id ());
-
-        return userService.getCommentsChapter(from, to, chapterId);
-    }
 
 
 

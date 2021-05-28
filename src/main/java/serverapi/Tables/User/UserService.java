@@ -245,23 +245,6 @@ public class UserService {
 
 //////////////////////Comment parts//////////////////////
 
-    public ResponseEntity getCommentsChapter(int from, int to, Long chapterId) {
-
-        //get list comments in 1 chapter
-        List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsChapter(chapterId, from, to);
-
-        if (chapterCommentsDTOList.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "No comment found!");
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
-        }
-
-        Map<String, Object> msg = Map.of(
-                "msg", "Get chapter comment successfully!",
-                "user_id", chapterCommentsDTOList
-
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
 
 //////////////////////Admin parts//////////////////////
 

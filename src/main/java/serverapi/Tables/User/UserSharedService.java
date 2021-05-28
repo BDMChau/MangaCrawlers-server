@@ -93,32 +93,32 @@ public class UserSharedService {
     }
 
 
-    public ResponseEntity DeleteCommentsUsersByUserId(Long userId) {
-
-        List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsByUserId(userId);
-        Optional<User> userOptional = userRepos.findById(userId);
-
-        if (userOptional.isEmpty()) {
-
-            Map<String, Object> msg = Map.of(
-                    "msg", "user not found!"
-
-            );
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
-
-        }
-        if (chapterCommentsDTOList.isEmpty()) {
-
-            Map<String, Object> msg = Map.of("msg", "No comment found!");
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
-        }
-        User user = userOptional.get();
-        chapterCommentsRepos.deleteAllCommentsByUserId(user);
-
-        Map<String, Object> msg = Map.of(
-                "msg", "delete all user's comments successfully!",
-                "user deleted info: ", user
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
+//    public ResponseEntity DeleteCommentsUsersByUserId(Long userId) {
+//
+//        List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsChapter (userId);
+//        Optional<User> userOptional = userRepos.findById(userId);
+//
+//        if (userOptional.isEmpty()) {
+//
+//            Map<String, Object> msg = Map.of(
+//                    "msg", "user not found!"
+//
+//            );
+//            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
+//
+//        }
+//        if (chapterCommentsDTOList.isEmpty()) {
+//
+//            Map<String, Object> msg = Map.of("msg", "No comment found!");
+//            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
+//        }
+//        User user = userOptional.get();
+//        chapterCommentsRepos.deleteAllCommentsByUserId(user);
+//
+//        Map<String, Object> msg = Map.of(
+//                "msg", "delete all user's comments successfully!",
+//                "user deleted info: ", user
+//        );
+//        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+//    }
 }
