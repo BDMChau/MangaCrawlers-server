@@ -10,6 +10,7 @@ import serverapi.Tables.ChapterComments.ChapterComments;
 import serverapi.Tables.FollowingManga.FollowingManga;
 import serverapi.Tables.RatingManga.RatingManga;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
+import serverapi.Tables.TransGroup.TransGroup;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -49,6 +50,12 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ratingmanga_id")
     private RatingManga ratingManga;
+
+
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="transgroup_id")
+    private TransGroup transgroup;
 
 
     @Column(columnDefinition = "varchar(100)", nullable = false)

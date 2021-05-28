@@ -11,12 +11,14 @@ import serverapi.Security.RandomBytes;
 import serverapi.Security.TokenService;
 import serverapi.SharedServices.Mailer;
 import serverapi.StaticFiles.UserAvatarCollection;
+import serverapi.Tables.TransGroup.TransGroup;
 import serverapi.Tables.User.User;
 
 import javax.mail.MessagingException;
 import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -62,7 +64,8 @@ public class AuthService {
 
         // send mail to verify account
         Integer ThreeDays = (1000 * 60 * 60 * 24) * 3; // 3 days in miliseconds
-        String timeExpired = String.valueOf(Calendar.getInstance().getTimeInMillis() + Long.parseLong(String.valueOf(ThreeDays)));
+        String timeExpired =
+                String.valueOf(Calendar.getInstance().getTimeInMillis() + Long.parseLong(String.valueOf(ThreeDays)));
         String token = new RandomBytes().randomBytes(32);
         String hashedToken = new HashSHA512().hash(token);
         newUser.setToken_verify(hashedToken);
@@ -100,7 +103,7 @@ public class AuthService {
         }
 
         Boolean isVerified = user.getUser_isVerified();
-        if(Boolean.FALSE.equals(isVerified)){
+        if (Boolean.FALSE.equals(isVerified)) {
             Map<String, String> error = Map.of("err", "Check email to verify the account!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
         }
@@ -111,14 +114,26 @@ public class AuthService {
         String email = user.getUser_email();
         String avatar = user.getUser_avatar();
         Boolean isAdmin = user.getUser_isAdmin();
-        Map<String, Serializable> userData = Map.of(
-                "user_id", id,
-                "user_name", name,
-                "user_email", email,
-                "user_avatar", avatar,
-                "user_isAdmin", isAdmin,
-                "user_isVerified", isVerified
-        );
+        TransGroup transGroup = user.getTransgroup();
+
+        Map<String, Serializable> userData = new HashMap<>();
+        if (transGroup != null) {
+            userData.put("user_id", id);
+            userData.put("user_name", name);
+            userData.put("user_email", email);
+            userData.put("user_avatar", avatar);
+            userData.put("user_isAdmin", isAdmin);
+            userData.put("user_isVerified", isVerified);
+            userData.put("user_transgroup_id", transGroup.getTransgroup_id());
+
+        } else {
+            userData.put("user_id", id);
+            userData.put("user_name", name);
+            userData.put("user_email", email);
+            userData.put("user_avatar", avatar);
+            userData.put("user_isAdmin", isAdmin);
+            userData.put("user_isVerified", isVerified);
+        }
 
 
         TokenService tokenService = new TokenService();
@@ -214,6 +229,9 @@ public class AuthService {
 
         Long tokenExpiredAt = Long.parseLong(user.getToken_verify_createdAt());
         if (currentTime >= tokenExpiredAt || tokenExpiredAt == null) {
+            user.setToken_verify(null);
+            user.setToken_verify_createdAt(null);
+
             Map<String, String> err = Map.of(
                     "err", "Token has expired!",
                     "err2", "Contact the admin for more information!"

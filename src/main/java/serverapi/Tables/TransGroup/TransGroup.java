@@ -6,10 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import serverapi.Tables.Manga.Manga;
-
+import serverapi.Tables.User.User;
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.List;
 
 
@@ -38,6 +37,10 @@ public class TransGroup {
         @JsonBackReference
         @OneToMany(mappedBy = "transgroup", cascade = CascadeType.ALL)
         private List<Manga> mangas;
+
+        @JsonBackReference
+        @OneToMany(mappedBy = "transgroup", cascade = CascadeType.ALL)
+        private List<User> users;
 
 
         @Column(columnDefinition = "varchar(100)", nullable = false)
