@@ -43,7 +43,7 @@ public class RatingManga {
     private Manga manga;
 
 
-    @Column(columnDefinition = "int", nullable = true)
-    private Integer value;
+    @Column(columnDefinition = "float", nullable = true)
+    private Float value;
 
 }

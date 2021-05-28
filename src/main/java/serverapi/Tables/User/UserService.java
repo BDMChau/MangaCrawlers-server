@@ -6,10 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
-import serverapi.Query.DTO.ChapterCommentsDTO;
-import serverapi.Query.DTO.FollowingDTO;
-import serverapi.Query.DTO.RatingMangaDTO;
-import serverapi.Query.DTO.UserReadingHistoryDTO;
+import serverapi.Query.DTO.*;
 import serverapi.Query.Repository.*;
 import serverapi.SharedServices.CloudinaryUploader;
 import serverapi.StaticFiles.UserAvatarCollection;
@@ -21,6 +18,7 @@ import serverapi.Tables.RatingManga.RatingManga;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -561,7 +559,7 @@ public class UserService {
                 HttpStatus.OK);
     }
 
-    public ResponseEntity ratingManga(Long userId, Long mangaId,Integer value, RatingPOJO ratingPOJO){
+    public ResponseEntity ratingManga(Long userId, Long mangaId,Float value, RatingPOJO ratingPOJO){
 
         Optional<User> userOptional = userRepos.findById(userId);
         if (userOptional.isEmpty()) {
@@ -630,6 +628,30 @@ public class UserService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
                 HttpStatus.OK);
     }
+
+    public ResponseEntity averageStar(){
+        List<AverageStarDTO> ratingMangas = ratingMangaRepos.avgRatingManga();
+
+        ratingMangas.forEach(item->{
+            Long mangaId = item.getManga_id();
+            float stars = (float) item.getStar();
+
+           Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
+            Manga manga = mangaOptional.get();
+            manga.setStars(stars);
+
+            mangaRepository.saveAndFlush(manga);
+
+
+        });
+        Map<String, Object> msg = Map.of(
+                "msg", "Average stars manga successfully"
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                HttpStatus.OK);
+
+    }
+
 
 
 }

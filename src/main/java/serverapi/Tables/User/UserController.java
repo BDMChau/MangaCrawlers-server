@@ -174,9 +174,14 @@ public class UserController {
         Long userId = Long.parseLong(StrUserId);
         Long mangaId = Long.parseLong(ratingPOJO.getManga_id());
         System.out.println("tra ve gium t"+mangaId);
-        Integer value = Integer.parseInt(ratingPOJO.getValue());
+        Float value = Float.parseFloat(ratingPOJO.getValue());
 
         return userService.ratingManga(userId,mangaId,value,ratingPOJO);
 
+    }
+    @GetMapping("/averagestars")
+    public ResponseEntity averageStar() {
+
+        return userService.averageStar();
     }
 }
