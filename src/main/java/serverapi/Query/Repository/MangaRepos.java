@@ -84,6 +84,8 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
     List<ChapterDTO> findChaptersbyMangaId(Long manga_id);
 
 
+
+
     @Async
     public <S extends Manga> S save(S entity);
 }

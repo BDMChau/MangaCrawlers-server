@@ -8,8 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
+import serverapi.Tables.Manga.POJO.RatingPOJO;
 import serverapi.Tables.User.POJO.UserPOJO;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -162,5 +164,16 @@ public class UserController {
         Long userId = Long.parseLong(StrUserId);
 
         return userService.removeAvatar(userId);
+    }
+
+    @PostMapping("/ratingmanga")
+    public ResponseEntity ratingManga(@RequestBody RatingPOJO ratingPOJO, ServletRequest request){
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+        Long mangaId = Long.parseLong(ratingPOJO.getManga_id());
+        Integer value = Integer.parseInt(ratingPOJO.getValue());
+
+        return userService.ratingManga(userId,mangaId,value,ratingPOJO);
+
     }
 }

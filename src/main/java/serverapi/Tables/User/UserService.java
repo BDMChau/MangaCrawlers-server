@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Query.DTO.ChapterCommentsDTO;
 import serverapi.Query.DTO.FollowingDTO;
+import serverapi.Query.DTO.RatingMangaDTO;
 import serverapi.Query.DTO.UserReadingHistoryDTO;
 import serverapi.Query.Repository.*;
 import serverapi.SharedServices.CloudinaryUploader;
@@ -15,8 +16,11 @@ import serverapi.StaticFiles.UserAvatarCollection;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.FollowingManga.FollowingManga;
 import serverapi.Tables.Manga.Manga;
+import serverapi.Tables.Manga.POJO.RatingPOJO;
+import serverapi.Tables.RatingManga.RatingManga;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
@@ -30,18 +34,22 @@ public class UserService {
     private final ReadingHistoryRepos readingHistoryRepos;
     private final ChapterRepos chapterRepos;
     private final ChapterCommentsRepos chapterCommentsRepos;
+    private final RatingRepos ratingRepos;
+
 
     @Autowired
-    public UserService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos,
-                       ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos,
-                       ChapterCommentsRepos chapterCommentsRepos) {
+    public UserService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos, ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos, ChapterCommentsRepos chapterCommentsRepos, RatingRepos ratingRepos) {
         this.mangaRepository = mangaRepository;
         this.followingRepos = followingRepos;
         this.userRepos = userRepos;
         this.readingHistoryRepos = readingHistoryRepos;
         this.chapterRepos = chapterRepos;
         this.chapterCommentsRepos = chapterCommentsRepos;
+        this.ratingRepos = ratingRepos;
     }
+
+
+
 
 
     public ResponseEntity getFollowingMangas(Long UserId) {
@@ -554,6 +562,25 @@ public class UserService {
         Map<String, Object> msg = Map.of(
                 "msg", "Remove avatar successfully!",
                 "avatar_url", user.getUser_avatar()
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                HttpStatus.OK);
+    }
+
+    public ResponseEntity ratingManga(Long userId, Long mangaId,Integer value, RatingPOJO ratingPOJO){
+
+        Optional<User> userOptional = userRepos.findById(userId);
+        if (userOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "User not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get();
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Rating manga successfully",
+                "mangaInfo", mangaOptional
+
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
                 HttpStatus.OK);
