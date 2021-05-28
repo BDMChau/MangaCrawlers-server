@@ -40,7 +40,7 @@ public class UserController {
 
 
 
-    @Cacheable(value = "historymangas", key = "#root.method")
+    @Cacheable(value = "historymangas", key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @GetMapping("/gethistorymanga")
     public ResponseEntity GetReadingHistory(ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -63,7 +63,7 @@ public class UserController {
     }
 
 
-    @Cacheable(value = "followingmangas", key = "#root.method")
+    @Cacheable(value = "followingmangas", key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @GetMapping("/getfollowingmangas")
     public ResponseEntity getFollowingMangas(ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -108,19 +108,21 @@ public class UserController {
 
 
     // Delete User by userId
+    @CacheEvict(allEntries = true, value = {"allusers"})
     @DeleteMapping("/deleteuser")
     public ResponseEntity deleteUser(@RequestBody UserPOJO userPOJO) {
         Long userId = Long.parseLong(userPOJO.getUser_id());
         return userService.deleteUser(userId);
     }
 
+    @CacheEvict(allEntries = true, value = {"allusers"})
     @PutMapping("/deprecateuser")
     public ResponseEntity deprecateUser(@RequestBody UserPOJO userPOJO) {
         Long userId = Long.parseLong(userPOJO.getUser_id());
         return userService.deprecateUser(userId);
     }
 
-    @Cacheable(value = "allusers", key = "#root.method")
+    @Cacheable(value = "allusers", key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @GetMapping("/getallusers")
     public ResponseEntity getAllUsers(ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
