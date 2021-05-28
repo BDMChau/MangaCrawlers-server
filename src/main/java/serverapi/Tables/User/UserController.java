@@ -168,11 +168,12 @@ public class UserController {
     }
 
 
-    @PostMapping("/ratingmanga")
+    @PutMapping("/ratingmanga")
     public ResponseEntity ratingManga(@RequestBody RatingPOJO ratingPOJO, ServletRequest request){
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
         Long mangaId = Long.parseLong(ratingPOJO.getManga_id());
+        System.out.println("tra ve gium t"+mangaId);
         Integer value = Integer.parseInt(ratingPOJO.getValue());
 
         return userService.ratingManga(userId,mangaId,value,ratingPOJO);

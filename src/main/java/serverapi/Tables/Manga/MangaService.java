@@ -1,5 +1,6 @@
 package serverapi.Tables.Manga;
 
+import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import serverapi.Query.Specification.MangaSpecification;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.UpdateView.UpdateView;
+import org.junit.Assert.*;
 
 import java.util.*;
 
@@ -142,6 +144,7 @@ public class MangaService {
         listViewsMangas.forEach(item -> {
             Long mangaId = item.getManga_id();
             Long totalViews = item.getViews();
+
             Calendar createdAt = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
             Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);

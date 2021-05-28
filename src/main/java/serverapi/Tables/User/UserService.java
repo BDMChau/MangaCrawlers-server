@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Query.DTO.ChapterCommentsDTO;
 import serverapi.Query.DTO.FollowingDTO;
+import serverapi.Query.DTO.RatingMangaDTO;
 import serverapi.Query.DTO.UserReadingHistoryDTO;
 import serverapi.Query.Repository.*;
 import serverapi.SharedServices.CloudinaryUploader;
@@ -16,6 +17,7 @@ import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.FollowingManga.FollowingManga;
 import serverapi.Tables.Manga.Manga;
 import serverapi.Tables.Manga.POJO.RatingPOJO;
+import serverapi.Tables.RatingManga.RatingManga;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
 
 import java.io.IOException;
@@ -31,19 +33,18 @@ public class UserService {
     private final ReadingHistoryRepos readingHistoryRepos;
     private final ChapterRepos chapterRepos;
     private final ChapterCommentsRepos chapterCommentsRepos;
+    private final RatingMangaRepos ratingMangaRepos;
 
     @Autowired
-    public UserService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos,
-                       ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos,
-                       ChapterCommentsRepos chapterCommentsRepos) {
+    public UserService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos, ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos, ChapterCommentsRepos chapterCommentsRepos, RatingMangaRepos ratingMangaRepos) {
         this.mangaRepository = mangaRepository;
         this.followingRepos = followingRepos;
         this.userRepos = userRepos;
         this.readingHistoryRepos = readingHistoryRepos;
         this.chapterRepos = chapterRepos;
         this.chapterCommentsRepos = chapterCommentsRepos;
+        this.ratingMangaRepos = ratingMangaRepos;
     }
-
 
     public ResponseEntity getFollowingMangas(Long UserId) {
 
@@ -568,7 +569,6 @@ public class UserService {
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
                     HttpStatus.BAD_REQUEST);
         }
-        User user = userOptional.get();
 
         Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
         if (mangaOptional.isEmpty()) {
@@ -576,11 +576,56 @@ public class UserService {
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
         }
 
+        List<RatingMangaDTO> ratingMangaDTOS = ratingMangaRepos.ratingManga(userId);
+        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+        ratingMangaDTOS.forEach(item->{
+            if(item.getManga_id().equals(mangaId)){
+
+                atomicBoolean.set(true);
+
+                Long ratingMangaId = item.getRatingmanga_id();
+
+
+                Optional<RatingManga> ratingMangaOptional = ratingMangaRepos.findById(ratingMangaId);
+                RatingManga ratingManga = ratingMangaOptional.get();
+
+                User user = userOptional.get();
+                Manga manga = mangaOptional.get();
+
+                System.out.println("aaaaaaaaaa"+value);
+                ratingManga.setValue(value);
+                System.out.println("shshshshs:"+value);
+                ratingManga.setManga(manga);
+
+                ratingMangaRepos.save(ratingManga);
+            }
+
+        });
+        if (atomicBoolean.get() == true) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Update ratingmanga successfully!"
+
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+
+        }
+
+        Manga manga = mangaOptional.get();
+        System.out.println("ra cai gi:"+manga);
+
+        User user = userOptional.get();
+
+        RatingManga rating = new RatingManga();
+
+        rating.setManga(manga);
+
+        rating.setUser(user);
+        rating.setValue(value);
+
+      ratingMangaRepos.save(rating);
 
         Map<String, Object> msg = Map.of(
-                "msg", "Rating manga successfully",
-                "mangaInfo", mangaOptional
-
+                "msg", "Rating manga successfully"
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
                 HttpStatus.OK);
