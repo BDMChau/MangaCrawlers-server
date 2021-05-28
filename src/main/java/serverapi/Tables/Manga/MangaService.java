@@ -88,7 +88,10 @@ public class MangaService {
         }
 
 
-        Map<String, Object> msg = Map.of("msg", "Get latest mangas successfully!", "data", latestChapterFromManga);
+        Map<String, Object> msg = Map.of(
+                "msg", "Get latest mangas successfully!",
+                "data", latestChapterFromManga
+        );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
