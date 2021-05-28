@@ -1,12 +1,17 @@
 package serverapi.Tables.Chapter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
+import serverapi.Helpers.OffsetBasedPageRequest;
+import serverapi.Query.DTO.ChapterCommentsDTO;
 import serverapi.Query.DTO.ChapterDTO;
 import serverapi.Query.DTO.ChapterImgDTO;
+import serverapi.Query.DTO.MangaDTO;
+import serverapi.Query.Repository.ChapterCommentsRepos;
 import serverapi.Query.Repository.ChapterRepos;
 import serverapi.Query.Repository.ImgChapterRepos;
 import serverapi.Query.Repository.MangaRepos;
@@ -21,12 +26,14 @@ public class ChapterService {
     private final ChapterRepos chapterRepos;
     private final ImgChapterRepos imgChapterRepos;
     private final MangaRepos mangaRepos;
+    private final ChapterCommentsRepos chapterCommentsRepos;
 
     @Autowired
-    public ChapterService(ChapterRepos chapterRepos, ImgChapterRepos imgChapterRepos, MangaRepos mangaRepos) {
+    public ChapterService(ChapterRepos chapterRepos, ImgChapterRepos imgChapterRepos, MangaRepos mangaRepos, ChapterCommentsRepos chapterCommentsRepos) {
         this.chapterRepos = chapterRepos;
         this.imgChapterRepos = imgChapterRepos;
         this.mangaRepos = mangaRepos;
+        this.chapterCommentsRepos= chapterCommentsRepos;
     }
 
 
@@ -41,42 +48,6 @@ public class ChapterService {
     }
 
 
-//    public ResponseEntity getlatestmanga(){
-//        List<LatestManga> latestMangas = ();
-//
-//
-//        Map<String, Object> msg = Map.of(
-//                "msg", "Get all mangas, chapters successfully!",
-//                "data", latestMangas
-//
-//
-//        );
-//        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-//    }
-
-//    public ResponseEntity findmaxid(){
-//        List<Chapter> chapters = chapterRepos.findmaxid();
-//
-//
-//
-//        Map<String, Object> msg = Map.of(
-//                "msg", "Get all chapters successfully!",
-//                "data", chapters
-//        );
-//        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-//    }
-
-
-    //    public ResponseEntity getTotalView(){
-//
-//        List<Chapter> chapters = chapterRepos.getTotalView();
-//
-//        Map<String, Object> msg = Map.of(
-//                "msg", "Get all total views chapters successfully!",
-//                "data", chapters
-//        );
-//        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-//    }
     public ResponseEntity findImgByChapter(Long chapterId, Long mangaId) {
         Optional<Chapter> chapterInfo = chapterRepos.findById(chapterId);
         if (chapterInfo.isEmpty()) {
@@ -112,4 +83,45 @@ public class ChapterService {
                     HttpStatus.ACCEPTED);
         }
     }
+
+//    public ResponseEntity getCommentsChapter(Long chapterId, int amount, int from) {
+//
+//        //get list comments in 1 chapter
+//        List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsChapter (chapterId, amount, from);
+//
+//        if (chapterCommentsDTOList.isEmpty()) {
+//            Map<String, Object> msg = Map.of("msg", "No comment found!");
+//            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
+//        }
+//
+//
+//        Map<String, Object> msg = Map.of(
+//                "msg", "Get chapter comment successfully!",
+//                "Info", chapterCommentsDTOList
+//
+//        );
+//        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+//    }
+
+    public ResponseEntity getCommentsChapter(Long chapterId, int amount, int from) {
+
+        //get list comments in 1 chapter
+        Pageable pageable = new OffsetBasedPageRequest (from, amount);
+        System.out.println ("pageable "+pageable.getPageNumber ());
+        List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsChapter (chapterId, pageable);
+
+        if (chapterCommentsDTOList.isEmpty()) {
+            Map<String, Object> msg = Map.of("msg", "No comment found!");
+            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
+        }
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get chapter comment successfully!",
+                "Info", chapterCommentsDTOList
+
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
 }

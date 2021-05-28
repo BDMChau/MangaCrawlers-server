@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
+import serverapi.Query.DTO.AuthorMangaDTO;
 import serverapi.Query.DTO.ChapterCommentsDTO;
 import serverapi.Query.DTO.FollowingDTO;
 import serverapi.Query.DTO.UserReadingHistoryDTO;
@@ -45,137 +46,7 @@ public class UserService {
     }
 
 
-    public ResponseEntity getFollowingMangas(Long UserId) {
-
-        List<FollowingDTO> followingDTOList = followingRepos.findByUserId(UserId);
-
-        if (followingDTOList.isEmpty()) {
-
-            Map<String, Object> msg = Map.of("msg", "No manga follow found!");
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
-        }
-        Map<String, Object> msg = Map.of(
-                "msg", "Get following mangas successfully!",
-                "mangas", followingDTOList,
-                "user_id", UserId
-
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
-
-
-    public ResponseEntity getChapterComments(Long userId) {
-
-        List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsByUserId(userId);
-
-        if (chapterCommentsDTOList.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "No comment found!");
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
-        }
-
-        Map<String, Object> msg = Map.of(
-                "msg", "Get chapter comment successfully!",
-                "mangas", chapterCommentsDTOList,
-                "user_id", userId
-
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
-
-
-    public ResponseEntity deleteFollowManga(Long mangaId, Long userId) {
-        List<FollowingDTO> Follow = followingRepos.findByUserId(userId);
-        System.out.println("mangaID" + mangaId);
-        System.out.println("userID" + userId);
-
-        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-        if (Follow.isEmpty()) {
-            Map<String, Object> err = Map.of("err", "No following manga to delete!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
-
-        } else {
-
-            Follow.forEach(item -> {
-                System.out.println(item.getManga_id());
-                System.out.println(item.getManga_id().equals(mangaId));
-                if (item.getManga_id().equals(mangaId)) {
-                    Long followId = item.getFollowId();
-
-                    System.out.println("follow id: " + followId);
-                    followingRepos.deleteById(followId);
-                    atomicBoolean.set(true);
-                }
-            });
-            if (atomicBoolean.get() == true) {
-                Map<String, Object> msg = Map.of(
-                        "msg", "Delete following manga successfully!"
-                );
-                return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-            }
-
-            Map<String, Object> err = Map.of("err", "Cannot delete");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
-        }
-    }
-
-
-    public ResponseEntity addFollowManga(Long mangaId, Long userId) {
-        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-        List<FollowingDTO> follows = followingRepos.findByUserId(userId);
-
-        if (follows.isEmpty()) {
-            Optional<User> userOptional = userRepos.findById(userId);
-            User user = userOptional.get();
-
-            Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
-            Manga manga = mangaOptional.get();
-
-            FollowingManga followingManga = new FollowingManga();
-            followingManga.setUser(user);
-            followingManga.setManga(manga);
-
-            followingRepos.save(followingManga);
-
-            Map<String, Object> msg = Map.of(
-                    "msg", "add Follow successfully!"
-
-            );
-            return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
-
-        } else {
-            follows.forEach(item -> {
-                if (item.getManga_id().equals(mangaId)) {
-
-                    atomicBoolean.set(true);
-                }
-            });
-            if (atomicBoolean.get() == true) {
-                Map<String, Object> err = Map.of("err", "Cannot ADD to database!");
-                return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-                        HttpStatus.BAD_REQUEST);
-
-            } else {
-                Optional<User> userOptional = userRepos.findById(userId);
-                User user = userOptional.get();
-
-                Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
-                Manga manga = mangaOptional.get();
-
-                FollowingManga followingManga = new FollowingManga();
-                followingManga.setUser(user);
-                followingManga.setManga(manga);
-
-                followingRepos.save(followingManga);
-
-                Map<String, Object> msg = Map.of(
-                        "msg", "add follow successfully!"
-                );
-                return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
-
-            }
-
-        }
-    }
+//////////////////////History parts//////////////////////
 
 
     public ResponseEntity GetReadingHistory(Long userId) {
@@ -257,7 +128,148 @@ public class UserService {
     }
 
 
-    public ResponseEntity deleteUser(Long userId) {
+//////////////////////Follow parts//////////////////////
+
+    public ResponseEntity getFollowingMangas(Long UserId) {
+
+        List<FollowingDTO> followingDTOList = followingRepos.findByUserId(UserId);
+
+        if (followingDTOList.isEmpty()) {
+
+            Map<String, Object> msg = Map.of("msg", "No manga follow found!");
+            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
+        }
+        Map<String, Object> msg = Map.of(
+                "msg", "Get following mangas successfully!",
+                "mangas", followingDTOList,
+                "user_id", UserId
+
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    public ResponseEntity addFollowManga(Long mangaId, Long userId) {
+        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+        List<FollowingDTO> follows = followingRepos.findByUserId(userId);
+
+        if (follows.isEmpty()) {
+            Optional<User> userOptional = userRepos.findById(userId);
+            User user = userOptional.get();
+
+            Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
+            Manga manga = mangaOptional.get();
+
+            FollowingManga followingManga = new FollowingManga();
+            followingManga.setUser(user);
+            followingManga.setManga(manga);
+
+            followingRepos.save(followingManga);
+
+            Map<String, Object> msg = Map.of(
+                    "msg", "add Follow successfully!"
+
+            );
+            return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
+
+        } else {
+            follows.forEach(item -> {
+                if (item.getManga_id().equals(mangaId)) {
+
+                    atomicBoolean.set(true);
+                }
+            });
+            if (atomicBoolean.get() == true) {
+                Map<String, Object> err = Map.of("err", "Cannot ADD to database!");
+                return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                        HttpStatus.BAD_REQUEST);
+
+            } else {
+                Optional<User> userOptional = userRepos.findById(userId);
+                User user = userOptional.get();
+
+                Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
+                Manga manga = mangaOptional.get();
+
+                FollowingManga followingManga = new FollowingManga();
+                followingManga.setUser(user);
+                followingManga.setManga(manga);
+
+                followingRepos.save(followingManga);
+
+                Map<String, Object> msg = Map.of(
+                        "msg", "add follow successfully!"
+                );
+                return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
+
+            }
+
+        }
+    }
+
+
+    public ResponseEntity deleteFollowManga(Long mangaId, Long userId) {
+        List<FollowingDTO> Follow = followingRepos.findByUserId(userId);
+        System.out.println("mangaID" + mangaId);
+        System.out.println("userID" + userId);
+
+        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+        if (Follow.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "No following manga to delete!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+
+        } else {
+
+            Follow.forEach(item -> {
+                System.out.println(item.getManga_id());
+                System.out.println(item.getManga_id().equals(mangaId));
+                if (item.getManga_id().equals(mangaId)) {
+                    Long followId = item.getFollowId();
+
+                    System.out.println("follow id: " + followId);
+                    followingRepos.deleteById(followId);
+                    atomicBoolean.set(true);
+                }
+            });
+            if (atomicBoolean.get() == true) {
+                Map<String, Object> msg = Map.of(
+                        "msg", "Delete following manga successfully!"
+                );
+                return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+            }
+
+            Map<String, Object> err = Map.of("err", "Cannot delete");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+        }
+    }
+
+
+
+//////////////////////Comment parts//////////////////////
+
+
+//////////////////////Admin parts//////////////////////
+
+    //////Interact with users
+
+    public ResponseEntity deleteUser(Long userId, Long adminId) {
+        Optional<User> adminOptional = userRepos.findById(adminId);
+        if (adminOptional.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "err", "Missing creadential to access this resource"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        User admin = adminOptional.get();
+
+        Boolean isAdmin = admin.getUser_isAdmin();
+        if (Boolean.FALSE.equals(isAdmin)) {
+            Map<String, Object> err = Map.of(
+                    "err", "You are not allowed to access this resource!"
+            );
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
         //get user info
         Optional<User> userOptional = userRepos.findById(userId);
 
@@ -287,7 +299,25 @@ public class UserService {
     }
 
 
-    public ResponseEntity deprecateUser(Long userId) {
+    public ResponseEntity deprecateUser(Long userId, Long adminId) {
+        Optional<User> adminOptional = userRepos.findById(adminId);
+        if (adminOptional.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "err", "Missing creadential to access this resource"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        User admin = adminOptional.get();
+
+        Boolean isAdmin = admin.getUser_isAdmin();
+        if (Boolean.FALSE.equals(isAdmin)) {
+            Map<String, Object> err = Map.of(
+                    "err", "You are not allowed to access this resource!"
+            );
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
         //get user info
         Optional<User> userOptional = userRepos.findById(userId);
 
@@ -317,91 +347,6 @@ public class UserService {
 
     }
 
-
-    public ResponseEntity DeleteFollowsUsersByUserId(Long userId) {
-        List<FollowingDTO> followingDTOList = followingRepos.findByUserId(userId);
-        Optional<User> userOptional = userRepos.findById(userId);
-
-        if (userOptional.isEmpty()) {
-
-            Map<String, Object> msg = Map.of(
-                    "msg", "user not found!"
-
-            );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(),
-                    HttpStatus.BAD_REQUEST);
-        }
-        if (followingDTOList.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "No Follows!");
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
-        }
-        User user = userOptional.get();
-        followingRepos.deleteAllFollowByUserId(user);
-
-        Map<String, Object> msg = Map.of(
-                "msg", "delete all user's follows successfully!",
-                "user deleted info: ", user
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
-
-
-    public ResponseEntity DeleteHitoriesUsersByUserId(Long userId) {
-
-        List<UserReadingHistoryDTO> userReadingHistoryDTOList = readingHistoryRepos.GetHistoriesByUserId(userId);
-        Optional<User> userOptional = userRepos.findById(userId);
-
-        if (userOptional.isEmpty()) {
-
-            Map<String, Object> msg = Map.of(
-                    "msg", "user not found!"
-
-            );
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
-        }
-        if (userReadingHistoryDTOList.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "No history found!");
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
-        }
-        User user = userOptional.get();
-        readingHistoryRepos.deleteAllHistoryByUserId(user);
-
-        Map<String, Object> msg = Map.of(
-                "msg", "delete all user's histories successfully!",
-                "user deleted info: ", user
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
-
-
-    public ResponseEntity DeleteCommentsUsersByUserId(Long userId) {
-
-        List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsByUserId(userId);
-        Optional<User> userOptional = userRepos.findById(userId);
-
-        if (userOptional.isEmpty()) {
-
-            Map<String, Object> msg = Map.of(
-                    "msg", "user not found!"
-
-            );
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
-
-        }
-        if (chapterCommentsDTOList.isEmpty()) {
-
-            Map<String, Object> msg = Map.of("msg", "No comment found!");
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
-        }
-        User user = userOptional.get();
-        chapterCommentsRepos.deleteAllCommentsByUserId(user);
-
-        Map<String, Object> msg = Map.of(
-                "msg", "delete all user's comments successfully!",
-                "user deleted info: ", user
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
 
 
     public ResponseEntity getAllUsers(Long userId) {
@@ -437,47 +382,6 @@ public class UserService {
         Map<String, Object> msg = Map.of(
                 "msg", "Get all users successfully!",
                 "users", users
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
-
-    public ResponseEntity getAllMangas(Long userId) {
-        Optional<User> userOptional = userRepos.findById(userId);
-        if (userOptional.isEmpty()) {
-            Map<String, Object> err = Map.of(
-                    "err", "Missing creadential to access this resource"
-            );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-                    HttpStatus.BAD_REQUEST);
-        }
-        User user = userOptional.get();
-
-        Boolean isAdmin = user.getUser_isAdmin();
-        if (Boolean.FALSE.equals(isAdmin)) {
-            Map<String, Object> err = Map.of(
-                    "err", "You are not allowed to access this resource!"
-            );
-            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
-                    HttpStatus.FORBIDDEN);
-        }
-
-        List<Manga> mangas = mangaRepository.findAll();
-        if (mangas.isEmpty()) {
-            Map<String, Object> msg = Map.of(
-                    "msg", "Empty mangas!",
-                    "mangas", mangas
-            );
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-        }
-        mangas.forEach(manga ->{
-            manga.getAuthor().getAuthor_name();
-            System.out.println(manga.getChapters().size());
-        });
-
-
-        Map<String, Object> msg = Map.of(
-                "msg", "Get all mangas successfully!",
-                "users", mangas
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
@@ -565,27 +469,42 @@ public class UserService {
         Optional<User> userOptional = userRepos.findById(userId);
         if (userOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "User not found!");
+    /////Interact with mangas
+
+    public ResponseEntity getAllMangas(Long userId) {
+        Optional<User> userOptional = userRepos.findById(userId);
+        if (userOptional.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "err", "Missing creadential to access this resource"
+            );
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
                     HttpStatus.BAD_REQUEST);
         }
         User user = userOptional.get();
 
-        Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
-        if (mangaOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "No mangas!");
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
+        Boolean isAdmin = user.getUser_isAdmin();
+        if (Boolean.FALSE.equals(isAdmin)) {
+            Map<String, Object> err = Map.of(
+                    "err", "You are not allowed to access this resource!"
+            );
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
         }
 
-
+        List<AuthorMangaDTO> mangas = mangaRepository.getAllMangas ();
+        if (mangas.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Empty mangas!",
+                    "mangas", mangas
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
         Map<String, Object> msg = Map.of(
-                "msg", "Rating manga successfully",
-                "mangaInfo", mangaOptional
-
+                "msg", "Get all mangas successfully!",
+                "users", mangas
         );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
-                HttpStatus.OK);
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
-
 
 }
 
