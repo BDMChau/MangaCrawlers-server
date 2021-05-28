@@ -494,7 +494,11 @@ public class UserService {
                     HttpStatus.FORBIDDEN);
         }
 
-        List<AuthorMangaDTO> mangas = mangaRepository.getAllMangas ();
+        List<AuthorMangaDTO> mangas = mangaRepository.getAllMangasInfo ();
+        mangas.forEach (items ->{
+            items.getManga_id ();
+        });
+
         if (mangas.isEmpty()) {
             Map<String, Object> msg = Map.of(
                     "msg", "Empty mangas!",
