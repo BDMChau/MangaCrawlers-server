@@ -19,6 +19,8 @@ import serverapi.Tables.ReadingHistory.ReadingHistory;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -634,11 +636,15 @@ public class UserService {
 
         ratingMangas.forEach(item->{
             Long mangaId = item.getManga_id();
-            float stars = (float) item.getStar();
+
+           float stars =  (float)item.getStar();
+
+            DecimalFormat df = new DecimalFormat("##,##");
+            String formatted = df.format(stars);
 
            Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
             Manga manga = mangaOptional.get();
-            manga.setStars(stars);
+            manga.setStars(Float.parseFloat(formatted));
 
             mangaRepository.saveAndFlush(manga);
 
