@@ -103,13 +103,7 @@ public class UserController {
 
 
 
-    // Delete User by userId
-    @CacheEvict(allEntries = true, value = {"allusers"})
-    @DeleteMapping("/deleteuser")
-    public ResponseEntity deleteUser(@RequestBody UserPOJO userPOJO) {
-        Long userId = Long.parseLong(userPOJO.getUser_id());
-        return userService.deleteUser(userId);
-    }
+
 
     @CacheEvict(allEntries = true, value = {"allusers"})
     @PutMapping("/deprecateuser")
@@ -123,16 +117,8 @@ public class UserController {
         return userService.deprecateUser(userId, adminId);
     }
 
-    @Cacheable(value = "allusers", key = "#request.getAttribute(\"user\").get(\"user_id\")")
-    @GetMapping("/getallusers")
-    public ResponseEntity getAllUsers(ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
-
-        return userService.getAllUsers(userId);
-    }
-
     // Delete User by userId
+    @CacheEvict(allEntries = true, value = {"allusers"})
     @DeleteMapping("/deleteuser")
     public ResponseEntity deleteUser(@RequestBody UserPOJO userPOJO, ServletRequest request) {
 
@@ -143,6 +129,18 @@ public class UserController {
 
         return userService.deleteUser(userId, adminId);
     }
+
+
+
+    @Cacheable(value = "allusers", key = "#request.getAttribute(\"user\").get(\"user_id\")")
+    @GetMapping("/getallusers")
+    public ResponseEntity getAllUsers(ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+        return userService.getAllUsers(userId);
+    }
+
 
 
     @PutMapping("/updateavatar")

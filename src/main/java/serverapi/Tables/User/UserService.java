@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Query.DTO.AuthorMangaDTO;
-import serverapi.Query.DTO.ChapterCommentsDTO;
 import serverapi.Query.DTO.FollowingDTO;
 import serverapi.Query.DTO.UserReadingHistoryDTO;
 import serverapi.Query.Repository.*;
@@ -469,6 +468,10 @@ public class UserService {
         Optional<User> userOptional = userRepos.findById(userId);
         if (userOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "User not found!");
+        }
+
+        return null;
+    }
     /////Interact with mangas
 
     public ResponseEntity getAllMangas(Long userId) {
