@@ -15,6 +15,7 @@ import serverapi.StaticFiles.UserAvatarCollection;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.FollowingManga.FollowingManga;
 import serverapi.Tables.Manga.Manga;
+import serverapi.Tables.Manga.POJO.RatingPOJO;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
 
 import java.io.IOException;
@@ -554,6 +555,32 @@ public class UserService {
         Map<String, Object> msg = Map.of(
                 "msg", "Remove avatar successfully!",
                 "avatar_url", user.getUser_avatar()
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                HttpStatus.OK);
+    }
+
+    public ResponseEntity ratingManga(Long userId, Long mangaId,Integer value, RatingPOJO ratingPOJO){
+
+        Optional<User> userOptional = userRepos.findById(userId);
+        if (userOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "User not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get();
+
+        Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
+        if (mangaOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of("msg", "No mangas!");
+            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
+        }
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Rating manga successfully",
+                "mangaInfo", mangaOptional
+
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
                 HttpStatus.OK);

@@ -31,9 +31,11 @@ public class RatingManga {
     )
     private Long ratingmanga_id;
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "ratingManga", cascade = CascadeType.ALL)
-    private Collection<User> users;
+
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_id")
+    private User user;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
