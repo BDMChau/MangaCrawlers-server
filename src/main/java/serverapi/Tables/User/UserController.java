@@ -110,12 +110,6 @@ public class UserController {
 
     }
 
-    @GetMapping("/averagestars")
-    public ResponseEntity averageStar() {
-
-        return userService.averageStar();
-    }
-
 
     @PutMapping("/updateavatar")
     public ResponseEntity updateAvatar(
@@ -143,7 +137,16 @@ public class UserController {
     }
 
 
-//////////////////////comment parts//////////////////////
+    ////////////comment parts
+    @PostMapping("/addcommentchapter")
+    public ResponseEntity addCommentChapter(@RequestBody CommentPOJO commentPOJO, ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+        Long chapterId = Long.parseLong(commentPOJO.getChapter_id());
+        String content = commentPOJO.getChaptercmt_content();
+
+        return userService.addCommentChapter(chapterId, userId, content);
+    }
 
 
 //////////////////////// Admin parts ////////////////////////////

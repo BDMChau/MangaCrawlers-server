@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Helpers.RoundNumber;
 import serverapi.Query.DTO.AuthorMangaDTO;
-import serverapi.Query.DTO.AverageStarDTO;
 import serverapi.Query.DTO.CommentExportDTO;
 import serverapi.Query.DTO.FollowingDTO;
 import serverapi.Query.DTO.UserReadingHistoryDTO;
@@ -248,7 +247,6 @@ public class UserService {
 
     //////////////////////Comment parts//////////////////////
     public ResponseEntity addCommentChapter(Long chapterId, Long userId, String content) {
-
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
         Calendar timeUpdated = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
@@ -281,21 +279,20 @@ public class UserService {
         chapterComments.setChaptercmt_time(timeUpdated);
         chapterCommentsRepos.save(chapterComments);
 
-        CommentExportDTO commentExportDTO = new CommentExportDTO ();
+        CommentExportDTO commentExportDTO = new CommentExportDTO();
 
-        commentExportDTO.setChapter_id (chapterComments.getChapter ().getChapter_id ());
-        commentExportDTO.setChapter_name (chapterComments.getChapter ().getChapter_name ());
-        commentExportDTO.setCreatedAt (chapterComments.getChapter ().getCreatedAt ());
+        commentExportDTO.setChapter_id(chapterComments.getChapter().getChapter_id());
+        commentExportDTO.setChapter_name(chapterComments.getChapter().getChapter_name());
+        commentExportDTO.setCreatedAt(chapterComments.getChapter().getCreatedAt());
 
-        commentExportDTO.setChaptercmt_id (chapterComments.getChaptercmt_id ());
-        commentExportDTO.setChaptercmt_content (chapterComments.getChaptercmt_content ());
-        commentExportDTO.setChaptercmt_time (chapterComments.getChaptercmt_time ());
+        commentExportDTO.setChaptercmt_id(chapterComments.getChaptercmt_id());
+        commentExportDTO.setChaptercmt_content(chapterComments.getChaptercmt_content());
+        commentExportDTO.setChaptercmt_time(chapterComments.getChaptercmt_time());
 
-        commentExportDTO.setUser_id (chapterComments.getUser ().getUser_id ());
-        commentExportDTO.setUser_email (chapterComments.getUser ().getUser_email ());
-        commentExportDTO.setUser_name (chapterComments.getUser ().getUser_name ());
-        commentExportDTO.setUser_avatar (chapterComments.getUser ().getUser_avatar ());
-
+        commentExportDTO.setUser_id(chapterComments.getUser().getUser_id());
+        commentExportDTO.setUser_email(chapterComments.getUser().getUser_email());
+        commentExportDTO.setUser_name(chapterComments.getUser().getUser_name());
+        commentExportDTO.setUser_avatar(chapterComments.getUser().getUser_avatar());
 
 
         Map<String, Object> msg = Map.of(
@@ -376,31 +373,6 @@ public class UserService {
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
                 HttpStatus.OK);
-    }
-
-
-    public ResponseEntity averageStar() {
-        List<AverageStarDTO> ratingMangas = ratingMangaRepos.avgRatingManga();
-
-        ratingMangas.forEach(ratingManga -> {
-            Long mangaId = ratingManga.getManga_id();
-
-            float stars = (float) ratingManga.getStar();
-            float starsAfterRounded = new RoundNumber().roundRatingManga(stars);
-
-            Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
-            Manga manga = mangaOptional.get();
-            manga.setStars(starsAfterRounded);
-
-            mangaRepository.saveAndFlush(manga);
-        });
-
-        Map<String, Object> msg = Map.of(
-                "msg", "Average stars manga successfully"
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
-                HttpStatus.OK);
-
     }
 
 
