@@ -103,9 +103,9 @@ public class UserController {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
         Long mangaId = Long.parseLong(ratingPOJO.getManga_id());
-        Float value = Float.parseFloat(ratingPOJO.getValue());
+        Float newValue = Float.parseFloat(ratingPOJO.getValue());
 
-        return userService.ratingManga(userId, mangaId, value);
+        return userService.ratingManga(userId, mangaId, newValue);
 
     }
 

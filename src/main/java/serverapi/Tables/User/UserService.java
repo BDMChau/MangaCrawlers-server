@@ -247,32 +247,64 @@ public class UserService {
 
 
     ///////////////// Rating manga part
-    public ResponseEntity ratingManga(Long userId, Long mangaId, Float value) {
+    public ResponseEntity ratingManga(Long userId, Long mangaId, Float newValue) {
         Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
         Manga manga = mangaOptional.get();
 
         Optional<User> userOptional = userRepos.findById(userId);
         User user = userOptional.get();
 
-        float averageResult;
+        float averageResult = 0;
         float total = 0;
-        List<Float> listValues = ratingMangaRepos.findAllValueByMangaId(mangaId);
-        for (Float oneValue : listValues) {
-            total += oneValue;
+        float roundedResult = 0;
+
+
+        Long ratingMangaId = null;
+        List<RatingManga> ratingMangaList = ratingMangaRepos.findAllByMangaId(mangaId);
+        for (RatingManga ratingManga : ratingMangaList) {
+            if (ratingManga.getUser().getUser_id().equals(userId)) {
+                ratingMangaId = ratingManga.getRatingmanga_id();
+            }
         }
 
-        averageResult = (total + value) / (listValues.size() + 1);
+        if (ratingMangaId == null) {
+            System.out.println("alo alo alo");
+            for (RatingManga ratingManga : ratingMangaList) {
+                total += ratingManga.getValue();
+            }
 
-        Float roundedResult = new RoundNumber().roundRatingManga(averageResult);
+            averageResult = (total + newValue) / (ratingMangaList.size() + 1);
 
-        manga.setStars(roundedResult);
-        mangaRepository.save(manga);
+            roundedResult = new RoundNumber().roundRatingManga(averageResult);
 
-        RatingManga ratingManga = new RatingManga();
-        ratingManga.setManga(manga);
-        ratingManga.setUser(user);
-        ratingManga.setValue(value);
-        ratingMangaRepos.save(ratingManga);
+            manga.setStars(roundedResult);
+            mangaRepository.save(manga);
+
+            RatingManga ratingManga = new RatingManga();
+            ratingManga.setManga(manga);
+            ratingManga.setUser(user);
+            ratingManga.setValue(newValue);
+            ratingMangaRepos.save(ratingManga);
+
+        } else {
+            Optional<RatingManga> ratingMangaOptional = ratingMangaRepos.findById(ratingMangaId);
+            RatingManga ratingManga = ratingMangaOptional.get();
+
+            ratingManga.setValue(newValue);
+
+            ratingMangaRepos.save(ratingManga);
+
+            for (RatingManga RatingManga : ratingMangaList) {
+                total += RatingManga.getValue();
+            }
+
+            averageResult = total / ratingMangaList.size();
+
+            roundedResult = new RoundNumber().roundRatingManga(averageResult);
+
+            manga.setStars(roundedResult);
+            mangaRepository.save(manga);
+        }
 
 
         Map<String, Object> msg = Map.of(
