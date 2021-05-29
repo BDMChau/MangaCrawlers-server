@@ -2,15 +2,14 @@ package serverapi.Tables.Manga;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
+import serverapi.Helpers.OffsetBasedPageRequest;
 import serverapi.Query.DTO.*;
-import serverapi.Query.Repository.ChapterRepos;
-import serverapi.Query.Repository.GenreRepos;
-import serverapi.Query.Repository.MangaRepos;
-import serverapi.Query.Repository.UpdateViewRepos;
+import serverapi.Query.Repository.*;
 import serverapi.Query.Specification.MangaSpecification;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
@@ -24,13 +23,15 @@ public class MangaService {
     private final ChapterRepos chapterRepository;
     private final UpdateViewRepos updateViewRepos;
     private final GenreRepos genreRepository;
+    private final ChapterCommentsRepos chapterCommentsRepos;
 
     @Autowired
-    public MangaService(MangaRepos mangaRepository, ChapterRepos chapterRepository, UpdateViewRepos updateViewRepos, GenreRepos genreRepository) {
+    public MangaService(MangaRepos mangaRepository, ChapterRepos chapterRepository, UpdateViewRepos updateViewRepos, GenreRepos genreRepository, ChapterCommentsRepos chapterCommentsRepos) {
         this.mangaRepository = mangaRepository;
         this.chapterRepository = chapterRepository;
         this.updateViewRepos = updateViewRepos;
         this.genreRepository = genreRepository;
+        this.chapterCommentsRepos = chapterCommentsRepos;
     }
 
     public ResponseEntity updateViewsChapter(Long mangaId, Long chapterId, MangaPOJO mangaPOJO) {
@@ -208,6 +209,40 @@ public class MangaService {
         Map<String, Object> msg = Map.of(
                 "msg", "Get search results successfully!",
                 "data", searchingResults
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    public ResponseEntity getCommentsManga(Long mangaId, int amount, int from) {
+
+        //get list comments in 1 chapter
+        Optional<AuthorMangaDTO> mangaOptional = mangaRepository.getAllByMangaId (mangaId);
+
+        if (mangaOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Empty mangas!"
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
+        List<ChapterDTO> chapterDTOList = chapterRepository.findChaptersbyMangaId (mangaId);
+        System.out.println ("chapterDTOList "+chapterDTOList);
+
+        chapterDTOList.forEach (items ->{
+            Pageable pageableChapter = new OffsetBasedPageRequest (0, 1);
+            List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsChapter (items.getChapter_id (), pageableChapter);
+        });
+
+//
+//        if (chapterCommentsDTOList.isEmpty()) {
+//            Map<String, Object> msg = Map.of("msg", "No comment found!");
+//            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
+//        }
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get chapter comment successfully!"
+//                "Info", chapterCommentsDTOList
+//
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }

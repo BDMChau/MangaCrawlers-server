@@ -495,9 +495,6 @@ public class UserService {
         }
 
         List<AuthorMangaDTO> mangas = mangaRepository.getAllMangasInfo ();
-        mangas.forEach (items ->{
-            items.getManga_id ();
-        });
 
         if (mangas.isEmpty()) {
             Map<String, Object> msg = Map.of(

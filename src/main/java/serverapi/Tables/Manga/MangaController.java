@@ -5,6 +5,7 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import serverapi.Tables.Manga.POJO.CommentPOJO;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 
 @RestController
@@ -81,6 +82,19 @@ public class MangaController {
         return mangaService.searchMangasByName(mangaName);
     }
 
+    @PostMapping("/getcommentsmanga")
+    public ResponseEntity getCommentsChapter(@RequestBody CommentPOJO commentPOJO) {
+
+        Long mangaId = Long.parseLong(commentPOJO.getManga_id ());
+
+        int from = Integer.parseInt (commentPOJO.getFrom ());
+        System.out.println ("from_"+from);
+
+        int amount = Integer.parseInt (commentPOJO.getAmount ());
+        System.out.println ("amount_"+amount);
+
+        return mangaService.getCommentsManga(mangaId, amount, from);
+    }
 
 
 

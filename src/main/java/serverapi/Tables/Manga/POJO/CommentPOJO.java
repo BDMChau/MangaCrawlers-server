@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 public class CommentPOJO {
 
+    private String manga_id;
     private String chapter_id;
     private String from;
     private String amount;
