@@ -14,7 +14,6 @@ import serverapi.StaticFiles.UserAvatarCollection;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.FollowingManga.FollowingManga;
 import serverapi.Tables.Manga.Manga;
-import serverapi.Tables.Manga.POJO.RatingPOJO;
 import serverapi.Tables.RatingManga.RatingManga;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
 
@@ -34,7 +33,9 @@ public class UserService {
     private final RatingMangaRepos ratingMangaRepos;
 
     @Autowired
-    public UserService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos, ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos, ChapterCommentsRepos chapterCommentsRepos, RatingMangaRepos ratingMangaRepos) {
+    public UserService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos,
+                       ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos,
+                       ChapterCommentsRepos chapterCommentsRepos, RatingMangaRepos ratingMangaRepos) {
         this.mangaRepository = mangaRepository;
         this.followingRepos = followingRepos;
         this.userRepos = userRepos;
@@ -45,9 +46,7 @@ public class UserService {
     }
 
 
-//////////////////////History parts//////////////////////
-
-
+    //////////////////////History reading manga parts
     public ResponseEntity GetReadingHistory(Long userId) {
         List<UserReadingHistoryDTO> readingHistoryDTO = readingHistoryRepos.GetHistoriesByUserId(userId);
         readingHistoryDTO.sort(Comparator.comparing(UserReadingHistoryDTO::getReading_History_time).reversed());
@@ -127,8 +126,7 @@ public class UserService {
     }
 
 
-//////////////////////Follow parts//////////////////////
-
+    ////////////////////// Following manga parts
     public ResponseEntity getFollowingMangas(Long UserId) {
 
         List<FollowingDTO> followingDTOList = followingRepos.findByUserId(UserId);
@@ -242,14 +240,104 @@ public class UserService {
     }
 
 
-
 //////////////////////Comment parts//////////////////////
 
 
-//////////////////////Admin parts//////////////////////
+    ///////////////// Rating manga part
+    public ResponseEntity ratingManga(Long userId, Long mangaId, Float value) {
+        Optional<User> userOptional = userRepos.findById(userId);
+        if (userOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "User not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get();
 
-    //////Interact with users
+        Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
+        if (mangaOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of("msg", "No mangas!");
+            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
+        }
 
+        List<RatingMangaDTO> ratingMangaDTOS = ratingMangaRepos.ratingManga(userId);
+        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+        ratingMangaDTOS.forEach(item -> {
+            if (item.getManga_id().equals(mangaId)) {
+
+                atomicBoolean.set(true);
+
+                Long ratingMangaId = item.getRatingmanga_id();
+
+
+                Optional<RatingManga> ratingMangaOptional = ratingMangaRepos.findById(ratingMangaId);
+                RatingManga ratingManga = ratingMangaOptional.get();
+
+                Manga manga = mangaOptional.get();
+
+
+                ratingManga.setValue(value);
+                ratingManga.setManga(manga);
+
+                ratingMangaRepos.save(ratingManga);
+            }
+
+        });
+
+        if (atomicBoolean.get() == true) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Update rating manga successfully!"
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+
+        }
+
+        Manga manga = mangaOptional.get();
+        System.out.println("manga updated rating: " + manga);
+
+
+        RatingManga rating = new RatingManga();
+        rating.setManga(manga);
+        rating.setUser(user);
+        rating.setValue(value);
+
+        ratingMangaRepos.save(rating);
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Rating manga successfully"
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                HttpStatus.OK);
+    }
+
+
+    public ResponseEntity averageStar() {
+        List<AverageStarDTO> ratingMangas = ratingMangaRepos.avgRatingManga();
+
+        ratingMangas.forEach(ratingManga -> {
+            Long mangaId = ratingManga.getManga_id();
+
+            float stars = (float) ratingManga.getStar();
+            float starsAfterRounded = new RoundNumber().roundRatingManga(stars);
+
+            Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
+            Manga manga = mangaOptional.get();
+            manga.setStars(starsAfterRounded);
+
+            mangaRepository.saveAndFlush(manga);
+        });
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Average stars manga successfully"
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                HttpStatus.OK);
+
+    }
+
+
+////////////////////////// Admin parts  /////////////////////////
+
+    //////////// Interact with users
     public ResponseEntity deleteUser(Long userId, Long adminId) {
         Optional<User> adminOptional = userRepos.findById(adminId);
         if (adminOptional.isEmpty()) {
@@ -345,7 +433,6 @@ public class UserService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
     }
-
 
 
     public ResponseEntity getAllUsers(Long userId) {
@@ -464,104 +551,7 @@ public class UserService {
     }
 
 
-
-    //////////// rating part
-
-    public ResponseEntity ratingManga(Long userId, Long mangaId,Float value, RatingPOJO ratingPOJO){
-        Optional<User> userOptional = userRepos.findById(userId);
-        if (userOptional.isEmpty()) {
-            Map<String, Object> err = Map.of("err", "User not found!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-                    HttpStatus.BAD_REQUEST);
-        }
-        User user = userOptional.get();
-
-        Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
-        if (mangaOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "No mangas!");
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
-        }
-
-        List<RatingMangaDTO> ratingMangaDTOS = ratingMangaRepos.ratingManga(userId);
-        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-        ratingMangaDTOS.forEach(item->{
-            if(item.getManga_id().equals(mangaId)){
-
-                atomicBoolean.set(true);
-
-                Long ratingMangaId = item.getRatingmanga_id();
-
-
-                Optional<RatingManga> ratingMangaOptional = ratingMangaRepos.findById(ratingMangaId);
-                RatingManga ratingManga = ratingMangaOptional.get();
-
-                Manga manga = mangaOptional.get();
-
-
-                ratingManga.setValue(value);
-                ratingManga.setManga(manga);
-
-                ratingMangaRepos.save(ratingManga);
-            }
-
-        });
-
-        if (atomicBoolean.get() == true) {
-            Map<String, Object> msg = Map.of(
-                    "msg", "Update rating manga successfully!"
-            );
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-
-        }
-
-        Manga manga = mangaOptional.get();
-        System.out.println("manga updated rating: "+manga);
-
-
-        RatingManga rating = new RatingManga();
-        rating.setManga(manga);
-        rating.setUser(user);
-        rating.setValue(value);
-
-        ratingMangaRepos.save(rating);
-
-        Map<String, Object> msg = Map.of(
-                "msg", "Rating manga successfully"
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
-                HttpStatus.OK);
-    }
-
-
-    public ResponseEntity averageStar(){
-        List<AverageStarDTO> ratingMangas = ratingMangaRepos.avgRatingManga();
-
-        ratingMangas.forEach(ratingManga->{
-            Long mangaId = ratingManga.getManga_id();
-
-            float stars =  (float)ratingManga.getStar();
-            float starsAfterRounded = new RoundNumber().roundRatingManga(stars);
-
-            Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
-            Manga manga = mangaOptional.get();
-            manga.setStars(starsAfterRounded);
-
-            mangaRepository.saveAndFlush(manga);
-        });
-
-        Map<String, Object> msg = Map.of(
-                "msg", "Average stars manga successfully"
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
-                HttpStatus.OK);
-
-    }
-
-
-
-
     /////Interact with mangas
-
     public ResponseEntity getAllMangas(Long userId) {
         Optional<User> userOptional = userRepos.findById(userId);
         User user = userOptional.get();
@@ -582,9 +572,9 @@ public class UserService {
                     HttpStatus.FORBIDDEN);
         }
 
-        List<AuthorMangaDTO> mangas = mangaRepository.getAllMangasInfo ();
-        mangas.forEach (items ->{
-            items.getManga_id ();
+        List<AuthorMangaDTO> mangas = mangaRepository.getAllMangasInfo();
+        mangas.forEach(items -> {
+            items.getManga_id();
         });
 
         if (mangas.isEmpty()) {
@@ -600,8 +590,6 @@ public class UserService {
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
-
-
 
 
 }
