@@ -128,7 +128,7 @@ public class Manga {
             updatable = true,
             columnDefinition = "float default 0"
     )
-    private Float stars;
+    private float stars;
 
     @Column(
             columnDefinition = "bigint(20) default 0"
@@ -157,7 +157,7 @@ public class Manga {
     private Calendar createdAt;
 
 
-    public Manga(String manga_name, String status, String description, Float stars, Long views,
+    public Manga(String manga_name, String status, String description, float stars, Long views,
                  String thumbnail, int date_publications, Calendar createdAt) {
 
         this.manga_name = manga_name;

@@ -638,13 +638,28 @@ public class UserService {
             Long mangaId = item.getManga_id();
 
            float stars =  (float)item.getStar();
+           int starDiv = (int) (stars/1);
+            System.out.println("stardiv"+starDiv);
+           float starMod = stars % 1;
+            System.out.println("starmod"+starMod);
 
-            DecimalFormat df = new DecimalFormat("##,##");
-            String formatted = df.format(stars);
+            if(starMod > 0 && starMod < 0.5){
+                starMod = 0;
+            }
+            else if(starMod > 0.5 && starMod <= 1){
+                starMod = 1;
+            }
+            else if(starMod == 0.5){
+
+                starMod =0.5F;
+            }
+
+           float roundoff = starDiv + starMod;
 
            Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
             Manga manga = mangaOptional.get();
-            manga.setStars(Float.parseFloat(formatted));
+            manga.setStars(roundoff);
+
 
             mangaRepository.saveAndFlush(manga);
 
