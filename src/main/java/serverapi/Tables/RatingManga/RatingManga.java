@@ -39,11 +39,11 @@ public class RatingManga {
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="manga_id", insertable = false, updatable = false)
+    @JoinColumn(name="manga_id", insertable = true, updatable = true)
     private Manga manga;
 
 
-    @Column(columnDefinition = "int", nullable = true)
-    private Integer value;
+    @Column(columnDefinition = "float", nullable = true)
+    private Float value;
 
 }

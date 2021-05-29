@@ -1,5 +1,6 @@
 package serverapi.Tables.Manga;
 
+import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -15,8 +16,10 @@ import serverapi.Query.Specification.MangaSpecification;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.UpdateView.UpdateView;
+import org.junit.Assert.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MangaService {
@@ -142,6 +145,7 @@ public class MangaService {
         listViewsMangas.forEach(item -> {
             Long mangaId = item.getManga_id();
             Long totalViews = item.getViews();
+
             Calendar createdAt = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
             Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
@@ -173,23 +177,129 @@ public class MangaService {
 
 
     public ResponseEntity getWeeklyMangas() {
-        List<Manga> listWeeklyMangasRanking = mangaRepository.getWeekly(PageRequest.of(0, 5));
 
-        if (listWeeklyMangasRanking.isEmpty()) {
+        List<Manga> listCurrentWeekly = mangaRepository.getWeekly(7,0);
+        List<Manga> listPreviousWeekly = mangaRepository.getWeekly(14,7);
+        System.out.println("con chó thịnh"+listCurrentWeekly);
+        System.out.println("con đỉ thịnh:"+listPreviousWeekly);
+
+        if(listCurrentWeekly.isEmpty() ){
+
             Map<String, Object> err = Map.of(
                     "msg", "Nothing from weekly mangas ranking!"
             );
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, err).toJSON(), HttpStatus.OK);
         }
 
+        if(listPreviousWeekly.isEmpty()){
+            listPreviousWeekly = listCurrentWeekly;
+            System.out.println("check previous"+listPreviousWeekly);
+        }
+
+        List<WeeklyMangaDTO> listWeeklyMangasRanking = new ArrayList<>();
+
+
+        if(listCurrentWeekly.size() >= listPreviousWeekly.size()){
+            System.out.println("câm"+listCurrentWeekly.size());
+            System.out.println("cmcmc"+listPreviousWeekly.size());
+
+            int temp = listCurrentWeekly.size() - listPreviousWeekly.size();
+            int previousWeeklySize = listPreviousWeekly.size();
+            for(int i =0; i<listCurrentWeekly.size();i++){
+
+                for(int j=0 ; j<listPreviousWeekly.size() ; j++){
+
+                    if(listCurrentWeekly.get(i).getManga_id().equals(listPreviousWeekly.get(j).getManga_id())){
+
+                        WeeklyMangaDTO weeklyMangaDTO = new WeeklyMangaDTO();
+                        System.out.println("listCurrentWeekly.get(i).getManga_id()"+listCurrentWeekly.get(i).getManga_id());
+
+                       Long views = listCurrentWeekly.get(i).getViews() - listPreviousWeekly.get(j).getViews();
+
+                       weeklyMangaDTO.setManga_id(listCurrentWeekly.get(i).getManga_id());
+                       weeklyMangaDTO.setViews(listCurrentWeekly.get(i).getViews());
+                       weeklyMangaDTO.setView_compares(views);
+                        System.out.println("check set");
+
+                       listWeeklyMangasRanking.add(j,weeklyMangaDTO);
+                        System.out.println("listWeeklyMangasRanking.set(j,mangaDTO)"+listWeeklyMangasRanking);
+                    }
+                }
+
+            }
+            int z = 0;
+            while (z < temp){
+
+                WeeklyMangaDTO weeklyMangaDTO = new WeeklyMangaDTO();
+                weeklyMangaDTO.setManga_id(listCurrentWeekly.get(previousWeeklySize + z).getManga_id());
+                weeklyMangaDTO.setViews(listCurrentWeekly.get(previousWeeklySize + z).getViews());
+                weeklyMangaDTO.setView_compares(listCurrentWeekly.get(previousWeeklySize + z).getViews());
+
+                listWeeklyMangasRanking.add(weeklyMangaDTO);
+                z++;
+            }
+        }
+        else {
+
+            int temp = listPreviousWeekly.size() - listCurrentWeekly.size();
+            int previousWeeklySize = listPreviousWeekly.size();
+
+            for(int i =0; i < listPreviousWeekly.size(); i++){
+
+                for(int j=0; j < listCurrentWeekly.size(); j++){
+
+                    if(listPreviousWeekly.get(i).getManga_id().equals(listCurrentWeekly.get(j).getManga_id())){
+
+                        WeeklyMangaDTO weeklyMangaDTO = new WeeklyMangaDTO();
+                        System.out.println("listPreviousWeekly.get(i).getManga_id()");
+
+                        Long views = listCurrentWeekly.get(j).getViews() - listPreviousWeekly.get(i).getViews();
+
+                        weeklyMangaDTO.setManga_id(listCurrentWeekly.get(j).getManga_id());
+                        weeklyMangaDTO.setViews(listCurrentWeekly.get(j).getViews());
+                        weeklyMangaDTO.setView_compares(views);
+
+                        listWeeklyMangasRanking.add(weeklyMangaDTO);
+                    }
+                }
+
+            }
+
+        }
+
+        System.out.println("hà phương"+listWeeklyMangasRanking);
+        listWeeklyMangasRanking.sort(Comparator.comparing(WeeklyMangaDTO::getView_compares).reversed());
+     //   listWeeklyMangasRanking.stream().limit(5L);
+        System.out.println("list weekly manga ranking"+listWeeklyMangasRanking);
+
+        List<Manga> listWeeklyRanking = new ArrayList<>();
+
+        List<WeeklyMangaDTO> top5Mangas =  listWeeklyMangasRanking.stream().limit(5).collect(Collectors.toList());
+
+
+        top5Mangas.forEach(item->{
+
+            Optional<Manga> mangaOptional = mangaRepository.findById(item.getManga_id());
+            Manga manga = mangaOptional.get();
+            listWeeklyRanking.add(manga);
+
+            System.out.println("totototo"+listWeeklyRanking);
+
+        });
+
+        if (listWeeklyRanking.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "msg", "Nothing from weekly mangas ranking empty!"
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, err).toJSON(), HttpStatus.OK);
+        }
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get weekly mangas ranking successfully!",
-                "data", listWeeklyMangasRanking
+                "data", listWeeklyRanking
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
-
 
     public ResponseEntity searchMangasByName(String mangaName) {
         MangaSpecification specific =

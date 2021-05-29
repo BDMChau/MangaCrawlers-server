@@ -6,9 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
-import serverapi.Query.DTO.AuthorMangaDTO;
-import serverapi.Query.DTO.FollowingDTO;
-import serverapi.Query.DTO.UserReadingHistoryDTO;
+import serverapi.Query.DTO.*;
 import serverapi.Query.Repository.*;
 import serverapi.SharedServices.CloudinaryUploader;
 import serverapi.StaticFiles.UserAvatarCollection;
@@ -16,9 +14,14 @@ import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.FollowingManga.FollowingManga;
 import serverapi.Tables.Manga.Manga;
 import serverapi.Tables.Manga.POJO.RatingPOJO;
+import serverapi.Tables.RatingManga.RatingManga;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -31,17 +34,17 @@ public class UserService {
     private final ReadingHistoryRepos readingHistoryRepos;
     private final ChapterRepos chapterRepos;
     private final ChapterCommentsRepos chapterCommentsRepos;
+    private final RatingMangaRepos ratingMangaRepos;
 
     @Autowired
-    public UserService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos,
-                       ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos,
-                       ChapterCommentsRepos chapterCommentsRepos) {
+    public UserService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos, ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos, ChapterCommentsRepos chapterCommentsRepos, RatingMangaRepos ratingMangaRepos) {
         this.mangaRepository = mangaRepository;
         this.followingRepos = followingRepos;
         this.userRepos = userRepos;
         this.readingHistoryRepos = readingHistoryRepos;
         this.chapterRepos = chapterRepos;
         this.chapterCommentsRepos = chapterCommentsRepos;
+        this.ratingMangaRepos = ratingMangaRepos;
     }
 
 
@@ -463,7 +466,7 @@ public class UserService {
                 HttpStatus.OK);
     }
 
-    public ResponseEntity ratingManga(Long userId, Long mangaId,Integer value, RatingPOJO ratingPOJO){
+    public ResponseEntity ratingManga(Long userId, Long mangaId,Float value, RatingPOJO ratingPOJO){
 
         Optional<User> userOptional = userRepos.findById(userId);
         if (userOptional.isEmpty()) {
@@ -483,7 +486,6 @@ public class UserService {
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
                     HttpStatus.BAD_REQUEST);
         }
-        User user = userOptional.get();
 
         Boolean isAdmin = user.getUser_isAdmin();
         if (Boolean.FALSE.equals(isAdmin)) {
