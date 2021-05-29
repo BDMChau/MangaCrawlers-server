@@ -11,7 +11,6 @@ import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.Manga.POJO.RatingPOJO;
 import serverapi.Tables.User.POJO.UserPOJO;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -170,17 +169,7 @@ public class UserController {
     }
 
 
-    @PutMapping("/ratingmanga")
-    public ResponseEntity ratingManga(@RequestBody RatingPOJO ratingPOJO, ServletRequest request){
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
-        Long mangaId = Long.parseLong(ratingPOJO.getManga_id());
-        System.out.println("tra ve gium t"+mangaId);
-        Float value = Float.parseFloat(ratingPOJO.getValue());
 
-        return userService.ratingManga(userId,mangaId,value,ratingPOJO);
-
-    }
     /////Interact with mangas
 
     //Get all mangas in admin page
@@ -193,6 +182,18 @@ public class UserController {
         return userService.getAllMangas(userId);
     }
 
+    //////////// rating part
+    @PutMapping("/ratingmanga")
+    public ResponseEntity ratingManga(@RequestBody RatingPOJO ratingPOJO, ServletRequest request){
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+        Long mangaId = Long.parseLong(ratingPOJO.getManga_id());
+        System.out.println("tra ve gium t"+mangaId);
+        Float value = Float.parseFloat(ratingPOJO.getValue());
+
+        return userService.ratingManga(userId,mangaId,value,ratingPOJO);
+
+    }
 
     @GetMapping("/averagestars")
     public ResponseEntity averageStar() {

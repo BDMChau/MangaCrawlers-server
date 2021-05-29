@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
+import serverapi.Helpers.RoundNumber;
 import serverapi.Query.DTO.*;
 import serverapi.Query.Repository.*;
 import serverapi.SharedServices.CloudinaryUploader;
@@ -17,11 +18,7 @@ import serverapi.Tables.Manga.POJO.RatingPOJO;
 import serverapi.Tables.RatingManga.RatingManga;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -466,14 +463,18 @@ public class UserService {
                 HttpStatus.OK);
     }
 
-    public ResponseEntity ratingManga(Long userId, Long mangaId,Float value, RatingPOJO ratingPOJO){
 
+
+    //////////// rating part
+
+    public ResponseEntity ratingManga(Long userId, Long mangaId,Float value, RatingPOJO ratingPOJO){
         Optional<User> userOptional = userRepos.findById(userId);
         if (userOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "User not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
                     HttpStatus.BAD_REQUEST);
         }
+        User user = userOptional.get();
 
         Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
         if (mangaOptional.isEmpty()) {
@@ -494,36 +495,31 @@ public class UserService {
                 Optional<RatingManga> ratingMangaOptional = ratingMangaRepos.findById(ratingMangaId);
                 RatingManga ratingManga = ratingMangaOptional.get();
 
-                User user = userOptional.get();
                 Manga manga = mangaOptional.get();
 
-                System.out.println("aaaaaaaaaa"+value);
+
                 ratingManga.setValue(value);
-                System.out.println("shshshshs:"+value);
                 ratingManga.setManga(manga);
 
                 ratingMangaRepos.save(ratingManga);
             }
 
         });
+
         if (atomicBoolean.get() == true) {
             Map<String, Object> msg = Map.of(
-                    "msg", "Update ratingmanga successfully!"
-
+                    "msg", "Update rating manga successfully!"
             );
             return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
         }
 
         Manga manga = mangaOptional.get();
-        System.out.println("ra cai gi:"+manga);
+        System.out.println("manga updated rating: "+manga);
 
-        User user = userOptional.get();
 
         RatingManga rating = new RatingManga();
-
         rating.setManga(manga);
-
         rating.setUser(user);
         rating.setValue(value);
 
@@ -536,40 +532,23 @@ public class UserService {
                 HttpStatus.OK);
     }
 
+
     public ResponseEntity averageStar(){
         List<AverageStarDTO> ratingMangas = ratingMangaRepos.avgRatingManga();
 
-        ratingMangas.forEach(item->{
-            Long mangaId = item.getManga_id();
+        ratingMangas.forEach(ratingManga->{
+            Long mangaId = ratingManga.getManga_id();
 
-            float stars =  (float)item.getStar();
-            int starDiv = (int) (stars/1);
-            System.out.println("stardiv"+starDiv);
-            float starMod = stars % 1;
-            System.out.println("starmod"+starMod);
-
-            if(starMod > 0 && starMod < 0.5){
-                starMod = 0;
-            }
-            else if(starMod > 0.5 && starMod <= 1){
-                starMod = 1;
-            }
-            else if(starMod == 0.5){
-
-                starMod =0.5F;
-            }
-
-            float roundoff = starDiv + starMod;
+            float stars =  (float)ratingManga.getStar();
+            float starsAfterRounded = new RoundNumber().roundRatingManga(stars);
 
             Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
             Manga manga = mangaOptional.get();
-            manga.setStars(roundoff);
-
+            manga.setStars(starsAfterRounded);
 
             mangaRepository.saveAndFlush(manga);
-
-
         });
+
         Map<String, Object> msg = Map.of(
                 "msg", "Average stars manga successfully"
         );
