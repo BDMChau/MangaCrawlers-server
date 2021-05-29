@@ -471,14 +471,121 @@ public class UserService {
         Optional<User> userOptional = userRepos.findById(userId);
         if (userOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "User not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
         }
 
-        return null;
+        Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
+        if (mangaOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of("msg", "No mangas!");
+            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
+        }
+
+        List<RatingMangaDTO> ratingMangaDTOS = ratingMangaRepos.ratingManga(userId);
+        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+        ratingMangaDTOS.forEach(item->{
+            if(item.getManga_id().equals(mangaId)){
+
+                atomicBoolean.set(true);
+
+                Long ratingMangaId = item.getRatingmanga_id();
+
+
+                Optional<RatingManga> ratingMangaOptional = ratingMangaRepos.findById(ratingMangaId);
+                RatingManga ratingManga = ratingMangaOptional.get();
+
+                User user = userOptional.get();
+                Manga manga = mangaOptional.get();
+
+                System.out.println("aaaaaaaaaa"+value);
+                ratingManga.setValue(value);
+                System.out.println("shshshshs:"+value);
+                ratingManga.setManga(manga);
+
+                ratingMangaRepos.save(ratingManga);
+            }
+
+        });
+        if (atomicBoolean.get() == true) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Update ratingmanga successfully!"
+
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+
+        }
+
+        Manga manga = mangaOptional.get();
+        System.out.println("ra cai gi:"+manga);
+
+        User user = userOptional.get();
+
+        RatingManga rating = new RatingManga();
+
+        rating.setManga(manga);
+
+        rating.setUser(user);
+        rating.setValue(value);
+
+        ratingMangaRepos.save(rating);
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Rating manga successfully"
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                HttpStatus.OK);
     }
+
+    public ResponseEntity averageStar(){
+        List<AverageStarDTO> ratingMangas = ratingMangaRepos.avgRatingManga();
+
+        ratingMangas.forEach(item->{
+            Long mangaId = item.getManga_id();
+
+            float stars =  (float)item.getStar();
+            int starDiv = (int) (stars/1);
+            System.out.println("stardiv"+starDiv);
+            float starMod = stars % 1;
+            System.out.println("starmod"+starMod);
+
+            if(starMod > 0 && starMod < 0.5){
+                starMod = 0;
+            }
+            else if(starMod > 0.5 && starMod <= 1){
+                starMod = 1;
+            }
+            else if(starMod == 0.5){
+
+                starMod =0.5F;
+            }
+
+            float roundoff = starDiv + starMod;
+
+            Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
+            Manga manga = mangaOptional.get();
+            manga.setStars(roundoff);
+
+
+            mangaRepository.saveAndFlush(manga);
+
+
+        });
+        Map<String, Object> msg = Map.of(
+                "msg", "Average stars manga successfully"
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                HttpStatus.OK);
+
+    }
+
+
+
+
     /////Interact with mangas
 
     public ResponseEntity getAllMangas(Long userId) {
         Optional<User> userOptional = userRepos.findById(userId);
+        User user = userOptional.get();
         if (userOptional.isEmpty()) {
             Map<String, Object> err = Map.of(
                     "err", "Missing creadential to access this resource"
@@ -514,6 +621,9 @@ public class UserService {
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
+
+
+
 
 }
 
