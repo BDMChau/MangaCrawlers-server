@@ -2,7 +2,6 @@ package serverapi.Query.Repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 import serverapi.Query.DTO.ChapterImgDTO;
 import serverapi.Tables.ImageChapter.ImageChapter;
@@ -16,6 +15,5 @@ public interface ImgChapterRepos extends JpaRepository<ImageChapter, Long> {
             ".imageChapters i WHERE c.chapter_id =?1 ")
     List<ChapterImgDTO> findImgsByChapterId(Long chapter_id);
 
-    @Async
-    public <S extends ImageChapter> S save(S entity);
+
 }

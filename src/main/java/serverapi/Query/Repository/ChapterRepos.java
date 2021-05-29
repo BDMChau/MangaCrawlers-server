@@ -2,7 +2,6 @@ package serverapi.Query.Repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 import serverapi.Query.DTO.ChapterDTO;
 import serverapi.Tables.Chapter.Chapter;
@@ -30,6 +29,5 @@ public interface ChapterRepos extends JpaRepository<Chapter, Long> {
 List<ChapterDTO> findChaptersbyMangaId(Long manga_id);
 
 
-    @Async
-    public <S extends Chapter> S save(S entity);
+
 }

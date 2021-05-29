@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 import serverapi.Query.DTO.FollowingDTO;
 import serverapi.Tables.FollowingManga.FollowingManga;
@@ -25,8 +24,6 @@ public interface FollowingRepos extends JpaRepository<FollowingManga, Long> {
     List<FollowingDTO> findByUserId(Long userId);
 
 
-    @Async
-    <S extends FollowingManga> S save(S entity);
 
 
 

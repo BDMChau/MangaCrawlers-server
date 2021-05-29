@@ -2,7 +2,6 @@ package serverapi.Query.Repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 import serverapi.Query.DTO.ChapterDTO;
 import serverapi.Query.DTO.MangaDTO;
@@ -19,7 +18,6 @@ public interface UserRepos extends JpaRepository<User, Long> {
     @Query("SELECT new serverapi.Query.DTO.MangaDTO(m.manga_id, m.manga_name, m.thumbnail) FROM Manga m JOIN m.readingHistories rd WHERE m.manga_id =?1 ")
     List<MangaDTO> findMangaByReadingHistory(Long manga_id);
 
-    @Async
-    public <S extends User> S save(S entity);
+
 }
 

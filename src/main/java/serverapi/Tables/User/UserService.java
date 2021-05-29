@@ -9,12 +9,14 @@ import serverapi.Api.Response;
 import serverapi.Helpers.RoundNumber;
 import serverapi.Query.DTO.AuthorMangaDTO;
 import serverapi.Query.DTO.AverageStarDTO;
+import serverapi.Query.DTO.CommentExportDTO;
 import serverapi.Query.DTO.FollowingDTO;
 import serverapi.Query.DTO.UserReadingHistoryDTO;
 import serverapi.Query.Repository.*;
 import serverapi.SharedServices.CloudinaryUploader;
 import serverapi.StaticFiles.UserAvatarCollection;
 import serverapi.Tables.Chapter.Chapter;
+import serverapi.Tables.ChapterComments.ChapterComments;
 import serverapi.Tables.FollowingManga.FollowingManga;
 import serverapi.Tables.Manga.Manga;
 import serverapi.Tables.RatingManga.RatingManga;
@@ -148,6 +150,7 @@ public class UserService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
+
     public ResponseEntity addFollowManga(Long mangaId, Long userId) {
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
         List<FollowingDTO> follows = followingRepos.findByUserId(userId);
@@ -243,7 +246,67 @@ public class UserService {
     }
 
 
-//////////////////////Comment parts//////////////////////
+    //////////////////////Comment parts//////////////////////
+    public ResponseEntity addCommentChapter(Long chapterId, Long userId, String content) {
+
+        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+        Calendar timeUpdated = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+
+        Optional<Chapter> chapterOptional = chapterRepos.findById(chapterId);
+
+        //check chapter exit
+        if (chapterOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Empty chapters!"
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
+        Chapter chapter = chapterOptional.get();
+
+        Optional<User> userOptional = userRepos.findById(userId);
+
+        ///check user exit
+        if (userOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Empty user!"
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
+        User user = userOptional.get();
+
+        ChapterComments chapterComments = new ChapterComments();
+        chapterComments.setChapter(chapter);
+        chapterComments.setUser(user);
+        chapterComments.setChaptercmt_content(content);
+        chapterComments.setChaptercmt_time(timeUpdated);
+        chapterCommentsRepos.save(chapterComments);
+
+        CommentExportDTO commentExportDTO = new CommentExportDTO ();
+
+        commentExportDTO.setChapter_id (chapterComments.getChapter ().getChapter_id ());
+        commentExportDTO.setChapter_name (chapterComments.getChapter ().getChapter_name ());
+        commentExportDTO.setCreatedAt (chapterComments.getChapter ().getCreatedAt ());
+
+        commentExportDTO.setChaptercmt_id (chapterComments.getChaptercmt_id ());
+        commentExportDTO.setChaptercmt_content (chapterComments.getChaptercmt_content ());
+        commentExportDTO.setChaptercmt_time (chapterComments.getChaptercmt_time ());
+
+        commentExportDTO.setUser_id (chapterComments.getUser ().getUser_id ());
+        commentExportDTO.setUser_email (chapterComments.getUser ().getUser_email ());
+        commentExportDTO.setUser_name (chapterComments.getUser ().getUser_name ());
+        commentExportDTO.setUser_avatar (chapterComments.getUser ().getUser_avatar ());
+
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "add comment successfully!",
+                "comment_info", commentExportDTO
+
+        );
+        return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
+
+
+    }
 
 
     ///////////////// Rating manga part
@@ -579,9 +642,6 @@ public class UserService {
         }
 
         List<AuthorMangaDTO> mangas = mangaRepository.getAllMangasInfo();
-        mangas.forEach(items -> {
-            items.getManga_id();
-        });
 
         if (mangas.isEmpty()) {
             Map<String, Object> msg = Map.of(
@@ -592,7 +652,7 @@ public class UserService {
         }
         Map<String, Object> msg = Map.of(
                 "msg", "Get all mangas successfully!",
-                "users", mangas
+                "mangas", mangas
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
