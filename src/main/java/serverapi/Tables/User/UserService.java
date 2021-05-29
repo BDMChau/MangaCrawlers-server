@@ -7,7 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Helpers.RoundNumber;
-import serverapi.Query.DTO.*;
+import serverapi.Query.DTO.AuthorMangaDTO;
+import serverapi.Query.DTO.AverageStarDTO;
+import serverapi.Query.DTO.FollowingDTO;
+import serverapi.Query.DTO.UserReadingHistoryDTO;
 import serverapi.Query.Repository.*;
 import serverapi.SharedServices.CloudinaryUploader;
 import serverapi.StaticFiles.UserAvatarCollection;
@@ -245,65 +248,36 @@ public class UserService {
 
     ///////////////// Rating manga part
     public ResponseEntity ratingManga(Long userId, Long mangaId, Float value) {
+        Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
+        Manga manga = mangaOptional.get();
+
         Optional<User> userOptional = userRepos.findById(userId);
-        if (userOptional.isEmpty()) {
-            Map<String, Object> err = Map.of("err", "User not found!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-                    HttpStatus.BAD_REQUEST);
-        }
         User user = userOptional.get();
 
-        Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
-        if (mangaOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "No mangas!");
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
+        float averageResult;
+        float total = 0;
+        List<Float> listValues = ratingMangaRepos.findAllValueByMangaId(mangaId);
+        for (Float oneValue : listValues) {
+            total += oneValue;
         }
 
-        List<RatingMangaDTO> ratingMangaDTOS = ratingMangaRepos.ratingManga(userId);
-        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-        ratingMangaDTOS.forEach(item -> {
-            if (item.getManga_id().equals(mangaId)) {
+        averageResult = (total + value) / (listValues.size() + 1);
 
-                atomicBoolean.set(true);
+        Float roundedResult = new RoundNumber().roundRatingManga(averageResult);
 
-                Long ratingMangaId = item.getRatingmanga_id();
+        manga.setStars(roundedResult);
+        mangaRepository.save(manga);
 
+        RatingManga ratingManga = new RatingManga();
+        ratingManga.setManga(manga);
+        ratingManga.setUser(user);
+        ratingManga.setValue(value);
+        ratingMangaRepos.save(ratingManga);
 
-                Optional<RatingManga> ratingMangaOptional = ratingMangaRepos.findById(ratingMangaId);
-                RatingManga ratingManga = ratingMangaOptional.get();
-
-                Manga manga = mangaOptional.get();
-
-
-                ratingManga.setValue(value);
-                ratingManga.setManga(manga);
-
-                ratingMangaRepos.save(ratingManga);
-            }
-
-        });
-
-        if (atomicBoolean.get() == true) {
-            Map<String, Object> msg = Map.of(
-                    "msg", "Update rating manga successfully!"
-            );
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-
-        }
-
-        Manga manga = mangaOptional.get();
-        System.out.println("manga updated rating: " + manga);
-
-
-        RatingManga rating = new RatingManga();
-        rating.setManga(manga);
-        rating.setUser(user);
-        rating.setValue(value);
-
-        ratingMangaRepos.save(rating);
 
         Map<String, Object> msg = Map.of(
-                "msg", "Rating manga successfully"
+                "msg", "Rating manga successfully",
+                "manga", Map.of("stars", roundedResult)
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
                 HttpStatus.OK);

@@ -20,4 +20,8 @@ public interface RatingMangaRepos extends JpaRepository<RatingManga,Long> {
 
     @Query("SELECT new serverapi.Query.DTO.AverageStarDTO(AVG(rm.value), m.manga_id) FROM RatingManga rm JOIN rm.manga m GROUP BY m.manga_id ")
     List<AverageStarDTO> avgRatingManga();
+
+    @Query(value = "SELECT rm.value from RatingManga rm JOIN rm.manga m where m.manga_id = " +
+            "?1 ")
+    List<Float> findAllValueByMangaId(Long mangaId);
 }
