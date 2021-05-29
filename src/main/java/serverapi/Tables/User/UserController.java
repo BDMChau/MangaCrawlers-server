@@ -147,7 +147,7 @@ public class UserController {
 
 //////////////////////// Admin parts ////////////////////////////
 
-    //    @Cacheable(value = "allmangas", key = "#root.method")
+    @Cacheable(value = "allmangas", key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @GetMapping("/getallmangas")
     public ResponseEntity getAllMangas(ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -155,6 +155,7 @@ public class UserController {
 
         return userService.getAllMangas(userId);
     }
+
 
     @Cacheable(value = "allusers", key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @GetMapping("/getallusers")
