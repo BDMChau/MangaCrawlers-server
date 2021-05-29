@@ -239,8 +239,9 @@ public class MangaService {
         }
 
         List<ChapterCommentsDTO> commentsOfChapters = new ArrayList<>();
+        // get cmts in chapters >>> currently is latest cmt in a chapters
         chapterDTOList.forEach(chapter -> {
-            Pageable pageableChapter = new OffsetBasedPageRequest(from, amount);
+            Pageable pageableChapter = new OffsetBasedPageRequest(0, 1);
             List<ChapterCommentsDTO> chapterCommentsDTOList =
                     chapterCommentsRepos.commentsChapterOnManga(chapter.getChapter_id(), pageableChapter);
 

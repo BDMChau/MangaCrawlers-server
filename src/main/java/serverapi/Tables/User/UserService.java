@@ -244,52 +244,51 @@ public class UserService {
     }
 
 
+    //////////////////////Comment parts//////////////////////
+    public ResponseEntity addCommentChapter(Long chapterId, Long userId, String content) {
 
-//////////////////////Comment parts//////////////////////
-public ResponseEntity addCommentChapter(Long chapterId, Long userId, String content) {
+        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+        Calendar timeUpdated = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
-    AtomicBoolean atomicBoolean = new AtomicBoolean (false);
-    Calendar updatetime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Optional<Chapter> chapterOptional = chapterRepos.findById(chapterId);
 
-    Optional<Chapter> chapterOptional = chapterRepos.findById (chapterId);
+        //check chapter exit
+        if (chapterOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Empty chapters!"
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
+        Chapter chapter = chapterOptional.get();
 
-    //check chapter exit
-    if(chapterOptional.isEmpty ()){
+        Optional<User> userOptional = userRepos.findById(userId);
+
+        ///check user exit
+        if (userOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Empty user!"
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
+        User user = userOptional.get();
+
+        ChapterComments chapterComments = new ChapterComments();
+
+        chapterComments.setChapter(chapter);
+        chapterComments.setUser(user);
+        chapterComments.setChaptercmt_content(content);
+        chapterComments.setChaptercmt_time(timeUpdated);
+        chapterCommentsRepos.save(chapterComments);
+
         Map<String, Object> msg = Map.of(
-                "msg", "Empty chapters!"
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
-    Chapter chapter = chapterOptional.get ();
-
-    Optional<User> userOptional = userRepos.findById (userId);
-
-    ///check user exit
-    if(userOptional.isEmpty ()){
-        Map<String, Object> msg = Map.of(
-                "msg", "Empty user!"
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
-    User user= userOptional.get ();
-
-    ChapterComments chapterComments = new ChapterComments ();
-
-    chapterComments.setChapter (chapter);
-    chapterComments.setUser (user);
-    chapterComments.setChaptercmt_content (content);
-    chapterComments.setChaptercmt_time (updatetime);
-    chapterCommentsRepos.save (chapterComments);
-
-        Map<String, Object> msg = Map.of (
                 "msg", "add Follow successfully!",
-                "comment_info",chapterComments
+                "comment_info", chapterComments
 
         );
-        return new ResponseEntity<> (new Response (201, HttpStatus.CREATED, msg).toJSON (), HttpStatus.CREATED);
+        return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
 
 
-}
+    }
 
 
 //////////////////////Admin parts//////////////////////
@@ -391,7 +390,6 @@ public ResponseEntity addCommentChapter(Long chapterId, Long userId, String cont
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
     }
-
 
 
     public ResponseEntity getAllUsers(Long userId) {
@@ -509,7 +507,7 @@ public ResponseEntity addCommentChapter(Long chapterId, Long userId, String cont
                 HttpStatus.OK);
     }
 
-    public ResponseEntity ratingManga(Long userId, Long mangaId,Integer value, RatingPOJO ratingPOJO){
+    public ResponseEntity ratingManga(Long userId, Long mangaId, Integer value, RatingPOJO ratingPOJO) {
 
         Optional<User> userOptional = userRepos.findById(userId);
         if (userOptional.isEmpty()) {
@@ -540,7 +538,7 @@ public ResponseEntity addCommentChapter(Long chapterId, Long userId, String cont
                     HttpStatus.FORBIDDEN);
         }
 
-        List<AuthorMangaDTO> mangas = mangaRepository.getAllMangasInfo ();
+        List<AuthorMangaDTO> mangas = mangaRepository.getAllMangasInfo();
 
         if (mangas.isEmpty()) {
             Map<String, Object> msg = Map.of(

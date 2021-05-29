@@ -100,7 +100,6 @@ public class UserController {
 
 //////////////////////comment parts//////////////////////
 
-    @CacheEvict(allEntries = true, value = {"followingmangas"})
     @PostMapping("/addcommentchapter")
     public ResponseEntity addCommentChapter(@RequestBody CommentPOJO commentPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
