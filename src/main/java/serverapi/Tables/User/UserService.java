@@ -274,10 +274,10 @@ public class UserService {
 
         ChapterComments chapterComments = new ChapterComments();
         chapterComments.setChapter(chapter);
-        chapterComments.setUser();
+        chapterComments.setUser(user);
         chapterComments.setChaptercmt_content(content);
         chapterComments.setChaptercmt_time(timeUpdated);
-        chapterCommentsRepos.saveAndFlush(chapterComments);
+        chapterCommentsRepos.save(chapterComments);
 
 
 
