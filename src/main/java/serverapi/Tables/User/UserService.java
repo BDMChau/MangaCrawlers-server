@@ -13,6 +13,7 @@ import serverapi.Query.Repository.*;
 import serverapi.SharedServices.CloudinaryUploader;
 import serverapi.StaticFiles.UserAvatarCollection;
 import serverapi.Tables.Chapter.Chapter;
+import serverapi.Tables.ChapterComments.ChapterComments;
 import serverapi.Tables.FollowingManga.FollowingManga;
 import serverapi.Tables.Manga.Manga;
 import serverapi.Tables.Manga.POJO.RatingPOJO;
@@ -147,6 +148,7 @@ public class UserService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
+
     public ResponseEntity addFollowManga(Long mangaId, Long userId) {
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
         List<FollowingDTO> follows = followingRepos.findByUserId(userId);
@@ -244,6 +246,50 @@ public class UserService {
 
 
 //////////////////////Comment parts//////////////////////
+public ResponseEntity addCommentChapter(Long chapterId, Long userId, String content) {
+
+    AtomicBoolean atomicBoolean = new AtomicBoolean (false);
+    Calendar updatetime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+
+    Optional<Chapter> chapterOptional = chapterRepos.findById (chapterId);
+
+    //check chapter exit
+    if(chapterOptional.isEmpty ()){
+        Map<String, Object> msg = Map.of(
+                "msg", "Empty chapters!"
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+    Chapter chapter = chapterOptional.get ();
+
+    Optional<User> userOptional = userRepos.findById (userId);
+
+    ///check user exit
+    if(userOptional.isEmpty ()){
+        Map<String, Object> msg = Map.of(
+                "msg", "Empty user!"
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+    User user= userOptional.get ();
+
+    ChapterComments chapterComments = new ChapterComments ();
+
+    chapterComments.setChapter (chapter);
+    chapterComments.setUser (user);
+    chapterComments.setChaptercmt_content (content);
+    chapterComments.setChaptercmt_time (updatetime);
+    chapterCommentsRepos.save (chapterComments);
+
+        Map<String, Object> msg = Map.of (
+                "msg", "add Follow successfully!",
+                "comment_info",chapterComments
+
+        );
+        return new ResponseEntity<> (new Response (201, HttpStatus.CREATED, msg).toJSON (), HttpStatus.CREATED);
+
+
+}
 
 
 //////////////////////Admin parts//////////////////////

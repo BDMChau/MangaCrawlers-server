@@ -12,7 +12,7 @@ import java.util.Calendar;
 public class AuthorMangaDTO {
 
 
-    private Long Chapters_lenght;
+    private Long Chapters_length;
     private Long author_id;
     private String author_name;
 
@@ -49,10 +49,10 @@ public class AuthorMangaDTO {
 
     }
 
-    public AuthorMangaDTO(Long chapters_lenght, Long author_id,
+    public AuthorMangaDTO(Long chapters_length, Long author_id,
                           String author_name, Long manga_id, String manga_name, String status, String description,
                           float stars, Long views, String thumbnail, int date_publications, Calendar manga_createdAt) {
-        Chapters_lenght = chapters_lenght;
+        Chapters_length = chapters_length;
         this.author_id = author_id;
         this.author_name = author_name;
         this.manga_id = manga_id;

@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import serverapi.Tables.Manga.POJO.CommentPOJO;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.Manga.POJO.RatingPOJO;
 import serverapi.Tables.User.POJO.UserPOJO;
@@ -99,11 +100,20 @@ public class UserController {
 
 //////////////////////comment parts//////////////////////
 
+    @CacheEvict(allEntries = true, value = {"followingmangas"})
+    @PostMapping("/addcommentchapter")
+    public ResponseEntity addCommentChapter(@RequestBody CommentPOJO commentPOJO, ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+        Long chapterId = Long.parseLong(commentPOJO.getChapter_id ());
+        String content = commentPOJO.getChaptercmt_content ();
+
+        return userService.addCommentChapter(chapterId, userId, content);
+    }
 
 
 
-
-
+//////////////////////////////////////////////////////////////////
 
     @CacheEvict(allEntries = true, value = {"allusers"})
     @PutMapping("/deprecateuser")

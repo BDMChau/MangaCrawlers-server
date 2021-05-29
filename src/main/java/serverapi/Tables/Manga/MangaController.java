@@ -87,6 +87,7 @@ public class MangaController {
 
         Long mangaId = Long.parseLong(commentPOJO.getManga_id ());
 
+        System.out.println ("asdasdadasdasd"+mangaId);
         int from = Integer.parseInt (commentPOJO.getFrom ());
         System.out.println ("from_"+from);
 

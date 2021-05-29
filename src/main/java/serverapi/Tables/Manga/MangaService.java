@@ -123,7 +123,7 @@ public class MangaService {
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get manga page successfully!",
-                "manga", manga,
+                "manga", manga,//Chapter_Length is null
                 "genres", genres,
                 "chapters", chapters
         );
@@ -224,25 +224,45 @@ public class MangaService {
             );
             return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
         }
+
+
         List<ChapterDTO> chapterDTOList = chapterRepository.findChaptersbyMangaId (mangaId);
         System.out.println ("chapterDTOList "+chapterDTOList);
 
+        if(chapterDTOList.isEmpty ()){
+            Map<String, Object> msg = Map.of(
+                    "msg", "Empty chapters!"
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
+
+        List<ChapterCommentsDTO> listCommentsChapters = new ArrayList<> ();
         chapterDTOList.forEach (items ->{
             Pageable pageableChapter = new OffsetBasedPageRequest (0, 1);
-            List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsChapter (items.getChapter_id (), pageableChapter);
+            List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.commentsChapterOnManga (items.getChapter_id (), pageableChapter);
+
+            if(chapterCommentsDTOList.isEmpty ()){
+                System.out.println ("Chapters don't have any comment: "+items.getChapter_id ());
+            }
+            chapterCommentsDTOList.forEach (chapterItems->{
+
+                listCommentsChapters.add (chapterItems);
+            });
+
         });
 
-//
-//        if (chapterCommentsDTOList.isEmpty()) {
-//            Map<String, Object> msg = Map.of("msg", "No comment found!");
-//            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
-//        }
+
+        if (listCommentsChapters.isEmpty()) {
+            Map<String, Object> msg = Map.of("msg", "No comment found!");
+            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
+        }
 
 
         Map<String, Object> msg = Map.of(
-                "msg", "Get chapter comment successfully!"
-//                "Info", chapterCommentsDTOList
-//
+                "msg", "Get chapter comment successfully!",
+                "manga_info", mangaOptional,//manga_id": null,"manga_name": null,"status": null,"description": null,"stars": 0.0,"views": null,"thumbnail": null,"date_publications": 0,"manga_createdAt": null,
+                "comments_info",listCommentsChapters
+
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
