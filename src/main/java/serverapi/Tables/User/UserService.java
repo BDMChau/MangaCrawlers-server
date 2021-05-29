@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Query.DTO.AuthorMangaDTO;
+import serverapi.Query.DTO.CommentExportDTO;
 import serverapi.Query.DTO.FollowingDTO;
 import serverapi.Query.DTO.UserReadingHistoryDTO;
 import serverapi.Query.Repository.*;
@@ -279,13 +280,26 @@ public class UserService {
         chapterComments.setChaptercmt_time(timeUpdated);
         chapterCommentsRepos.save(chapterComments);
 
+        CommentExportDTO commentExportDTO = new CommentExportDTO ();
 
+        commentExportDTO.setChapter_id (chapterComments.getChapter ().getChapter_id ());
+        commentExportDTO.setChapter_name (chapterComments.getChapter ().getChapter_name ());
+        commentExportDTO.setCreatedAt (chapterComments.getChapter ().getCreatedAt ());
+
+        commentExportDTO.setChaptercmt_id (chapterComments.getChaptercmt_id ());
+        commentExportDTO.setChaptercmt_content (chapterComments.getChaptercmt_content ());
+        commentExportDTO.setChaptercmt_time (chapterComments.getChaptercmt_time ());
+
+        commentExportDTO.setUser_id (chapterComments.getUser ().getUser_id ());
+        commentExportDTO.setUser_email (chapterComments.getUser ().getUser_email ());
+        commentExportDTO.setUser_name (chapterComments.getUser ().getUser_name ());
+        commentExportDTO.setUser_avatar (chapterComments.getUser ().getUser_avatar ());
 
 
 
         Map<String, Object> msg = Map.of(
-                "msg", "add Follow successfully!",
-                "comment_info", chapterComments
+                "msg", "add comment successfully!",
+                "comment_info", commentExportDTO
 
         );
         return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);

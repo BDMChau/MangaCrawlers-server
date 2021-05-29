@@ -7,10 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Helpers.OffsetBasedPageRequest;
-import serverapi.Query.DTO.ChapterCommentsDTO;
-import serverapi.Query.DTO.ChapterDTO;
-import serverapi.Query.DTO.ChapterImgDTO;
-import serverapi.Query.DTO.MangaDTO;
+import serverapi.Query.DTO.*;
 import serverapi.Query.Repository.ChapterCommentsRepos;
 import serverapi.Query.Repository.ChapterRepos;
 import serverapi.Query.Repository.ImgChapterRepos;
@@ -109,9 +106,9 @@ public class ChapterService {
         //get list comments in 1 chapter
         Pageable pageable = new OffsetBasedPageRequest (from, amount);
         System.out.println ("pageable "+pageable.getPageNumber ());
-        List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsChapter (chapterId, pageable);
+        List<CommentExportDTO> commentExportDTOS = chapterCommentsRepos.getCommentsChapter (chapterId, pageable);
 
-        if (chapterCommentsDTOList.isEmpty()) {
+        if (commentExportDTOS.isEmpty()) {
             Map<String, Object> msg = Map.of("msg", "No comment found!");
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
         }
@@ -119,7 +116,7 @@ public class ChapterService {
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get chapter comment successfully!",
-                "Info", chapterCommentsDTOList
+                "Info", commentExportDTOS
 
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);

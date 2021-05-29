@@ -36,7 +36,7 @@ public class ChapterCommentsDTO {
         this.chaptercmt_content = chaptercmt_content;
     }
 
-    private Long user_id;
+
 
     public ChapterCommentsDTO(Long user_id, String user_name, String user_email, String user_avatar,
                               Long chapter_id, String chapter_name, Calendar createdAt,
@@ -53,6 +53,7 @@ public class ChapterCommentsDTO {
         this.chaptercmt_content = chaptercmt_content;
     }
 
+    private Long user_id;
     private String user_name;
     private String user_email;
     private String user_avatar;

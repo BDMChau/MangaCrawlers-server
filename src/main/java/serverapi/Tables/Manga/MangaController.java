@@ -82,10 +82,9 @@ public class MangaController {
     }
 
     @PostMapping("/getcommentsmanga")
-    public ResponseEntity getCommentsChapter(@RequestBody CommentPOJO commentPOJO) {
+    public ResponseEntity getCommentsManga(@RequestBody CommentPOJO commentPOJO) {
 
         Long mangaId = Long.parseLong(commentPOJO.getManga_id());
-
 
         int from = Integer.parseInt(commentPOJO.getFrom());
         System.out.println("from_" + from);
@@ -93,7 +92,7 @@ public class MangaController {
         int amount = Integer.parseInt(commentPOJO.getAmount());
         System.out.println("amount_" + amount);
 
-        return mangaService.getCommentsManga(mangaId, amount, from);
+        return mangaService.getCommentsManga(mangaId);
     }
 
 
