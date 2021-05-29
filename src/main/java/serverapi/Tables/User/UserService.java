@@ -273,12 +273,15 @@ public class UserService {
         User user = userOptional.get();
 
         ChapterComments chapterComments = new ChapterComments();
-
         chapterComments.setChapter(chapter);
-        chapterComments.setUser(user);
+        chapterComments.setUser();
         chapterComments.setChaptercmt_content(content);
         chapterComments.setChaptercmt_time(timeUpdated);
-        chapterCommentsRepos.save(chapterComments);
+        chapterCommentsRepos.saveAndFlush(chapterComments);
+
+
+
+
 
         Map<String, Object> msg = Map.of(
                 "msg", "add Follow successfully!",
@@ -549,7 +552,7 @@ public class UserService {
         }
         Map<String, Object> msg = Map.of(
                 "msg", "Get all mangas successfully!",
-                "users", mangas
+                "mangas", mangas
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }

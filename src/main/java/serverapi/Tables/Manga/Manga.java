@@ -10,7 +10,6 @@ import serverapi.Tables.Author.Author;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.FollowingManga.FollowingManga;
 import serverapi.Tables.MangaGenre.MangaGenre;
-
 import serverapi.Tables.RatingManga.RatingManga;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
 import serverapi.Tables.TransGroup.TransGroup;

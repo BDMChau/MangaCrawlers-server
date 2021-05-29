@@ -37,14 +37,14 @@ public class MangaService {
 
     public ResponseEntity updateViewsChapter(Long mangaId, Long chapterId, MangaPOJO mangaPOJO) {
 
-        Optional<Manga> manga = mangaRepository.findById(mangaId);
+        Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
 
-        if (manga.isEmpty()) {
+        if (mangaOptional.isEmpty()) {
             Map<String, Object> msg = Map.of("msg", "No mangas!");
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
         }
 
-        List<Chapter> chapters = manga.get().getChapters();
+        List<Chapter> chapters = mangaOptional.get().getChapters();
 
         chapters.forEach(item -> {
             if (item.getChapter_id().equals(chapterId)) {
@@ -60,7 +60,7 @@ public class MangaService {
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get all mangas successfully!",
-                "data", manga,
+                "data", mangaOptional,
                 "data2", chapters
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);

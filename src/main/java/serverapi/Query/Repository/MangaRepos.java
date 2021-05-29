@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 import serverapi.Query.DTO.*;
 import serverapi.Tables.Manga.Manga;
@@ -96,6 +95,5 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
     List<ChapterDTO> findChaptersbyMangaId(Long manga_id);
 
 
-    @Async
-    public <S extends Manga> S save(S entity);
+
 }
