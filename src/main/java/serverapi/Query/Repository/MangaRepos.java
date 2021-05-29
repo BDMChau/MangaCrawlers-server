@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import serverapi.Query.DTO.*;
 import serverapi.Tables.Manga.Manga;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,9 +58,9 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
     List<MangaViewDTO> getTotalView();
 
 
-    @Query(value = "SELECT m FROM Manga m JOIN m.updateViews u WHERE u.createdAt > current_date - 7 Order By u" +
+    @Query(value = "SELECT m FROM Manga m JOIN m.updateViews u WHERE u.createdAt >= current_date - :from_time and u.createdAt < current_date - :to_time Order By u" +
             ".totalviews Desc")
-    List<Manga> getWeekly(PageRequest pageable);
+    List<Manga> getWeekly( @Param("from_time")int from_time, @Param("to_time") int to_time);
 
 
     @Query("SELECT new serverapi.Query.DTO.AuthorMangaDTO( a.author_id, a.author_name," +
@@ -81,6 +82,8 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
             "Manga m JOIN m.chapters c " +
             "WHERE m.manga_id = ?1")
     List<ChapterDTO> findChaptersbyMangaId(Long manga_id);
+
+
 
 
     @Async

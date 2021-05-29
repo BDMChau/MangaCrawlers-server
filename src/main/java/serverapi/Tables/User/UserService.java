@@ -17,6 +17,7 @@ import serverapi.Tables.Manga.POJO.RatingPOJO;
 import serverapi.Tables.RatingManga.RatingManga;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;

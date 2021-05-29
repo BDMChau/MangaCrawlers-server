@@ -11,6 +11,7 @@ import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.Manga.POJO.RatingPOJO;
 import serverapi.Tables.User.POJO.UserPOJO;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
