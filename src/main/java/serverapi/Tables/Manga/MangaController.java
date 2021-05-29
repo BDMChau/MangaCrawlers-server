@@ -10,7 +10,7 @@ import serverapi.Tables.Manga.POJO.MangaPOJO;
 
 @RestController
 @RequestMapping("/api/manga")
-@CacheConfig(cacheNames={"manga"})
+@CacheConfig(cacheNames = {"manga"})
 public class MangaController {
     private final MangaService mangaService;
 
@@ -18,7 +18,6 @@ public class MangaController {
     public MangaController(MangaService mangaService) {
         this.mangaService = mangaService;
     }
-
 
 
     @PutMapping("/updateviewchapter")
@@ -85,19 +84,17 @@ public class MangaController {
     @PostMapping("/getcommentsmanga")
     public ResponseEntity getCommentsChapter(@RequestBody CommentPOJO commentPOJO) {
 
-        Long mangaId = Long.parseLong(commentPOJO.getManga_id ());
+        Long mangaId = Long.parseLong(commentPOJO.getManga_id());
 
-        System.out.println ("asdasdadasdasd"+mangaId);
-        int from = Integer.parseInt (commentPOJO.getFrom ());
-        System.out.println ("from_"+from);
 
-        int amount = Integer.parseInt (commentPOJO.getAmount ());
-        System.out.println ("amount_"+amount);
+        int from = Integer.parseInt(commentPOJO.getFrom());
+        System.out.println("from_" + from);
+
+        int amount = Integer.parseInt(commentPOJO.getAmount());
+        System.out.println("amount_" + amount);
 
         return mangaService.getCommentsManga(mangaId, amount, from);
     }
-
-
 
 
     // comment parts
