@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class UserService {
@@ -315,7 +316,7 @@ public class UserService {
         User user = userOptional.get();
 
         float averageResult = 0;
-        float total = 0;
+        AtomicReference<Float> total = new AtomicReference<>((float) 0);
         float roundedResult = 0;
 
 
@@ -324,41 +325,42 @@ public class UserService {
         for (RatingManga ratingManga : ratingMangaList) {
             if (ratingManga.getUser().getUser_id().equals(userId)) {
                 ratingMangaId = ratingManga.getRatingmanga_id();
+                break;
             }
         }
 
         if (ratingMangaId == null) {
-            System.out.println("alo alo alo");
-            for (RatingManga ratingManga : ratingMangaList) {
-                total += ratingManga.getValue();
-            }
+            ratingMangaList.forEach(oneRatingManga -> {
+                total.updateAndGet(v -> new Float((float) (v + oneRatingManga.getValue())));
+            });
 
-            averageResult = (total + newValue) / (ratingMangaList.size() + 1);
+            averageResult = (total.get() + newValue) / (ratingMangaList.size() + 1);
 
             roundedResult = new RoundNumber().roundRatingManga(averageResult);
 
             manga.setStars(roundedResult);
-            mangaRepository.save(manga);
+//            mangaRepository.save(manga);
 
             RatingManga ratingManga = new RatingManga();
             ratingManga.setManga(manga);
             ratingManga.setUser(user);
             ratingManga.setValue(newValue);
-            ratingMangaRepos.save(ratingManga);
+//            ratingMangaRepos.save(ratingManga);
 
         } else {
-            Optional<RatingManga> ratingMangaOptional = ratingMangaRepos.findById(ratingMangaId);
-            RatingManga ratingManga = ratingMangaOptional.get();
+            Optional<RatingManga> existedRatingMangaOptionNal = ratingMangaRepos.findById(ratingMangaId);
+            RatingManga existedRatingManga = existedRatingMangaOptionNal.get();
 
-            ratingManga.setValue(newValue);
+            existedRatingManga.setValue(newValue);
+            ratingMangaRepos.saveAndFlush(existedRatingManga);
 
-            ratingMangaRepos.save(ratingManga);
+            List<RatingManga> ratingMangaList02 = ratingMangaRepos.findAllByMangaId(mangaId);
+            ratingMangaList02.forEach(ratingManga -> {
+                total.updateAndGet(v -> new Float((float) (v + ratingManga.getValue())));
+            });
 
-            for (RatingManga RatingManga : ratingMangaList) {
-                total += RatingManga.getValue();
-            }
 
-            averageResult = total / ratingMangaList.size();
+            averageResult = total.get() / ratingMangaList02.size();
 
             roundedResult = new RoundNumber().roundRatingManga(averageResult);
 
