@@ -12,13 +12,13 @@ public class RoundNumber {
         float starMod = stars % 1;
 
 
-        if (starMod > 0 && starMod < 0.5) {
+        if (starMod >= 0 && starMod < 0.4) {
             starMod = 0;
-        } else if (starMod > 0.5 && starMod <= 1) {
-            starMod = 1;
-        } else if (starMod == 0.5) {
-
+        } else if (starMod >= 0.4 && starMod < 0.8) {
             starMod = 0.5F;
+        } else if (starMod >= 0.8 && starMod <= 1) {
+
+            starMod = 1;
         }
 
         float roundoff = starDiv + starMod;
