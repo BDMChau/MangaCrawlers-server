@@ -12,6 +12,7 @@ import serverapi.Query.Repository.ChapterCommentsRepos;
 import serverapi.Query.Repository.ChapterRepos;
 import serverapi.Query.Repository.ImgChapterRepos;
 import serverapi.Query.Repository.MangaRepos;
+import serverapi.Tables.Manga.Manga;
 
 import java.util.List;
 import java.util.Map;
@@ -100,9 +101,22 @@ public class ChapterService {
 //        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 //    }
 
-    public ResponseEntity getCommentsChapter(Long chapterId, int amount, int from) {
+    public ResponseEntity getCommentsChapter(Long mangaId, Long chapterId, int amount, int from) {
 
 
+        //check chapterId is empty
+        Optional<Chapter> chapterOptional =chapterRepos.findById (chapterId);
+        if(chapterOptional.isEmpty ()){
+            Map<String, Object> msg = Map.of("msg", "Chapter not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+
+        //check mangaId of this chapter != mangaId input
+        Long mangaIdofChapter = chapterOptional.get ().getManga ().getManga_id ();
+        if(mangaIdofChapter != mangaId){
+            Map<String, Object> msg = Map.of("msg", "This manga doesn't have this chapter!");
+            return new ResponseEntity<>(new Response(404, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
         //get list comments in 1 chapter
         Pageable pageable = new OffsetBasedPageRequest (from, amount);
         System.out.println ("pageable "+pageable.getPageNumber ());
