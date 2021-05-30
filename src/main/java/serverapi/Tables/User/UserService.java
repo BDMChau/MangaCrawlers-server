@@ -2,6 +2,7 @@ package serverapi.Tables.User;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,10 @@ public class UserService {
     private final ChapterRepos chapterRepos;
     private final ChapterCommentsRepos chapterCommentsRepos;
     private final RatingMangaRepos ratingMangaRepos;
+
+    @Autowired
+    CacheManager cacheManager;
+
 
     @Autowired
     public UserService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos,
@@ -339,13 +344,13 @@ public class UserService {
             roundedResult = new RoundNumber().roundRatingManga(averageResult);
 
             manga.setStars(roundedResult);
-//            mangaRepository.save(manga);
+            mangaRepository.save(manga);
 
             RatingManga ratingManga = new RatingManga();
             ratingManga.setManga(manga);
             ratingManga.setUser(user);
             ratingManga.setValue(newValue);
-//            ratingMangaRepos.save(ratingManga);
+            ratingMangaRepos.save(ratingManga);
 
         } else {
             Optional<RatingManga> existedRatingMangaOptionNal = ratingMangaRepos.findById(ratingMangaId);
@@ -368,6 +373,9 @@ public class UserService {
             mangaRepository.save(manga);
         }
 
+        // evict single cache
+        cacheManager.getCache("mangaPage").evict(mangaId.toString());
+//        new CacheService().evictSingleCacheValue("mangaPage", mangaId.toString());
 
         Map<String, Object> msg = Map.of(
                 "msg", "Rating manga successfully",

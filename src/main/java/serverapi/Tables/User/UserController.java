@@ -98,7 +98,6 @@ public class UserController {
         return userService.deleteFollowManga(mangaId, userId);
     }
 
-
     @PutMapping("/ratingmanga")
     public ResponseEntity ratingManga(@RequestBody RatingPOJO ratingPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
