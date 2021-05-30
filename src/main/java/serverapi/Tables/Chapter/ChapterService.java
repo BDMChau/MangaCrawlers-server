@@ -109,14 +109,14 @@ public class ChapterService {
         List<CommentExportDTO> commentExportDTOS = chapterCommentsRepos.getCommentsChapter (chapterId, pageable);
 
         if (commentExportDTOS.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "No comment found!");
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
+            Map<String, Object> msg = Map.of("msg", "No comments found!");
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
         }
 
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get chapter comment successfully!",
-                "Info", commentExportDTOS
+                "comments", commentExportDTOS
 
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
