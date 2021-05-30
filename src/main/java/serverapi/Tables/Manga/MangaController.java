@@ -92,7 +92,7 @@ public class MangaController {
         int amount = commentPOJO.getAmount();
         System.out.println("amount_" + amount);
 
-        return mangaService.getCommentsManga(mangaId);
+        return mangaService.getCommentsManga(mangaId, from, amount);
     }
 
 

@@ -11,6 +11,7 @@ import serverapi.Query.DTO.*;
 import serverapi.Query.Repository.*;
 import serverapi.Query.Specification.MangaSpecification;
 import serverapi.Tables.Chapter.Chapter;
+import serverapi.Tables.Manga.POJO.CommentPOJO;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.UpdateView.UpdateView;
 
@@ -320,62 +321,33 @@ public class MangaService {
     }
 
 
-    public ResponseEntity getCommentsManga(Long mangaId) {
+    public ResponseEntity getCommentsManga(Long mangaId, int from, int amount) {
 
         //get list comments in 1 chapter
         Optional<AuthorMangaDTO> mangaOptional = mangaRepository.getAllByMangaId(mangaId);
 
-        if (mangaOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of(
-                    "msg", "No mangas!"
+        if (mangaOptional.isEmpty ()) {
+            Map<String, Object> msg = Map.of (
+                    "msg", "Manga not found!"
             );
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+            return new ResponseEntity<> (new Response (400, HttpStatus.BAD_REQUEST, msg).toJSON (), HttpStatus.BAD_REQUEST);
         }
 
+        Pageable pageable = new OffsetBasedPageRequest(from,amount);
+        List<CommentExportDTO> commentsOfChapters = chapterCommentsRepos.getCommentsManga (mangaId,pageable);
 
-        List<ChapterDTO> chapterDTOList = chapterRepository.findChaptersbyMangaId(mangaId);
-        System.out.println("chapterDTOList " + chapterDTOList);
-
-        if (chapterDTOList.isEmpty()) {
-            Map<String, Object> msg = Map.of(
-                    "msg", "No chapters!"
+        if(commentsOfChapters.isEmpty ()){
+            Map<String, Object> msg = Map.of (
+                    "msg", "empty comment!"
             );
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+            return new ResponseEntity<> (new Response (200, HttpStatus.NO_CONTENT, msg).toJSON (), HttpStatus.NO_CONTENT);
         }
-
-        List<CommentExportDTO> commentsOfChapters = new ArrayList<>();
-        // get cmts in chapters >>> currently is latest cmt in a chapters
-        chapterDTOList.forEach(chapter -> {
-            Pageable pageableChapter = new OffsetBasedPageRequest(0, 1);
-            List<CommentExportDTO> chapterCommentsDTOList =
-                    chapterCommentsRepos.getCommentsChapter(chapter.getChapter_id(), pageableChapter);
-
-            if (chapterCommentsDTOList.isEmpty()) {
-                System.out.println("This chapter doesn't have any comments!: " + chapter.getChapter_id());
-            }
-
-            chapterCommentsDTOList.forEach(comment -> {
-                commentsOfChapters.add(comment);
-            });
-
-        });
-
-
-        if (commentsOfChapters.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "No comments in this chapter!");
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
-        }
-
-        // in manga_info has some field will be null
-        // manga_id": null,"manga_name": null,"status": null,"description": null,
-        // "stars": 0.0,"views": null,"thumbnail": null,"date_publications": 0,"manga_createdAt": null,
-
-        Map<String, Object> msg = Map.of(
+        Map<String, Object> msg = Map.of (
                 "msg", "Get chapter comments successfully!",
                 "manga_info", mangaOptional,
                 "comments_of_chapters", commentsOfChapters
-
         );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
+        return new ResponseEntity<> (new Response (200, HttpStatus.OK, msg).toJSON (), HttpStatus.OK);
+
+   }
 }
