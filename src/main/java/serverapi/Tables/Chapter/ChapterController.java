@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import serverapi.Tables.Manga.POJO.CommentPOJO;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 
-import java.awt.print.Pageable;
-
 @RestController
 @RequestMapping("/api/chapter")
 @CacheConfig(cacheNames={"chapter"})
@@ -39,8 +37,8 @@ public class ChapterController {
 //    }
 
 
-    @Cacheable(value = "topMangas", key = "#mangaPOJO.getChapter_id() + #mangaPOJO.getManga_id()")
-    @PostMapping("/getimgchapter")
+    @Cacheable(value = "getimgschapter", key = "#mangaPOJO.getChapter_id() + #mangaPOJO.getManga_id()")
+    @PostMapping("/getimgschapter")
     public ResponseEntity findImgByChapter(@RequestBody MangaPOJO mangaPOJO){
 
         Long chapterId = Long.parseLong(mangaPOJO.getChapter_id());
