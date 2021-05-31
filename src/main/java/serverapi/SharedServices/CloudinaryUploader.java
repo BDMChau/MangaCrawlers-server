@@ -17,14 +17,15 @@ public class CloudinaryUploader {
     );
     private Cloudinary cloudinary = new Cloudinary(paramsConfig);
 
-    public Map uploadImg(byte[] fileBytes, String fileName, String folder) throws IOException {
+    public Map uploadImg(byte[] fileBytes, String fileName, String folder, boolean usePublicIdAsFileName) throws IOException {
         Map params = ObjectUtils.asMap(
-//                "public_id", fileName, set this when upload manga
+                "public_id", usePublicIdAsFileName ? fileName : null,
                 "folder", folder,
                 "use_filename", true,
                 "unique_filename", true,
                 "resource_type", "auto"
         );
+
 
         Map uploadResult = cloudinary.uploader().upload(fileBytes, params);
 

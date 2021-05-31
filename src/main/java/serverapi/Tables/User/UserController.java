@@ -117,7 +117,7 @@ public class UserController {
     ) throws IOException, ParseException {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
-
+        System.err.println(file);
         String[] splitedFileName = file.getOriginalFilename().split(Pattern.quote("."));
         String fileName = splitedFileName[0];
         byte[] fileBytes = file.getBytes();
@@ -187,7 +187,6 @@ public class UserController {
     @CacheEvict(allEntries = true, value = {"allusers"})
     @DeleteMapping("/deleteuser")
     public ResponseEntity deleteUser(@RequestBody UserPOJO userPOJO, ServletRequest request) {
-
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long adminId = Long.parseLong(StrUserId);
 
@@ -196,5 +195,18 @@ public class UserController {
         return userService.deleteUser(userId, adminId);
     }
 
+
+    /////////////// Translation Group parts //////////////
+    @PostMapping("/uploadmangaimgs")
+    public ResponseEntity uploadMangaImgs(
+            ServletRequest request,
+            @RequestParam(required = false) MultipartFile[] files
+    ) throws IOException, ParseException {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+
+       return userService.uploadMangaImgs(userId,files);
+    }
 
 }

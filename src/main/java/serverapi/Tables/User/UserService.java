@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import serverapi.Api.Response;
 import serverapi.Helpers.RoundNumber;
 import serverapi.Query.DTO.AuthorMangaDTO;
@@ -23,7 +25,9 @@ import serverapi.Tables.RatingManga.RatingManga;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -542,12 +546,8 @@ public class UserService {
         }
 
         // upload new avatar to cloudinary
-        Map cloudinaryResponse = cloudinaryUploader.uploadImg(fileBytes, fileName, "users_avatar");
+        Map cloudinaryResponse = cloudinaryUploader.uploadImg(fileBytes, fileName, "users_avatar", false);
 
-//        String createdAt = (String) cloudinaryResponse.get("created_at");
-//        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-//        Date date = dateFormat.parse(createdAt);
-//        System.out.println(date.getTime());
 
         user.setAvatar_public_id_cloudinary((String) cloudinaryResponse.get("public_id"));
         user.setUser_avatar((String) cloudinaryResponse.get("secure_url")); // secure_url is https, url is http
@@ -638,6 +638,42 @@ public class UserService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
+
+    /////////////// Translation Group parts //////////////
+    public ResponseEntity uploadMangaImgs(
+            Long userId,
+            @RequestParam(required = false) MultipartFile[] files
+    ) throws IOException, ParseException {
+
+        for (MultipartFile file : files) {
+            Map responseFromCloudinary = new CloudinaryUploader().uploadImg(file.getBytes(),
+                    file.getOriginalFilename(), "/uploadmangas", true);
+
+            System.err.println(responseFromCloudinary);
+
+            String createdAt = (String) responseFromCloudinary.get("created_at");
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+            Date date = dateFormat.parse(createdAt);
+            System.out.println(date.getTime());
+
+
+            if (responseFromCloudinary.get("name") == "Error") {
+                Map<String, Object> err = Map.of(
+                        "err", "One or many files have been failed when uploading!",
+                        "err2", "Maximum size for one file is 10MB"
+                );
+                return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                        HttpStatus.BAD_REQUEST);
+            }
+
+        }
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get all mangas successfully!"
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
 
 }
 
