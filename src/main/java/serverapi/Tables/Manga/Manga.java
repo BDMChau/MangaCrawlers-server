@@ -72,6 +72,7 @@ public class Manga {
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
     private Collection<RatingManga> ratingMangas;
 
+
     @JsonBackReference
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
     private Collection<UpdateView> updateViews;

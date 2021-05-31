@@ -17,10 +17,7 @@ import serverapi.Tables.User.User;
 import javax.mail.MessagingException;
 import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service
@@ -54,6 +51,7 @@ public class AuthService {
         newUser.setUser_password(signPOJO.getUser_password());
         newUser.setUser_isAdmin(false);
         newUser.setUser_isVerified(false);
+        newUser.setCreatedAt(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
 
         UserAvatarCollection userAvatarCollection = new UserAvatarCollection();
         if (signPOJO.isNullAvatar()) {
