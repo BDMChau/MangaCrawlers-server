@@ -96,6 +96,4 @@ public class MangaController {
     }
 
 
-    // comment parts
-
 }

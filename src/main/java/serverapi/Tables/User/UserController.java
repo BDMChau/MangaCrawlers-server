@@ -4,17 +4,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import serverapi.Api.Response;
 import serverapi.Tables.Manga.POJO.CommentPOJO;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.Manga.POJO.RatingPOJO;
+import serverapi.Tables.User.POJO.TransGroupPOJO;
 import serverapi.Tables.User.POJO.UserPOJO;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
@@ -208,5 +212,23 @@ public class UserController {
 
        return userService.uploadMangaImgs(userId,files);
     }
+
+    @PostMapping("/signuptransgroup")
+    @ResponseBody
+    public ResponseEntity signUpTransGroup(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) throws NoSuchAlgorithmException {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+        if (Boolean.FALSE.equals(transGroupPOJO.isValid())) {
+            Map<String, String> error = Map.of("err", "Missing credentials!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+        String groupName = transGroupPOJO.getGroup_name();
+        String groupDesc = transGroupPOJO.getGroup_desc();
+
+
+        return userService.signUpTransGroup(userId, groupName, groupDesc);
+    }
+
 
 }

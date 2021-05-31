@@ -23,6 +23,7 @@ import serverapi.Tables.FollowingManga.FollowingManga;
 import serverapi.Tables.Manga.Manga;
 import serverapi.Tables.RatingManga.RatingManga;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
+import serverapi.Tables.TransGroup.TransGroup;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -41,6 +42,7 @@ public class UserService {
     private final ChapterRepos chapterRepos;
     private final ChapterCommentsRepos chapterCommentsRepos;
     private final RatingMangaRepos ratingMangaRepos;
+    private final TransGroupRepos transGroupRepos;
 
     @Autowired
     CacheService cacheService;
@@ -49,7 +51,8 @@ public class UserService {
     @Autowired
     public UserService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos,
                        ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos,
-                       ChapterCommentsRepos chapterCommentsRepos, RatingMangaRepos ratingMangaRepos) {
+                       ChapterCommentsRepos chapterCommentsRepos, RatingMangaRepos ratingMangaRepos,
+                       TransGroupRepos transGroupRepos) {
         this.mangaRepository = mangaRepository;
         this.followingRepos = followingRepos;
         this.userRepos = userRepos;
@@ -57,6 +60,7 @@ public class UserService {
         this.chapterRepos = chapterRepos;
         this.chapterCommentsRepos = chapterCommentsRepos;
         this.ratingMangaRepos = ratingMangaRepos;
+        this.transGroupRepos = transGroupRepos;
     }
 
 
@@ -675,5 +679,32 @@ public class UserService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
+
+    public ResponseEntity signUpTransGroup(Long userId, String groupName, String groupDesc) {
+        Optional<TransGroup> transGroupOptional = transGroupRepos.findByName(groupName);
+        if (transGroupOptional.isPresent()) {
+            Map<String, Object> err = Map.of("err", "Group name is existed!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(),
+                    HttpStatus.ACCEPTED);
+        }
+
+        Optional<User> userOptional = userRepos.findById(userId);
+        User user = userOptional.get();
+
+        TransGroup transGroup = new TransGroup();
+        transGroup.setTransgroup_name(groupName);
+        transGroup.setTransgroup_email(user.getUser_email());
+        if (groupDesc.isEmpty()) {
+            transGroup.setTransgroup_desc("");
+        } else {
+            transGroup.setTransgroup_desc(groupDesc);
+        }
+
+        transGroupRepos.saveAndFlush(transGroup);
+
+        Map<String, Object> msg = Map.of("msg", "Register new translation group successfully");
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                HttpStatus.OK);
+    }
 }
 
