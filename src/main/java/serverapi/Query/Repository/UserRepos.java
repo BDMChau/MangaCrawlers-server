@@ -1,10 +1,13 @@
 package serverapi.Query.Repository;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import serverapi.Query.DTO.ChapterDTO;
 import serverapi.Query.DTO.MangaDTO;
+import serverapi.Query.DTO.ReportTopMangaDTO;
+import serverapi.Query.DTO.ReportUserFollowMangaDTO;
 import serverapi.Tables.User.User;
 
 import java.util.List;
@@ -17,6 +20,15 @@ public interface UserRepos extends JpaRepository<User, Long> {
 
     @Query("SELECT new serverapi.Query.DTO.MangaDTO(m.manga_id, m.manga_name, m.thumbnail) FROM Manga m JOIN m.readingHistories rd WHERE m.manga_id =?1 ")
     List<MangaDTO> findMangaByReadingHistory(Long manga_id);
+
+    @Query("SELECT new serverapi.Query.DTO.ReportUserFollowMangaDTO(COUNT(u.user_id), a.author_id, a.author_name, m.manga_id, m.manga_name, m.thumbnail, m.stars, m.views, m.date_publications)"+
+            "FROM FollowingManga fm JOIN fm.manga m JOIN fm.user u JOIN m.author a GROUP BY a.author_id, a.author_name, m.manga_id, m.manga_name, m.thumbnail, m.stars, m.views, m.date_publications" +
+            " ORDER BY COUNT(u.user_id) DESC")
+    List<ReportUserFollowMangaDTO>findAllFollwingManga(Pageable pageable);
+
+    @Query("SELECT new serverapi.Query.DTO.ReportTopMangaDTO(a.author_id,a.author_name, m.manga_id, m.manga_name, m.thumbnail, m.stars, m.views, m.date_publications, m.createdAt)" +
+            "FROM Manga m JOIN m.author a ORDER BY m.views DESC ")
+    List<ReportTopMangaDTO> findTopManga(Pageable pageable);
 
 
 }
