@@ -283,7 +283,7 @@ public class UserService {
         chapterComments.setUser(user);
         chapterComments.setChaptercmt_content(content);
         chapterComments.setChaptercmt_time(timeUpdated);
-        chapterCommentsRepos.save(chapterComments);
+        chapterCommentsRepos.saveAndFlush(chapterComments);
 
         CommentExportDTO commentExportDTO = new CommentExportDTO();
 

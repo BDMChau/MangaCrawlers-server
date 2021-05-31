@@ -1,16 +1,13 @@
 package serverapi.Query.Repository;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import serverapi.Query.DTO.ChapterCommentsDTO;
 import serverapi.Query.DTO.CommentExportDTO;
 import serverapi.Query.DTO.MangaChapterDTO;
-import serverapi.Query.DTO.MangaChapterGenreDTO;
 import serverapi.Tables.ChapterComments.ChapterComments;
 import serverapi.Tables.User.User;
 
@@ -43,15 +40,16 @@ public interface ChapterCommentsRepos extends JpaRepository<ChapterComments, Lon
             "FROM ChapterComments cm JOIN cm.chapter c JOIN cm.user u JOIN Manga m ON m.manga_id = c.manga " +
             "WHERE m.manga_id =?1 " +
             "AND cm.chaptercmt_id =(SELECT MAX(cmt.chaptercmt_id) " +
-                                   "FROM ChapterComments cmt JOIN cmt.chapter ct " +
-                                   "WHERE cmt.chapter = c.chapter_id ORDER BY cm.chaptercmt_time DESC) "
-            )
+            "FROM ChapterComments cmt JOIN cmt.chapter ct " +
+            "WHERE cmt.chapter = c.chapter_id ) ORDER BY cm.chaptercmt_time DESC "
+    )
     List<CommentExportDTO> getCommentsManga(Long manga_id, Pageable pageable);
 
 
     @Query("SELECT new serverapi.Query.DTO.MangaChapterDTO(c.chapter_id, c.chapter_name, c.createdAt, m.manga_id," +
-            " m.manga_name, m.thumbnail) FROM Manga m JOIN m.chapters c WHERE c.chapter_id = (SELECT MAX(ct.chapter_id) FROM Manga mg INNER JOIN mg.chapters ct " +
-            "WHERE mg.manga_id = m.manga_id ) Order by c.chapter_id Desc")
+            " m.manga_name, m.thumbnail) FROM Manga m JOIN m.chapters c WHERE c.chapter_id = (SELECT MAX(ct" +
+            ".chapter_id) FROM Manga mg INNER JOIN mg.chapters ct " +
+            "WHERE mg.manga_id = m.manga_id ) ORDER BY c.chapter_id DESC")
     List<MangaChapterDTO> getLatestChapterFromManga();
 
 

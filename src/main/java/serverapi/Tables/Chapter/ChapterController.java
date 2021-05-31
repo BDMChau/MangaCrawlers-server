@@ -48,7 +48,7 @@ public class ChapterController {
         return chapterService.findImgByChapter(chapterId, mangaId);
     }
 
-    ///sai
+
     @Transactional
     @PostMapping("/getcommentschapter")
     public ResponseEntity getCommentsChapter(@RequestBody CommentPOJO commentPOJO) {
