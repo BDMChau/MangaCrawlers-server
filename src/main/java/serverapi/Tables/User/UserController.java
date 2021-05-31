@@ -117,7 +117,7 @@ public class UserController {
     ) throws IOException, ParseException {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
-        System.err.println(file);
+
         String[] splitedFileName = file.getOriginalFilename().split(Pattern.quote("."));
         String fileName = splitedFileName[0];
         byte[] fileBytes = file.getBytes();
