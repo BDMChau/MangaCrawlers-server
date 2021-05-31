@@ -6,16 +6,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PutMapping;
 import serverapi.Api.Response;
 import serverapi.Query.DTO.ReportTopMangaDTO;
+import serverapi.Query.DTO.ReportUserDTO;
 import serverapi.Query.DTO.ReportUserFollowMangaDTO;
 import serverapi.Query.Repository.FollowingRepos;
 import serverapi.Query.Repository.MangaRepos;
 import serverapi.Query.Repository.UserRepos;
-import serverapi.Tables.FollowingManga.FollowingManga;
-import serverapi.Tables.Manga.Manga;
-import serverapi.Tables.User.User;
 
 import java.util.*;
 
@@ -60,6 +57,30 @@ public class AdminService {
 
         Map<String, Object> msg = Map.of("msg", "Report top five mangas successfully!", "data", reportTopMangaDTOS);
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    public ResponseEntity reportUser(){
+
+
+        Calendar time = Calendar.getInstance();
+        time.get(Calendar.JUNE);
+        System.out.println("thoi gian"+time);
+
+//        time.set(Calendar.MONTH,Calendar.MAY + 1) ;
+        List<ReportUserDTO> reportUserDTOS = userRepos.getUser();
+        reportUserDTOS.forEach(item->{
+            if(item.getCreatedAt().equals(time.get(Calendar.JUNE))){
+                item.getUser_isVerified();
+                item.getUser_avatar();
+                item.getUser_email();
+                item.getUser_name();
+                item.getCreatedAt();
+            }
+        });
+
+        Map<String, Object> msg = Map.of("msg", "Report top five mangas successfully!", "data",reportUserDTOS);
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+
     }
 
 }

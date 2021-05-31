@@ -4,12 +4,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import serverapi.Query.DTO.ChapterDTO;
-import serverapi.Query.DTO.MangaDTO;
-import serverapi.Query.DTO.ReportTopMangaDTO;
-import serverapi.Query.DTO.ReportUserFollowMangaDTO;
+import serverapi.Query.DTO.*;
 import serverapi.Tables.User.User;
 
+import java.util.Calendar;
 import java.util.List;
 
 @Repository
@@ -29,6 +27,9 @@ public interface UserRepos extends JpaRepository<User, Long> {
     @Query("SELECT new serverapi.Query.DTO.ReportTopMangaDTO(a.author_id,a.author_name, m.manga_id, m.manga_name, m.thumbnail, m.stars, m.views, m.date_publications, m.createdAt)" +
             "FROM Manga m JOIN m.author a ORDER BY m.views DESC ")
     List<ReportTopMangaDTO> findTopManga(Pageable pageable);
+
+    @Query("SELECT new serverapi.Query.DTO.ReportUserDTO(u.user_name, u.user_email, u.user_avatar, u. user_isVerified, u.createdAt) FROM User u ")
+    List<ReportUserDTO> getUser();
 
 
 }

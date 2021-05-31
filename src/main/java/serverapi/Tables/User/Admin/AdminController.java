@@ -37,6 +37,13 @@ public class AdminController {
 
     }
 
+    @GetMapping("/reportuser")
+    public ResponseEntity reportUser(){
+
+
+        return adminService.reportUser();
+    }
+
 
 
 
