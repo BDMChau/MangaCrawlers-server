@@ -11,7 +11,6 @@ import serverapi.Query.DTO.*;
 import serverapi.Query.Repository.*;
 import serverapi.Query.Specification.MangaSpecification;
 import serverapi.Tables.Chapter.Chapter;
-import serverapi.Tables.Manga.POJO.CommentPOJO;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.UpdateView.UpdateView;
 
@@ -326,28 +325,29 @@ public class MangaService {
         //get list comments in 1 chapter
         Optional<AuthorMangaDTO> mangaOptional = mangaRepository.getAllByMangaId(mangaId);
 
-        if (mangaOptional.isEmpty ()) {
-            Map<String, Object> msg = Map.of (
+        if (mangaOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of(
                     "msg", "Manga not found!"
             );
-            return new ResponseEntity<> (new Response (400, HttpStatus.BAD_REQUEST, msg).toJSON (), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(),
+                    HttpStatus.BAD_REQUEST);
         }
 
-        Pageable pageable = new OffsetBasedPageRequest(from,amount);
-        List<CommentExportDTO> commentsOfChapters = chapterCommentsRepos.getCommentsManga (mangaId,pageable);
+        Pageable pageable = new OffsetBasedPageRequest(from, amount);
+        List<CommentExportDTO> commentsOfChapters = chapterCommentsRepos.getCommentsManga(mangaId, pageable);
 
-        if(commentsOfChapters.isEmpty ()){
-            Map<String, Object> msg = Map.of (
+        if (commentsOfChapters.isEmpty()) {
+            Map<String, Object> msg = Map.of(
                     "msg", "empty comment!"
             );
-            return new ResponseEntity<> (new Response (200, HttpStatus.NO_CONTENT, msg).toJSON (), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(new Response(200, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
         }
-        Map<String, Object> msg = Map.of (
+        Map<String, Object> msg = Map.of(
                 "msg", "Get chapter comments successfully!",
                 "manga_info", mangaOptional,
                 "comments_of_chapters", commentsOfChapters
         );
-        return new ResponseEntity<> (new Response (200, HttpStatus.OK, msg).toJSON (), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
-   }
+    }
 }

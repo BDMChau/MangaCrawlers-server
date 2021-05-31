@@ -2,7 +2,6 @@ package serverapi.Tables.User;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,6 +12,7 @@ import serverapi.Query.DTO.CommentExportDTO;
 import serverapi.Query.DTO.FollowingDTO;
 import serverapi.Query.DTO.UserReadingHistoryDTO;
 import serverapi.Query.Repository.*;
+import serverapi.SharedServices.CacheService;
 import serverapi.SharedServices.CloudinaryUploader;
 import serverapi.StaticFiles.UserAvatarCollection;
 import serverapi.Tables.Chapter.Chapter;
@@ -39,7 +39,7 @@ public class UserService {
     private final RatingMangaRepos ratingMangaRepos;
 
     @Autowired
-    CacheManager cacheManager;
+    CacheService cacheService;
 
 
     @Autowired
@@ -374,8 +374,7 @@ public class UserService {
         }
 
         // evict single cache
-        cacheManager.getCache("mangaPage").evict(mangaId.toString());
-//        new CacheService().evictSingleCacheValue("mangaPage", mangaId.toString());
+        cacheService.evictSingleCacheValue("mangaPage", mangaId.toString());
 
         Map<String, Object> msg = Map.of(
                 "msg", "Rating manga successfully",
