@@ -178,8 +178,6 @@ public class MangaService {
 
         List<Manga> listCurrentWeekly = mangaRepository.getWeekly(7, 0);
         List<Manga> listPreviousWeekly = mangaRepository.getWeekly(14, 7);
-        System.out.println("con chó thịnh" + listCurrentWeekly);
-        System.out.println("con đỉ thịnh:" + listPreviousWeekly);
 
         if (listCurrentWeekly.isEmpty()) {
 
@@ -198,8 +196,6 @@ public class MangaService {
 
 
         if (listCurrentWeekly.size() >= listPreviousWeekly.size()) {
-            System.out.println("câm" + listCurrentWeekly.size());
-            System.out.println("cmcmc" + listPreviousWeekly.size());
 
             int temp = listCurrentWeekly.size() - listPreviousWeekly.size();
             int previousWeeklySize = listPreviousWeekly.size();
@@ -264,7 +260,6 @@ public class MangaService {
 
         }
 
-        System.out.println("hà phương" + listWeeklyMangasRanking);
         listWeeklyMangasRanking.sort(Comparator.comparing(WeeklyMangaDTO::getView_compares).reversed());
         //   listWeeklyMangasRanking.stream().limit(5L);
         System.out.println("list weekly manga ranking" + listWeeklyMangasRanking);
@@ -333,21 +328,23 @@ public class MangaService {
                     HttpStatus.BAD_REQUEST);
         }
 
+
         Pageable pageable = new OffsetBasedPageRequest(from, amount);
         List<CommentExportDTO> commentsOfChapters = chapterCommentsRepos.getCommentsManga(mangaId, pageable);
 
         if (commentsOfChapters.isEmpty()) {
             Map<String, Object> msg = Map.of(
-                    "msg", "empty comment!"
+                    "msg", "No comments found!"
             );
-            return new ResponseEntity<>(new Response(200, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
         }
+
+
         Map<String, Object> msg = Map.of(
                 "msg", "Get chapter comments successfully!",
                 "manga_info", mangaOptional,
-                "comments_of_chapters", commentsOfChapters
+                "comments", commentsOfChapters
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-
     }
 }
