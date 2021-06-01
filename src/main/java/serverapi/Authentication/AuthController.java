@@ -12,6 +12,7 @@ import serverapi.Enums.isValidEnum;
 
 import javax.mail.MessagingException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
 import java.util.Map;
 
 
@@ -31,10 +32,12 @@ public class AuthController {
     public ResponseEntity signUp(@RequestBody SignPOJO signPOJO) throws NoSuchAlgorithmException, MessagingException {
         if (signPOJO.isValidSignUp() == isValidEnum.missing_credentials) {
             Map<String, String> error = Map.of("err", "Missing credentials!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(),
+                    HttpStatus.BAD_REQUEST);
 
         } else if (signPOJO.isValidSignUp() == isValidEnum.password_strong_fail) {
-            Map<String, String> error = Map.of("err", "Eight characters, at least one letter and 1 number for password required!");
+            Map<String, String> error = Map.of("err", "Eight characters, at least one letter and 1 number for " +
+                    "password required!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
 
         } else if (signPOJO.isValidSignUp() == isValidEnum.email_invalid) {
@@ -52,9 +55,10 @@ public class AuthController {
     public ResponseEntity signIn(@RequestBody SignPOJO signPOJO) throws NoSuchAlgorithmException {
         if (signPOJO.isValidSignIn() == isValidEnum.missing_credentials) {
             Map<String, String> error = Map.of("err", "Missing credentials!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(),
+                    HttpStatus.BAD_REQUEST);
 
-        }  else if (signPOJO.isValidSignIn() == isValidEnum.email_invalid) {
+        } else if (signPOJO.isValidSignIn() == isValidEnum.email_invalid) {
             Map<String, String> error = Map.of("err", "Invalid email!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
         }
@@ -66,10 +70,12 @@ public class AuthController {
 
     @PostMapping("/requestchangepass")
     @ResponseBody
-    public ResponseEntity requestChangePassword(@RequestBody SignPOJO signPOJO) throws MailException, MessagingException, NoSuchAlgorithmException {
+    public ResponseEntity requestChangePassword(@RequestBody SignPOJO signPOJO) throws MailException,
+            MessagingException, NoSuchAlgorithmException {
         if (signPOJO.isNullEmail()) {
             Map<String, String> error = Map.of("err", "Missing credentials!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(),
+                    HttpStatus.BAD_REQUEST);
         }
 
         return authService.requestChangePassword(signPOJO);
@@ -84,7 +90,8 @@ public class AuthController {
             Map<String, String> error = Map.of("err", "Body request wrong!" +
                     " please try " +
                     "again!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(),
+                    HttpStatus.BAD_REQUEST);
         }
 
         return authService.changePassword(signPOJO);
@@ -98,14 +105,21 @@ public class AuthController {
             Map<String, String> error = Map.of("err", "Body request wrong!" +
                     " please try " +
                     "again!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(),
+                    HttpStatus.BAD_REQUEST);
         }
 
         return authService.confirmVerification(signPOJO);
     }
 
 
+    //////////// auto call http every 25 minutes to wake up app on heroku
+    @GetMapping("/autocallhttp")
+    public void autoCallHttp() {
+        Calendar calendar = Calendar.getInstance();
 
-
+        System.err.println("Auto call http to wake up app on heroku every 25 minutes");
+        System.err.println(calendar.getTime());
+    }
 
 }
