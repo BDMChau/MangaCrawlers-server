@@ -178,9 +178,10 @@ public class MangaService {
 
         List<Manga> listCurrentWeekly = mangaRepository.getWeekly(7, 0);
         List<Manga> listPreviousWeekly = mangaRepository.getWeekly(14, 7);
+        System.err.println("Getting weekly mangas!");
 
         if (listCurrentWeekly.isEmpty()) {
-
+            System.err.println("Current list empty!");
             Map<String, Object> err = Map.of(
                     "msg", "Nothing from weekly mangas ranking!"
             );
@@ -188,6 +189,7 @@ public class MangaService {
         }
 
         if (listPreviousWeekly.isEmpty()) {
+            System.err.println("Previous list empty!");
             listPreviousWeekly = listCurrentWeekly;
             System.out.println("check previous" + listPreviousWeekly);
         }

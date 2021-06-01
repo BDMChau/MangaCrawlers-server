@@ -14,7 +14,7 @@ import serverapi.Query.DTO.CommentExportDTO;
 import serverapi.Query.DTO.FollowingDTO;
 import serverapi.Query.DTO.UserReadingHistoryDTO;
 import serverapi.Query.Repository.*;
-import serverapi.SharedServices.CacheService;
+import serverapi.SharedServices.Cache.CacheService;
 import serverapi.SharedServices.CloudinaryUploader;
 import serverapi.StaticFiles.UserAvatarCollection;
 import serverapi.Tables.Chapter.Chapter;

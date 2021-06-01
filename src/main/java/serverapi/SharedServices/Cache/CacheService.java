@@ -1,4 +1,4 @@
-package serverapi.SharedServices;
+package serverapi.SharedServices.Cache;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;

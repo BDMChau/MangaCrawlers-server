@@ -21,7 +21,7 @@ public class MangaConfigScheduled {
 
 
 //    @Async
-//    @Scheduled(cron = "* 12 * * * ?")
+//    @Scheduled(cron = "* */12 * * * ?")
 //public ResponseEntity getTotalView() {
 //    List<MangaViewDTO> listViewsMangas = mangaRepository.getTotalView();
 //
