@@ -33,9 +33,6 @@ public class AdvancedSearchGenreId {
 
                     if(items.getManga_id () == mangaGenreDTO.getManga_id ()){
 
-
-                        System.err.println ("manga_idaa"+items.getManga_id ());
-
                         System.err.println ("check trong hàm"+items.getManga_id ());
 
                         secondList.add (items);
@@ -58,7 +55,9 @@ public class AdvancedSearchGenreId {
 
                     if(items.getManga_id ().equals (manga.getManga_id ())){
 
+                        System.err.println ("MangaADD"+manga.getManga_id ());
                         mangaChapterDTOList.add (manga);
+
                     }
                 });
             });

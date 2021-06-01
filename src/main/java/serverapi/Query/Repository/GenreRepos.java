@@ -22,4 +22,5 @@ public interface GenreRepos extends JpaRepository<Genre, Long> {
     List<MangaGenreDTO> getAllGenresMangas();
 
 
+
 }

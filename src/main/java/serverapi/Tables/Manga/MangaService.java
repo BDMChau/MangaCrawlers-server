@@ -12,6 +12,7 @@ import serverapi.Query.DTO.*;
 import serverapi.Query.Repository.*;
 import serverapi.Query.Specification.MangaSpecification;
 import serverapi.Tables.Chapter.Chapter;
+import serverapi.Tables.Genre.Genre;
 import serverapi.Tables.Manga.POJO.CommentPOJO;
 import serverapi.Tables.Manga.POJO.GenrePOJO;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
@@ -356,6 +357,23 @@ public class MangaService {
 
    public ResponseEntity searchMangasByGenres(List<Long> listGenreId){
 
+       if(listGenreId.isEmpty ()){
+           Map<String, Object> msg = Map.of (
+                   "msg", "empty genres!"
+           );
+           return new ResponseEntity<> (new Response (200, HttpStatus.NO_CONTENT, msg).toJSON (), HttpStatus.NO_CONTENT);
+       }
+       List<Genre> genresInput = new ArrayList<> ();
+       List<Genre> genres= genreRepository.findAll ();
+       genres.forEach (genre ->{
+           listGenreId.forEach (genreId ->{
+               if(genre.getGenre_id ().equals (genreId)){
+                   genresInput.add (genre);
+               }
+           });
+       });
+
+
        System.out.println ("listGenreId.get (0) "+listGenreId.get (0));
        //Get all genres from manga_genres
        List<MangaGenreDTO> listGenresMangas = genreRepository.getAllGenresMangas ();
@@ -405,7 +423,6 @@ public class MangaService {
            System.out.println ("listGenreId.get (1) "+listGenreId.get (i));
 
            if(GenreIdAtI == null || GenreIdAtI == 0L){
-               System.out.println ("vàođâyko?");
 
                List<MangaChapterDTO> mangaChapterDTOList = new AdvancedSearchGenreId (mangaRepository).showMangaList (subFirstList,Mangas);
 
@@ -416,9 +433,11 @@ public class MangaService {
                    );
                    return new ResponseEntity<> (new Response (202, HttpStatus.ACCEPTED, msg).toJSON (), HttpStatus.ACCEPTED);
                }
+
                Map<String, Object> msg = Map.of (
                        "msg", "Get search results successfully!1",
-                       "data",mangaChapterDTOList
+                       "data",mangaChapterDTOList,
+                       "genres_info",genresInput
                );
                return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
            }
@@ -441,7 +460,8 @@ public class MangaService {
        }
        Map<String, Object> msg = Map.of (
                "msg", "Get search results successfully!last",
-               "data",mangaChapterDTOList
+               "data",mangaChapterDTOList,
+               "genres_info",genresInput
        );
        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
    }
