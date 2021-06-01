@@ -46,13 +46,17 @@ public class TransGroup {
         @Column(columnDefinition = "varchar(100)", nullable = false)
         private String transgroup_name;
 
+        @Column(columnDefinition = "TEXT", nullable = true)
+        private String transgroup_desc;
+
         @Column(columnDefinition = "varchar(50)", nullable = false)
         private String transgroup_email;
 
 
-        public TransGroup(String transgroup_name, String transgroup_email) {
-            this.transgroup_name = transgroup_name;
-            this.transgroup_email = transgroup_email;
+        public TransGroup(String transgroup_name, String transgroup_email, String transgroup_desc) {
+                this.transgroup_name = transgroup_name;
+                this.transgroup_email = transgroup_email;
+                this.transgroup_desc = transgroup_desc;
         }
 
 

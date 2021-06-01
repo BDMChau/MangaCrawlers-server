@@ -13,6 +13,7 @@ import serverapi.Tables.ReadingHistory.ReadingHistory;
 import serverapi.Tables.TransGroup.TransGroup;
 
 import javax.persistence.*;
+import java.util.Calendar;
 import java.util.Collection;
 
 @Entity
@@ -91,11 +92,19 @@ public class User {
     @Column(nullable = true)
     private String token_verify_createdAt;
 
-    public User(String user_name, String user_email, String user_password, String user_avatar, Boolean user_isAdmin) {
+    @Column(
+            nullable = false,
+            updatable = true,
+            columnDefinition = "timestamp with time zone"
+    )
+    private Calendar createdAt;
+
+    public User(String user_name, String user_email, String user_password, String user_avatar, Boolean user_isAdmin, Calendar createdAt) {
         this.user_name = user_name;
         this.user_email = user_email;
         this.user_password = user_password;
         this.user_avatar = user_avatar;
         this.user_isAdmin = user_isAdmin;
+        this.createdAt = createdAt;
     }
 }
