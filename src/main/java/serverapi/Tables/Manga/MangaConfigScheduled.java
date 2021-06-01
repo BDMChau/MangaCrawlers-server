@@ -10,12 +10,12 @@ import serverapi.Query.Repository.UpdateViewRepos;
 @EnableScheduling
 public class MangaConfigScheduled {
 
-    MangaRepos mangaRepos;
+    MangaRepos mangaRepository;
     UpdateViewRepos updateViewRepos;
 
     @Autowired
-    public MangaConfigScheduled(MangaRepos mangaRepos, UpdateViewRepos updateViewRepos){
-        this.mangaRepos = mangaRepos;
+    public MangaConfigScheduled(MangaRepos mangaRepository, UpdateViewRepos updateViewRepos){
+        this.mangaRepository = mangaRepository;
         this.updateViewRepos = updateViewRepos;
     }
 
