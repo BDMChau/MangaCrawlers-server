@@ -14,7 +14,12 @@ import serverapi.Query.Repository.FollowingRepos;
 import serverapi.Query.Repository.MangaRepos;
 import serverapi.Query.Repository.UserRepos;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.*;
+import java.util.logging.SimpleFormatter;
 
 @Service
 public class AdminService {
@@ -22,6 +27,7 @@ public class AdminService {
     private final UserRepos userRepos;
     private final FollowingRepos followingRepos;
     private final MangaRepos mangaRepos;
+
 
     @Autowired
     public AdminService(UserRepos userRepos, FollowingRepos followingRepos, MangaRepos mangaRepos) {
@@ -61,22 +67,29 @@ public class AdminService {
 
     public ResponseEntity reportUser(){
 
-
-        Calendar time = Calendar.getInstance();
-        time.get(Calendar.JUNE);
-        System.out.println("thoi gian"+time);
-
-//        time.set(Calendar.MONTH,Calendar.MAY + 1) ;
         List<ReportUserDTO> reportUserDTOS = userRepos.getUser();
-        reportUserDTOS.forEach(item->{
-            if(item.getCreatedAt().equals(time.get(Calendar.JUNE))){
-                item.getUser_isVerified();
-                item.getUser_avatar();
-                item.getUser_email();
-                item.getUser_name();
-                item.getCreatedAt();
-            }
-        });
+
+         reportUserDTOS.forEach(item->{
+
+             Calendar calendar = Calendar.getInstance();
+           calendar = item.getCreatedAt();
+
+            
+//            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
+//            String str = simpleDateFormat.format(calendar.getTime());
+
+//            if(){
+//                item.getUser_name();
+//                item.getUser_email();
+//                item.getUser_avatar();
+//                item.getUser_isVerified();
+//                item.getCreatedAt();
+//                reportUserDTOS.add(item);
+//            }
+
+             System.out.println(calendar.getTime());
+
+       });
 
         Map<String, Object> msg = Map.of("msg", "Report top five mangas successfully!", "data",reportUserDTOS);
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);

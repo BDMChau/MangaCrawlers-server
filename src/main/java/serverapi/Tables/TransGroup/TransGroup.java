@@ -9,6 +9,7 @@ import serverapi.Tables.Manga.Manga;
 import serverapi.Tables.User.User;
 
 import javax.persistence.*;
+import java.util.Calendar;
 import java.util.List;
 
 
@@ -52,11 +53,19 @@ public class TransGroup {
         @Column(columnDefinition = "varchar(50)", nullable = false)
         private String transgroup_email;
 
+        @Column(
+                nullable = false,
+                updatable = true,
+                columnDefinition = "timestamp with time zone"
+        )
+        private Calendar createdAt;
 
-        public TransGroup(String transgroup_name, String transgroup_email, String transgroup_desc) {
+
+        public TransGroup(String transgroup_name, String transgroup_email, String transgroup_desc,Calendar createdAt) {
             this.transgroup_name = transgroup_name;
             this.transgroup_email = transgroup_email;
             this.transgroup_desc = transgroup_desc;
+            this.createdAt = createdAt;
         }
 
 
