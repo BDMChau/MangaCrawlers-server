@@ -99,11 +99,12 @@ public class User {
     )
     private Calendar createdAt;
 
-    public User(String user_name, String user_email, String user_password, String user_avatar, Boolean user_isAdmin) {
+    public User(String user_name, String user_email, String user_password, String user_avatar, Boolean user_isAdmin, Calendar createdAt) {
         this.user_name = user_name;
         this.user_email = user_email;
         this.user_password = user_password;
         this.user_avatar = user_avatar;
         this.user_isAdmin = user_isAdmin;
+        this.createdAt = createdAt;
     }
 }

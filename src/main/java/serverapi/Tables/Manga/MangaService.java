@@ -6,11 +6,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
+import serverapi.Helpers.AdvancedSearchGenreId;
 import serverapi.Helpers.OffsetBasedPageRequest;
 import serverapi.Query.DTO.*;
 import serverapi.Query.Repository.*;
 import serverapi.Query.Specification.MangaSpecification;
 import serverapi.Tables.Chapter.Chapter;
+import serverapi.Tables.Genre.Genre;
+import serverapi.Tables.Manga.POJO.CommentPOJO;
+import serverapi.Tables.Manga.POJO.GenrePOJO;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.UpdateView.UpdateView;
 
@@ -295,6 +299,7 @@ public class MangaService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
+
     public ResponseEntity searchMangasByName(String mangaName) {
         MangaSpecification specific =
                 new MangaSpecification(new SearchCriteriaDTO("manga_name", ":", mangaName));
@@ -347,6 +352,118 @@ public class MangaService {
                 "manga_info", mangaOptional,
                 "comments", commentsOfChapters
         );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
+        return new ResponseEntity<> (new Response (200, HttpStatus.OK, msg).toJSON (), HttpStatus.OK);
+
+   }
+
+   public ResponseEntity searchMangasByGenres(List<Long> listGenreId){
+
+       if(listGenreId.isEmpty ()){
+           Map<String, Object> msg = Map.of (
+                   "msg", "empty genres!"
+           );
+           return new ResponseEntity<> (new Response (200, HttpStatus.NO_CONTENT, msg).toJSON (), HttpStatus.NO_CONTENT);
+       }
+       List<Genre> genresInput = new ArrayList<> ();
+       List<Genre> genres= genreRepository.findAll ();
+       genres.forEach (genre ->{
+           listGenreId.forEach (genreId ->{
+               if(genre.getGenre_id ().equals (genreId)){
+                   genresInput.add (genre);
+               }
+           });
+       });
+
+
+       System.out.println ("listGenreId.get (0) "+listGenreId.get (0));
+       //Get all genres from manga_genres
+       List<MangaGenreDTO> listGenresMangas = genreRepository.getAllGenresMangas ();
+
+       //Get all mangas
+       List<MangaChapterDTO> Mangas = mangaRepository.getLatestChapterFromManga();
+
+       /////check listGenresMangas
+       if(listGenresMangas.isEmpty ()){
+           Map<String, Object> msg = Map.of (
+                   "msg", "empty genres!"
+           );
+           return new ResponseEntity<> (new Response (200, HttpStatus.NO_CONTENT, msg).toJSON (), HttpStatus.NO_CONTENT);
+       }
+
+       //Get and check first genreId from input
+       Long firstGenreId = 0L;
+       firstGenreId = listGenreId.get (0);
+       List<MangaGenreDTO> firstList = new ArrayList<> ();
+       Long finalFirstGenreId = firstGenreId;
+
+       if(firstGenreId == null || firstGenreId == 0L){
+           Map<String, Object> msg = Map.of (
+                   "msg", "empty genres!"
+           );
+           return new ResponseEntity<> (new Response (200, HttpStatus.NO_CONTENT, msg).toJSON (), HttpStatus.NO_CONTENT);
+       }
+
+       listGenresMangas.forEach (items->{
+           if(items.getGenre_id ().equals (finalFirstGenreId)){
+               firstList.add (items);
+           }
+       });
+
+       //check genreId after first genreId.
+       List<MangaGenreDTO> subFirstList = firstList;
+       Long finalLastGenId =finalFirstGenreId;
+
+
+       System.out.println ("listgensize"+listGenreId.size ());
+       for(int i=1; i< listGenreId.size (); i++){
+
+           Long GenreIdAtI = 0L;
+           GenreIdAtI = listGenreId.get (i);
+           Long finalGenreId = GenreIdAtI;
+
+           System.out.println ("listGenreId.get (1) "+listGenreId.get (i));
+
+           if(GenreIdAtI == null || GenreIdAtI == 0L){
+
+               List<MangaChapterDTO> mangaChapterDTOList = new AdvancedSearchGenreId (mangaRepository).showMangaList (subFirstList,Mangas);
+
+               if(mangaChapterDTOList.isEmpty ()){
+
+                   Map<String, Object> msg = Map.of (
+                           "msg", "Manga not found!"
+                   );
+                   return new ResponseEntity<> (new Response (202, HttpStatus.ACCEPTED, msg).toJSON (), HttpStatus.ACCEPTED);
+               }
+
+               Map<String, Object> msg = Map.of (
+                       "msg", "Get search results successfully!1",
+                       "data",mangaChapterDTOList,
+                       "genres_info",genresInput
+               );
+               return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+           }
+
+           List<MangaGenreDTO> secondList = new AdvancedSearchGenreId (mangaRepository).searchGen (finalGenreId,subFirstList,listGenresMangas);
+
+           subFirstList= secondList;
+       }
+
+
+       List<MangaGenreDTO> lastList = subFirstList;
+       List<MangaChapterDTO> mangaChapterDTOList = new AdvancedSearchGenreId (mangaRepository).showMangaList (lastList,Mangas);
+
+       if(mangaChapterDTOList.isEmpty ()){
+
+           Map<String, Object> msg = Map.of (
+                   "msg", "Manga not found!last"
+           );
+           return new ResponseEntity<> (new Response (202, HttpStatus.ACCEPTED, msg).toJSON (), HttpStatus.ACCEPTED);
+       }
+       Map<String, Object> msg = Map.of (
+               "msg", "Get search results successfully!last",
+               "data",mangaChapterDTOList,
+               "genres_info",genresInput
+       );
+       return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+   }
 }
