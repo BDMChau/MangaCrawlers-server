@@ -681,19 +681,28 @@ public class UserService {
 
 
     public ResponseEntity signUpTransGroup(Long userId, String groupName, String groupDesc) {
-        Optional<TransGroup> transGroupOptional = transGroupRepos.findByName(groupName);
+        Optional<User> userOptional = userRepos.findById(userId);
+        if (userOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "User is not exist!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get();
+
+
+        Optional<TransGroup> transGroupOptional = transGroupRepos.findByEmail(user.getUser_email());
         if (transGroupOptional.isPresent()) {
-            Map<String, Object> err = Map.of("err", "Group name is existed!");
+            Map<String, Object> err = Map.of("err", "Group is existed!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(),
                     HttpStatus.ACCEPTED);
         }
 
-        Optional<User> userOptional = userRepos.findById(userId);
-        User user = userOptional.get();
+
 
         TransGroup transGroup = new TransGroup();
         transGroup.setTransgroup_name(groupName);
         transGroup.setTransgroup_email(user.getUser_email());
+        transGroup.setCreatedAt(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
         if (groupDesc.isEmpty()) {
             transGroup.setTransgroup_desc("");
         } else {

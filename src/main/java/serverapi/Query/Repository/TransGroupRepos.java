@@ -13,4 +13,7 @@ public interface TransGroupRepos extends JpaRepository<TransGroup, Long> {
     @Query("SELECT transgr FROM TransGroup transgr WHERE transgr.transgroup_name = ?1")
     Optional<TransGroup> findByName(String groupName);
 
+    @Query("SELECT transgr FROM TransGroup transgr WHERE transgr.transgroup_email = ?1")
+    Optional<TransGroup> findByEmail(String groupEmail);
+
 }
