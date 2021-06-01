@@ -72,11 +72,11 @@ public class AdminService {
          reportUserDTOS.forEach(item->{
 
              Calendar calendar = Calendar.getInstance();
-           calendar = item.getCreatedAt();
 
-            
-//            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
-//            String str = simpleDateFormat.format(calendar.getTime());
+             calendar = item.getCreatedAt();
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
+            String str = simpleDateFormat.format(calendar.getTime());
 
 //            if(){
 //                item.getUser_name();
@@ -87,7 +87,7 @@ public class AdminService {
 //                reportUserDTOS.add(item);
 //            }
 
-             System.out.println(calendar.getTime());
+             System.out.println(str);
 
        });
 
