@@ -392,7 +392,6 @@ public class UserService {
     }
 
 
-
     public ResponseEntity updateAvatar(String fileName, byte[] fileBytes, Long userId) throws IOException,
             ParseException {
         Optional<User> userOptional = userRepos.findById(userId);
@@ -465,8 +464,6 @@ public class UserService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
                 HttpStatus.OK);
     }
-
-
 
 
     /////////////// Translation Group parts //////////////
@@ -543,23 +540,36 @@ public class UserService {
     }
 
 
-    public ResponseEntity getTransGroupInfo(Long userId){
+    public ResponseEntity getTransGroupInfo(Long userId, Long transGroupId) {
         Optional<User> userOptional = userRepos.findById(userId);
-        if(userOptional.isEmpty()){
+        if (userOptional.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "msg", "User is not exist!"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<TransGroup> transGroupOptional = transGroupRepos.findById(transGroupId);
+        if (transGroupOptional.isEmpty()) {
             Map<String, Object> msg = Map.of(
-                    "msg", "No trans group!"
+                    "msg", "No translation group!"
             );
             return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
                     HttpStatus.OK);
         }
-        User user = userOptional.get();
-        Long transGroup = user.getTransgroup().getTransgroup_id();
-        System.err.println(transGroup);
+        TransGroup transGroup = transGroupOptional.get();
+        Collection<Manga> listManga = transGroup.getMangas();
 
 
 
-
-    return null;
+        Map<String, Object> msg = Map.of(
+                "msg", "Get translation group info successfully!",
+                "trans_group", transGroup,
+                "list_manga", listManga
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                HttpStatus.OK);
     }
 
 }

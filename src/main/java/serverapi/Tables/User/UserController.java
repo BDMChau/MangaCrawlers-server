@@ -17,6 +17,7 @@ import serverapi.Tables.User.POJO.UserPOJO;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -152,9 +153,6 @@ public class UserController {
     }
 
 
-
-
-
     /////////////// Translation Group parts //////////////
     @PostMapping("/uploadmangaimgs")
     public ResponseEntity uploadMangaImgs(
@@ -165,7 +163,7 @@ public class UserController {
         Long userId = Long.parseLong(StrUserId);
 
 
-       return userService.uploadMangaImgs(userId,files);
+        return userService.uploadMangaImgs(userId, files);
     }
 
     @PostMapping("/signuptransgroup")
@@ -175,7 +173,8 @@ public class UserController {
 
         if (Boolean.FALSE.equals(transGroupPOJO.isValid())) {
             Map<String, String> error = Map.of("err", "Missing credentials!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(),
+                    HttpStatus.BAD_REQUEST);
         }
         String groupName = transGroupPOJO.getGroup_name();
         String groupDesc = transGroupPOJO.getGroup_desc();
@@ -186,12 +185,22 @@ public class UserController {
 
 
     @PostMapping("/gettransgroupinfo")
-    public ResponseEntity getTransGroupInfo(ServletRequest request)  {
+    public ResponseEntity getTransGroupInfo(ServletRequest request, @RequestBody Map data) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
+        Long transGroupIdOfUser = Long.parseLong(getUserAttribute(request).get("user_transgroup_id").toString());
+        Long transGroupId = Long.parseLong(data.get("transgroup_id").toString());
+        if (!transGroupId.equals(transGroupIdOfUser)) {
+            Map<String, Object> err = Map.of(
+                    "err", "Invalid transgroup_id!"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
 
-        return userService.getTransGroupInfo(userId);
+
+        return userService.getTransGroupInfo(userId, transGroupId);
     }
 
 }
