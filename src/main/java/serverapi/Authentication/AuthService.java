@@ -112,17 +112,16 @@ public class AuthService {
         String email = user.getUser_email();
         String avatar = user.getUser_avatar();
         Boolean isAdmin = user.getUser_isAdmin();
-        TransGroup transGroup = user.getTransgroup();
+        Optional<TransGroup> transGroup = Optional.ofNullable(user.getTransgroup());
 
         Map<String, Serializable> userData = new HashMap<>();
-        if (transGroup != null) {
+        if (transGroup.isEmpty()) {
             userData.put("user_id", id);
             userData.put("user_name", name);
             userData.put("user_email", email);
             userData.put("user_avatar", avatar);
             userData.put("user_isAdmin", isAdmin);
             userData.put("user_isVerified", isVerified);
-            userData.put("user_transgroup_id", transGroup.getTransgroup_id());
 
         } else {
             userData.put("user_id", id);
@@ -131,6 +130,7 @@ public class AuthService {
             userData.put("user_avatar", avatar);
             userData.put("user_isAdmin", isAdmin);
             userData.put("user_isVerified", isVerified);
+            userData.put("user_transgroup_id",transGroup.get().getTransgroup_id());
         }
 
 

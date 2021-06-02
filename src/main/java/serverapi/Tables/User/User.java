@@ -52,10 +52,9 @@ public class User {
     private Collection<RatingManga> ratingMangas;
 
 
-
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="transgroup_id")
+    @JoinColumn(name = "transgroup_id")
     private TransGroup transgroup;
 
 
@@ -99,7 +98,8 @@ public class User {
     )
     private Calendar createdAt;
 
-    public User(String user_name, String user_email, String user_password, String user_avatar, Boolean user_isAdmin, Calendar createdAt) {
+    public User(String user_name, String user_email, String user_password, String user_avatar, Boolean user_isAdmin,
+                Calendar createdAt) {
         this.user_name = user_name;
         this.user_email = user_email;
         this.user_password = user_password;

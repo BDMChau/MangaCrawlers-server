@@ -10,7 +10,7 @@ import serverapi.Tables.User.User;
 
 import javax.persistence.*;
 import java.util.Calendar;
-import java.util.List;
+import java.util.Collection;
 
 
 @Entity
@@ -37,11 +37,11 @@ public class TransGroup {
 
         @JsonBackReference
         @OneToMany(mappedBy = "transgroup", cascade = CascadeType.ALL)
-        private List<Manga> mangas;
+        private Collection<Manga> mangas;
 
         @JsonBackReference
-        @OneToMany(mappedBy = "transgroup", cascade = CascadeType.ALL)
-        private List<User> users;
+        @OneToMany(mappedBy = "transgroup", cascade = CascadeType.MERGE)
+        private Collection<User> users;
 
 
         @Column(columnDefinition = "varchar(100)", nullable = false)

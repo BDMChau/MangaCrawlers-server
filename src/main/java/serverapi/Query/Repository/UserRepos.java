@@ -5,10 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import serverapi.Query.DTO.*;
+import serverapi.Tables.TransGroup.TransGroup;
 import serverapi.Tables.User.User;
 
-import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepos extends JpaRepository<User, Long> {
@@ -34,6 +35,7 @@ public interface UserRepos extends JpaRepository<User, Long> {
     @Query("SELECT new serverapi.Query.DTO.UserDTO(u.user_id, u.createdAt) FROM User u")
     List<UserDTO> getAllUser();
 
-
+    @Query("SELECT u FROM User u JOIN u.transgroup WHERE u.user_id = ?1")
+    Optional<TransGroup> getTransGroupById(Long userId);
 }
 

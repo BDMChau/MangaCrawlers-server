@@ -169,7 +169,6 @@ public class UserController {
     }
 
     @PostMapping("/signuptransgroup")
-    @ResponseBody
     public ResponseEntity signUpTransGroup(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) throws NoSuchAlgorithmException {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
@@ -185,5 +184,14 @@ public class UserController {
         return userService.signUpTransGroup(userId, groupName, groupDesc);
     }
 
+
+    @PostMapping("/gettransgroupinfo")
+    public ResponseEntity getTransGroupInfo(ServletRequest request)  {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+
+        return userService.getTransGroupInfo(userId);
+    }
 
 }

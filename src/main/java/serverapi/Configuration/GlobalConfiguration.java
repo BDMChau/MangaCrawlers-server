@@ -34,8 +34,8 @@ public class GlobalConfiguration {
     }
 
 
-    //////////// auto call http every 25 minutes to wake up app on heroku
-    @Scheduled(fixedDelay = 1500000)
+    //////////// auto call http every 20 minutes to wake up app on heroku
+    @Scheduled(fixedDelay = 1200000)
     public void autoCallHttp() throws IOException {
         URL url = new URL(System.getenv("HOST_PRODUCTION") + "api/auth/autocallhttp");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();

@@ -523,8 +523,6 @@ public class UserService {
                     HttpStatus.ACCEPTED);
         }
 
-
-
         TransGroup transGroup = new TransGroup();
         transGroup.setTransgroup_name(groupName);
         transGroup.setTransgroup_email(user.getUser_email());
@@ -534,12 +532,35 @@ public class UserService {
         } else {
             transGroup.setTransgroup_desc(groupDesc);
         }
-
         transGroupRepos.saveAndFlush(transGroup);
+
+        user.setTransgroup(transGroup);
+        userRepos.save(user);
 
         Map<String, Object> msg = Map.of("msg", "Register new translation group successfully");
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
                 HttpStatus.OK);
     }
+
+
+    public ResponseEntity getTransGroupInfo(Long userId){
+        Optional<User> userOptional = userRepos.findById(userId);
+        if(userOptional.isEmpty()){
+            Map<String, Object> msg = Map.of(
+                    "msg", "No trans group!"
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                    HttpStatus.OK);
+        }
+        User user = userOptional.get();
+        Long transGroup = user.getTransgroup().getTransgroup_id();
+        System.err.println(transGroup);
+
+
+
+
+    return null;
+    }
+
 }
 
