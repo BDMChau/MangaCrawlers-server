@@ -17,7 +17,6 @@ import serverapi.Tables.User.POJO.UserPOJO;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -201,6 +200,16 @@ public class UserController {
 
 
         return userService.getTransGroupInfo(userId, transGroupId);
+    }
+
+
+    @PostMapping("/addnewprojectmanga")
+    public ResponseEntity addNewProjectManga(ServletRequest request, @RequestBody Map data) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+        Map fields = (Map) data.get("fields");
+
+        return userService.addNewProjectManga(userId, fields);
     }
 
 }

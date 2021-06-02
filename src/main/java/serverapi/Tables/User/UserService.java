@@ -572,5 +572,10 @@ public class UserService {
                 HttpStatus.OK);
     }
 
+
+    public ResponseEntity addNewProjectManga(Long userId, Map fields){
+        System.err.println(fields);
+        return null;
+    }
 }
 
