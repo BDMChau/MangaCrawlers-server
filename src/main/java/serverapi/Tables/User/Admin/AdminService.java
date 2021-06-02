@@ -7,22 +7,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
-import serverapi.Query.DTO.ReportTopMangaDTO;
-import serverapi.Query.DTO.ReportUserDTO;
-import serverapi.Query.DTO.ReportUserFollowMangaDTO;
-import serverapi.Query.DTO.UserDTO;
+import serverapi.Query.DTO.*;
 import serverapi.Query.Repository.FollowingRepos;
 import serverapi.Query.Repository.MangaRepos;
 import serverapi.Query.Repository.UserRepos;
 import serverapi.Tables.User.User;
 
-import javax.sound.midi.Soundbank;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.*;
-import java.util.logging.SimpleFormatter;
 
 @Service
 public class AdminService {
@@ -112,6 +104,179 @@ public class AdminService {
                 "List report users ",listReportUser);
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
+    }
+
+
+
+    public ResponseEntity deleteUser(Long userId, Long adminId) {
+        Optional<User> adminOptional = userRepos.findById(adminId);
+        if (adminOptional.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "err", "Missing creadential to access this resource"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        User admin = adminOptional.get();
+
+        Boolean isAdmin = admin.getUser_isAdmin();
+        if (Boolean.FALSE.equals(isAdmin)) {
+            Map<String, Object> err = Map.of(
+                    "err", "You are not allowed to access this resource!"
+            );
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
+        //get user info
+        Optional<User> userOptional = userRepos.findById(userId);
+
+        if (userOptional.isEmpty()) {
+
+            Map<String, Object> err = Map.of(
+                    "err", "User not found!"
+
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get();
+        userRepos.delete(user);
+
+        List<User> users = userRepos.findAll();
+
+        Comparator<User> compareById = (User u1, User u2) -> u1.getUser_id().compareTo(u2.getUser_id());
+        Collections.sort(users, compareById); // sort users by id
+
+        Map<String, Object> msg = Map.of(
+                "msg", "delete user successfully!",
+                "users", users
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+
+    }
+
+
+    public ResponseEntity deprecateUser(Long userId, Long adminId) {
+        Optional<User> adminOptional = userRepos.findById(adminId);
+        if (adminOptional.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "err", "Missing creadential to access this resource"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        User admin = adminOptional.get();
+
+        Boolean isAdmin = admin.getUser_isAdmin();
+        if (Boolean.FALSE.equals(isAdmin)) {
+            Map<String, Object> err = Map.of(
+                    "err", "You are not allowed to access this resource!"
+            );
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
+        //get user info
+        Optional<User> userOptional = userRepos.findById(userId);
+
+        if (userOptional.isEmpty()) {
+
+            Map<String, Object> err = Map.of(
+                    "err", "User not found!"
+
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get();
+        user.setUser_isVerified(false);
+        userRepos.save(user);
+
+        List<User> users = userRepos.findAll();
+
+        Comparator<User> compareById = (User u1, User u2) -> u1.getUser_id().compareTo(u2.getUser_id());
+        Collections.sort(users, compareById); // sort users by id
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Deprecate user successfully!",
+                "users", users
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+
+    }
+
+
+    public ResponseEntity getAllUsers(Long userId) {
+        Optional<User> userOptional = userRepos.findById(userId);
+        if (userOptional.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "err", "Missing creadential to access this resource"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get();
+
+        Boolean isAdmin = user.getUser_isAdmin();
+        if (Boolean.FALSE.equals(isAdmin)) {
+            Map<String, Object> err = Map.of(
+                    "err", "You are not allowed to access this resource!"
+            );
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
+
+        List<User> users = userRepos.findAll();
+        if (users.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Empty users!",
+                    "users", users
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get all users successfully!",
+                "users", users
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
+    public ResponseEntity getAllMangas(Long userId) {
+        Optional<User> userOptional = userRepos.findById(userId);
+        User user = userOptional.get();
+        if (userOptional.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "err", "Missing creadential to access this resource"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        Boolean isAdmin = user.getUser_isAdmin();
+        if (Boolean.FALSE.equals(isAdmin)) {
+            Map<String, Object> err = Map.of(
+                    "err", "You are not allowed to access this resource!"
+            );
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
+
+        List<AuthorMangaDTO> mangas = mangaRepos.getAllMangasInfo();
+
+        if (mangas.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Empty mangas!",
+                    "mangas", mangas
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
+        Map<String, Object> msg = Map.of(
+                "msg", "Get all mangas successfully!",
+                "mangas", mangas
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
 }

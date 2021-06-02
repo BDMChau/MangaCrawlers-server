@@ -152,52 +152,7 @@ public class UserController {
     }
 
 
-//////////////////////// Admin parts ////////////////////////////
 
-    @Cacheable(value = "allmangas", key = "#request.getAttribute(\"user\").get(\"user_id\")")
-    @GetMapping("/getallmangas")
-    public ResponseEntity getAllMangas(ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
-
-        return userService.getAllMangas(userId);
-    }
-
-
-    @Cacheable(value = "allusers", key = "#request.getAttribute(\"user\").get(\"user_id\")")
-    @GetMapping("/getallusers")
-    public ResponseEntity getAllUsers(ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
-
-        return userService.getAllUsers(userId);
-    }
-
-
-    @CacheEvict(allEntries = true, value = {"allusers"})
-    @PutMapping("/deprecateuser")
-    public ResponseEntity deprecateUser(@RequestBody UserPOJO userPOJO, ServletRequest request) {
-
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long adminId = Long.parseLong(StrUserId);
-
-        Long userId = Long.parseLong(userPOJO.getUser_id());
-
-        return userService.deprecateUser(userId, adminId);
-    }
-
-
-    // Delete User by userId
-    @CacheEvict(allEntries = true, value = {"allusers"})
-    @DeleteMapping("/deleteuser")
-    public ResponseEntity deleteUser(@RequestBody UserPOJO userPOJO, ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long adminId = Long.parseLong(StrUserId);
-
-        Long userId = Long.parseLong(userPOJO.getUser_id());
-
-        return userService.deleteUser(userId, adminId);
-    }
 
 
     /////////////// Translation Group parts //////////////

@@ -14,6 +14,7 @@ public class TokenVerificationConfig {
 
         registrationBean.setFilter(new serverapi.Middleware.TokenVerification());
         registrationBean.addUrlPatterns("/api/user/*");
+        registrationBean.addUrlPatterns("/api/admin/*");
 
         return registrationBean;
     }
