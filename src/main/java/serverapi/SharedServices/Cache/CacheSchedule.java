@@ -17,13 +17,13 @@ public class CacheSchedule {
     @Scheduled(cron = "0 0 0 */7 * ?")
     public void evictCacheWeeklyMangas() {
         Calendar calendar = Calendar.getInstance();
-        System.err.println("Evict Cache weeklyMangas every after 7 days: " + calendar.getTime());
+        System.err.println("Evict Cache weeklyMangas every 7 days: " + calendar.getTime());
     }
 
     @CacheEvict(allEntries = true, value = {"topMangas"})
-    @Scheduled(cron = "0 0 */12 * * ?")
+    @Scheduled(cron = "* * */23 * * ?")
     public void evictCacheTopMangas() {
         Calendar calendar = Calendar.getInstance();
-        System.err.println("Evict Cache topMangas every after 12 hours: " + calendar.getTime());
+        System.err.println("Evict Cache topMangas every 23 hours: " + calendar.getTime());
     }
 }

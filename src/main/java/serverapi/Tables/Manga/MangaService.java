@@ -179,10 +179,8 @@ public class MangaService {
     public ResponseEntity getWeeklyMangas() {
 
         List<UpdateViewDTO> listCurrentWeekly = mangaRepository.getWeekly(7, 0);
-        List<UpdateViewDTO> listPreviousWeekly = mangaRepository.getWeekly(14,7);
+        List<UpdateViewDTO> listPreviousWeekly = mangaRepository.getWeekly(14, 7);
 
-        System.out.println("con chó thịnh"+listCurrentWeekly);
-        System.out.println("con đỉ thịnh:"+listPreviousWeekly);
 
         if (listCurrentWeekly.isEmpty()) {
             System.err.println("Current list empty!");
@@ -215,10 +213,11 @@ public class MangaService {
                         WeeklyMangaDTO weeklyMangaDTO = new WeeklyMangaDTO();
                         System.out.println("listCurrentWeekly.get(i).getManga_id()" + listCurrentWeekly.get(i).getManga_id());
 
-                        System.out.println("listCurrentWeekly.get(i).getViews()"+listCurrentWeekly.get(i));
-                        System.out.println("listPreviousWeekly.get(j).getViews()"+listPreviousWeekly.get(j).getTotalviews());
-                        Long views = listCurrentWeekly.get(i).getTotalviews() - listPreviousWeekly.get(j).getTotalviews();
-                        System.out.println(" view sau khi tru"+views);
+                        System.out.println("listCurrentWeekly.get(i).getViews()" + listCurrentWeekly.get(i));
+                        System.out.println("listPreviousWeekly.get(j).getViews()" + listPreviousWeekly.get(j).getTotalviews());
+                        Long views =
+                                listCurrentWeekly.get(i).getTotalviews() - listPreviousWeekly.get(j).getTotalviews();
+                        System.out.println(" view sau khi tru" + views);
 
                         weeklyMangaDTO.setManga_id(listCurrentWeekly.get(i).getManga_id());
                         weeklyMangaDTO.setViews(listCurrentWeekly.get(i).getTotalviews());
@@ -255,7 +254,8 @@ public class MangaService {
                         WeeklyMangaDTO weeklyMangaDTO = new WeeklyMangaDTO();
                         System.out.println("listPreviousWeekly.get(i).getManga_id()");
 
-                        Long views = listCurrentWeekly.get(j).getTotalviews() - listPreviousWeekly.get(i).getTotalviews();
+                        Long views =
+                                listCurrentWeekly.get(j).getTotalviews() - listPreviousWeekly.get(i).getTotalviews();
 
                         weeklyMangaDTO.setManga_id(listCurrentWeekly.get(j).getManga_id());
                         weeklyMangaDTO.setViews(listCurrentWeekly.get(j).getTotalviews());

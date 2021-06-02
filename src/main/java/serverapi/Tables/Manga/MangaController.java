@@ -1,20 +1,16 @@
 package serverapi.Tables.Manga;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.core.serializer.Deserializer;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import serverapi.Query.DTO.GenreDTO;
 import serverapi.Tables.Manga.POJO.CommentPOJO;
-import serverapi.Tables.Manga.POJO.GenrePOJO;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/manga")
@@ -106,16 +102,16 @@ public class MangaController {
     @PostMapping("/advancedsearch")
     public ResponseEntity searchMangasByGenres(@RequestBody Map data) {
 
-        List<Integer> listIntGenId = (List<Integer>) data.get ("genres_id");
-        List<Long> listGenId = new ArrayList<> ();
+        List<Integer> listIntGenId = (List<Integer>) data.get("genres_id");
+        List<Long> listGenId = new ArrayList<>();
 
         for (Integer genreId : listIntGenId) {
-            Long id = Long.parseLong (genreId.toString ());
-            listGenId.add (id);
+            Long id = Long.parseLong(genreId.toString());
+            listGenId.add(id);
         }
 
 
-       return mangaService.searchMangasByGenres(listGenId);
+        return mangaService.searchMangasByGenres(listGenId);
     }
 
 

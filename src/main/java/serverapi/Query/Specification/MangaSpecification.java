@@ -28,7 +28,8 @@ public class MangaSpecification implements Specification<Manga> {
             return builder.greaterThanOrEqualTo(
                     root.<String>get(searchCriteriaDTO.getKey()), searchCriteriaDTO.getValue().toString());
         } else if (searchCriteriaDTO.getOperation().equalsIgnoreCase("<")) {
-            return builder.lessThanOrEqualTo(builder.lower(root.<String>get(searchCriteriaDTO.getKey())), searchCriteriaDTO.getValue().toString());
+            return builder.lessThanOrEqualTo(builder.lower(root.<String>get(searchCriteriaDTO.getKey())),
+                    searchCriteriaDTO.getValue().toString());
         } else if (searchCriteriaDTO.getOperation().equalsIgnoreCase(":")) {
 
             if (root.get(searchCriteriaDTO.getKey()).getJavaType() == String.class) {// search page
