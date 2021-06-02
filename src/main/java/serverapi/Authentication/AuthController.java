@@ -114,12 +114,12 @@ public class AuthController {
 
 
     //////////// auto call http every 25 minutes to wake up app on heroku
-    @GetMapping("/autocallhttp")
-    public void autoCallHttp() {
-        Calendar calendar = Calendar.getInstance();
-
-        System.err.println("Auto call http to wake up app on heroku every 25 minutes");
-        System.err.println(calendar.getTime());
-    }
+//    @GetMapping("/autocallhttp")
+//    public void autoCallHttp() {
+//        Calendar calendar = Calendar.getInstance();
+//
+//        System.err.println("Auto call http to wake up app on heroku every 25 minutes");
+//        System.err.println(calendar.getTime());
+//    }
 
 }
