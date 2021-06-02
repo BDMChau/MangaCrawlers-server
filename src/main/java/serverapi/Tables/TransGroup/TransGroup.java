@@ -61,10 +61,11 @@ public class TransGroup {
         private Calendar createdAt;
 
 
-        public TransGroup(String transgroup_name, String transgroup_email, String transgroup_desc) {
+        public TransGroup(String transgroup_name, String transgroup_email, String transgroup_desc,Calendar createdAt) {
             this.transgroup_name = transgroup_name;
             this.transgroup_email = transgroup_email;
             this.transgroup_desc = transgroup_desc;
+            this.createdAt = createdAt;
         }
 
 
