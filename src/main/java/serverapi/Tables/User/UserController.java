@@ -187,7 +187,7 @@ public class UserController {
     public ResponseEntity getTransGroupInfo(ServletRequest request, @RequestBody Map data) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
-
+        System.err.println(data);
         Long transGroupIdOfUser = Long.parseLong(getUserAttribute(request).get("user_transgroup_id").toString());
         Long transGroupId = Long.parseLong(data.get("transgroup_id").toString());
         if (!transGroupId.equals(transGroupIdOfUser)) {

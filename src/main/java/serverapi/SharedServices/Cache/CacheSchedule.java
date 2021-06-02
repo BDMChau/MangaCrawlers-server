@@ -21,7 +21,7 @@ public class CacheSchedule {
     }
 
     @CacheEvict(allEntries = true, value = {"topMangas"})
-    @Scheduled(cron = "* * */23 * * ?")
+    @Scheduled(cron = "0 0 */23 * * ?")
     public void evictCacheTopMangas() {
         Calendar calendar = Calendar.getInstance();
         System.err.println("Evict Cache topMangas every 23 hours: " + calendar.getTime());
