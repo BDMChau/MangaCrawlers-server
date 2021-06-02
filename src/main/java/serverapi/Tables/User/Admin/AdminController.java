@@ -17,6 +17,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/admin")
 @CacheConfig(cacheNames = {"admin"})
+
 public class AdminController {
 
 
@@ -45,11 +46,21 @@ public class AdminController {
 
     }
 
+
     @GetMapping("/reporttopviewsmanga")
     public ResponseEntity reportTopViewsManga() {
 
         return adminService.reportTopViewManga();
 
+    }
+
+
+    @GetMapping("/reportuser")
+    public ResponseEntity reportUser(ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+        return adminService.reportUser(userId);
     }
 
 
@@ -63,13 +74,13 @@ public class AdminController {
     }
 
 
-    @Cacheable(value = "reportUser", key = "#request.getAttribute(\"user\").get(\"user_id\")")
-    @GetMapping("/reportuser")
-    public ResponseEntity reportUser(ServletRequest request) {
+    @Cacheable(value = "allusers", key = "#request.getAttribute(\"user\").get(\"user_id\")")
+    @GetMapping("/getallusers")
+    public ResponseEntity getAllUsers(ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
-        return adminService.reportUser(userId);
+        return adminService.getAllUsers(userId);
     }
 
 
