@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import serverapi.Query.DTO.*;
 import serverapi.Tables.Manga.Manga;
+import serverapi.Tables.UpdateView.UpdateView;
 
 import java.util.Calendar;
 import java.util.List;
@@ -57,10 +58,11 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
     List<MangaViewDTO> getTotalView();
 
 
-    @Query(value = "SELECT m FROM Manga m JOIN m.updateViews u WHERE u.createdAt >= current_date - :from_time and u.createdAt < current_date - :to_time Order By u" +
-            ".totalviews Desc")
-    List<Manga> getWeekly( @Param("from_time")int from_time, @Param("to_time") int to_time);
-
+    @Query("SELECT new serverapi.Query.DTO.UpdateViewDTO(m.manga_id,m.manga_name, m.thumbnail, m.description, m.status, m.stars," +
+            "m.views, m.date_publications, m.createdAt, u.updatedview_id, u.totalviews, u.createdAt) " +
+            "FROM UpdateView u JOIN u.manga m " +
+            "WHERE u.createdAt >= current_date - :from_time and u.createdAt < current_date - :to_time ")
+    List<UpdateViewDTO> getWeekly(@Param("from_time")int from_time, @Param("to_time") int to_time);
 
     @Query("SELECT new serverapi.Query.DTO.AuthorMangaDTO( a.author_id, a.author_name," +
             " m.manga_id, m.manga_name, m.status, m.description, m.stars, " +

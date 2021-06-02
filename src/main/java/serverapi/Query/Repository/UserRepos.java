@@ -28,8 +28,11 @@ public interface UserRepos extends JpaRepository<User, Long> {
             "FROM Manga m JOIN m.author a ORDER BY m.views DESC ")
     List<ReportTopMangaDTO> findTopManga(Pageable pageable);
 
-    @Query("SELECT new serverapi.Query.DTO.ReportUserDTO(u.user_name, u.user_email, u.user_avatar, u. user_isVerified, u.createdAt) FROM User u ")
-    List<ReportUserDTO> getUser();
+//    @Query("SELECT new serverapi.Query.DTO.ReportUserDTO(COUNT(u.user_id),u.user_name, u.user_email, u.user_avatar, u.user_isVerified, u.createdAt) FROM User u GROUP BY u.user_name, u.user_email,u.user_avatar,u.user_isVerified ")
+//    List<ReportUserDTO> getUser();
+
+    @Query("SELECT new serverapi.Query.DTO.UserDTO(u.user_id, u.createdAt) FROM User u")
+    List<UserDTO> getAllUser();
 
 
 }

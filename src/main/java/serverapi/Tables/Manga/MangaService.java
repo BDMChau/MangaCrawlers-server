@@ -176,8 +176,11 @@ public class MangaService {
 
     public ResponseEntity getWeeklyMangas() {
 
-        List<Manga> listCurrentWeekly = mangaRepository.getWeekly(7, 0);
-        List<Manga> listPreviousWeekly = mangaRepository.getWeekly(14, 7);
+        List<UpdateViewDTO> listCurrentWeekly = mangaRepository.getWeekly(7, 0);
+        List<UpdateViewDTO> listPreviousWeekly = mangaRepository.getWeekly(14,7);
+
+        System.out.println("con chó thịnh"+listCurrentWeekly);
+        System.out.println("con đỉ thịnh:"+listPreviousWeekly);
 
         if (listCurrentWeekly.isEmpty()) {
 
@@ -198,6 +201,7 @@ public class MangaService {
         if (listCurrentWeekly.size() >= listPreviousWeekly.size()) {
 
             int temp = listCurrentWeekly.size() - listPreviousWeekly.size();
+
             int previousWeeklySize = listPreviousWeekly.size();
             for (int i = 0; i < listCurrentWeekly.size(); i++) {
 
@@ -208,14 +212,17 @@ public class MangaService {
                         WeeklyMangaDTO weeklyMangaDTO = new WeeklyMangaDTO();
                         System.out.println("listCurrentWeekly.get(i).getManga_id()" + listCurrentWeekly.get(i).getManga_id());
 
-                        Long views = listCurrentWeekly.get(i).getViews() - listPreviousWeekly.get(j).getViews();
+                        System.out.println("listCurrentWeekly.get(i).getViews()"+listCurrentWeekly.get(i));
+                        System.out.println("listPreviousWeekly.get(j).getViews()"+listPreviousWeekly.get(j).getTotalviews());
+                        Long views = listCurrentWeekly.get(i).getTotalviews() - listPreviousWeekly.get(j).getTotalviews();
+                        System.out.println(" view sau khi tru"+views);
 
                         weeklyMangaDTO.setManga_id(listCurrentWeekly.get(i).getManga_id());
-                        weeklyMangaDTO.setViews(listCurrentWeekly.get(i).getViews());
+                        weeklyMangaDTO.setViews(listCurrentWeekly.get(i).getTotalviews());
                         weeklyMangaDTO.setView_compares(views);
                         System.out.println("check set");
 
-                        listWeeklyMangasRanking.add(j, weeklyMangaDTO);
+                        listWeeklyMangasRanking.add(weeklyMangaDTO);
                         System.out.println("listWeeklyMangasRanking.set(j,mangaDTO)" + listWeeklyMangasRanking);
                     }
                 }
@@ -226,18 +233,17 @@ public class MangaService {
 
                 WeeklyMangaDTO weeklyMangaDTO = new WeeklyMangaDTO();
                 weeklyMangaDTO.setManga_id(listCurrentWeekly.get(previousWeeklySize + z).getManga_id());
-                weeklyMangaDTO.setViews(listCurrentWeekly.get(previousWeeklySize + z).getViews());
-                weeklyMangaDTO.setView_compares(listCurrentWeekly.get(previousWeeklySize + z).getViews());
+                weeklyMangaDTO.setViews(listCurrentWeekly.get(previousWeeklySize + z).getTotalviews());
+                weeklyMangaDTO.setView_compares(listCurrentWeekly.get(previousWeeklySize + z).getTotalviews());
 
                 listWeeklyMangasRanking.add(weeklyMangaDTO);
                 z++;
             }
         } else {
 
-            int temp = listPreviousWeekly.size() - listCurrentWeekly.size();
             int previousWeeklySize = listPreviousWeekly.size();
 
-            for (int i = 0; i < listPreviousWeekly.size(); i++) {
+            for (int i = 0; i < previousWeeklySize; i++) {
 
                 for (int j = 0; j < listCurrentWeekly.size(); j++) {
 
@@ -246,10 +252,10 @@ public class MangaService {
                         WeeklyMangaDTO weeklyMangaDTO = new WeeklyMangaDTO();
                         System.out.println("listPreviousWeekly.get(i).getManga_id()");
 
-                        Long views = listCurrentWeekly.get(j).getViews() - listPreviousWeekly.get(i).getViews();
+                        Long views = listCurrentWeekly.get(j).getTotalviews() - listPreviousWeekly.get(i).getTotalviews();
 
                         weeklyMangaDTO.setManga_id(listCurrentWeekly.get(j).getManga_id());
-                        weeklyMangaDTO.setViews(listCurrentWeekly.get(j).getViews());
+                        weeklyMangaDTO.setViews(listCurrentWeekly.get(j).getTotalviews());
                         weeklyMangaDTO.setView_compares(views);
 
                         listWeeklyMangasRanking.add(weeklyMangaDTO);
