@@ -52,13 +52,6 @@ public class AdminController {
 
     }
 
-    @GetMapping("/reportuser")
-    public ResponseEntity reportUser() {
-
-
-        return adminService.reportUser();
-    }
-
 
     @Cacheable(value = "allmangas", key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @GetMapping("/getallmangas")
@@ -70,13 +63,13 @@ public class AdminController {
     }
 
 
-    @Cacheable(value = "allusers", key = "#request.getAttribute(\"user\").get(\"user_id\")")
-    @GetMapping("/getallusers")
-    public ResponseEntity getAllUsers(ServletRequest request) {
+    @Cacheable(value = "reportUser", key = "#request.getAttribute(\"user\").get(\"user_id\")")
+    @GetMapping("/reportuser")
+    public ResponseEntity reportUser(ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
-        return adminService.getAllUsers(userId);
+        return adminService.reportUser(userId);
     }
 
 

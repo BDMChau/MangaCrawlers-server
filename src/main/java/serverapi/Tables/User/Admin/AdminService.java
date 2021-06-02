@@ -31,15 +31,15 @@ public class AdminService {
         this.mangaRepos = mangaRepos;
     }
 
-    public ResponseEntity reportUserFollowManga(){
+    public ResponseEntity reportUserFollowManga() {
 
-        List<ReportUserFollowMangaDTO> reportUserFollowMangaDTOS = userRepos.findAllFollwingManga(PageRequest.of(0,1));
+        List<ReportUserFollowMangaDTO> reportUserFollowMangaDTOS = userRepos.findAllFollwingManga(PageRequest.of(0, 1));
 
-        if(reportUserFollowMangaDTOS.isEmpty()){
+        if (reportUserFollowMangaDTOS.isEmpty()) {
             Map<String, Object> err = Map.of("msg", "Nothing user follow mangas!");
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
         }
-       // reportUserFollowMangaDTOS.sort(Comparator.comparing(ReportUserFollowMangaDTO::getTotal_user).reversed());
+        // reportUserFollowMangaDTOS.sort(Comparator.comparing(ReportUserFollowMangaDTO::getTotal_user).reversed());
 
         Map<String, Object> msg = Map.of(
                 "msg", "Report user follow  mangas successfully!",
@@ -48,8 +48,8 @@ public class AdminService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
-    public ResponseEntity reportTopViewManga(){
-       List<ReportTopMangaDTO> reportTopMangaDTOS = userRepos.findTopManga(PageRequest.of(0,5));
+    public ResponseEntity reportTopViewManga() {
+        List<ReportTopMangaDTO> reportTopMangaDTOS = userRepos.findTopManga(PageRequest.of(0, 5));
 
         if (reportTopMangaDTOS.isEmpty()) {
             Map<String, Object> err = Map.of("msg", "Nothing of top mangas!");
@@ -60,52 +60,80 @@ public class AdminService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
-    public ResponseEntity reportUser(){
-
-            List<UserDTO> getUserInfo = userRepos.getAllUser();
-             List<ReportUserDTO> listReportUser = new ArrayList<>();
-
-            for(int i =0; i < 12; i++){
-
-                ReportUserDTO reportUserDTO = new ReportUserDTO();
-                int finalI = i+1;
-                System.err.println("lỗi"+finalI);
-                List<UserDTO> userDTOList = new ArrayList<>();
-
-                getUserInfo.forEach(item->{
-
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
-                    Integer monthOfUser =  Integer.parseInt(simpleDateFormat.format(item.getCreated_at().getTime()));
-
-                    if (monthOfUser == finalI) {
-
-                        userDTOList.add(item);
-                        System.out.println("them "+finalI);
-
-                    }
 
 
-                    });
-                System.out.println("reportuserdtolist"+userDTOList);
+    public ResponseEntity reportUser(Long userId) {
+        Optional<User> userOptional = userRepos.findById(userId);
+        if (userOptional.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "err", "Missing creadential to access this resource"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get();
 
-                System.out.println("report user dtos"+listReportUser.size());
+        Boolean isAdmin = user.getUser_isAdmin();
+        if (Boolean.FALSE.equals(isAdmin)) {
+            Map<String, Object> err = Map.of(
+                    "err", "You are not allowed to access this resource!"
+            );
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
+
+        List<UserDTO> getUserInfo = userRepos.getAllUser();
+        if (getUserInfo.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Empty users!",
+                    "users", getUserInfo
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
 
 
-                reportUserDTO.setTotal_user(userDTOList.size());
-                reportUserDTO.setMonth(finalI);
-                System.out.println("dieu kien dung"+finalI);
-               listReportUser.add(reportUserDTO);
+        List<ReportUserDTO> listReportUser = new ArrayList<>();
+
+        for (int i = 0; i < 12; i++) {
+
+            ReportUserDTO reportUserDTO = new ReportUserDTO();
+            int finalI = i + 1;
+            System.err.println("lỗi" + finalI);
+            List<UserDTO> userDTOList = new ArrayList<>();
+
+            getUserInfo.forEach(item -> {
+
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
+                Integer monthOfUser = Integer.parseInt(simpleDateFormat.format(item.getCreated_at().getTime()));
+
+                if (monthOfUser == finalI) {
+
+                    userDTOList.add(item);
+                    System.out.println("them " + finalI);
+
+                }
 
 
-            }
+            });
+            System.out.println("reportuserdtolist" + userDTOList);
+
+            System.out.println("report user dtos" + listReportUser.size());
+
+
+            reportUserDTO.setTotal_user(userDTOList.size());
+            reportUserDTO.setMonth(finalI);
+            System.out.println("dieu kien dung" + finalI);
+            listReportUser.add(reportUserDTO);
+
+
+        }
 
         Map<String, Object> msg = Map.of(
                 "msg", "Report users successfully!",
-                "List report users ",listReportUser);
+                "List report users ", listReportUser);
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
     }
-
 
 
     public ResponseEntity deleteUser(Long userId, Long adminId) {
@@ -202,44 +230,6 @@ public class AdminService {
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
-    }
-
-
-    public ResponseEntity getAllUsers(Long userId) {
-        Optional<User> userOptional = userRepos.findById(userId);
-        if (userOptional.isEmpty()) {
-            Map<String, Object> err = Map.of(
-                    "err", "Missing creadential to access this resource"
-            );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-                    HttpStatus.BAD_REQUEST);
-        }
-        User user = userOptional.get();
-
-        Boolean isAdmin = user.getUser_isAdmin();
-        if (Boolean.FALSE.equals(isAdmin)) {
-            Map<String, Object> err = Map.of(
-                    "err", "You are not allowed to access this resource!"
-            );
-            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
-                    HttpStatus.FORBIDDEN);
-        }
-
-        List<User> users = userRepos.findAll();
-        if (users.isEmpty()) {
-            Map<String, Object> msg = Map.of(
-                    "msg", "Empty users!",
-                    "users", users
-            );
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-        }
-
-
-        Map<String, Object> msg = Map.of(
-                "msg", "Get all users successfully!",
-                "users", users
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
 
