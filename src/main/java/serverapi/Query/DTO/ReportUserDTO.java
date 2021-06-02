@@ -11,19 +11,13 @@ import java.util.Calendar;
 @NoArgsConstructor
 public class ReportUserDTO {
 
-    private String user_name;
-    private String user_email;
-    private String user_avatar;
-    private Boolean user_isVerified;
-    private Calendar createdAt;
+   private int total_user =0;
+   private int month =0;
 
 
-    public ReportUserDTO(String user_name, String user_email, String user_avatar, Boolean user_isVerified, Calendar createdAt) {
-        this.user_name = user_name;
-        this.user_email = user_email;
-        this.user_avatar = user_avatar;
-        this.user_isVerified = user_isVerified;
-        this.createdAt = createdAt;
+
+    public ReportUserDTO(int total_user, int month) {
+        this.total_user = total_user;
+        this.month = month;
     }
-
 }

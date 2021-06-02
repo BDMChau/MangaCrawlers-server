@@ -10,10 +10,13 @@ import serverapi.Api.Response;
 import serverapi.Query.DTO.ReportTopMangaDTO;
 import serverapi.Query.DTO.ReportUserDTO;
 import serverapi.Query.DTO.ReportUserFollowMangaDTO;
+import serverapi.Query.DTO.UserDTO;
 import serverapi.Query.Repository.FollowingRepos;
 import serverapi.Query.Repository.MangaRepos;
 import serverapi.Query.Repository.UserRepos;
+import serverapi.Tables.User.User;
 
+import javax.sound.midi.Soundbank;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -67,31 +70,46 @@ public class AdminService {
 
     public ResponseEntity reportUser(){
 
-        List<ReportUserDTO> reportUserDTOS = userRepos.getUser();
+            List<UserDTO> getUserInfo = userRepos.getAllUser();
+             List<ReportUserDTO> listReportUser = new ArrayList<>();
 
-         reportUserDTOS.forEach(item->{
+            for(int i =0; i < 12; i++){
 
-             Calendar calendar = Calendar.getInstance();
+                ReportUserDTO reportUserDTO = new ReportUserDTO();
+                int finalI = i+1;
+                System.err.println("lỗi"+finalI);
+                List<UserDTO> userDTOList = new ArrayList<>();
 
-             calendar = item.getCreatedAt();
+                getUserInfo.forEach(item->{
 
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
-            String str = simpleDateFormat.format(calendar.getTime());
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
+                    Integer monthOfUser =  Integer.parseInt(simpleDateFormat.format(item.getCreated_at().getTime()));
 
-//            if(){
-//                item.getUser_name();
-//                item.getUser_email();
-//                item.getUser_avatar();
-//                item.getUser_isVerified();
-//                item.getCreatedAt();
-//                reportUserDTOS.add(item);
-//            }
+                    if (monthOfUser == finalI) {
 
-             System.out.println(str);
+                        userDTOList.add(item);
+                        System.out.println("them "+finalI);
 
-       });
+                    }
 
-        Map<String, Object> msg = Map.of("msg", "Report top five mangas successfully!", "data",reportUserDTOS);
+
+                    });
+                System.out.println("reportuserdtolist"+userDTOList);
+
+                System.out.println("report user dtos"+listReportUser.size());
+
+
+                reportUserDTO.setTotal_user(userDTOList.size());
+                reportUserDTO.setMonth(finalI);
+                System.out.println("dieu kien dung"+finalI);
+               listReportUser.add(reportUserDTO);
+
+
+            }
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Report users successfully!",
+                "List report users ",listReportUser);
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
     }
