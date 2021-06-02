@@ -12,6 +12,7 @@ import serverapi.Query.Repository.FollowingRepos;
 import serverapi.Query.Repository.MangaRepos;
 import serverapi.Query.Repository.TransGroupRepos;
 import serverapi.Query.Repository.UserRepos;
+import serverapi.Tables.Manga.Manga;
 import serverapi.Tables.TransGroup.TransGroup;
 import serverapi.Tables.User.User;
 
@@ -140,6 +141,60 @@ public class AdminService {
 
     }
 
+    public ResponseEntity reportManga(Long userId) {
+        Boolean isAdmin = isUserAdmin(userId);
+        if (!isAdmin) {
+            Map<String, Object> err = Map.of(
+                    "err", "You are not allowed to access this resource!"
+            );
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
+
+        List<Manga> mangasInfo = mangaRepos.findAll();
+        List<ReportsDTO> listReportManga = new ArrayList<>();
+
+        for (int i = 0; i < 12; i++) {
+
+            ReportsDTO reportsDTO = new ReportsDTO();
+            int finalI = i + 1;
+            System.err.println("lỗi" + finalI);
+            List<Manga> mangaList = new ArrayList<>();
+
+            mangasInfo.forEach(item -> {
+
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
+                Integer monthOfUser = Integer.parseInt(simpleDateFormat.format(item.getCreatedAt().getTime()));
+
+                if (monthOfUser == finalI) {
+
+                    mangaList.add(item);
+                    System.out.println("them " + finalI);
+
+                }
+
+
+            });
+            System.out.println("reportmangadtolist" + mangaList);
+
+            System.out.println("report manga dtos" + listReportManga.size());
+
+
+            reportsDTO.setValues(mangaList.size());
+            reportsDTO.setMonth(finalI);
+            System.out.println("dieu kien dung" + finalI);
+            listReportManga.add(reportsDTO);
+
+
+        }
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get report of mangas successfully!",
+                "mangas_report",listReportManga );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+
+    }
+
 
 
     public ResponseEntity deleteUser(Long userId, Long adminId) {
@@ -201,6 +256,7 @@ public class AdminService {
             List<TransGroup> transGroupList = new ArrayList<>();
 
             getTransGroupInfo.forEach(item -> {
+
 
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
                 Integer monthOfUser = Integer.parseInt(simpleDateFormat.format(item.getCreatedAt().getTime()));

@@ -14,6 +14,7 @@ public class ReportsDTO {
 
 
 
+
     public ReportsDTO(int values, int month) {
         this.values = values;
         this.month = month;
