@@ -186,27 +186,10 @@ public class UserController {
 
 
     @PostMapping("/gettransgroupinfo")
-<<<<<<< Updated upstream
     public ResponseEntity getTransGroupInfo(ServletRequest request)  {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
-=======
-    public ResponseEntity getTransGroupInfo(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
-
-//        Long transGroupIdOfUser = Long.parseLong(getUserAttribute(request).get("user_transgroup_id").toString());
-          Long transGroupId = Long.parseLong(transGroupPOJO.getTransgroup_id ());
-//        if (!transGroupId.equals(transGroupIdOfUser)) {
-//            Map<String, Object> err = Map.of(
-//                    "err", "Invalid transgroup_id!"
-//            );
-//            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-//                    HttpStatus.BAD_REQUEST);
-//        }
-
->>>>>>> Stashed changes
 
         return userService.getTransGroupInfo(userId);
     }

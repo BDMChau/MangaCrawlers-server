@@ -25,17 +25,6 @@ public interface UserRepos extends JpaRepository<User, Long> {
             " ORDER BY COUNT(u.user_id) DESC")
     List<ReportUserFollowMangaDTO>findAllFollwingManga(Pageable pageable);
 
-
-//    @Query("SELECT new serverapi.Query.DTO.UserTransgroupDTO(u.user_id, u.user_name, u.user_email, user_avatar," +
-//            " tg.transgroup_id)" +
-//            " FROM TransGroup tg JOIN tg.users u" +
-//            " WHERE tg.transgroup_id =?1")
-//    List<UserTransgroupDTO> getUsersTransgroup(Long transgroup_id);
-
-    @Query("SELECT new serverapi.Query.DTO.UserTransGroupDTO(u.user_id, u.user_name, u.user_email, u.user_avatar, tg.transgroup_id)" +
-            "FROM TransGroup tg INNER JOIN tg.users u WHERE tg.transgroup_id =?1 ORDER BY u.user_id DESC")
-    List<UserTransGroupDTO> getUsersTransGroup(Long transgroup_id);
-
     @Query("SELECT new serverapi.Query.DTO.ReportTopMangaDTO(a.author_id,a.author_name, m.manga_id, m.manga_name, m.thumbnail, m.stars, m.views, m.date_publications, m.createdAt)" +
             "FROM Manga m JOIN m.author a ORDER BY m.views DESC ")
     List<ReportTopMangaDTO> findTopManga(Pageable pageable);
@@ -43,8 +32,8 @@ public interface UserRepos extends JpaRepository<User, Long> {
 //    @Query("SELECT new serverapi.Query.DTO.ReportUserDTO(COUNT(u.user_id),u.user_name, u.user_email, u.user_avatar, u.user_isVerified, u.createdAt) FROM User u GROUP BY u.user_name, u.user_email,u.user_avatar,u.user_isVerified ")
 //    List<ReportUserDTO> getUser();
 
-    @Query("SELECT new serverapi.Query.DTO.UserRDTO(u.user_id, u.createdAt) FROM User u")
-    List<UserRDTO> getAllUser();
+    @Query("SELECT new serverapi.Query.DTO.UserDTO(u.user_id, u.createdAt) FROM User u")
+    List<UserDTO> getAllUser();
 
     @Query("SELECT u FROM User u JOIN u.transgroup WHERE u.user_id = ?1")
     Optional<TransGroup> getTransGroupById(Long userId);

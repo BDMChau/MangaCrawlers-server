@@ -35,11 +35,6 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
             "WHERE mg.manga_id = m.manga_id ) AND m.manga_id =?1 Order by c.chapter_id Desc")
     Optional<MangaChapterDTO> getLatestChapterFromMangaByMangaId(Long manga_id);
 
-    @Query("SELECT new serverapi.Query.DTO.MangaChapterDTO(c.chapter_id, c.chapter_name, c.createdAt, m.manga_id," +
-            " m.manga_name, m.thumbnail) FROM Manga m JOIN m.chapters c JOIN TransGroup tg ON tg.transgroup_id = m.transgroup WHERE c.chapter_id = (SELECT MAX(ct.chapter_id) FROM Manga mg INNER JOIN mg.chapters ct " +
-            "WHERE mg.manga_id = m.manga_id ) AND tg.transgroup_id =?1 Order by c.chapter_id Desc")
-    List<MangaChapterDTO> getLatestChapterFromMangaByTransgroup(Long transgroup_id);
-
 
 //    @Query(value = "select * from manga", nativeQuery = true)
 //    List<Manga> getAllMangas();

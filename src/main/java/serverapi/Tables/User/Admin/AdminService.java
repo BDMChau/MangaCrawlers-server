@@ -93,7 +93,7 @@ public class AdminService {
                     HttpStatus.FORBIDDEN);
         }
 
-        List<UserRDTO> getUserInfo = userRepos.getAllUser();
+        List<UserDTO> getUserInfo = userRepos.getAllUser();
         List<ReportUserDTO> listReportUser = new ArrayList<>();
 
         for (int i = 0; i < 12; i++) {
@@ -101,12 +101,12 @@ public class AdminService {
             ReportUserDTO reportUserDTO = new ReportUserDTO();
             int finalI = i + 1;
             System.err.println("lỗi" + finalI);
-            List<UserRDTO> userDTOList = new ArrayList<>();
+            List<UserDTO> userDTOList = new ArrayList<>();
 
             getUserInfo.forEach(item -> {
 
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
-                Integer monthOfUser = Integer.parseInt(simpleDateFormat.format(item.getCreatedAt ().getTime()));
+                Integer monthOfUser = Integer.parseInt(simpleDateFormat.format(item.getCreated_at().getTime()));
 
                 if (monthOfUser == finalI) {
 
