@@ -78,6 +78,13 @@ public class MangaController {
     }
 
 
+    @Cacheable(value = "dailyMangas", key = "#root.method")
+    @GetMapping("/getDaily")
+    public ResponseEntity getDailyMangas() {
+        return mangaService.getDailyMangas();
+    }
+
+
     @PostMapping("/searchmangas")
     public ResponseEntity searchMangasByName(@RequestBody MangaPOJO mangaPOJO) {
         String mangaName = mangaPOJO.getManga_name();

@@ -3,20 +3,19 @@ package serverapi.Query.DTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.Calendar;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserDTO {
-
-    public UserDTO(Long user_id, Calendar created_at) {
+public class UserRDTO {
+    public UserRDTO(Long user_id, Calendar createdAt) {
         this.user_id = user_id;
-        this.created_at = created_at;
+        this.createdAt = createdAt;
     }
 
     private Long user_id;
-    private Calendar created_at;
+    private Calendar createdAt;
+
 }
