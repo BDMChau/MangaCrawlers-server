@@ -194,9 +194,9 @@ public class UserController {
     public ResponseEntity getTransGroupInfo(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
-        System.err.println(data);
+
         Long transGroupIdOfUser = Long.parseLong(getUserAttribute(request).get("user_transgroup_id").toString());
-        Long transGroupId = Long.parseLong(data.get("transgroup_id").toString());
+        Long transGroupId = Long.parseLong(transGroupPOJO.getTransgroup_id ());
         if (!transGroupId.equals(transGroupIdOfUser)) {
             Map<String, Object> err = Map.of(
                     "err", "Invalid transgroup_id!"
@@ -204,17 +204,6 @@ public class UserController {
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
                     HttpStatus.BAD_REQUEST);
         }
-
-//        Long transGroupIdOfUser = Long.parseLong(getUserAttribute(request).get("user_transgroup_id").toString());
-          Long transGroupId = Long.parseLong(transGroupPOJO.getTransgroup_id ());
-//        if (!transGroupId.equals(transGroupIdOfUser)) {
-//            Map<String, Object> err = Map.of(
-//                    "err", "Invalid transgroup_id!"
-//            );
-//            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-//                    HttpStatus.BAD_REQUEST);
-//        }
-
 
         return userService.getTransGroupInfo(userId,transGroupId);
     }
