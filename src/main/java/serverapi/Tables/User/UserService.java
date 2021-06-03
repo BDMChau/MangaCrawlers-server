@@ -16,14 +16,19 @@ import serverapi.Query.Repository.*;
 import serverapi.SharedServices.Cache.CacheService;
 import serverapi.SharedServices.CloudinaryUploader;
 import serverapi.StaticFiles.UserAvatarCollection;
+import serverapi.Tables.Author.Author;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.ChapterComments.ChapterComments;
 import serverapi.Tables.FollowingManga.FollowingManga;
+import serverapi.Tables.Genre.Genre;
 import serverapi.Tables.Manga.Manga;
+import serverapi.Tables.MangaGenre.MangaGenre;
 import serverapi.Tables.RatingManga.RatingManga;
 import serverapi.Tables.ReadingHistory.ReadingHistory;
 import serverapi.Tables.TransGroup.TransGroup;
+import serverapi.Tables.User.POJO.FieldsCreateMangaDTO;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -31,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -42,6 +48,9 @@ public class UserService {
     private final ChapterCommentsRepos chapterCommentsRepos;
     private final RatingMangaRepos ratingMangaRepos;
     private final TransGroupRepos transGroupRepos;
+    private final GenreRepos genreRepos;
+    private final MangaGenreRepos mangaGenreRepos;
+    private final AuthorRepos authorRepos;
 
     @Autowired
     CacheService cacheService;
@@ -51,7 +60,8 @@ public class UserService {
     public UserService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos,
                        ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos,
                        ChapterCommentsRepos chapterCommentsRepos, RatingMangaRepos ratingMangaRepos,
-                       TransGroupRepos transGroupRepos) {
+                       TransGroupRepos transGroupRepos, GenreRepos genreRepos, MangaGenreRepos mangaGenreRepos,
+                       AuthorRepos authorRepos) {
         this.mangaRepository = mangaRepository;
         this.followingRepos = followingRepos;
         this.userRepos = userRepos;
@@ -60,6 +70,9 @@ public class UserService {
         this.chapterCommentsRepos = chapterCommentsRepos;
         this.ratingMangaRepos = ratingMangaRepos;
         this.transGroupRepos = transGroupRepos;
+        this.genreRepos = genreRepos;
+        this.mangaGenreRepos = mangaGenreRepos;
+        this.authorRepos = authorRepos;
     }
 
 
@@ -539,7 +552,7 @@ public class UserService {
                 HttpStatus.OK);
     }
 
-
+    @Transactional
     public ResponseEntity getTransGroupInfo(Long userId, Long transGroupId) {
         Optional<User> userOptional = userRepos.findById(userId);
         if (userOptional.isEmpty()) {
@@ -560,8 +573,7 @@ public class UserService {
         }
         TransGroup transGroup = transGroupOptional.get();
         Collection<Manga> listManga = transGroup.getMangas();
-
-
+        listManga.forEach(manga ->manga.getManga_name());
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get translation group info successfully!",
@@ -573,9 +585,110 @@ public class UserService {
     }
 
 
-    public ResponseEntity addNewProjectManga(Long userId, Map fields){
-        System.err.println(fields);
-        return null;
+
+
+    public ResponseEntity addNewProjectMangaFields(Long userId, Long transGrId, FieldsCreateMangaDTO fieldsCreateMangaDTO) throws IOException {
+        Optional<User> userOptional = userRepos.findById(userId);
+        if (userOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "user not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get();
+
+        // translation group
+        Optional<TransGroup> transGroupOptional = transGroupRepos.findById(transGrId);
+        if (transGroupOptional.isPresent()) {
+            TransGroup transGroup = transGroupOptional.get();
+            List<Manga> mangaList = (List<Manga>) transGroup.getMangas();
+
+            List<Manga> isExistedManga = mangaList.stream()
+                    .filter(manga -> manga.getManga_name().equals(fieldsCreateMangaDTO.getMangaName()))
+                    .collect(Collectors.toList());
+
+            if (!isExistedManga.isEmpty()) {
+                Map<String, Object> msg = Map.of("msg", "This manga is existed! With manga's name");
+                return new ResponseEntity<>(new Response(202, HttpStatus.OK, msg).toJSON(),
+                        HttpStatus.OK);
+            }
+            System.err.println("01");
+        }
+        TransGroup transGroup = transGroupOptional.get();
+
+
+        // set author
+        Author author = new Author();
+        author.setAuthor_name(fieldsCreateMangaDTO.getAuthor());
+        authorRepos.saveAndFlush(author);
+        System.err.println("02");
+
+        // set manga
+        Manga manga = new Manga();
+        manga.setManga_name(fieldsCreateMangaDTO.getMangaName());
+        manga.setStars(Float.intBitsToFloat(fieldsCreateMangaDTO.getRating()));
+        manga.setViews(Long.valueOf(fieldsCreateMangaDTO.getViews()));
+        manga.setDate_publications(fieldsCreateMangaDTO.getPublicationYear());
+        manga.setStatus(fieldsCreateMangaDTO.getStatus());
+        manga.setDescription(fieldsCreateMangaDTO.getDescription());
+        manga.setAuthor(author);
+        manga.setTransgroup(transGroup);
+        manga.setCreatedAt(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+        mangaRepository.saveAndFlush(manga);
+        System.err.println("03");
+
+        // set mangaGenre
+        List<Long> listGenreId = new ArrayList<>();
+        fieldsCreateMangaDTO.getGenres().forEach(genreId -> {
+            listGenreId.add(Long.parseLong(genreId));
+        });
+        List<Genre> genres = genreRepos.findAllById(listGenreId);
+
+        MangaGenre mangaGenre = new MangaGenre();
+        genres.forEach(genre -> {
+            mangaGenre.setGenre(genre);
+        });
+        mangaGenre.setManga(manga);
+        mangaGenreRepos.saveAndFlush(mangaGenre);
+        System.err.println("04");
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Added fields, go to next step to add thumbnails image",
+                "manga_id", manga.getManga_id()
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                HttpStatus.OK);
     }
+
+
+    public ResponseEntity addNewProjectMangaThumbnails(Long userId, Long transGrId, MultipartFile file, Long mangaId) throws IOException {
+        Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
+        if(mangaOptional.isEmpty()){
+            return null;
+        }
+        Manga manga = mangaOptional.get();
+
+
+        CloudinaryUploader cloudinaryUploader = new CloudinaryUploader();
+        Map cloudinaryResponse = cloudinaryUploader.uploadImg(
+                file.getBytes(),
+                manga.getManga_name(),
+                "transGroup_manga_upload",
+                false
+        );
+        String securedUrl = (String) cloudinaryResponse.get("secure_url");
+
+        manga.setThumbnail(securedUrl);
+        mangaRepository.saveAndFlush(manga);
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Added manga's thumbnail , add new manga successfully"
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                HttpStatus.OK);
+
+    }
+
+
 }
 

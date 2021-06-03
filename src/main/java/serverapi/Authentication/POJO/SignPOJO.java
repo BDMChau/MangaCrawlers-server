@@ -1,6 +1,7 @@
 package serverapi.Authentication.POJO;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import serverapi.Enums.isValidEnum;
 import serverapi.Helpers.ReadJSONFileAndGetValue;
@@ -9,13 +10,15 @@ import java.util.regex.Pattern;
 
 @Data
 @NoArgsConstructor
+@Getter
 public class SignPOJO {
-    String user_name;
-    String user_email;
-    String user_password;
-    String user_change_pass_token;
-    String user_verify_token;
-    String user_avatar;
+    private String user_name;
+    private String user_email;
+    private String user_password;
+    private String user_change_pass_token;
+    private String user_verify_token;
+    private String user_avatar;
+
 
 
     private String getRegexStr(String objKey) {

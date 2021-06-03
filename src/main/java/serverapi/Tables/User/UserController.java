@@ -12,11 +12,13 @@ import serverapi.Api.Response;
 import serverapi.Tables.Manga.POJO.CommentPOJO;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.Manga.POJO.RatingPOJO;
+import serverapi.Tables.User.POJO.FieldsCreateMangaDTO;
 import serverapi.Tables.User.POJO.TransGroupPOJO;
 import serverapi.Tables.User.POJO.UserPOJO;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -203,13 +205,52 @@ public class UserController {
     }
 
 
-    @PostMapping("/addnewprojectmanga")
-    public ResponseEntity addNewProjectManga(ServletRequest request, @RequestBody Map data) {
+    @PostMapping("/addnewprojectmangafields")
+    @Transactional
+    public ResponseEntity addNewProjectMangaFields(
+            ServletRequest request,
+            @RequestBody FieldsCreateMangaDTO fieldsCreateMangaDTO
+    ) throws IOException {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
-        Map fields = (Map) data.get("fields");
+        String StrTransGrId = getUserAttribute(request).get("user_transgroup_id").toString();
+        Long transGrId = Long.parseLong(StrTransGrId);
 
-        return userService.addNewProjectManga(userId, fields);
+        if (fieldsCreateMangaDTO.isFieldsEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "err", "Miss fields!"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        return userService.addNewProjectMangaFields(userId, transGrId, fieldsCreateMangaDTO);
     }
+
+    @PostMapping("/addnewprojectmangathumbnail")
+    public ResponseEntity addNewProjectMangaFields(
+            ServletRequest request,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "manga_id", required = false) Integer manga_id
+    ) throws IOException {
+        System.err.println(file.getOriginalFilename());
+        System.err.println(manga_id);
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+        String StrTransGrId = getUserAttribute(request).get("user_transgroup_id").toString();
+        Long transGrId = Long.parseLong(StrTransGrId);
+
+        if (file == null && manga_id != 0) {
+            Map<String, Object> err = Map.of(
+                    "err", "Miss fields!"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        Long mangaId = Long.parseLong(String.valueOf(manga_id));
+        return userService.addNewProjectMangaThumbnails(userId, transGrId, file, mangaId);
+    }
+
 
 }
