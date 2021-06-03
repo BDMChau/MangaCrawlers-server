@@ -186,12 +186,6 @@ public class UserController {
 
 
     @PostMapping("/gettransgroupinfo")
-<<<<<<< Updated upstream
-    public ResponseEntity getTransGroupInfo(ServletRequest request)  {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
-
-=======
     public ResponseEntity getTransGroupInfo(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
@@ -206,9 +200,8 @@ public class UserController {
 //                    HttpStatus.BAD_REQUEST);
 //        }
 
->>>>>>> Stashed changes
 
-        return userService.getTransGroupInfo(userId);
+        return userService.getTransGroupInfo(userId,transGroupId);
     }
 
 }

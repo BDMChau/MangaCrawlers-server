@@ -541,11 +541,7 @@ public class UserService {
     }
 
 
-<<<<<<< Updated upstream
-    public ResponseEntity getTransGroupInfo(Long userId){
-        Optional<User> userOptional = userRepos.findById(userId);
-        if(userOptional.isEmpty()){
-=======
+
     public ResponseEntity getTransGroupInfo(Long userId, Long transGroupId) {
         AtomicBoolean check = new AtomicBoolean ();
         Optional<User> userOptional = userRepos.findById(userId);
@@ -566,18 +562,15 @@ public class UserService {
         Optional<TransGroup> transGroupOptional = transGroupRepos.findById(transGroupId);
         if (transGroupOptional.isEmpty()) {
             System.err.println ("check if empty trans");
->>>>>>> Stashed changes
             Map<String, Object> msg = Map.of(
                     "msg", "No trans group!"
             );
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
         }
-<<<<<<< Updated upstream
         User user = userOptional.get();
-        Long transGroup = user.getTransgroup().getTransgroup_id();
-        System.err.println(transGroup);
+        Long transgroupId = user.getTransgroup().getTransgroup_id();
 
-=======
+
         TransGroup transGroup = transGroupOptional.get();
         List<MangaChapterDTO> listManga = mangaRepository.getLatestChapterFromMangaByTransgroup (transGroupId);
         if(listManga.isEmpty ()){
@@ -586,7 +579,6 @@ public class UserService {
             );
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
         }
->>>>>>> Stashed changes
 
         List<UserTransGroupDTO> listUsers = userRepos.getUsersTransGroup (transGroupId);
         if(listManga.isEmpty ()){
@@ -596,10 +588,6 @@ public class UserService {
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
         }
 
-<<<<<<< Updated upstream
-
-    return null;
-=======
         Map<String, Object> msg = Map.of(
                 "msg", "Get translation group info successfully!",
                 "trans_group", transGroup,
@@ -607,7 +595,7 @@ public class UserService {
                 "list_users", listUsers
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
->>>>>>> Stashed changes
+
     }
 
 }
