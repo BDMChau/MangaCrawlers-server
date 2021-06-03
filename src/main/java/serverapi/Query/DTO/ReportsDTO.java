@@ -7,15 +7,16 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ReportUserDTO {
+public class ReportsDTO {
 
-   private int users =0;
+   private int values =0;
    private int month =0;
 
 
 
-    public ReportUserDTO(int users, int month) {
-        this.users = users;
+
+    public ReportsDTO(int values, int month) {
+        this.values = values;
         this.month = month;
     }
 }

@@ -109,5 +109,21 @@ public class AdminController {
         return adminService.deleteUser(userId, adminId);
     }
 
+    @GetMapping("/reporttransgroup")
+    public ResponseEntity reportTransGroup(ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+        return adminService.reportTransGroup(userId);
+    }
+
+    @GetMapping("/reportmanga")
+    public ResponseEntity reportManga(ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+        return adminService.reportManga(userId);
+    }
+
 
 }
