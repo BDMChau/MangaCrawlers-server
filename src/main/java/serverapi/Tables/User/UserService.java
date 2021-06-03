@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import serverapi.Api.Response;
 import serverapi.Helpers.RoundNumber;
-import serverapi.Query.DTO.CommentExportDTO;
-import serverapi.Query.DTO.FollowingDTO;
-import serverapi.Query.DTO.UserReadingHistoryDTO;
+import serverapi.Query.DTO.*;
 import serverapi.Query.Repository.*;
 import serverapi.SharedServices.Cache.CacheService;
 import serverapi.SharedServices.CloudinaryUploader;
@@ -569,20 +567,32 @@ public class UserService {
             Map<String, Object> msg = Map.of(
                     "msg", "No translation group!"
             );
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
-                    HttpStatus.OK);
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
         }
         TransGroup transGroup = transGroupOptional.get();
-        Collection<Manga> listManga = transGroup.getMangas();
-        listManga.forEach(manga ->manga.getManga_name());
+        List<MangaChapterDTO> listManga = mangaRepository.getLatestChapterFromMangaByTransgroup (transGroupId);
+        if(listManga.isEmpty ()){
+            Map<String, Object> msg = Map.of(
+                    "msg", "No mangas!"
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+        }
+
+        List<UserTransGroupDTO> listUsers = userRepos.getUsersTransGroup (transGroupId);
+        if(listManga.isEmpty ()){
+            Map<String, Object> msg = Map.of(
+                    "msg", "No users!"
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+        }
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get translation group info successfully!",
                 "trans_group", transGroup,
-                "list_manga", listManga
+                "list_manga", listManga,
+                "list_user", listUsers
         );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
-                HttpStatus.OK);
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
 
@@ -596,6 +606,7 @@ public class UserService {
                     HttpStatus.BAD_REQUEST);
         }
         User user = userOptional.get();
+        Long transgroupId = user.getTransgroup().getTransgroup_id();
 
         // translation group
         Optional<TransGroup> transGroupOptional = transGroupRepos.findById(transGrId);

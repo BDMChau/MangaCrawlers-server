@@ -273,16 +273,25 @@ public class MangaService {
         //   listWeeklyMangasRanking.stream().limit(5L);
         System.out.println("list weekly manga ranking" + listWeeklyMangasRanking);
 
-        List<Manga> listWeeklyRanking = new ArrayList<>();
+        List<AuthorMangaDTO> listWeeklyRanking = new ArrayList<>();
 
-        List<WeeklyMangaDTO> top5Mangas = listWeeklyMangasRanking.stream().limit(5).collect(Collectors.toList());
+        List<WeeklyMangaDTO> top10Mangas = listWeeklyMangasRanking.stream().limit(10).collect(Collectors.toList());
 
+        List<AuthorMangaDTO> mangas = mangaRepository.getAllMangas ();
 
-        top5Mangas.forEach(item -> {
+        if(mangas.isEmpty ()){
+            Map<String, Object> err = Map.of(
+                    "msg", "Nothing from daily mangas ranking empty!"
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, err).toJSON(), HttpStatus.OK);
+        }
 
-            Optional<Manga> mangaOptional = mangaRepository.findById(item.getManga_id());
-            Manga manga = mangaOptional.get();
-            listWeeklyRanking.add(manga);
+        top10Mangas.forEach(item -> {
+            mangas.forEach (manga->{
+                if(item.getManga_id ()==manga.getManga_id ()){
+                    listWeeklyRanking.add(manga);
+                }
+            });
 
             System.out.println("totototo" + listWeeklyRanking);
 
@@ -298,6 +307,137 @@ public class MangaService {
         Map<String, Object> msg = Map.of(
                 "msg", "Get weekly mangas ranking successfully!",
                 "data", listWeeklyRanking
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    public ResponseEntity getDailyMangas() {
+
+        List<UpdateViewDTO> listCurrentDaily = mangaRepository.getWeekly(1, 0);
+        List<UpdateViewDTO> listPreviousDaily = mangaRepository.getWeekly(2, 1);
+
+
+        if (listCurrentDaily.isEmpty()) {
+            System.err.println("Current list empty!");
+            Map<String, Object> err = Map.of(
+                    "msg", "Nothing from daily mangas ranking!"
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, err).toJSON(), HttpStatus.OK);
+        }
+
+        if (listPreviousDaily.isEmpty()) {
+            System.err.println("Previous list empty!");
+            listPreviousDaily = listCurrentDaily;
+            System.out.println("check previous" + listPreviousDaily);
+        }
+
+        List<DailyMangaDTO> listDailyMangasRanking = new ArrayList<>();
+
+
+        if (listCurrentDaily.size() >= listPreviousDaily.size()) {
+
+            int temp = listCurrentDaily.size() - listPreviousDaily.size();
+
+            int previousDailySize = listPreviousDaily.size();
+            for (int i = 0; i < listCurrentDaily.size(); i++) {
+
+                for (int j = 0; j < listPreviousDaily.size(); j++) {
+
+                    if (listCurrentDaily.get(i).getManga_id().equals(listPreviousDaily.get(j).getManga_id())) {
+
+                        DailyMangaDTO dailyMangaDTO = new DailyMangaDTO ();
+
+                        Long views = listCurrentDaily.get(i).getTotalviews() - listPreviousDaily.get(j).getTotalviews();
+                        System.out.println(" view sau khi tru" + views);
+
+                        dailyMangaDTO.setManga_id(listCurrentDaily.get(i).getManga_id());
+                        dailyMangaDTO.setViews(listCurrentDaily.get(i).getTotalviews());
+                        dailyMangaDTO.setView_compares(views);
+                        System.out.println("check set");
+
+                        listDailyMangasRanking.add(dailyMangaDTO);
+                        System.out.println("listWeeklyMangasRanking.set(j,mangaDTO)" + listDailyMangasRanking);
+                    }
+                }
+
+            }
+            int z = 0;
+            while (z < temp) {
+
+                DailyMangaDTO dailyMangaDTO = new DailyMangaDTO ();
+                dailyMangaDTO.setManga_id(listCurrentDaily.get(previousDailySize + z).getManga_id());
+                dailyMangaDTO.setViews(listCurrentDaily.get(previousDailySize + z).getTotalviews());
+                dailyMangaDTO.setView_compares(listCurrentDaily.get(previousDailySize + z).getTotalviews());
+
+                listDailyMangasRanking.add(dailyMangaDTO);
+                z++;
+            }
+        } else {
+
+            int previousDailySize = listPreviousDaily.size();
+
+            for (int i = 0; i < previousDailySize; i++) {
+
+                for (int j = 0; j < listCurrentDaily.size(); j++) {
+
+                    if (listPreviousDaily.get(i).getManga_id().equals(listCurrentDaily.get(j).getManga_id())) {
+
+                        DailyMangaDTO dailyMangaDTO = new DailyMangaDTO ();
+                        System.out.println("listPreviousWeekly.get(i).getManga_id()");
+
+                        Long views =
+                                listCurrentDaily.get(j).getTotalviews() - listPreviousDaily.get(i).getTotalviews();
+
+                        dailyMangaDTO.setManga_id(listCurrentDaily.get(j).getManga_id());
+                        dailyMangaDTO.setViews(listCurrentDaily.get(j).getTotalviews());
+                        dailyMangaDTO.setView_compares(views);
+
+                        listDailyMangasRanking.add(dailyMangaDTO);
+                    }
+                }
+
+            }
+
+        }
+
+        listDailyMangasRanking.sort(Comparator.comparing(DailyMangaDTO::getView_compares).reversed());
+        //   listWeeklyMangasRanking.stream().limit(5L);
+        System.out.println("list daily manga ranking" + listDailyMangasRanking);
+
+        List<AuthorMangaDTO> listDailyRanking = new ArrayList<>();
+
+        List<DailyMangaDTO> top10Mangas = listDailyMangasRanking.stream().limit(10).collect(Collectors.toList());
+
+        List<AuthorMangaDTO> mangas = mangaRepository.getAllMangas ();
+
+        if(mangas.isEmpty ()){
+            Map<String, Object> err = Map.of(
+                    "msg", "Nothing from daily mangas ranking empty!"
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, err).toJSON(), HttpStatus.OK);
+        }
+
+        top10Mangas.forEach(item -> {
+            mangas.forEach (manga->{
+                if(item.getManga_id ()==manga.getManga_id ()){
+                    listDailyRanking.add(manga);
+                }
+            });
+
+            System.out.println("totototo" + listDailyRanking);
+
+        });
+
+        if (listDailyRanking.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "msg", "Nothing from daily mangas ranking empty!"
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, err).toJSON(), HttpStatus.OK);
+        }
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get daily mangas ranking successfully!",
+                "data", listDailyRanking
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
