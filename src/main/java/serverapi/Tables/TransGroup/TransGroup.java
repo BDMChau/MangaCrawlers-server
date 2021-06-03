@@ -40,9 +40,8 @@ public class TransGroup {
         private Collection<Manga> mangas;
 
         @JsonBackReference
-        @OneToMany(mappedBy = "transgroup", cascade = CascadeType.MERGE)
+        @OneToMany(mappedBy = "transgroup", cascade = CascadeType.ALL)
         private Collection<User> users;
-
 
         @Column(columnDefinition = "varchar(100)", nullable = false)
         private String transgroup_name;
