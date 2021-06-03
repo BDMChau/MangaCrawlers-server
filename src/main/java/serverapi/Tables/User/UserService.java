@@ -473,7 +473,6 @@ public class UserService {
     }
 
 
-    
     /////////////// Translation Group parts //////////////
     public ResponseEntity uploadChapterImgs(
             Long userId,
@@ -543,7 +542,10 @@ public class UserService {
         user.setTransgroup(transGroup);
         userRepos.save(user);
 
-        Map<String, Object> msg = Map.of("msg", "Register new translation group successfully");
+        Map<String, Object> msg = Map.of(
+                "msg", "Register new translation group successfully",
+                "transgroup_id", transGroup.getTransgroup_id()
+        );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
                 HttpStatus.OK);
     }
@@ -568,16 +570,16 @@ public class UserService {
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
         }
         TransGroup transGroup = transGroupOptional.get();
-        List<MangaChapterDTO> listManga = mangaRepository.getLatestChapterFromMangaByTransgroup (transGroupId);
-        if(listManga.isEmpty ()){
+        List<MangaChapterDTO> listManga = mangaRepository.getLatestChapterFromMangaByTransgroup(transGroupId);
+        if (listManga.isEmpty()) {
             Map<String, Object> msg = Map.of(
                     "msg", "No mangas!"
             );
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
         }
 
-        List<UserTransGroupDTO> listUsers = userRepos.getUsersTransGroup (transGroupId);
-        if(listManga.isEmpty ()){
+        List<UserTransGroupDTO> listUsers = userRepos.getUsersTransGroup(transGroupId);
+        if (listManga.isEmpty()) {
             Map<String, Object> msg = Map.of(
                     "msg", "No users!"
             );
@@ -594,8 +596,8 @@ public class UserService {
     }
 
 
-
-    public ResponseEntity addNewProjectMangaFields(Long userId, Long transGrId, FieldsCreateMangaDTO fieldsCreateMangaDTO) throws IOException {
+    public ResponseEntity addNewProjectMangaFields(Long userId, Long transGrId,
+                                                   FieldsCreateMangaDTO fieldsCreateMangaDTO) throws IOException {
         Optional<User> userOptional = userRepos.findById(userId);
         if (userOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "user not found!");
@@ -604,6 +606,7 @@ public class UserService {
         }
         User user = userOptional.get();
         Long transgroupId = user.getTransgroup().getTransgroup_id();
+
 
         // translation group
         Optional<TransGroup> transGroupOptional = transGroupRepos.findById(transGrId);
@@ -616,8 +619,8 @@ public class UserService {
                     .collect(Collectors.toList());
 
             if (!isExistedManga.isEmpty()) {
-                Map<String, Object> msg = Map.of("msg", "This manga is existed! With manga's name");
-                return new ResponseEntity<>(new Response(202, HttpStatus.OK, msg).toJSON(),
+                Map<String, Object> err = Map.of("err", "This manga is existed! With manga's name");
+                return new ResponseEntity<>(new Response(202, HttpStatus.OK, err).toJSON(),
                         HttpStatus.OK);
             }
             System.err.println("01");
@@ -670,9 +673,9 @@ public class UserService {
     }
 
 
-    public ResponseEntity addNewProjectMangaThumbnails(Long userId, Long transGrId, MultipartFile file, Long mangaId) throws IOException {
+    public ResponseEntity addNewProjectMangaThumbnail(Long userId, Long transGrId, MultipartFile file, Long mangaId) throws IOException {
         Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
-        if(mangaOptional.isEmpty()){
+        if (mangaOptional.isEmpty()) {
             return null;
         }
         Manga manga = mangaOptional.get();

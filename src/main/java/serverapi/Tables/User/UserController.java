@@ -136,7 +136,6 @@ public class UserController {
     }
 
 
-
     @DeleteMapping("/removeavatar")
     public ResponseEntity removeAvatar(ServletRequest request) throws IOException {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -157,8 +156,6 @@ public class UserController {
     }
 
 
-
-
     ////////////////////////// Translation Group parts /////////////////////////////
     @PostMapping("/uploadchapterimgs")
     public ResponseEntity uploadChapterImgs(
@@ -169,13 +166,14 @@ public class UserController {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
-        for(MultipartFile file : files){
+        for (MultipartFile file : files) {
             System.err.println(file.getOriginalFilename());
         }
 
         Long mangaId = Long.parseLong(String.valueOf(manga_id));
         return userService.uploadChapterImgs(userId, mangaId, files);
     }
+
 
     @PostMapping("/signuptransgroup")
     public ResponseEntity signUpTransGroup(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) throws NoSuchAlgorithmException {
@@ -200,17 +198,14 @@ public class UserController {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
-        Long transGroupIdOfUser = Long.parseLong(getUserAttribute(request).get("user_transgroup_id").toString());
-        Long transGroupId = Long.parseLong(transGroupPOJO.getTransgroup_id ());
-        if (!transGroupId.equals(transGroupIdOfUser)) {
-            Map<String, Object> err = Map.of(
-                    "err", "Invalid transgroup_id!"
-            );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-                    HttpStatus.BAD_REQUEST);
+        if (getUserAttribute(request).get("user_transgroup_id") == null) {
+            Map<String, String> error = Map.of("err", "Login again before visit this page, thank you!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(),
+                    HttpStatus.ACCEPTED);
         }
+        Long transGroupId = Long.parseLong(getUserAttribute(request).get("user_transgroup_id").toString());
 
-        return userService.getTransGroupInfo(userId,transGroupId);
+        return userService.getTransGroupInfo(userId, transGroupId);
     }
 
 
@@ -222,8 +217,14 @@ public class UserController {
     ) throws IOException {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
-        String StrTransGrId = getUserAttribute(request).get("user_transgroup_id").toString();
-        Long transGrId = Long.parseLong(StrTransGrId);
+
+        if (getUserAttribute(request).get("user_transgroup_id") == null) {
+            Map<String, String> error = Map.of("err", "Login again before visit this page, thank you!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(),
+                    HttpStatus.ACCEPTED);
+        }
+        Long transGrId = Long.parseLong(getUserAttribute(request).get("user_transgroup_id").toString());
+
 
         if (fieldsCreateMangaDTO.isFieldsEmpty()) {
             Map<String, Object> err = Map.of(
@@ -238,13 +239,11 @@ public class UserController {
 
 
     @PostMapping("/addnewprojectmangathumbnail")
-    public ResponseEntity addNewProjectMangaFields(
+    public ResponseEntity addNewProjectMangaThumbnail(
             ServletRequest request,
             @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestParam(value = "manga_id", required = false) Integer manga_id
     ) throws IOException {
-        System.err.println(file.getOriginalFilename());
-        System.err.println(manga_id);
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
         String StrTransGrId = getUserAttribute(request).get("user_transgroup_id").toString();
@@ -259,7 +258,7 @@ public class UserController {
         }
 
         Long mangaId = Long.parseLong(String.valueOf(manga_id));
-        return userService.addNewProjectMangaThumbnails(userId, transGrId, file, mangaId);
+        return userService.addNewProjectMangaThumbnail(userId, transGrId, file, mangaId);
     }
 
 

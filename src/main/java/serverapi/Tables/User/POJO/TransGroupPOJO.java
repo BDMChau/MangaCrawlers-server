@@ -14,10 +14,8 @@ public class TransGroupPOJO {
     public Boolean isValid() {
         if (group_name == null
                 || group_desc == null
-                || transgroup_id == null
                 || group_name.equals("")
                 || group_desc.equals("")
-                || transgroup_id.equals ("")
         ) {
             return false;
         } else {
