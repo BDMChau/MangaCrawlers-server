@@ -79,7 +79,7 @@ public class MangaController {
 
 
     @Cacheable(value = "dailyMangas", key = "#root.method")
-    @GetMapping("/getDaily")
+    @GetMapping("/getdaily")
     public ResponseEntity getDailyMangas() {
         return mangaService.getDailyMangas();
     }
