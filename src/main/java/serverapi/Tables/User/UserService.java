@@ -74,7 +74,7 @@ public class UserService {
     }
 
 
-    //////////////////////History reading manga parts
+    //////////////////////////////////// User parts ///////////////////////////////////////////
     public ResponseEntity GetReadingHistory(Long userId) {
         List<UserReadingHistoryDTO> readingHistoryDTO = readingHistoryRepos.GetHistoriesByUserId(userId);
         readingHistoryDTO.sort(Comparator.comparing(UserReadingHistoryDTO::getReading_History_time).reversed());
@@ -154,7 +154,6 @@ public class UserService {
     }
 
 
-    ////////////////////// Following manga parts
     public ResponseEntity getFollowingMangas(Long UserId) {
 
         List<FollowingDTO> followingDTOList = followingRepos.findByUserId(UserId);
@@ -269,7 +268,6 @@ public class UserService {
     }
 
 
-    //////////////////////Comment parts//////////////////////
     public ResponseEntity addCommentChapter(Long chapterId, Long userId, String content) {
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
         Calendar timeUpdated = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -287,7 +285,6 @@ public class UserService {
 
         Optional<User> userOptional = userRepos.findById(userId);
 
-        ///check user exit
         if (userOptional.isEmpty()) {
             Map<String, Object> msg = Map.of(
                     "msg", "Empty user!"
@@ -330,7 +327,6 @@ public class UserService {
     }
 
 
-    ///////////////// Rating manga part
     public ResponseEntity ratingManga(Long userId, Long mangaId, Float newValue) {
         Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
         Manga manga = mangaOptional.get();
@@ -477,6 +473,7 @@ public class UserService {
     }
 
 
+    
     /////////////// Translation Group parts //////////////
     public ResponseEntity uploadChapterImgs(
             Long userId,
@@ -551,6 +548,7 @@ public class UserService {
                 HttpStatus.OK);
     }
 
+
     @Transactional
     public ResponseEntity getTransGroupInfo(Long userId, Long transGroupId) {
         Optional<User> userOptional = userRepos.findById(userId);
@@ -594,7 +592,6 @@ public class UserService {
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
-
 
 
 

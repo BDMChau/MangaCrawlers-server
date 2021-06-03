@@ -36,34 +36,7 @@ public class AdminController {
     }
 
 
-    ////////////////////////////////////////////////
-
-    @GetMapping("/reporttotaluserfollowmanga")
-    public ResponseEntity reportUserFollowManga() {
-
-
-        return adminService.reportUserFollowManga();
-
-    }
-
-
-    @GetMapping("/reporttopviewsmanga")
-    public ResponseEntity reportTopViewsManga() {
-
-        return adminService.reportTopViewManga();
-
-    }
-
-
-    @GetMapping("/reportuser")
-    public ResponseEntity reportUser(ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
-
-        return adminService.reportUser(userId);
-    }
-
-
+    /////////////////////////////// get
     @Cacheable(value = "allmangas", key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @GetMapping("/getallmangas")
     public ResponseEntity getAllMangas(ServletRequest request) {
@@ -84,6 +57,7 @@ public class AdminController {
     }
 
 
+    ///////////////// interact
     @CacheEvict(allEntries = true, value = {"allusers"})
     @PutMapping("/deprecateuser")
     public ResponseEntity deprecateUser(@RequestBody UserPOJO userPOJO, ServletRequest request) {
@@ -97,7 +71,7 @@ public class AdminController {
     }
 
 
-    // Delete User by userId
+
     @CacheEvict(allEntries = true, value = {"allusers"})
     @DeleteMapping("/deleteuser")
     public ResponseEntity deleteUser(@RequestBody UserPOJO userPOJO, ServletRequest request) {
@@ -109,6 +83,9 @@ public class AdminController {
         return adminService.deleteUser(userId, adminId);
     }
 
+
+
+    /////////////////////////// chart report
     @GetMapping("/reporttransgroup")
     public ResponseEntity reportTransGroup(ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -116,6 +93,7 @@ public class AdminController {
 
         return adminService.reportTransGroup(userId);
     }
+
 
     @GetMapping("/reportmanga")
     public ResponseEntity reportManga(ServletRequest request) {
@@ -126,4 +104,26 @@ public class AdminController {
     }
 
 
+    @GetMapping("/reportuser")
+    public ResponseEntity reportUser(ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+        return adminService.reportUser(userId);
+    }
+
+
+
+    @GetMapping("/reporttotaluserfollowmanga")
+    public ResponseEntity reportUserFollowManga() {
+
+        return adminService.reportUserFollowManga();
+    }
+
+
+    @GetMapping("/reporttopviewsmanga")
+    public ResponseEntity reportTopViewsManga() {
+
+        return adminService.reportTopViewManga();
+    }
 }

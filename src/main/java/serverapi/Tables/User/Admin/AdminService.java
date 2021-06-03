@@ -36,6 +36,7 @@ public class AdminService {
         this.transGroupRepos = transGroupRepos;
     }
 
+
     private Boolean isUserAdmin(Long userId) {
         Optional<User> userOptional = userRepos.findById(userId);
         if (userOptional.isEmpty()) {
@@ -54,39 +55,9 @@ public class AdminService {
 
     ////////////////////////////////////////////////////////
 
-    public ResponseEntity reportUserFollowManga() {
-
-        List<ReportUserFollowMangaDTO> reportUserFollowMangaDTOS = userRepos.findAllFollwingManga(PageRequest.of(0, 1));
-
-        if (reportUserFollowMangaDTOS.isEmpty()) {
-            Map<String, Object> err = Map.of("msg", "Nothing user follow mangas!");
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
-        }
-        // reportUserFollowMangaDTOS.sort(Comparator.comparing(ReportUserFollowMangaDTO::getTotal_user).reversed());
-
-        Map<String, Object> msg = Map.of(
-                "msg", "Report user follow  mangas successfully!",
-                "mangas", reportUserFollowMangaDTOS
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
 
 
-
-    public ResponseEntity reportTopViewManga() {
-        List<ReportTopMangaDTO> reportTopMangaDTOS = userRepos.findTopManga(PageRequest.of(0, 5));
-
-        if (reportTopMangaDTOS.isEmpty()) {
-            Map<String, Object> err = Map.of("msg", "Nothing of top mangas!");
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
-        }
-
-        Map<String, Object> msg = Map.of("msg", "Report top five mangas successfully!", "data", reportTopMangaDTOS);
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
-
-
-
+    // report chart
     public ResponseEntity reportUser(Long userId) {
         Boolean isAdmin = isUserAdmin(userId);
         if (!isAdmin) {
@@ -97,7 +68,7 @@ public class AdminService {
                     HttpStatus.FORBIDDEN);
         }
 
-        List<UserDTO> getUserInfo = userRepos.getAllUser();
+        List<UserRDTO> getUserInfo = userRepos.getAllUser();
         List<ReportsDTO> listReportUser = new ArrayList<>();
 
         for (int i = 0; i < 12; i++) {
@@ -140,6 +111,7 @@ public class AdminService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
     }
+
 
     public ResponseEntity reportManga(Long userId) {
         Boolean isAdmin = isUserAdmin(userId);
@@ -196,45 +168,6 @@ public class AdminService {
     }
 
 
-
-    public ResponseEntity deleteUser(Long userId, Long adminId) {
-        Boolean isAdmin = isUserAdmin(userId);
-        if (!isAdmin) {
-            Map<String, Object> err = Map.of(
-                    "err", "You are not allowed to access this resource!"
-            );
-            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
-                    HttpStatus.FORBIDDEN);
-        }
-
-        //get user info
-        Optional<User> userOptional = userRepos.findById(userId);
-
-        if (userOptional.isEmpty()) {
-
-            Map<String, Object> err = Map.of(
-                    "err", "User not found!"
-
-            );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-                    HttpStatus.BAD_REQUEST);
-        }
-        User user = userOptional.get();
-        userRepos.delete(user);
-
-        List<User> users = userRepos.findAll();
-
-        Comparator<User> compareById = (User u1, User u2) -> u1.getUser_id().compareTo(u2.getUser_id());
-        Collections.sort(users, compareById); // sort users by id
-
-        Map<String, Object> msg = Map.of(
-                "msg", "delete user successfully!",
-                "users", users
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-
-    }
-
     public ResponseEntity reportTransGroup(Long userId) {
         Boolean isAdmin = isUserAdmin(userId);
         if (!isAdmin) {
@@ -289,6 +222,48 @@ public class AdminService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
+
+
+    //////////////
+    public ResponseEntity deleteUser(Long userId, Long adminId) {
+        Boolean isAdmin = isUserAdmin(userId);
+        if (!isAdmin) {
+            Map<String, Object> err = Map.of(
+                    "err", "You are not allowed to access this resource!"
+            );
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
+
+        //get user info
+        Optional<User> userOptional = userRepos.findById(userId);
+
+        if (userOptional.isEmpty()) {
+
+            Map<String, Object> err = Map.of(
+                    "err", "User not found!"
+
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get();
+        userRepos.delete(user);
+
+        List<User> users = userRepos.findAll();
+
+        Comparator<User> compareById = (User u1, User u2) -> u1.getUser_id().compareTo(u2.getUser_id());
+        Collections.sort(users, compareById); // sort users by id
+
+        Map<String, Object> msg = Map.of(
+                "msg", "delete user successfully!",
+                "users", users
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+
+    }
+
+
     public ResponseEntity deprecateUser(Long userId, Long adminId) {
         Boolean isAdmin = isUserAdmin(userId);
         if (!isAdmin) {
@@ -330,6 +305,7 @@ public class AdminService {
 
 
 
+    ////////////////// report
     public ResponseEntity getAllUsers(Long userId) {
         Boolean isAdmin = isUserAdmin(userId);
         if (!isAdmin) {
@@ -360,7 +336,6 @@ public class AdminService {
     }
 
 
-
     public ResponseEntity getAllMangas(Long userId) {
         Boolean isAdmin = isUserAdmin(userId);
         if (!isAdmin) {
@@ -386,5 +361,37 @@ public class AdminService {
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
+
+
+    public ResponseEntity reportUserFollowManga() {
+
+        List<ReportUserFollowMangaDTO> reportUserFollowMangaDTOS = userRepos.findAllFollwingManga(PageRequest.of(0, 1));
+
+        if (reportUserFollowMangaDTOS.isEmpty()) {
+            Map<String, Object> err = Map.of("msg", "Nothing user follow mangas!");
+            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
+        }
+        // reportUserFollowMangaDTOS.sort(Comparator.comparing(ReportUserFollowMangaDTO::getTotal_user).reversed());
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Report user follow  mangas successfully!",
+                "mangas", reportUserFollowMangaDTOS
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
+    public ResponseEntity reportTopViewManga() {
+        List<ReportTopMangaDTO> reportTopMangaDTOS = userRepos.findTopManga(PageRequest.of(0, 5));
+
+        if (reportTopMangaDTOS.isEmpty()) {
+            Map<String, Object> err = Map.of("msg", "Nothing of top mangas!");
+            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
+        }
+
+        Map<String, Object> msg = Map.of("msg", "Report top five mangas successfully!", "data", reportTopMangaDTOS);
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
 
 }

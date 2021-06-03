@@ -81,6 +81,7 @@ public class UserController {
         return userService.getFollowingMangas(userId);
     }
 
+
     ///Add manga to list user's follows
     @CacheEvict(allEntries = true, value = {"followingmangas"})
     @PostMapping("/addfollowingmanga")
@@ -91,6 +92,7 @@ public class UserController {
 
         return userService.addFollowManga(mangaId, userId);
     }
+
 
     ///Delete manga following from user's follows( Unfollow)
     @CacheEvict(allEntries = true, value = {"followingmangas"})
@@ -103,6 +105,7 @@ public class UserController {
 
         return userService.deleteFollowManga(mangaId, userId);
     }
+
 
     @PutMapping("/ratingmanga")
     public ResponseEntity ratingManga(@RequestBody RatingPOJO ratingPOJO, ServletRequest request) {
@@ -133,6 +136,7 @@ public class UserController {
     }
 
 
+
     @DeleteMapping("/removeavatar")
     public ResponseEntity removeAvatar(ServletRequest request) throws IOException {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -142,7 +146,6 @@ public class UserController {
     }
 
 
-    ////////////comment parts
     @PostMapping("/addcommentchapter")
     public ResponseEntity addCommentChapter(@RequestBody CommentPOJO commentPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -154,7 +157,9 @@ public class UserController {
     }
 
 
-    /////////////// Translation Group parts //////////////
+
+
+    ////////////////////////// Translation Group parts /////////////////////////////
     @PostMapping("/uploadchapterimgs")
     public ResponseEntity uploadChapterImgs(
             ServletRequest request,
@@ -230,6 +235,7 @@ public class UserController {
 
         return userService.addNewProjectMangaFields(userId, transGrId, fieldsCreateMangaDTO);
     }
+
 
     @PostMapping("/addnewprojectmangathumbnail")
     public ResponseEntity addNewProjectMangaFields(
