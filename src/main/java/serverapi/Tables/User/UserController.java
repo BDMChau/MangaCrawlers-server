@@ -155,16 +155,21 @@ public class UserController {
 
 
     /////////////// Translation Group parts //////////////
-    @PostMapping("/uploadmangaimgs")
-    public ResponseEntity uploadMangaImgs(
+    @PostMapping("/uploadchapterimgs")
+    public ResponseEntity uploadChapterImgs(
             ServletRequest request,
-            @RequestParam(required = false) MultipartFile[] files
+            @RequestParam(required = false) MultipartFile[] files,
+            @RequestParam(required = false) Integer manga_id
     ) throws IOException, ParseException {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
+        for(MultipartFile file : files){
+            System.err.println(file.getOriginalFilename());
+        }
 
-        return userService.uploadMangaImgs(userId, files);
+        Long mangaId = Long.parseLong(String.valueOf(manga_id));
+        return userService.uploadChapterImgs(userId, mangaId, files);
     }
 
     @PostMapping("/signuptransgroup")

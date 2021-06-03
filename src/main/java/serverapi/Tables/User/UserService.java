@@ -480,8 +480,9 @@ public class UserService {
 
 
     /////////////// Translation Group parts //////////////
-    public ResponseEntity uploadMangaImgs(
+    public ResponseEntity uploadChapterImgs(
             Long userId,
+            Long mangaId,
             @RequestParam(required = false) MultipartFile[] files
     ) throws IOException, ParseException {
 
