@@ -199,6 +199,8 @@ public class UserController {
     public ResponseEntity getTransGroupInfo(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
+        System.err.println ("getUserAttribute(request).get(user_transgroup_id)+ "+getUserAttribute(request).get("user_transgroup_id"));
+        System.err.println ("userID nay "+userId);
 
         if (getUserAttribute(request).get("user_transgroup_id") == null) {
             Map<String, String> error = Map.of("err", "Login again before visit this page, thank you!");
@@ -235,12 +237,12 @@ public class UserController {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
-        if (getUserAttribute(request).get("user_transgroup_id") == null) {
+        if (getUserAttribute(request).get("transgroup_id") == null) {
             Map<String, String> error = Map.of("err", "Login again before visit this page, thank you!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(),
                     HttpStatus.ACCEPTED);
         }
-        Long transGrId = Long.parseLong(getUserAttribute(request).get("user_transgroup_id").toString());
+        Long transGrId = Long.parseLong(getUserAttribute(request).get("transgroup_id").toString());
 
 
         if (fieldsCreateMangaDTO.isFieldsEmpty()) {

@@ -28,6 +28,12 @@ public interface ChapterRepos extends JpaRepository<Chapter, Long> {
         "WHERE m.manga_id = ?1")
 List<ChapterDTO> findChaptersbyMangaId(Long manga_id);
 
+    @Query("SELECT new serverapi.Query.DTO.ChapterDTO(c.chapter_id, c.chapter_name, c.createdAt, m.manga_id) FROM " +
+            "Manga m JOIN m.chapters c")
+    List<ChapterDTO> getAllChapter();
+
+
+
 
 
 }
