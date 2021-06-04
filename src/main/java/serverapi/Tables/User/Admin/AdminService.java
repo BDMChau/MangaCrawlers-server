@@ -189,8 +189,6 @@ public class AdminService {
             List<TransGroup> transGroupList = new ArrayList<>();
 
             getTransGroupInfo.forEach(item -> {
-
-
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
                 Integer monthOfUser = Integer.parseInt(simpleDateFormat.format(item.getCreatedAt().getTime()));
 
@@ -209,15 +207,14 @@ public class AdminService {
 
             reportsDTO.setValues(transGroupList.size());
             reportsDTO.setMonth(finalI);
-            System.out.println("dieu kien dung" + finalI);
+            System.out.println("final result" + finalI);
             listReportTransGroup.add(reportsDTO);
 
         }
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get report of trans_group successfully!",
-                "trans_group_report", listReportTransGroup,
-                "trans_group_info",getTransGroupInfo
+                "trans_group_report", listReportTransGroup
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
