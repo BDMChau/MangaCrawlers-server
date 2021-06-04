@@ -8,6 +8,7 @@ import lombok.Setter;
 import serverapi.Tables.Chapter.Chapter;
 
 import javax.persistence.*;
+import java.util.Calendar;
 
 @Entity
 @Getter
@@ -34,6 +35,14 @@ public class ImageChapter {
 
     @Column(columnDefinition = "TEXT", nullable = true)
     private String imgchapter_public_id_cloudinary;
+
+    @Column(
+            nullable = true,
+            updatable = true,
+            columnDefinition = "timestamp with time zone"
+    )
+    private Calendar createdAt;
+
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)

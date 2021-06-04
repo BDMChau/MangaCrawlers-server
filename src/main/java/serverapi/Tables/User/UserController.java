@@ -161,7 +161,8 @@ public class UserController {
     public ResponseEntity uploadChapterImgs(
             ServletRequest request,
             @RequestParam(required = false) MultipartFile[] files,
-            @RequestParam(required = false) Integer manga_id
+            @RequestParam(required = false) Integer manga_id,
+            @RequestParam(required = false) String chapter_name
     ) throws IOException, ParseException {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
@@ -171,7 +172,9 @@ public class UserController {
         }
 
         Long mangaId = Long.parseLong(String.valueOf(manga_id));
-        return userService.uploadChapterImgs(userId, mangaId, files);
+        String chapterName = chapter_name;
+        System.err.println(chapterName);
+        return userService.uploadChapterImgs(userId, mangaId, chapterName, files);
     }
 
 

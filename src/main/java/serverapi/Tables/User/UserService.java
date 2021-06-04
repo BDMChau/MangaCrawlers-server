@@ -19,6 +19,7 @@ import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.ChapterComments.ChapterComments;
 import serverapi.Tables.FollowingManga.FollowingManga;
 import serverapi.Tables.Genre.Genre;
+import serverapi.Tables.ImageChapter.ImageChapter;
 import serverapi.Tables.Manga.Manga;
 import serverapi.Tables.MangaGenre.MangaGenre;
 import serverapi.Tables.RatingManga.RatingManga;
@@ -50,6 +51,7 @@ public class UserService {
     private final GenreRepos genreRepos;
     private final MangaGenreRepos mangaGenreRepos;
     private final AuthorRepos authorRepos;
+    private final ImgChapterRepos imgChapterRepos;
 
     @Autowired
     CacheService cacheService;
@@ -60,7 +62,7 @@ public class UserService {
                        ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos,
                        ChapterCommentsRepos chapterCommentsRepos, RatingMangaRepos ratingMangaRepos,
                        TransGroupRepos transGroupRepos, GenreRepos genreRepos, MangaGenreRepos mangaGenreRepos,
-                       AuthorRepos authorRepos) {
+                       AuthorRepos authorRepos, ImgChapterRepos imgChapterRepos) {
         this.mangaRepository = mangaRepository;
         this.followingRepos = followingRepos;
         this.userRepos = userRepos;
@@ -72,6 +74,7 @@ public class UserService {
         this.genreRepos = genreRepos;
         this.mangaGenreRepos = mangaGenreRepos;
         this.authorRepos = authorRepos;
+        this.imgChapterRepos = imgChapterRepos;
     }
 
 
@@ -478,21 +481,28 @@ public class UserService {
     public ResponseEntity uploadChapterImgs(
             Long userId,
             Long mangaId,
+            String chapterName,
             @RequestParam(required = false) MultipartFile[] files
     ) throws IOException, ParseException {
+        Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
+        if (mangaOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "Manga not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        Manga manga = mangaOptional.get();
 
+        Chapter chapter = new Chapter();
+        chapter.setChapter_name(chapterName);
+        chapter.setCreatedAt(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+        chapter.setManga(manga);
+        chapterRepos.saveAndFlush(chapter);
+
+
+        String folderName = manga.getManga_name() + "/" + manga.getManga_name() + "_" + chapterName;
         for (MultipartFile file : files) {
             Map responseFromCloudinary = new CloudinaryUploader().uploadImg(file.getBytes(),
-                    file.getOriginalFilename(), "/uploadmangas", true);
-
-            System.err.println(responseFromCloudinary);
-
-            String createdAt = (String) responseFromCloudinary.get("created_at");
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-            Date date = dateFormat.parse(createdAt);
-            System.out.println(date.getTime());
-
-
+                    file.getOriginalFilename(), "/transgroup_upload/" + folderName, true);
             if (responseFromCloudinary.get("name") == "Error") {
                 Map<String, Object> err = Map.of(
                         "err", "One or many files have been failed when uploading!",
@@ -501,7 +511,24 @@ public class UserService {
                 return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
                         HttpStatus.BAD_REQUEST);
             }
+            System.err.println(responseFromCloudinary);
+            String securedUrl = (String) responseFromCloudinary.get("secure_url");
+            String publicId = (String) responseFromCloudinary.get("public_id");
 
+            // format date
+            // String createdAtFromCloudinary = (String) responseFromCloudinary.get("created_at");
+            // DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+            // Date date = dateFormat.parse(createdAtFromCloudinary);
+            // Calendar createdAt = dateFormat.getCalendar();
+
+
+
+            ImageChapter imageChapter = new ImageChapter();
+            imageChapter.setImgchapter_url(securedUrl);
+//            imageChapter.setCreatedAt(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+            imageChapter.setImgchapter_public_id_cloudinary(publicId);
+            imageChapter.setChapter(chapter);
+            imgChapterRepos.saveAndFlush(imageChapter);
         }
 
 
@@ -595,7 +622,6 @@ public class UserService {
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
-
 
 
     @Transactional
