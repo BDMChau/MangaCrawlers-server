@@ -40,6 +40,12 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
             "WHERE mg.manga_id = m.manga_id ) AND tg.transgroup_id =?1 Order by c.chapter_id Desc")
     List<MangaChapterDTO> getLatestChapterFromMangaByTransgroup(Long transgroup_id);
 
+    @Query("SELECT new serverapi.Query.DTO.MangaChapterDTO(m.manga_id," +
+            " m.manga_name, m.thumbnail) FROM Manga m JOIN TransGroup tg ON tg.transgroup_id = m.transgroup WHERE tg.transgroup_id =?1")
+    List<MangaChapterDTO> getMangaByTransgroup(Long transgroup_id);
+
+
+
 
 //    @Query(value = "select * from manga", nativeQuery = true)
 //    List<Manga> getAllMangas();

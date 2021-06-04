@@ -21,9 +21,12 @@ public class MangaChapterDTO {
     private Long manga_id;
     private String manga_name;
     private String thumbnail;
-    private float stars;
-    private int views;
-    private int date_publications;
+
+    public MangaChapterDTO(Long manga_id, String manga_name, String thumbnail) {
+        this.manga_id = manga_id;
+        this.manga_name = manga_name;
+        this.thumbnail = thumbnail;
+    }
 
     public MangaChapterDTO(Long chapter_id, String chapter_name, Calendar createdAt, Long manga_id, String manga_name
             , String thumbnail) {
