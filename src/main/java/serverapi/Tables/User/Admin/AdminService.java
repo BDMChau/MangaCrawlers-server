@@ -1,6 +1,5 @@
 package serverapi.Tables.User.Admin;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -389,6 +388,7 @@ public class AdminService {
         Map<String, Object> msg = Map.of("msg", "Report top five mangas successfully!", "data", reportTopMangaDTOS);
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
+
 
     public ResponseEntity getAllTransGroup(Long userId) {
         Boolean isAdmin = isUserAdmin(userId);
