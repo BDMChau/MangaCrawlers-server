@@ -43,17 +43,8 @@ public class ImageChapter {
     )
     private Calendar createdAt;
 
-
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chapter_id")
     private Chapter chapter;
-    @Column(
-            nullable = false,
-            updatable = false,
-            columnDefinition = "timestamp with time zone"
-    )
-    private Calendar createdAt;
-
-
 }
