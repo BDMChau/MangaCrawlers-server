@@ -192,7 +192,6 @@ public class UserController {
         return userService.signUpTransGroup(userId, groupName, groupDesc);
     }
 
-
     @PostMapping("/gettransgroupinfo")
     public ResponseEntity getTransGroupInfo(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -206,6 +205,21 @@ public class UserController {
         Long transGroupId = Long.parseLong(getUserAttribute(request).get("user_transgroup_id").toString());
 
         return userService.getTransGroupInfo(userId, transGroupId);
+    }
+
+
+    @PostMapping("/getmangainfo")
+    public ResponseEntity getMangaInfo(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) {
+        if (getUserAttribute(request).get("user_transgroup_id") == null) {
+            Map<String, String> error = Map.of("err", "Login again before visit this page, thank you!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(),
+                    HttpStatus.ACCEPTED);
+        }
+        Long transGroupId = Long.parseLong(getUserAttribute(request).get("user_transgroup_id").toString());
+
+        Long mangaId = Long.parseLong(transGroupPOJO.getManga_id().toString());
+
+        return userService.getMangaInfo(transGroupId, mangaId);
     }
 
 

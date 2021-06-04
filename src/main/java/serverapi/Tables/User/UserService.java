@@ -26,6 +26,7 @@ import serverapi.Tables.ReadingHistory.ReadingHistory;
 import serverapi.Tables.TransGroup.TransGroup;
 import serverapi.Tables.User.POJO.FieldsCreateMangaDTO;
 
+import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -593,6 +594,51 @@ public class UserService {
                 "list_user", listUsers
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
+
+    @Transactional
+    public ResponseEntity getMangaInfo(Long transGroupId, Long mangaId) {
+        Optional<TransGroup> transGroupOptional = transGroupRepos.findById(transGroupId);
+        if (transGroupOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "Trans group not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        TransGroup transGroup = transGroupOptional.get();
+
+        // check exist manga in this trans group
+        Boolean isExistdManga = false;
+        List<Manga> listManga = (List<Manga>) transGroup.getMangas();
+        for (int i = 0; i < listManga.size(); i++) {
+            if (listManga.get(i).getManga_id().equals(mangaId)) {
+                isExistdManga = true;
+                break;
+            }
+        }
+
+        if (isExistdManga) {
+            Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
+            Manga manga = mangaOptional.get();
+            String authorName = manga.getAuthor().getAuthor_name();
+            List<Chapter> listChapter = manga.getChapters();
+            listChapter.forEach(chapter -> chapter.getChapter_name());
+
+            Map<String, Object> msg = Map.of(
+                    "msg", "Get manga info successfully!",
+                    "manga", manga,
+                    "chapters", listChapter,
+                    "author_name", authorName
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                    HttpStatus.OK);
+        }
+
+
+        Map<String, Object> err = Map.of("err", "Manga not found!");
+        return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(),
+                HttpStatus.ACCEPTED);
     }
 
 
