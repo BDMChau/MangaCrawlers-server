@@ -393,5 +393,32 @@ public class AdminService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
+    public ResponseEntity getAllTransGroup(Long userId) {
+        Boolean isAdmin = isUserAdmin(userId);
+        if (!isAdmin) {
+            Map<String, Object> err = Map.of(
+                    "err", "You are not allowed to access this resource!"
+            );
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
+
+        List<TransGroup> getTransGroupInfo = transGroupRepos.findAll();
+
+        if (getTransGroupInfo.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Empty transgroup!",
+                    "mangas", getTransGroupInfo
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
+        Map<String, Object> msg = Map.of(
+                "msg", "Get all transgroup successfully!",
+                "mangas", getTransGroupInfo
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
 
 }
