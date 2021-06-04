@@ -28,7 +28,8 @@ public class AdminService {
 
 
     @Autowired
-    public AdminService(UserRepos userRepos, FollowingRepos followingRepos, MangaRepos mangaRepos, TransGroupRepos transGroupRepos) {
+    public AdminService(UserRepos userRepos, FollowingRepos followingRepos, MangaRepos mangaRepos,
+                        TransGroupRepos transGroupRepos) {
         this.userRepos = userRepos;
         this.followingRepos = followingRepos;
         this.mangaRepos = mangaRepos;
@@ -55,7 +56,6 @@ public class AdminService {
     ////////////////////////////////////////////////////////
 
 
-
     // report chart
     public ResponseEntity reportUser(Long userId) {
         Boolean isAdmin = isUserAdmin(userId);
@@ -80,7 +80,7 @@ public class AdminService {
             getUserInfo.forEach(item -> {
 
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
-                Integer monthOfUser = Integer.parseInt(simpleDateFormat.format(item.getCreatedAt ().getTime()));
+                Integer monthOfUser = Integer.parseInt(simpleDateFormat.format(item.getCreatedAt().getTime()));
 
                 if (monthOfUser == finalI) {
 
@@ -161,7 +161,7 @@ public class AdminService {
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get report of mangas successfully!",
-                "mangas_report",listReportManga );
+                "mangas_report", listReportManga);
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
     }
@@ -217,7 +217,6 @@ public class AdminService {
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
-
 
 
     //////////////
@@ -300,7 +299,6 @@ public class AdminService {
     }
 
 
-
     ////////////////// report
     public ResponseEntity getAllUsers(Long userId) {
         Boolean isAdmin = isUserAdmin(userId);
@@ -359,6 +357,33 @@ public class AdminService {
     }
 
 
+    public ResponseEntity getAllTransGroup(Long userId) {
+        Boolean isAdmin = isUserAdmin(userId);
+        if (!isAdmin) {
+            Map<String, Object> err = Map.of(
+                    "err", "You are not allowed to access this resource!"
+            );
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
+
+        List<TransGroup> getTransGroupInfo = transGroupRepos.findAll();
+
+        if (getTransGroupInfo.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Empty transgroup!",
+                    "mangas", getTransGroupInfo
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
+        Map<String, Object> msg = Map.of(
+                "msg", "Get all transgroup successfully!",
+                "list_transgroup", getTransGroupInfo
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
     public ResponseEntity reportUserFollowManga() {
 
         List<ReportUserFollowMangaDTO> reportUserFollowMangaDTOS = userRepos.findAllFollwingManga(PageRequest.of(0, 1));
@@ -388,34 +413,6 @@ public class AdminService {
         Map<String, Object> msg = Map.of("msg", "Report top five mangas successfully!", "data", reportTopMangaDTOS);
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
-
-
-    public ResponseEntity getAllTransGroup(Long userId) {
-        Boolean isAdmin = isUserAdmin(userId);
-        if (!isAdmin) {
-            Map<String, Object> err = Map.of(
-                    "err", "You are not allowed to access this resource!"
-            );
-            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
-                    HttpStatus.FORBIDDEN);
-        }
-
-        List<TransGroup> getTransGroupInfo = transGroupRepos.findAll();
-
-        if (getTransGroupInfo.isEmpty()) {
-            Map<String, Object> msg = Map.of(
-                    "msg", "Empty transgroup!",
-                    "mangas", getTransGroupInfo
-            );
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-        }
-        Map<String, Object> msg = Map.of(
-                "msg", "Get all transgroup successfully!",
-                "mangas", getTransGroupInfo
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
-
 
 
 }

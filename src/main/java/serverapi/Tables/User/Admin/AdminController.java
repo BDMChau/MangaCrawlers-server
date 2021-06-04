@@ -56,6 +56,15 @@ public class AdminController {
         return adminService.getAllUsers(userId);
     }
 
+    @GetMapping("/getalltransgroup")
+    public ResponseEntity getAllTransGroup(ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+        return adminService.getAllTransGroup(userId);
+    }
+
+
 
     ///////////////// interact
     @CacheEvict(allEntries = true, value = {"allusers"})
@@ -127,11 +136,5 @@ public class AdminController {
         return adminService.reportTopViewManga();
     }
 
-    @GetMapping("/getalltransgroup")
-    public ResponseEntity getAllTransGroup(ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
 
-        return adminService.getAllTransGroup(userId);
-    }
 }
