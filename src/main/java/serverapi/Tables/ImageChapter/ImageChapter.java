@@ -8,6 +8,7 @@ import lombok.Setter;
 import serverapi.Tables.Chapter.Chapter;
 
 import javax.persistence.*;
+import java.util.Calendar;
 
 @Entity
 @Getter
@@ -39,6 +40,12 @@ public class ImageChapter {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chapter_id")
     private Chapter chapter;
+    @Column(
+            nullable = false,
+            updatable = false,
+            columnDefinition = "timestamp with time zone"
+    )
+    private Calendar createdAt;
 
 
 }

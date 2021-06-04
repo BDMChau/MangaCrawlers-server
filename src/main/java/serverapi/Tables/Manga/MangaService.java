@@ -19,6 +19,10 @@ import serverapi.Tables.UpdateView.UpdateView;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toCollection;
+
 @Service
 public class MangaService {
     private final MangaRepos mangaRepository;
@@ -190,12 +194,6 @@ public class MangaService {
             return new ResponseEntity<>(new Response(200, HttpStatus.OK, err).toJSON(), HttpStatus.OK);
         }
 
-        if (listPreviousWeekly.isEmpty()) {
-            System.err.println("Previous list empty!");
-            listPreviousWeekly = listCurrentWeekly;
-            System.out.println("check previous" + listPreviousWeekly);
-        }
-
         List<WeeklyMangaDTO> listWeeklyMangasRanking = new ArrayList<>();
 
 
@@ -211,21 +209,18 @@ public class MangaService {
                     if (listCurrentWeekly.get(i).getManga_id().equals(listPreviousWeekly.get(j).getManga_id())) {
 
                         WeeklyMangaDTO weeklyMangaDTO = new WeeklyMangaDTO();
-                        System.out.println("listCurrentWeekly.get(i).getManga_id()" + listCurrentWeekly.get(i).getManga_id());
 
-                        System.out.println("listCurrentWeekly.get(i).getViews()" + listCurrentWeekly.get(i));
-                        System.out.println("listPreviousWeekly.get(j).getViews()" + listPreviousWeekly.get(j).getTotalviews());
                         Long views =
                                 listCurrentWeekly.get(i).getTotalviews() - listPreviousWeekly.get(j).getTotalviews();
-                        System.out.println(" view sau khi tru" + views);
+
 
                         weeklyMangaDTO.setManga_id(listCurrentWeekly.get(i).getManga_id());
                         weeklyMangaDTO.setViews(listCurrentWeekly.get(i).getTotalviews());
                         weeklyMangaDTO.setView_compares(views);
-                        System.out.println("check set");
+
 
                         listWeeklyMangasRanking.add(weeklyMangaDTO);
-                        System.out.println("listWeeklyMangasRanking.set(j,mangaDTO)" + listWeeklyMangasRanking);
+                        System.err.println ("listweekly"+listCurrentWeekly.get(i).getManga_id());
                     }
                 }
 
@@ -252,16 +247,15 @@ public class MangaService {
                     if (listPreviousWeekly.get(i).getManga_id().equals(listCurrentWeekly.get(j).getManga_id())) {
 
                         WeeklyMangaDTO weeklyMangaDTO = new WeeklyMangaDTO();
-                        System.out.println("listPreviousWeekly.get(i).getManga_id()");
 
-                        Long views =
-                                listCurrentWeekly.get(j).getTotalviews() - listPreviousWeekly.get(i).getTotalviews();
+                        Long views = listCurrentWeekly.get(j).getTotalviews() - listPreviousWeekly.get(i).getTotalviews();
 
                         weeklyMangaDTO.setManga_id(listCurrentWeekly.get(j).getManga_id());
                         weeklyMangaDTO.setViews(listCurrentWeekly.get(j).getTotalviews());
                         weeklyMangaDTO.setView_compares(views);
 
                         listWeeklyMangasRanking.add(weeklyMangaDTO);
+                        System.err.println ("checklistweekly"+listCurrentWeekly.get(j).getManga_id());
                     }
                 }
 
@@ -269,13 +263,22 @@ public class MangaService {
 
         }
 
-        listWeeklyMangasRanking.sort(Comparator.comparing(WeeklyMangaDTO::getView_compares).reversed());
-        //   listWeeklyMangasRanking.stream().limit(5L);
-        System.out.println("list weekly manga ranking" + listWeeklyMangasRanking);
+
+        listWeeklyMangasRanking.sort(comparing(WeeklyMangaDTO::getView_compares).reversed());
+        ////remove duplicate from listWeeklyMangasRanking;
+        List<WeeklyMangaDTO> listWeeklyMangasRankingAfterRemoveDuplicates = listWeeklyMangasRanking.stream()
+                .collect(collectingAndThen(toCollection(() -> new TreeSet<WeeklyMangaDTO>(comparing(WeeklyMangaDTO::getManga_id))),
+                        ArrayList::new));
+        listWeeklyMangasRankingAfterRemoveDuplicates.forEach (item->{
+            System.err.println ("listWeeklyMangasRankingAfterRemoveDuplicates" +item.getManga_id ());
+        });
+        listWeeklyMangasRankingAfterRemoveDuplicates.sort(comparing(WeeklyMangaDTO::getView_compares).reversed());
+
+
 
         List<AuthorMangaDTO> listWeeklyRanking = new ArrayList<>();
 
-        List<WeeklyMangaDTO> top10Mangas = listWeeklyMangasRanking.stream().limit(10).collect(Collectors.toList());
+        List<WeeklyMangaDTO> top10Mangas = listWeeklyMangasRankingAfterRemoveDuplicates.stream().limit(10).collect(Collectors.toList());
 
         List<AuthorMangaDTO> mangas = mangaRepository.getAllMangas ();
 
@@ -323,12 +326,6 @@ public class MangaService {
                     "msg", "Nothing from daily mangas ranking!"
             );
             return new ResponseEntity<>(new Response(200, HttpStatus.OK, err).toJSON(), HttpStatus.OK);
-        }
-
-        if (listPreviousDaily.isEmpty()) {
-            System.err.println("Previous list empty!");
-            listPreviousDaily = listCurrentDaily;
-            System.out.println("check previous" + listPreviousDaily);
         }
 
         List<DailyMangaDTO> listDailyMangasRanking = new ArrayList<>();
@@ -400,9 +397,15 @@ public class MangaService {
 
         }
 
-        listDailyMangasRanking.sort(Comparator.comparing(DailyMangaDTO::getView_compares).reversed());
-        //   listWeeklyMangasRanking.stream().limit(5L);
-        System.out.println("list daily manga ranking" + listDailyMangasRanking);
+        listDailyMangasRanking.sort(comparing(DailyMangaDTO::getView_compares).reversed());
+        ////remove duplicate from listWeeklyMangasRanking;
+        List<DailyMangaDTO> listDailyMangasRankingAfterRemoveDuplicates = listDailyMangasRanking.stream()
+                .collect(collectingAndThen(toCollection(() -> new TreeSet<DailyMangaDTO>(comparing(DailyMangaDTO::getManga_id))),
+                        ArrayList::new));
+        listDailyMangasRankingAfterRemoveDuplicates.forEach (item->{
+            System.err.println ("listWeeklyMangasRankingAfterRemoveDuplicates" +item.getManga_id ());
+        });
+        listDailyMangasRankingAfterRemoveDuplicates.sort(comparing(DailyMangaDTO::getView_compares).reversed());
 
         List<AuthorMangaDTO> listDailyRanking = new ArrayList<>();
 
