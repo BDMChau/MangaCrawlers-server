@@ -571,6 +571,7 @@ public class UserService {
         }
         TransGroup transGroup = transGroupOptional.get();
         List<MangaChapterDTO> listManga = mangaRepository.getLatestChapterFromMangaByTransgroup(transGroupId);
+        System.err.println ("listManga.isEmpty() "+listManga.isEmpty());
         if (listManga.isEmpty()) {
             Map<String, Object> msg = Map.of(
                     "msg", "No mangas!"
