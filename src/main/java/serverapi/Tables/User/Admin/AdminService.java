@@ -7,13 +7,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Query.DTO.*;
-import serverapi.Query.Repository.FollowingRepos;
-import serverapi.Query.Repository.MangaRepos;
-import serverapi.Query.Repository.TransGroupRepos;
-import serverapi.Query.Repository.UserRepos;
+import serverapi.Query.Repository.*;
 import serverapi.Tables.Manga.Manga;
 import serverapi.Tables.TransGroup.TransGroup;
+import serverapi.Tables.User.AssistUser;
+import serverapi.Tables.User.POJO.TransGroupPOJO;
 import serverapi.Tables.User.User;
+import serverapi.Tables.User.UserService;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -25,15 +25,17 @@ public class AdminService {
     private final FollowingRepos followingRepos;
     private final MangaRepos mangaRepos;
     private final TransGroupRepos transGroupRepos;
+    private final ChapterRepos chapterRepos;
 
 
     @Autowired
     public AdminService(UserRepos userRepos, FollowingRepos followingRepos, MangaRepos mangaRepos,
-                        TransGroupRepos transGroupRepos) {
+                        TransGroupRepos transGroupRepos, ChapterRepos chapterRepos) {
         this.userRepos = userRepos;
         this.followingRepos = followingRepos;
         this.mangaRepos = mangaRepos;
         this.transGroupRepos = transGroupRepos;
+        this.chapterRepos = chapterRepos;
     }
 
 
@@ -295,6 +297,82 @@ public class AdminService {
                 "users", users
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+
+    }
+
+    /////////////////// transgroup & manga
+    public ResponseEntity deleteManga(Long userConfrimedId, Long transGroupId, Long mangaId) {
+
+//        ///////check transgroup
+        Optional<TransGroup> transGroupOptional = transGroupRepos.findById (transGroupId);
+
+        if(transGroupOptional.isEmpty ()){
+            Map<String, Object> err = Map.of(
+                    "err", "transgroup not found!"
+
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        TransGroup transGroup = transGroupOptional.get ();
+
+        Optional<Manga> mangaOptional = mangaRepos.findById (mangaId);
+
+        if(mangaOptional.isEmpty ()){
+            Map<String, Object> err = Map.of(
+                    "err", "manga not found!"
+
+            );
+            return new ResponseEntity<>(new Response(402, HttpStatus.ACCEPTED, err).toJSON(),
+                    HttpStatus.ACCEPTED);
+        }
+
+        Manga manga = mangaOptional.get ();
+
+
+        //////check user is created transgroup(by email)
+        Boolean isUserTransGroup = false;
+        Optional<User> userOptional = userRepos.findById(userConfrimedId);
+
+            User user = userOptional.get();
+
+            if(user.getTransgroup ().getTransgroup_email ().equals (transGroup.getTransgroup_email ())){
+                isUserTransGroup = true;
+            }
+
+        /////check admin && user
+        Boolean isAdmin = isUserAdmin(userConfrimedId);
+        if (!isAdmin && !isUserTransGroup) {
+            Map<String, Object> err = Map.of(
+                    "err", "You are not allowed to access this resource!"
+            );
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
+        mangaRepos.delete (manga);
+
+        List<MangaChapterDTO> mangaList = new AssistUser (mangaRepos,chapterRepos).getMangaList (user.getTransgroup ().getTransgroup_id ());
+        if(mangaList.isEmpty ()){
+            System.err.println ("empty mangaList");
+        }
+
+        Comparator<MangaChapterDTO> compareById = (MangaChapterDTO mc1, MangaChapterDTO mc2) -> mc1.getManga_id ().compareTo(mc2.getManga_id ());
+        Collections.sort(mangaList, compareById); // sort users by id
+
+        Map<String, Object> msg = Map.of(
+                "msg", "delete manga successfully!",
+                "mangaList", mangaList,
+                "user_deleted",user
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+
+
+    }
+
+    public ResponseEntity deletetransGroup(Long adminId, Long userId, Long transGroupId) {
+//
+        return null;
 
     }
 

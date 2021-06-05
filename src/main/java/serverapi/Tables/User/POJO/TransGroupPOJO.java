@@ -10,6 +10,7 @@ public class TransGroupPOJO {
     private String group_desc;
     private String transgroup_id;
     private Integer manga_id;
+    private String user_id;
 
 
     public Boolean isValid() {

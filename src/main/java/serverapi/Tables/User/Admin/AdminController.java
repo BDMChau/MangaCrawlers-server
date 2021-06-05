@@ -5,14 +5,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import serverapi.Api.Response;
+import serverapi.Query.Repository.UserRepos;
+import serverapi.Tables.User.POJO.TransGroupPOJO;
 import serverapi.Tables.User.POJO.UserPOJO;
+import serverapi.Tables.User.User;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -22,10 +28,12 @@ public class AdminController {
 
 
     private final AdminService adminService;
+    private final UserRepos userRepos;
 
     @Autowired
-    public AdminController(AdminService adminService) {
+    public AdminController(AdminService adminService, UserRepos userRepos) {
         this.adminService = adminService;
+        this.userRepos = userRepos;
     }
 
 
@@ -89,7 +97,45 @@ public class AdminController {
 
         Long userId = Long.parseLong(userPOJO.getUser_id());
 
-        return adminService.deleteUser(userId, adminId);
+        return adminService.deleteUser (userId, adminId);
+    }
+
+    //////////////////////////// manga
+    @DeleteMapping("/deletemanga")
+    public ResponseEntity deleteManga(@RequestBody TransGroupPOJO transGroupPOJO, ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+        Optional<User> userOptional = userRepos.findById (userId);
+        if(userOptional.isEmpty ()){
+
+            Map<String, Object> err = Map.of(
+                    "err", "User not found!"
+
+            );
+            return new ResponseEntity<>(new Response (400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get ();
+        Long userConfrimedId = 0L;
+        if(user.getUser_isAdmin ()== null && user.getTransgroup ().getTransgroup_id () == null){
+            userConfrimedId = user.getUser_id ();
+        }
+        Long transGroupId = Long.parseLong (transGroupPOJO.getTransgroup_id ());
+        Long mangaId = Long.parseLong (transGroupPOJO.getManga_id ().toString ());
+
+        return adminService.deleteManga(userConfrimedId, transGroupId, mangaId);
+    }
+    ////////////////////////// transgroup
+    @DeleteMapping("/deletetransgroup")
+    public ResponseEntity deleteTransGroup(@RequestBody TransGroupPOJO transGroupPOJO, ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long adminId = Long.parseLong(StrUserId);
+
+        Long userId = Long.parseLong(transGroupPOJO.getUser_id());
+
+        Long transGroupId = Long.parseLong (transGroupPOJO.getTransgroup_id ());
+
+        return adminService.deletetransGroup (adminId, userId, transGroupId);
     }
 
 

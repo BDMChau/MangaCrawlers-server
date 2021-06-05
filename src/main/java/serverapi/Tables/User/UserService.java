@@ -601,68 +601,7 @@ public class UserService {
 
         TransGroup transGroup = transGroupOptional.get();
 
-        List<MangaChapterDTO> listManga = mangaRepository.getMangaByTransgroup(transGroupId);
-        System.err.println("listManga.isEmpty() " + listManga.isEmpty());
-
-        List<MangaChapterDTO> mangaList = new ArrayList<> ();
-
-        if (!listManga.isEmpty()) {
-
-            List<ChapterDTO> listChapters = chapterRepos.getAllChapter ();
-
-            if (!listChapters.isEmpty()) {
-
-                listManga.forEach (manga->{
-
-                    System.err.println ("mangaId "+manga.getManga_id ());
-                    List<MangaChapterDTO> subMangaList = new ArrayList<> ();
-
-                    listChapters.forEach (chapter->{
-
-                        System.err.println ("chapterId "+chapter.getChapter_id ());
-                        System.err.println ("checkkingg "+manga.getManga_id ().equals (chapter.getManga_id ()));
-
-                        if(manga.getManga_id ().equals (chapter.getManga_id ())){
-
-                            MangaChapterDTO mangaChapterDTO = new MangaChapterDTO ();
-
-                            mangaChapterDTO.setChapter_id (chapter.getChapter_id ());
-                            mangaChapterDTO.setChapter_name (chapter.getChapter_name ());
-                            mangaChapterDTO.setCreatedAt (chapter.getCreatedAt ());
-                            mangaChapterDTO.setManga_id (manga.getManga_id ());
-                            mangaChapterDTO.setManga_name (manga.getManga_name ());
-                            mangaChapterDTO.setThumbnail (manga.getThumbnail ());
-                            mangaChapterDTO.setStars (manga.getStars ());
-
-                            subMangaList.add (mangaChapterDTO);
-                            System.err.println ("mangaChapterDTO "+mangaChapterDTO);
-                        }
-                    });
-                    if(subMangaList.isEmpty ()){
-
-                        System.err.println ("vào đây không?");
-                        MangaChapterDTO mangaChapterDTO = new MangaChapterDTO ();
-                        mangaChapterDTO.setChapter_id (0L);
-                        mangaChapterDTO.setChapter_name (" ");
-                        mangaChapterDTO.setCreatedAt (null);
-                        mangaChapterDTO.setManga_id (manga.getManga_id ());
-                        mangaChapterDTO.setManga_name (manga.getManga_name ());
-                        mangaChapterDTO.setThumbnail (manga.getThumbnail ());
-                        mangaChapterDTO.setStars (manga.getStars ());
-
-                        mangaList.add (mangaChapterDTO);
-                    }else{
-                        System.err.println ("ra đây không?");
-                        MangaChapterDTO maxChapter = subMangaList.stream().max(Comparator.comparing(v -> v.getChapter_id ())).get();
-
-                        mangaList.add (maxChapter);
-                    }
-
-                });
-            }
-            System.err.println ("listChaptersb is empty");
-        }
-        System.err.println ("listManga is empty");
+      List<MangaChapterDTO> mangaList = new AssistUser (mangaRepository,chapterRepos).getMangaList (transGroupId);
 
         List<UserTransGroupDTO> listUsers = userRepos.getUsersTransGroup(transGroupId);
         if (listUsers.isEmpty()) {
@@ -827,6 +766,9 @@ public class UserService {
                 HttpStatus.OK);
 
     }
+
+
+    ////////////////////////////////helper
 
 
 }
