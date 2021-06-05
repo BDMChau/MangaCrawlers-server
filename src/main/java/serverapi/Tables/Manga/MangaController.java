@@ -78,11 +78,19 @@ public class MangaController {
     }
 
 
-    @Cacheable(value = "dailyMangas", key = "#root.method")
+//    @Cacheable(value = "dailyMangas", key = "#root.method")
     @GetMapping("/getdaily")
     public ResponseEntity getDailyMangas() {
         return mangaService.getDailyMangas();
     }
+
+//    @Cacheable(value = "suggestionList", key = "#root.method")
+    @GetMapping("/getsuggestion")
+    public ResponseEntity getSuggestionList() {
+
+        return mangaService.getSuggestionList();
+    }
+
 
 
     @PostMapping("/searchmangas")
@@ -120,6 +128,8 @@ public class MangaController {
 
         return mangaService.searchMangasByGenres(listGenId);
     }
+
+
 
 
 }

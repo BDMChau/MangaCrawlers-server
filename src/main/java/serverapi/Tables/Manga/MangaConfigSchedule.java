@@ -1,9 +1,11 @@
 package serverapi.Tables.Manga;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import serverapi.Query.DTO.MangaViewDTO;
 import serverapi.Query.Repository.MangaRepos;
 import serverapi.Query.Repository.UpdateViewRepos;
@@ -28,7 +30,6 @@ public class MangaConfigSchedule {
     }
 
 
-    @Async
 //    @Scheduled(cron = "* * */23 * * ?") // every 23 hours
     public void updateViewsToManga() {
         List<MangaViewDTO> listViewsMangas = mangaRepository.getTotalView();
@@ -61,7 +62,7 @@ public class MangaConfigSchedule {
             view.setCreatedAt(createdAt);
             view.setManga(manga);
 
-            updateViewRepos.save(view);
+            updateViewRepos.saveAndFlush(view);
         });
 
         Calendar calendar = Calendar.getInstance();

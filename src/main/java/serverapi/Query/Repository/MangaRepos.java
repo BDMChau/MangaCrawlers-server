@@ -1,6 +1,7 @@
 package serverapi.Query.Repository;
 
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -30,22 +31,34 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
             "WHERE mg.manga_id = m.manga_id ) Order by c.chapter_id Desc")
     List<MangaChapterDTO> getLatestChapterFromManga();
 
+
+
     @Query("SELECT new serverapi.Query.DTO.MangaChapterDTO(c.chapter_id, c.chapter_name, c.createdAt, m.manga_id," +
             " m.manga_name, m.thumbnail) FROM Manga m JOIN m.chapters c WHERE c.chapter_id = (SELECT MAX(ct.chapter_id) FROM Manga mg INNER JOIN mg.chapters ct " +
             "WHERE mg.manga_id = m.manga_id ) AND m.manga_id =?1 Order by c.chapter_id Desc")
     Optional<MangaChapterDTO> getLatestChapterFromMangaByMangaId(Long manga_id);
+
+
 
     @Query("SELECT new serverapi.Query.DTO.MangaChapterDTO(c.chapter_id, c.chapter_name, c.createdAt, m.manga_id," +
             " m.manga_name, m.thumbnail) FROM Manga m JOIN m.chapters c JOIN TransGroup tg ON tg.transgroup_id = m.transgroup WHERE c.chapter_id = (SELECT MAX(ct.chapter_id) FROM Manga mg INNER JOIN mg.chapters ct " +
             "WHERE mg.manga_id = m.manga_id ) AND tg.transgroup_id =?1 Order by c.chapter_id Desc")
     List<MangaChapterDTO> getLatestChapterFromMangaByTransgroup(Long transgroup_id);
 
+
+
     @Query("SELECT new serverapi.Query.DTO.MangaChapterDTO(m.manga_id," +
             " m.manga_name, m.thumbnail) FROM Manga m JOIN TransGroup tg ON tg.transgroup_id = m.transgroup WHERE tg.transgroup_id =?1")
     List<MangaChapterDTO> getMangaByTransgroup(Long transgroup_id);
 
 
+    @Query(value = "SELECT * FROM Manga ORDER BY RANDOM() LIMIT :quantity", nativeQuery = true)
+    List<Manga> getRandomList(@Param("quantity") Integer quantity);
 
+
+    long count();
+
+    Page<Manga> findAll(Pageable pageable);
 
 //    @Query(value = "select * from manga", nativeQuery = true)
 //    List<Manga> getAllMangas();
@@ -77,7 +90,7 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
     @Query("SELECT new serverapi.Query.DTO.UpdateViewDTO(m.manga_id,m.manga_name, m.thumbnail, m.description, m.status, m.stars," +
             "m.views, m.date_publications, m.createdAt, u.updatedview_id, u.totalviews, u.createdAt) " +
             "FROM UpdateView u JOIN u.manga m " +
-            "WHERE u.createdAt >= current_date - :from_time and u.createdAt < current_date - :to_time ")
+            "WHERE u.createdAt >= current_date - :from_time and u.createdAt <= current_date - :to_time ")
     List<UpdateViewDTO> getWeekly(@Param("from_time")int from_time, @Param("to_time") int to_time);
 
     @Query("SELECT new serverapi.Query.DTO.AuthorMangaDTO( a.author_id, a.author_name," +
