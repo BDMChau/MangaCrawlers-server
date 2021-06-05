@@ -662,14 +662,11 @@ public class UserService {
             }
             System.err.println ("listChaptersb is empty");
         }
-        System.err.println ("listUsers is empty");
+        System.err.println ("listManga is empty");
 
         List<UserTransGroupDTO> listUsers = userRepos.getUsersTransGroup(transGroupId);
         if (listUsers.isEmpty()) {
-            Map<String, Object> msg = Map.of(
-                    "msg", "No users!"
-            );
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+            System.err.println ("listUser is empty");
         }
 
         Map<String, Object> msg = Map.of(
