@@ -173,7 +173,7 @@ public class UserController {
 
         Long mangaId = Long.parseLong(String.valueOf(manga_id));
         String chapterName = chapter_name;
-        System.err.println(chapterName);
+        System.err.println("chapterName: " + chapterName);
         return userService.uploadChapterImgs(userId, mangaId, chapterName, files);
     }
 
@@ -195,12 +195,15 @@ public class UserController {
         return userService.signUpTransGroup(userId, groupName, groupDesc);
     }
 
+
+    @Cacheable(value = "TransGroupInfo", key = "{#request.getAttribute(\"user\").get(\"user_id\"), #request.getAttribute(\"user\").get(\"user_transgroup_id\")}")
     @PostMapping("/gettransgroupinfo")
     public ResponseEntity getTransGroupInfo(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
-        System.err.println ("getUserAttribute(request).get(user_transgroup_id)+ "+getUserAttribute(request).get("user_transgroup_id"));
-        System.err.println ("userID nay "+userId);
+        System.err.println("user_transgroup_id: " + getUserAttribute(request).get("user_transgroup_id"));
+        System.err.println("userID: " + userId);
+
 
         if (getUserAttribute(request).get("user_transgroup_id") == null) {
             Map<String, String> error = Map.of("err", "Login again before visit this page, thank you!");
@@ -209,10 +212,12 @@ public class UserController {
         }
         Long transGroupId = Long.parseLong(getUserAttribute(request).get("user_transgroup_id").toString());
 
+
         return userService.getTransGroupInfo(userId, transGroupId);
     }
 
 
+    @Cacheable(value = "TransGroupInfo", key = "{#request.getAttribute(\"user\").get(\"user_id\"), #transGroupPOJO.getManga_id()}")
     @PostMapping("/getmangainfo")
     public ResponseEntity getMangaInfo(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) {
         if (getUserAttribute(request).get("user_transgroup_id") == null) {

@@ -32,12 +32,10 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
     List<MangaChapterDTO> getLatestChapterFromManga();
 
 
-
     @Query("SELECT new serverapi.Query.DTO.MangaChapterDTO(c.chapter_id, c.chapter_name, c.createdAt, m.manga_id," +
             " m.manga_name, m.thumbnail) FROM Manga m JOIN m.chapters c WHERE c.chapter_id = (SELECT MAX(ct.chapter_id) FROM Manga mg INNER JOIN mg.chapters ct " +
             "WHERE mg.manga_id = m.manga_id ) AND m.manga_id =?1 Order by c.chapter_id Desc")
     Optional<MangaChapterDTO> getLatestChapterFromMangaByMangaId(Long manga_id);
-
 
 
     @Query("SELECT new serverapi.Query.DTO.MangaChapterDTO(c.chapter_id, c.chapter_name, c.createdAt, m.manga_id," +
@@ -46,9 +44,8 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
     List<MangaChapterDTO> getLatestChapterFromMangaByTransgroup(Long transgroup_id);
 
 
-
     @Query("SELECT new serverapi.Query.DTO.MangaChapterDTO(m.manga_id," +
-            " m.manga_name, m.thumbnail) FROM Manga m JOIN TransGroup tg ON tg.transgroup_id = m.transgroup WHERE tg.transgroup_id =?1")
+            " m.manga_name, m.thumbnail, m.stars) FROM Manga m JOIN TransGroup tg ON tg.transgroup_id = m.transgroup WHERE tg.transgroup_id =?1")
     List<MangaChapterDTO> getMangaByTransgroup(Long transgroup_id);
 
 
@@ -91,7 +88,7 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
             "m.views, m.date_publications, m.createdAt, u.updatedview_id, u.totalviews, u.createdAt) " +
             "FROM UpdateView u JOIN u.manga m " +
             "WHERE u.createdAt >= current_date - :from_time and u.createdAt <= current_date - :to_time ")
-    List<UpdateViewDTO> getWeekly(@Param("from_time")int from_time, @Param("to_time") int to_time);
+    List<UpdateViewDTO> getWeekly(@Param("from_time") int from_time, @Param("to_time") int to_time);
 
     @Query("SELECT new serverapi.Query.DTO.AuthorMangaDTO( a.author_id, a.author_name," +
             " m.manga_id, m.manga_name, m.status, m.description, m.stars, " +
@@ -125,7 +122,6 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
             "Manga m JOIN m.chapters c " +
             "WHERE m.manga_id = ?1")
     List<ChapterDTO> findChaptersbyMangaId(Long manga_id);
-
 
 
 }
