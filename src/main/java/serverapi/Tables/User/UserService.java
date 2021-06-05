@@ -684,7 +684,7 @@ public class UserService {
 
 
     @Transactional
-    public ResponseEntity getMangaInfo(Long transGroupId, Long mangaId) {
+    public ResponseEntity getMangaInfoUploadPage(Long transGroupId, Long mangaId) {
         Optional<TransGroup> transGroupOptional = transGroupRepos.findById(transGroupId);
         if (transGroupOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "Trans group not found!");

@@ -196,7 +196,7 @@ public class UserController {
     }
 
 
-    @Cacheable(value = "TransGroupInfo", key = "{#request.getAttribute(\"user\").get(\"user_id\"), #request.getAttribute(\"user\").get(\"user_transgroup_id\")}")
+    @Cacheable(value = "transGroupInfo", key = "{#request.getAttribute(\"user\").get(\"user_id\"), #request.getAttribute(\"user\").get(\"user_transgroup_id\")}")
     @PostMapping("/gettransgroupinfo")
     public ResponseEntity getTransGroupInfo(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -217,9 +217,9 @@ public class UserController {
     }
 
 
-    @Cacheable(value = "TransGroupInfo", key = "{#request.getAttribute(\"user\").get(\"user_id\"), #transGroupPOJO.getManga_id()}")
+    @Cacheable(value = "mangaInfoUploadPage", key = "{#request.getAttribute(\"user\").get(\"user_id\"), #transGroupPOJO.getManga_id()}")
     @PostMapping("/getmangainfo")
-    public ResponseEntity getMangaInfo(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) {
+    public ResponseEntity getMangaInfoUploadPage(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) {
         if (getUserAttribute(request).get("user_transgroup_id") == null) {
             Map<String, String> error = Map.of("err", "Login again before visit this page, thank you!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(),
@@ -229,7 +229,7 @@ public class UserController {
 
         Long mangaId = Long.parseLong(transGroupPOJO.getManga_id().toString());
 
-        return userService.getMangaInfo(transGroupId, mangaId);
+        return userService.getMangaInfoUploadPage(transGroupId, mangaId);
     }
 
 
