@@ -662,6 +662,163 @@ public class UserService {
     }
 
 
+    public ResponseEntity deleteManga(Long userId, Long mangaId, Long transGroupId) {
+
+        Optional<TransGroup> transGroupOptional = transGroupRepos.findById (transGroupId);
+
+        if(transGroupOptional.isEmpty ()){
+            Map<String, Object> err = Map.of(
+                    "err", "Transgroup not found!"
+
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        TransGroup transGroup = transGroupOptional.get ();
+
+
+        //////
+        Optional<User> userOptional = userRepos.findById (userId);
+        if(userOptional.isEmpty ()){
+
+            Map<String, Object> err = Map.of(
+                    "err", "User not found!"
+
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        User user = userOptional.get ();
+        if(!user.getTransgroup ().getTransgroup_id ().equals (transGroupId)){
+
+            Map<String, Object> err = Map.of(
+                    "err", "You are not allowed to access this resource!"
+            );
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
+
+        if(!user.getUser_email ().equals (transGroup.getTransgroup_email ())){
+
+            Map<String, Object> err = Map.of(
+                    "err", "You are not allowed to access this resource!"
+            );
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
+
+
+        Optional<Manga> mangaOptional = mangaRepository.findById (mangaId);
+
+        if(mangaOptional.isEmpty ()){
+            Map<String, Object> err = Map.of(
+                    "err", "manga not found!"
+
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        Manga manga = mangaOptional.get ();
+        mangaRepository.delete (manga);
+
+        List<MangaChapterDTO> mangaList = mangaRepository.getLatestChapterFromManga ();
+        if(mangaList.isEmpty ()){
+            Map<String, Object> err = Map.of(
+                    "err", "List manga not found!"
+
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(),
+                    HttpStatus.ACCEPTED);
+        }
+
+        Comparator<MangaChapterDTO> compareById = (MangaChapterDTO mc1, MangaChapterDTO mc2) -> mc1.getManga_id ().compareTo(mc2.getManga_id ());
+        Collections.sort(mangaList, compareById); // sort users by id
+
+        Map<String, Object> msg = Map.of(
+                "msg", "delete manga successfully!",
+                "mangaList", mangaList,
+                "user_deleted",user
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+
+
+    }
+
+    public ResponseEntity deletetransGroup(Long userId, Long transGroupId) {
+
+        Optional<TransGroup> transGroupOptional = transGroupRepos.findById (transGroupId);
+
+        if(transGroupOptional.isEmpty ()){
+            Map<String, Object> err = Map.of(
+                    "err", "Transgroup not found!"
+
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        TransGroup transGroup = transGroupOptional.get ();
+
+
+        //////
+        Optional<User> userOptional = userRepos.findById (userId);
+        if(userOptional.isEmpty ()){
+
+            Map<String, Object> err = Map.of(
+                    "err", "User not found!"
+
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        User user = userOptional.get ();
+        if(!user.getTransgroup ().getTransgroup_id ().equals (transGroupId)){
+
+            Map<String, Object> err = Map.of(
+                    "err", "You are not allowed to access this resource!"
+            );
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
+
+        if(!user.getUser_email ().equals (transGroup.getTransgroup_email ())){
+
+            Map<String, Object> err = Map.of(
+                    "err", "You are not allowed to access this resource!"
+            );
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
+
+        transGroupRepos.delete (transGroup);
+
+        List<TransGroup> transGroupsList = transGroupRepos.findAll ();
+        if(transGroupsList.isEmpty ()){
+            Map<String, Object> err = Map.of(
+                    "err", "List transgroup not found!"
+
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(),
+                    HttpStatus.ACCEPTED);
+        }
+
+        Comparator<TransGroup> compareById = (TransGroup tg1, TransGroup tg2) -> tg1.getTransgroup_id ().compareTo(tg2.getTransgroup_id ());
+        Collections.sort(transGroupsList, compareById); // sort users by id
+
+        Map<String, Object> msg = Map.of(
+                "msg", "delete manga successfully!",
+                "mangaList", transGroupsList,
+                "user_deleted",user
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+
+    }
+
+
     public ResponseEntity addNewProjectMangaFields(Long userId, Long transGrId,
                                                    FieldsCreateMangaDTO fieldsCreateMangaDTO) throws IOException {
         Optional<User> userOptional = userRepos.findById(userId);

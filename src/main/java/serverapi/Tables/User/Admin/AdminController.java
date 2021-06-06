@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import serverapi.Api.Response;
 import serverapi.Query.Repository.UserRepos;
+import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.User.POJO.TransGroupPOJO;
 import serverapi.Tables.User.POJO.UserPOJO;
 import serverapi.Tables.User.User;
@@ -102,28 +103,13 @@ public class AdminController {
 
     //////////////////////////// manga
     @DeleteMapping("/deletemanga")
-    public ResponseEntity deleteManga(@RequestBody TransGroupPOJO transGroupPOJO, ServletRequest request) {
+    public ResponseEntity deleteManga(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
+        Long adminId = Long.parseLong(StrUserId);
 
-        Optional<User> userOptional = userRepos.findById (userId);
-        if(userOptional.isEmpty ()){
+        Long mangaId = Long.parseLong (mangaPOJO.getManga_id ());
 
-            Map<String, Object> err = Map.of(
-                    "err", "User not found!"
-
-            );
-            return new ResponseEntity<>(new Response (400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
-        }
-        User user = userOptional.get ();
-        Long userConfrimedId = 0L;
-        if(user.getUser_isAdmin ()== null && user.getTransgroup ().getTransgroup_id () == null){
-            userConfrimedId = user.getUser_id ();
-        }
-        Long transGroupId = Long.parseLong (transGroupPOJO.getTransgroup_id ());
-        Long mangaId = Long.parseLong (transGroupPOJO.getManga_id ().toString ());
-
-        return adminService.deleteManga(userConfrimedId, transGroupId, mangaId);
+        return adminService.deleteManga(adminId, mangaId);
     }
     ////////////////////////// transgroup
     @DeleteMapping("/deletetransgroup")
@@ -131,11 +117,9 @@ public class AdminController {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long adminId = Long.parseLong(StrUserId);
 
-        Long userId = Long.parseLong(transGroupPOJO.getUser_id());
-
         Long transGroupId = Long.parseLong (transGroupPOJO.getTransgroup_id ());
 
-        return adminService.deletetransGroup (adminId, userId, transGroupId);
+        return adminService.deletetransGroup (adminId, transGroupId);
     }
 
 

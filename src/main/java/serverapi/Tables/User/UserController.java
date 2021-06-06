@@ -232,6 +232,29 @@ public class UserController {
         return userService.getMangaInfo(transGroupId, mangaId);
     }
 
+    @DeleteMapping("/deletemanga")
+    public ResponseEntity deleteManga(@RequestBody TransGroupPOJO transGroupPOJO, ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userID = Long.parseLong(StrUserId);
+
+        Long mangaId = Long.parseLong (transGroupPOJO.getManga_id ().toString ());
+
+        Long transGroupId = Long.parseLong (transGroupPOJO.getTransgroup_id ());
+
+        return userService.deleteManga(userID, mangaId,transGroupId);
+    }
+
+    ////////////////////////// transgroup
+    @DeleteMapping("/deletetransgroup")
+    public ResponseEntity deleteTransGroup(@RequestBody TransGroupPOJO transGroupPOJO, ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+        Long transGroupId = Long.parseLong (transGroupPOJO.getTransgroup_id ());
+
+        return userService.deletetransGroup (userId, transGroupId);
+    }
+
 
     @PostMapping("/addnewprojectmangafields")
     @Transactional
