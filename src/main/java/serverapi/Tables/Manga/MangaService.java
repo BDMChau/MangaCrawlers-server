@@ -401,7 +401,7 @@ public class MangaService {
 
         List<AuthorMangaDTO> listDailyRanking = new ArrayList<>();
 
-        List<DailyMangaDTO> top10Mangas = listDailyMangasRanking.stream().limit(10).collect(Collectors.toList());
+        List<DailyMangaDTO> top10Mangas = listDailyMangasRankingAfterRemoveDuplicates.stream().limit(10).collect(Collectors.toList());
 
         List<AuthorMangaDTO> mangas = mangaRepository.getAllMangas();
 
