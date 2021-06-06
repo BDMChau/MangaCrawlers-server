@@ -592,16 +592,13 @@ public class MangaService {
                         new AdvancedSearchGenreId(mangaRepository).showMangaList(subFirstList, Mangas);
 
                 if (mangaChapterDTOList.isEmpty()) {
-
-                    Map<String, Object> msg = Map.of(
-                            "msg", "Manga not found!"
-                    );
-                    return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(),
+                    Map<String, Object> err = Map.of("err", "Manga not found!");
+                    return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(),
                             HttpStatus.ACCEPTED);
                 }
 
                 Map<String, Object> msg = Map.of(
-                        "msg", "Get search results successfully!1",
+                        "msg", "Get search results successfully!",
                         "data", mangaChapterDTOList,
                         "genres_info", genresInput
                 );
@@ -610,24 +607,20 @@ public class MangaService {
 
             List<MangaGenreDTO> secondList = new AdvancedSearchGenreId(mangaRepository).searchGen(finalGenreId,
                     subFirstList, listGenresMangas);
-
             subFirstList = secondList;
         }
 
 
         List<MangaGenreDTO> lastList = subFirstList;
-        List<MangaChapterDTO> mangaChapterDTOList = new AdvancedSearchGenreId(mangaRepository).showMangaList(lastList
-                , Mangas);
-
+        List<MangaChapterDTO> mangaChapterDTOList = new AdvancedSearchGenreId(mangaRepository).showMangaList(lastList, Mangas);
         if (mangaChapterDTOList.isEmpty()) {
-
-            Map<String, Object> msg = Map.of(
-                    "msg", "Manga not found!last"
-            );
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+            Map<String, Object> err = Map.of("err", "Manga not found");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
+
+
         Map<String, Object> msg = Map.of(
-                "msg", "Get search results successfully!last",
+                "msg", "Get search results successfully!",
                 "mangas", mangaChapterDTOList,
                 "genres", genresInput
         );
