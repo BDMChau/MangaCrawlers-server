@@ -43,4 +43,12 @@ public class GlobalConfiguration {
         con.connect();
     }
 
+    @Bean
+    public void autoCallHttp2() throws IOException {
+        URL url = new URL(System.getenv("HOST_PRODUCTION") + "api/auth/autocallhttp");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        con.connect();
+    }
+
 }
