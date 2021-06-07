@@ -36,8 +36,8 @@ public interface UserRepos extends JpaRepository<User, Long> {
             "FROM TransGroup tg INNER JOIN tg.users u WHERE tg.transgroup_id =?1 ORDER BY u.user_id DESC")
     List<UserTransGroupDTO> getUsersTransGroup(Long transgroup_id);
 
-    @Query("SELECT new serverapi.Query.DTO.UserDTO(u.user_id, u.user_name, u.user_email, u.user_avatar")
-    Optional<UserDTO> getUser(Long UserDTO);
+//    @Query("SELECT new serverapi.Query.DTO.UserDTO(u.user_id, u.user_name, u.user_email, u.user_avatar")
+//    Optional<UserDTO> getUser(Long UserDTO);
 
     @Query("SELECT new serverapi.Query.DTO.ReportTopMangaDTO(a.author_id,a.author_name, m.manga_id, m.manga_name, m.thumbnail, m.stars, m.views, m.date_publications, m.createdAt)" +
             "FROM Manga m JOIN m.author a ORDER BY m.views DESC ")

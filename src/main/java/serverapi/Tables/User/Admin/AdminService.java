@@ -392,9 +392,9 @@ public class AdminService {
         Collections.sort(transGroupsList, compareById); // sort users by id
 
         Map<String, Object> msg = Map.of(
-                "msg", "delete manga successfully!",
-                "mangaList", transGroupsList,
-                "user_deleted",admin
+                "msg", "delete transgroup successfully!",
+                "transgroups", transGroupsList,
+                "by_user",admin
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 

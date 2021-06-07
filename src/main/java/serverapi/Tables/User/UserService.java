@@ -27,12 +27,10 @@ import serverapi.Tables.ReadingHistory.ReadingHistory;
 import serverapi.Tables.TransGroup.TransGroup;
 import serverapi.Tables.User.POJO.FieldsCreateMangaDTO;
 
-import javax.swing.text.html.Option;
+
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -710,6 +708,7 @@ public class UserService {
         }
 
 
+        //check manga deleted is empty
         Optional<Manga> mangaOptional = mangaRepository.findById (mangaId);
 
         if(mangaOptional.isEmpty ()){
@@ -740,7 +739,7 @@ public class UserService {
         Map<String, Object> msg = Map.of(
                 "msg", "delete manga successfully!",
                 "mangaList", mangaList,
-                "user_deleted",user
+                "by_user",user
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
@@ -764,6 +763,7 @@ public class UserService {
 
 
         //////
+        System.err.println ("ra dây ko3");
         Optional<User> userOptional = userRepos.findById (userId);
         if(userOptional.isEmpty ()){
 
@@ -775,6 +775,7 @@ public class UserService {
                     HttpStatus.BAD_REQUEST);
         }
 
+        System.err.println ("ra dây ko2");
         User user = userOptional.get ();
         if(!user.getTransgroup ().getTransgroup_id ().equals (transGroupId)){
 
@@ -793,8 +794,32 @@ public class UserService {
             return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
                     HttpStatus.FORBIDDEN);
         }
+        /// delete and remove
+        System.err.println ("ra dây ko1");
+       List<User>  userList = userRepos.findAll ();
+        if(!userList.isEmpty ()){
+            System.err.println ("vào dây ko1");
+           userList.forEach (item -> {
 
-        transGroupRepos.delete (transGroup);
+                   if(item.equals (transGroup.getUsers ())){
+                       item.setTransgroup (null);
+                   }
+           });
+        }
+//        userRepos.findAll ().remove (transGroup);
+
+        List<Manga>  mangaList = mangaRepository.findAll ();
+        if(!mangaList.isEmpty ()){
+            mangaList.forEach (item -> {
+                    if (item.equals (transGroup.getMangas ())) {
+                        item.setTransgroup (null);
+                    }
+
+            });
+        }
+//        mangaRepository.findAll ().remove (transGroup);
+
+//        transGroupRepos.delete (transGroup);
 
         List<TransGroup> transGroupsList = transGroupRepos.findAll ();
         if(transGroupsList.isEmpty ()){
@@ -802,8 +827,7 @@ public class UserService {
                     "err", "List transgroup not found!"
 
             );
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(),
-                    HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
 
         Comparator<TransGroup> compareById = (TransGroup tg1, TransGroup tg2) -> tg1.getTransgroup_id ().compareTo(tg2.getTransgroup_id ());
@@ -811,8 +835,7 @@ public class UserService {
 
         Map<String, Object> msg = Map.of(
                 "msg", "delete manga successfully!",
-                "mangaList", transGroupsList,
-                "user_deleted",user
+                "by_user",user
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
