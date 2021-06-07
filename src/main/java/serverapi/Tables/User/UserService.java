@@ -752,52 +752,52 @@ public class UserService {
 
     }
 
-    @Transactional
-    public ResponseEntity checkRoleTransGroup(Long userId, Long transGroupId) {
-
-        Optional<TransGroup> transGroupOptional = transGroupRepos.findById(transGroupId);
-
-        if (transGroupOptional.isEmpty()) {
-            Map<String, Object> err = Map.of(
-                    "err", "Transgroup not found!"
-
-            );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-                    HttpStatus.BAD_REQUEST);
-        }
-
-        TransGroup transGroup = transGroupOptional.get();
-
-
-        //////
-        Optional<User> userOptional = userRepos.findById(userId);
-        if (userOptional.isEmpty()) {
-
-            Map<String, Object> err = Map.of(
-                    "err", "User not found!"
-
-            );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-                    HttpStatus.BAD_REQUEST);
-        }
-
-        User user = userOptional.get();
-
-        Boolean isleader = isLeader(user,transGroup);
-        if (!isleader) {
-            Map<String, Object> err = Map.of(
-                    "msg", "User is member!"
-            );
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, err).toJSON(),
-                    HttpStatus.OK);
-        }
-        Map<String, Object> msg = Map.of(
-                "msg", "User is leader"
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-
-
-    }
+//    @Transactional
+//    public ResponseEntity checkRoleTransGroup(Long userId, Long transGroupId) {
+//
+//        Optional<TransGroup> transGroupOptional = transGroupRepos.findById(transGroupId);
+//
+//        if (transGroupOptional.isEmpty()) {
+//            Map<String, Object> err = Map.of(
+//                    "err", "Transgroup not found!"
+//
+//            );
+//            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+//                    HttpStatus.BAD_REQUEST);
+//        }
+//
+//        TransGroup transGroup = transGroupOptional.get();
+//
+//
+//        //////
+//        Optional<User> userOptional = userRepos.findById(userId);
+//        if (userOptional.isEmpty()) {
+//
+//            Map<String, Object> err = Map.of(
+//                    "err", "User not found!"
+//
+//            );
+//            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+//                    HttpStatus.BAD_REQUEST);
+//        }
+//
+//        User user = userOptional.get();
+//
+//        Boolean isleader = isLeader(user,transGroup);
+//        if (!isleader) {
+//            Map<String, Object> err = Map.of(
+//                    "msg", "User is member!"
+//            );
+//            return new ResponseEntity<>(new Response(200, HttpStatus.OK, err).toJSON(),
+//                    HttpStatus.OK);
+//        }
+//        Map<String, Object> msg = Map.of(
+//                "msg", "User is leader"
+//        );
+//        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+//
+//
+//    }
 
     @Transactional
     public ResponseEntity deletetransGroup(Long userId, Long transGroupId) {
