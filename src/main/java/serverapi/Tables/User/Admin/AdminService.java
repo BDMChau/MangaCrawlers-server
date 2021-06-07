@@ -44,6 +44,7 @@ public class AdminService {
         }
         User user = userOptional.get();
 
+        System.err.println("isAdmin: " + user.getUser_isAdmin());
         Boolean isAdmin = user.getUser_isAdmin();
         if (Boolean.FALSE.equals(isAdmin)) {
             return false;
@@ -221,7 +222,7 @@ public class AdminService {
 
     //////////////
     public ResponseEntity deleteUser(Long userId, Long adminId) {
-        Boolean isAdmin = isUserAdmin(userId);
+        Boolean isAdmin = isUserAdmin(adminId);
         if (!isAdmin) {
             Map<String, Object> err = Map.of(
                     "err", "You are not allowed to access this resource!"
@@ -260,11 +261,9 @@ public class AdminService {
 
 
     public ResponseEntity deprecateUser(Long userId, Long adminId) {
-        Boolean isAdmin = isUserAdmin(userId);
+        Boolean isAdmin = isUserAdmin(adminId);
         if (!isAdmin) {
-            Map<String, Object> err = Map.of(
-                    "err", "You are not allowed to access this resource!"
-            );
+            Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
             return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
                     HttpStatus.FORBIDDEN);
         }
