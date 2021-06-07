@@ -76,6 +76,22 @@ public class UserService {
     }
 
 
+    private boolean isLeader(User user, TransGroup transGroup){
+
+
+            if (!user.getTransgroup ().equals (transGroup)) {
+                System.err.println ("usertrans "+user.getTransgroup ());
+                System.err.println ("trans "+transGroup);
+                System.err.println ("2");
+                return false;
+            }
+
+            if (!user.getUser_email ().equals (transGroup.getTransgroup_email ())) {
+                System.err.println ("3");
+                return false;
+            }
+        return true;
+    }
     //////////////////////////////////// User parts ///////////////////////////////////////////
     public ResponseEntity GetReadingHistory(Long userId) {
         List<UserReadingHistoryDTO> readingHistoryDTO = readingHistoryRepos.GetHistoriesByUserId(userId);
@@ -659,7 +675,7 @@ public class UserService {
                 HttpStatus.ACCEPTED);
     }
 
-
+    @Transactional
     public ResponseEntity deleteManga(Long userId, Long mangaId, Long transGroupId) {
 
         Optional<TransGroup> transGroupOptional = transGroupRepos.findById(transGroupId);
@@ -689,24 +705,15 @@ public class UserService {
         }
 
         User user = userOptional.get();
-        if (!user.getTransgroup().getTransgroup_id().equals(transGroupId)) {
 
+        Boolean isleader = isLeader(user,transGroup);
+        if (!isleader) {
             Map<String, Object> err = Map.of(
                     "err", "You are not allowed to access this resource!"
             );
             return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
                     HttpStatus.FORBIDDEN);
         }
-
-        if (!user.getUser_email().equals(transGroup.getTransgroup_email())) {
-
-            Map<String, Object> err = Map.of(
-                    "err", "You are not allowed to access this resource!"
-            );
-            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
-                    HttpStatus.FORBIDDEN);
-        }
-
 
         //check manga deleted is empty
         Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
@@ -738,15 +745,15 @@ public class UserService {
 
         Map<String, Object> msg = Map.of(
                 "msg", "delete manga successfully!",
-                "mangaList", mangaList,
-                "by_user", user
+                "mangaList", mangaList
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
 
     }
 
-    public ResponseEntity deletetransGroup(Long userId, Long transGroupId) {
+    @Transactional
+    public ResponseEntity checkRoleTransGroup(Long userId, Long transGroupId) {
 
         Optional<TransGroup> transGroupOptional = transGroupRepos.findById(transGroupId);
 
@@ -763,9 +770,9 @@ public class UserService {
 
 
         //////
-        System.err.println("ra dây ko3");
         Optional<User> userOptional = userRepos.findById(userId);
         if (userOptional.isEmpty()) {
+
             Map<String, Object> err = Map.of(
                     "err", "User not found!"
 
@@ -774,9 +781,55 @@ public class UserService {
                     HttpStatus.BAD_REQUEST);
         }
 
-        System.err.println("ra dây ko2");
         User user = userOptional.get();
-        if (!user.getTransgroup().getTransgroup_id().equals(transGroupId)) {
+
+        Boolean isleader = isLeader(user,transGroup);
+        if (!isleader) {
+            Map<String, Object> err = Map.of(
+                    "msg", "User is member!"
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, err).toJSON(),
+                    HttpStatus.OK);
+        }
+        Map<String, Object> msg = Map.of(
+                "msg", "User is leader"
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+
+
+    }
+
+    @Transactional
+    public ResponseEntity deletetransGroup(Long userId, Long transGroupId) {
+        Optional<TransGroup> transGroupOptional = transGroupRepos.findById(transGroupId);
+
+        if (transGroupOptional.isEmpty()) {
+
+            Map<String, Object> err = Map.of(
+                    "err", "Transgroup not found!"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        TransGroup transGroup = transGroupOptional.get();
+
+        //////
+        Optional<User> userOptional = userRepos.findById(userId);
+
+        if (userOptional.isEmpty()) {
+
+            Map<String, Object> err = Map.of(
+                    "err", "User not found!"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        User user = userOptional.get();
+
+        Boolean isleader = isLeader(user,transGroup);
+
+        if (!isleader) {
 
             Map<String, Object> err = Map.of(
                     "err", "You are not allowed to access this resource!"
@@ -784,16 +837,6 @@ public class UserService {
             return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
                     HttpStatus.FORBIDDEN);
         }
-
-        if (!user.getUser_email().equals(transGroup.getTransgroup_email())) {
-
-            Map<String, Object> err = Map.of(
-                    "err", "You are not allowed to access this resource!"
-            );
-            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
-                    HttpStatus.FORBIDDEN);
-        }
-
 
         /// delete and remove
         List<User> userList = (List<User>) transGroup.getUsers();
@@ -808,7 +851,6 @@ public class UserService {
         });
 
         transGroupRepos.delete(transGroup);
-
 
         Map<String, Object> msg = Map.of("msg", "delete transgroup successfully!");
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);

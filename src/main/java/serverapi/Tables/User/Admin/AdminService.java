@@ -15,6 +15,7 @@ import serverapi.Tables.User.POJO.TransGroupPOJO;
 import serverapi.Tables.User.User;
 import serverapi.Tables.User.UserService;
 
+import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -304,15 +305,15 @@ public class AdminService {
     public ResponseEntity deleteManga(Long adminId, Long mangaId) {
 
         Boolean isAdmin = isUserAdmin(adminId);
+
         if (!isAdmin) {
+
             Map<String, Object> err = Map.of(
                     "err", "You are not allowed to access this resource!"
             );
             return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
                     HttpStatus.FORBIDDEN);
         }
-        Optional<User> adminOptional = userRepos.findById (adminId);
-        User admin = adminOptional.get ();
 
         Optional<Manga> mangaOptional = mangaRepos.findById (mangaId);
 
@@ -326,12 +327,14 @@ public class AdminService {
         }
 
         Manga manga = mangaOptional.get ();
+
         mangaRepos.delete (manga);
 
         List<MangaChapterDTO> mangaList = mangaRepos.getLatestChapterFromManga ();
+
         if(mangaList.isEmpty ()){
             Map<String, Object> err = Map.of(
-                    "err", "List manga not found!"
+                    "err", "list manga not found!"
 
             );
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(),
@@ -343,40 +346,50 @@ public class AdminService {
 
         Map<String, Object> msg = Map.of(
                 "msg", "delete manga successfully!",
-                "mangaList", mangaList,
-                "user_deleted",admin
+                "mangaList", mangaList
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-
-
     }
 
+    @Transactional
     public ResponseEntity deletetransGroup(Long adminId, Long transGroupId) {
 
         Boolean isAdmin = isUserAdmin(adminId);
+
         if (!isAdmin) {
+
             Map<String, Object> err = Map.of(
                     "err", "You are not allowed to access this resource!"
             );
             return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
                     HttpStatus.FORBIDDEN);
         }
-        Optional<User> adminOptional = userRepos.findById (adminId);
-        User admin = adminOptional.get ();
 
         Optional<TransGroup> transGroupOptional = transGroupRepos.findById (transGroupId);
 
         if(transGroupOptional.isEmpty ()){
+
             Map<String, Object> err = Map.of(
                     "err", "transgroup not found!"
-
             );
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
                     HttpStatus.BAD_REQUEST);
         }
 
         TransGroup transGroup = transGroupOptional.get ();
-        transGroupRepos.delete (transGroup);
+
+        List<User> userList = (List<User>) transGroup.getUsers();
+        List<Manga> mangaList = (List<Manga>) transGroup.getMangas();
+
+        userList.forEach(user1 -> {
+            user1.setTransgroup(null);
+        });
+
+        mangaList.forEach(manga -> {
+            manga.setTransgroup(null);
+        });
+
+        transGroupRepos.delete(transGroup);
 
         List<TransGroup> transGroupsList = transGroupRepos.findAll ();
         if(transGroupsList.isEmpty ()){
@@ -393,13 +406,11 @@ public class AdminService {
 
         Map<String, Object> msg = Map.of(
                 "msg", "delete transgroup successfully!",
-                "transgroups", transGroupsList,
-                "by_user",admin
+                "transgroups", transGroupsList
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
     }
-
 
     ////////////////// report
     public ResponseEntity getAllUsers(Long userId) {
