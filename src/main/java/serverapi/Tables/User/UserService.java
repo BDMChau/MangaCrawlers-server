@@ -599,11 +599,11 @@ public class UserService {
 
         TransGroup transGroup = transGroupOptional.get();
 
-      List<MangaChapterDTO> mangaList = new AssistUser (mangaRepository,chapterRepos).getMangaList (transGroupId);
+        List<MangaChapterDTO> mangaList = new AssistUser(mangaRepository, chapterRepos).getMangaList(transGroupId);
 
         List<UserTransGroupDTO> listUsers = userRepos.getUsersTransGroup(transGroupId);
         if (listUsers.isEmpty()) {
-            System.err.println ("listUser is empty");
+            System.err.println("listUser is empty");
         }
 
         Map<String, Object> msg = Map.of(
@@ -662,9 +662,9 @@ public class UserService {
 
     public ResponseEntity deleteManga(Long userId, Long mangaId, Long transGroupId) {
 
-        Optional<TransGroup> transGroupOptional = transGroupRepos.findById (transGroupId);
+        Optional<TransGroup> transGroupOptional = transGroupRepos.findById(transGroupId);
 
-        if(transGroupOptional.isEmpty ()){
+        if (transGroupOptional.isEmpty()) {
             Map<String, Object> err = Map.of(
                     "err", "Transgroup not found!"
 
@@ -673,12 +673,12 @@ public class UserService {
                     HttpStatus.BAD_REQUEST);
         }
 
-        TransGroup transGroup = transGroupOptional.get ();
+        TransGroup transGroup = transGroupOptional.get();
 
 
         //////
-        Optional<User> userOptional = userRepos.findById (userId);
-        if(userOptional.isEmpty ()){
+        Optional<User> userOptional = userRepos.findById(userId);
+        if (userOptional.isEmpty()) {
 
             Map<String, Object> err = Map.of(
                     "err", "User not found!"
@@ -688,8 +688,8 @@ public class UserService {
                     HttpStatus.BAD_REQUEST);
         }
 
-        User user = userOptional.get ();
-        if(!user.getTransgroup ().getTransgroup_id ().equals (transGroupId)){
+        User user = userOptional.get();
+        if (!user.getTransgroup().getTransgroup_id().equals(transGroupId)) {
 
             Map<String, Object> err = Map.of(
                     "err", "You are not allowed to access this resource!"
@@ -698,7 +698,7 @@ public class UserService {
                     HttpStatus.FORBIDDEN);
         }
 
-        if(!user.getUser_email ().equals (transGroup.getTransgroup_email ())){
+        if (!user.getUser_email().equals(transGroup.getTransgroup_email())) {
 
             Map<String, Object> err = Map.of(
                     "err", "You are not allowed to access this resource!"
@@ -709,9 +709,9 @@ public class UserService {
 
 
         //check manga deleted is empty
-        Optional<Manga> mangaOptional = mangaRepository.findById (mangaId);
+        Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
 
-        if(mangaOptional.isEmpty ()){
+        if (mangaOptional.isEmpty()) {
             Map<String, Object> err = Map.of(
                     "err", "manga not found!"
 
@@ -720,11 +720,11 @@ public class UserService {
                     HttpStatus.BAD_REQUEST);
         }
 
-        Manga manga = mangaOptional.get ();
-        mangaRepository.delete (manga);
+        Manga manga = mangaOptional.get();
+        mangaRepository.delete(manga);
 
-        List<MangaChapterDTO> mangaList = mangaRepository.getLatestChapterFromManga ();
-        if(mangaList.isEmpty ()){
+        List<MangaChapterDTO> mangaList = mangaRepository.getLatestChapterFromManga();
+        if (mangaList.isEmpty()) {
             Map<String, Object> err = Map.of(
                     "err", "List manga not found!"
 
@@ -733,13 +733,13 @@ public class UserService {
                     HttpStatus.ACCEPTED);
         }
 
-        Comparator<MangaChapterDTO> compareById = (MangaChapterDTO mc1, MangaChapterDTO mc2) -> mc1.getManga_id ().compareTo(mc2.getManga_id ());
+        Comparator<MangaChapterDTO> compareById = (MangaChapterDTO mc1, MangaChapterDTO mc2) -> mc1.getManga_id().compareTo(mc2.getManga_id());
         Collections.sort(mangaList, compareById); // sort users by id
 
         Map<String, Object> msg = Map.of(
                 "msg", "delete manga successfully!",
                 "mangaList", mangaList,
-                "by_user",user
+                "by_user", user
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
@@ -748,9 +748,9 @@ public class UserService {
 
     public ResponseEntity deletetransGroup(Long userId, Long transGroupId) {
 
-        Optional<TransGroup> transGroupOptional = transGroupRepos.findById (transGroupId);
+        Optional<TransGroup> transGroupOptional = transGroupRepos.findById(transGroupId);
 
-        if(transGroupOptional.isEmpty ()){
+        if (transGroupOptional.isEmpty()) {
             Map<String, Object> err = Map.of(
                     "err", "Transgroup not found!"
 
@@ -759,14 +759,13 @@ public class UserService {
                     HttpStatus.BAD_REQUEST);
         }
 
-        TransGroup transGroup = transGroupOptional.get ();
+        TransGroup transGroup = transGroupOptional.get();
 
 
         //////
-        System.err.println ("ra dây ko3");
-        Optional<User> userOptional = userRepos.findById (userId);
-        if(userOptional.isEmpty ()){
-
+        System.err.println("ra dây ko3");
+        Optional<User> userOptional = userRepos.findById(userId);
+        if (userOptional.isEmpty()) {
             Map<String, Object> err = Map.of(
                     "err", "User not found!"
 
@@ -775,9 +774,9 @@ public class UserService {
                     HttpStatus.BAD_REQUEST);
         }
 
-        System.err.println ("ra dây ko2");
-        User user = userOptional.get ();
-        if(!user.getTransgroup ().getTransgroup_id ().equals (transGroupId)){
+        System.err.println("ra dây ko2");
+        User user = userOptional.get();
+        if (!user.getTransgroup().getTransgroup_id().equals(transGroupId)) {
 
             Map<String, Object> err = Map.of(
                     "err", "You are not allowed to access this resource!"
@@ -786,7 +785,7 @@ public class UserService {
                     HttpStatus.FORBIDDEN);
         }
 
-        if(!user.getUser_email ().equals (transGroup.getTransgroup_email ())){
+        if (!user.getUser_email().equals(transGroup.getTransgroup_email())) {
 
             Map<String, Object> err = Map.of(
                     "err", "You are not allowed to access this resource!"
@@ -794,49 +793,24 @@ public class UserService {
             return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
                     HttpStatus.FORBIDDEN);
         }
+
+
         /// delete and remove
-        System.err.println ("ra dây ko1");
-       List<User>  userList = userRepos.findAll ();
-        if(!userList.isEmpty ()){
-            System.err.println ("vào dây ko1");
-           userList.forEach (item -> {
+        List<User> userList = (List<User>) transGroup.getUsers();
+        List<Manga> mangaList = (List<Manga>) transGroup.getMangas();
 
-                   if(item.equals (transGroup.getUsers ())){
-                       item.setTransgroup (null);
-                   }
-           });
-        }
-//        userRepos.findAll ().remove (transGroup);
+        userList.forEach(user1 -> {
+            user1.setTransgroup(null);
+        });
 
-        List<Manga>  mangaList = mangaRepository.findAll ();
-        if(!mangaList.isEmpty ()){
-            mangaList.forEach (item -> {
-                    if (item.equals (transGroup.getMangas ())) {
-                        item.setTransgroup (null);
-                    }
+        mangaList.forEach(manga -> {
+            manga.setTransgroup(null);
+        });
 
-            });
-        }
-//        mangaRepository.findAll ().remove (transGroup);
+        transGroupRepos.delete(transGroup);
 
-//        transGroupRepos.delete (transGroup);
 
-        List<TransGroup> transGroupsList = transGroupRepos.findAll ();
-        if(transGroupsList.isEmpty ()){
-            Map<String, Object> err = Map.of(
-                    "err", "List transgroup not found!"
-
-            );
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
-        }
-
-        Comparator<TransGroup> compareById = (TransGroup tg1, TransGroup tg2) -> tg1.getTransgroup_id ().compareTo(tg2.getTransgroup_id ());
-        Collections.sort(transGroupsList, compareById); // sort users by id
-
-        Map<String, Object> msg = Map.of(
-                "msg", "delete manga successfully!",
-                "by_user",user
-        );
+        Map<String, Object> msg = Map.of("msg", "delete transgroup successfully!");
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
     }
