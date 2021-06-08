@@ -7,14 +7,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Query.DTO.*;
-import serverapi.Query.Repository.FollowingRepos;
-import serverapi.Query.Repository.MangaRepos;
-import serverapi.Query.Repository.TransGroupRepos;
-import serverapi.Query.Repository.UserRepos;
+import serverapi.Query.Repository.*;
 import serverapi.Tables.Manga.Manga;
 import serverapi.Tables.TransGroup.TransGroup;
+import serverapi.Tables.User.AssistUser;
+import serverapi.Tables.User.POJO.TransGroupPOJO;
 import serverapi.Tables.User.User;
+import serverapi.Tables.User.UserService;
 
+import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -25,15 +26,17 @@ public class AdminService {
     private final FollowingRepos followingRepos;
     private final MangaRepos mangaRepos;
     private final TransGroupRepos transGroupRepos;
+    private final ChapterRepos chapterRepos;
 
 
     @Autowired
     public AdminService(UserRepos userRepos, FollowingRepos followingRepos, MangaRepos mangaRepos,
-                        TransGroupRepos transGroupRepos) {
+                        TransGroupRepos transGroupRepos, ChapterRepos chapterRepos) {
         this.userRepos = userRepos;
         this.followingRepos = followingRepos;
         this.mangaRepos = mangaRepos;
         this.transGroupRepos = transGroupRepos;
+        this.chapterRepos = chapterRepos;
     }
 
 
@@ -220,7 +223,7 @@ public class AdminService {
     }
 
 
-    //////////////
+    /////////////////// action: delete
     public ResponseEntity deleteUser(Long userId, Long adminId) {
         Boolean isAdmin = isUserAdmin(adminId);
         if (!isAdmin) {
@@ -295,6 +298,73 @@ public class AdminService {
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
+    }
+
+
+    public ResponseEntity deleteManga(Long adminId, Long mangaId) {
+        Boolean isAdmin = isUserAdmin(adminId);
+        if (!isAdmin) {
+            Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
+
+        Optional<Manga> mangaOptional = mangaRepos.findById(mangaId);
+        if (mangaOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "manga not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        Manga manga = mangaOptional.get();
+
+        mangaRepos.delete(manga);
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Delete manga successfully!",
+                "manga_id", mangaId
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
+    @Transactional
+    public ResponseEntity deletetransGroup(Long adminId, Long transGroupId) {
+        Boolean isAdmin = isUserAdmin(adminId);
+        if (!isAdmin) {
+            Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
+
+        Optional<TransGroup> transGroupOptional = transGroupRepos.findById(transGroupId);
+        if (transGroupOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "transgroup not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        TransGroup transGroup = transGroupOptional.get();
+
+
+        List<User> userList = (List<User>) transGroup.getUsers();
+        List<Manga> mangaList = (List<Manga>) transGroup.getMangas();
+
+        userList.forEach(user1 -> {
+            user1.setTransgroup(null);
+        });
+
+        mangaList.forEach(manga -> {
+            manga.setTransgroup(null);
+        });
+
+        transGroupRepos.delete(transGroup);
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "delete transgroup successfully!",
+                "transgroup_id", transGroupId
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
 

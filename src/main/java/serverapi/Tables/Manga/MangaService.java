@@ -17,6 +17,8 @@ import serverapi.Tables.Genre.Genre;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.UpdateView.UpdateView;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -314,9 +316,21 @@ public class MangaService {
 
 
     public ResponseEntity getDailyMangas() {
-        List<UpdateViewDTO> listCurrentDaily = mangaRepository.getWeekly(1, 0);
-        List<UpdateViewDTO> listPreviousDaily = mangaRepository.getWeekly(2, 1);
+        List<UpdateViewDTO> listCurrentDaily = mangaRepository.getWeekly(1,0);
+        listCurrentDaily.forEach (item->{
+            System.err.println ("item in listcurrent "+item.getManga_id ());
+            System.err.println ("item in listcurrent "+item.getCreatedAt ().getFirstDayOfWeek ());
 
+        });
+        System.err.println ("datecurrent"+ LocalDateTime.now ());
+        List<UpdateViewDTO> listPreviousDaily = mangaRepository.getWeekly(2, 1);
+        listPreviousDaily.forEach (item->{
+            System.err.println ("item in lisprev "+item.getManga_id ());
+            System.err.println ("item in listprev "+item.getCreatedAt ().getFirstDayOfWeek ());
+
+        });
+
+        System.err.println ("listPreviousDaily check "+listPreviousDaily.isEmpty ());
         if (listCurrentDaily.isEmpty()) {
             System.err.println("Current list daily empty!");
             Map<String, Object> err = Map.of("err", "Nothing from daily mangas ranking!");
@@ -338,7 +352,7 @@ public class MangaService {
                         DailyMangaDTO dailyMangaDTO = new DailyMangaDTO();
 
                         Long views = listCurrentDaily.get(i).getTotalviews() - listPreviousDaily.get(j).getTotalviews();
-
+                        System.err.println ("Compare "+views);
                         dailyMangaDTO.setManga_id(listCurrentDaily.get(i).getManga_id());
                         dailyMangaDTO.setViews(listCurrentDaily.get(i).getTotalviews());
                         dailyMangaDTO.setView_compares(views);
@@ -372,10 +386,11 @@ public class MangaService {
                     if (listPreviousDaily.get(i).getManga_id().equals(listCurrentDaily.get(j).getManga_id())) {
 
                         DailyMangaDTO dailyMangaDTO = new DailyMangaDTO();
-                        System.out.println("listPreviousWeekly.get(i).getManga_id()");
+                        System.out.println("listPreviousDaily.get(i).getManga_id()");
 
                         Long views =
                                 listCurrentDaily.get(j).getTotalviews() - listPreviousDaily.get(i).getTotalviews();
+                        System.err.println ("Compare "+views);
 
                         dailyMangaDTO.setManga_id(listCurrentDaily.get(j).getManga_id());
                         dailyMangaDTO.setViews(listCurrentDaily.get(j).getTotalviews());
@@ -394,8 +409,9 @@ public class MangaService {
         List<DailyMangaDTO> listDailyMangasRankingAfterRemoveDuplicates = listDailyMangasRanking.stream()
                 .collect(collectingAndThen(toCollection(() -> new TreeSet<DailyMangaDTO>(comparing(DailyMangaDTO::getManga_id))),
                         ArrayList::new));
+
         listDailyMangasRankingAfterRemoveDuplicates.forEach(item -> {
-            System.err.println("listWeeklyMangasRankingAfterRemoveDuplicates" + item.getManga_id());
+            System.err.println("lisDailyMangasRankingAfterRemoveDuplicates" + item.getManga_id());
         });
         listDailyMangasRankingAfterRemoveDuplicates.sort(comparing(DailyMangaDTO::getView_compares).reversed());
 
@@ -411,6 +427,7 @@ public class MangaService {
         }
 
         top10Mangas.forEach(item -> {
+            System.err.println ("item iD này "+item.getManga_id ());
             mangas.forEach(manga -> {
                 if (item.getManga_id() == manga.getManga_id()) {
                     listDailyRanking.add(manga);

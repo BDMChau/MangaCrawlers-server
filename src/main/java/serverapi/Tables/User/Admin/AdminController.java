@@ -5,14 +5,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import serverapi.Api.Response;
+import serverapi.Query.Repository.UserRepos;
+import serverapi.Tables.Manga.POJO.MangaPOJO;
+import serverapi.Tables.User.POJO.TransGroupPOJO;
 import serverapi.Tables.User.POJO.UserPOJO;
+import serverapi.Tables.User.User;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -22,10 +29,12 @@ public class AdminController {
 
 
     private final AdminService adminService;
+    private final UserRepos userRepos;
 
     @Autowired
-    public AdminController(AdminService adminService) {
+    public AdminController(AdminService adminService, UserRepos userRepos) {
         this.adminService = adminService;
+        this.userRepos = userRepos;
     }
 
 
@@ -89,7 +98,28 @@ public class AdminController {
 
         Long userId = Long.parseLong(userPOJO.getUser_id());
 
-        return adminService.deleteUser(userId, adminId);
+        return adminService.deleteUser (userId, adminId);
+    }
+
+    //////////////////////////// manga
+    @DeleteMapping("/deletemanga")
+    public ResponseEntity deleteManga(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long adminId = Long.parseLong(StrUserId);
+
+        Long mangaId = Long.parseLong (mangaPOJO.getManga_id ());
+
+        return adminService.deleteManga(adminId, mangaId);
+    }
+    ////////////////////////// transgroup
+    @DeleteMapping("/deletetransgroup")
+    public ResponseEntity deleteTransGroup(@RequestBody TransGroupPOJO transGroupPOJO, ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long adminId = Long.parseLong(StrUserId);
+
+        Long transGroupId = Long.parseLong (transGroupPOJO.getTransgroup_id ());
+
+        return adminService.deletetransGroup (adminId, transGroupId);
     }
 
 

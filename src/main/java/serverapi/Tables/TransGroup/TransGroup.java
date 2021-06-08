@@ -36,11 +36,11 @@ public class TransGroup {
 
 
         @JsonBackReference
-        @OneToMany(mappedBy = "transgroup", cascade = CascadeType.ALL)
+        @OneToMany(mappedBy = "transgroup")
         private Collection<Manga> mangas;
 
         @JsonBackReference
-        @OneToMany(mappedBy = "transgroup", cascade = CascadeType.ALL)
+        @OneToMany(mappedBy = "transgroup")
         private Collection<User> users;
 
         @Column(columnDefinition = "varchar(100)", nullable = false)

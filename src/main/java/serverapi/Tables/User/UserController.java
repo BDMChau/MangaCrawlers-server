@@ -232,6 +232,49 @@ public class UserController {
         return userService.getMangaInfoUploadPage(transGroupId, mangaId);
     }
 
+    @DeleteMapping("/deletemanga")
+    public ResponseEntity deleteManga(@RequestBody TransGroupPOJO transGroupPOJO, ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userID = Long.parseLong(StrUserId);
+
+        Long mangaId = Long.parseLong (transGroupPOJO.getManga_id ().toString ());
+
+        Long transGroupId = Long.parseLong (transGroupPOJO.getTransgroup_id ());
+
+        return userService.deleteManga(userID, mangaId,transGroupId);
+    }
+
+    ////////////////////////// transgroup
+    @DeleteMapping("/deletetransgroup")
+    public ResponseEntity deleteTransGroup(@RequestBody TransGroupPOJO transGroupPOJO, ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+        Long transGroupId = Long.parseLong (transGroupPOJO.getTransgroup_id ());
+
+        return userService.deletetransGroup (userId, transGroupId);
+    }
+
+//    @GetMapping("/checkroletransgroup")
+//    public ResponseEntity checkRoleTransGroup(ServletRequest request) {
+//        String StrUserId = getUserAttribute(request).get("user_id").toString();
+//        Long userId = Long.parseLong(StrUserId);
+//
+//        String StrTransGroupId = getUserAttribute(request).get("transgroup_id").toString();
+//        if(StrTransGroupId.equals (null))
+//        {
+//            Map<String, Object> err = Map.of(
+//                    "err", "User not in transgroup!"
+//
+//            );
+//            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+//                    HttpStatus.BAD_REQUEST);
+//        }
+//        Long transGroupId = Long.parseLong(StrTransGroupId);
+//
+//        return userService.checkRoleTransGroup (userId, transGroupId);
+//    }
+
 
     @PostMapping("/addnewprojectmangafields")
     @Transactional
