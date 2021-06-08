@@ -251,12 +251,10 @@ public class AdminService {
 
         List<User> users = userRepos.findAll();
 
-        Comparator<User> compareById = (User u1, User u2) -> u1.getUser_id().compareTo(u2.getUser_id());
-        Collections.sort(users, compareById); // sort users by id
 
         Map<String, Object> msg = Map.of(
-                "msg", "delete user successfully!",
-                "users", users
+                "msg", "Delete user successfully!",
+                "user_id", userId
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 

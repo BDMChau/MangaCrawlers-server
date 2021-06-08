@@ -157,6 +157,7 @@ public class UserController {
 
 
     ////////////////////////// Translation Group parts /////////////////////////////
+    @CacheEvict(allEntries = true, value = {"allmangas"})
     @PostMapping("/uploadchapterimgs")
     public ResponseEntity uploadChapterImgs(
             ServletRequest request,
@@ -307,7 +308,7 @@ public class UserController {
     }
 
 
-    @CacheEvict(allEntries = true, value = {"transGroupInfo"})
+    @CacheEvict(allEntries = true, value = {"transGroupInfo", "allmangas"}) //allmangas is in admin service
     @PostMapping("/addnewprojectmangathumbnail")
     public ResponseEntity addNewProjectMangaThumbnail(
             ServletRequest request,

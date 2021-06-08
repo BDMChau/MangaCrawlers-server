@@ -74,7 +74,6 @@ public class AdminController {
     }
 
 
-
     ///////////////// interact
     @CacheEvict(allEntries = true, value = {"allusers"})
     @PutMapping("/deprecateuser")
@@ -89,7 +88,6 @@ public class AdminController {
     }
 
 
-
     @CacheEvict(allEntries = true, value = {"allusers"})
     @DeleteMapping("/deleteuser")
     public ResponseEntity deleteUser(@RequestBody UserPOJO userPOJO, ServletRequest request) {
@@ -98,30 +96,33 @@ public class AdminController {
 
         Long userId = Long.parseLong(userPOJO.getUser_id());
 
-        return adminService.deleteUser (userId, adminId);
+        return adminService.deleteUser(userId, adminId);
     }
 
-    //////////////////////////// manga
+
+
+    @CacheEvict(allEntries = true, value = {"allmangas"})
     @DeleteMapping("/deletemanga")
     public ResponseEntity deleteManga(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long adminId = Long.parseLong(StrUserId);
 
-        Long mangaId = Long.parseLong (mangaPOJO.getManga_id ());
+        Long mangaId = Long.parseLong(mangaPOJO.getManga_id());
 
         return adminService.deleteManga(adminId, mangaId);
     }
-    ////////////////////////// transgroup
+
+
+
     @DeleteMapping("/deletetransgroup")
     public ResponseEntity deleteTransGroup(@RequestBody TransGroupPOJO transGroupPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long adminId = Long.parseLong(StrUserId);
 
-        Long transGroupId = Long.parseLong (transGroupPOJO.getTransgroup_id ());
+        Long transGroupId = Long.parseLong(transGroupPOJO.getTransgroup_id());
 
-        return adminService.deletetransGroup (adminId, transGroupId);
+        return adminService.deletetransGroup(adminId, transGroupId);
     }
-
 
 
     /////////////////////////// chart report
@@ -150,7 +151,6 @@ public class AdminController {
 
         return adminService.reportUser(userId);
     }
-
 
 
     @GetMapping("/reporttotaluserfollowmanga")
