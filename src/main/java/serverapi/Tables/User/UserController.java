@@ -232,27 +232,29 @@ public class UserController {
         return userService.getMangaInfoUploadPage(transGroupId, mangaId);
     }
 
+
+    @CacheEvict(allEntries = true, value = {"transGroupInfo"})
     @DeleteMapping("/deletemanga")
     public ResponseEntity deleteManga(@RequestBody TransGroupPOJO transGroupPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userID = Long.parseLong(StrUserId);
 
-        Long mangaId = Long.parseLong (transGroupPOJO.getManga_id ().toString ());
+        Long mangaId = Long.parseLong(transGroupPOJO.getManga_id().toString());
 
-        Long transGroupId = Long.parseLong (transGroupPOJO.getTransgroup_id ());
+        Long transGroupId = Long.parseLong(transGroupPOJO.getTransgroup_id());
 
-        return userService.deleteManga(userID, mangaId,transGroupId);
+        return userService.deleteManga(userID, mangaId, transGroupId);
     }
 
-    ////////////////////////// transgroup
+
     @DeleteMapping("/deletetransgroup")
     public ResponseEntity deleteTransGroup(@RequestBody TransGroupPOJO transGroupPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
-        Long transGroupId = Long.parseLong (transGroupPOJO.getTransgroup_id ());
+        Long transGroupId = Long.parseLong(transGroupPOJO.getTransgroup_id());
 
-        return userService.deletetransGroup (userId, transGroupId);
+        return userService.deletetransGroup(userId, transGroupId);
     }
 
 //    @GetMapping("/checkroletransgroup")
@@ -285,12 +287,12 @@ public class UserController {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
-        if (getUserAttribute(request).get("transgroup_id") == null) {
-            Map<String, String> error = Map.of("err", "Login again before visit this page, thank you!");
+        if (getUserAttribute(request).get("user_transgroup_id") == null) {
+            Map<String, String> error = Map.of("err", "Login again before visit this page|");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(),
                     HttpStatus.ACCEPTED);
         }
-        Long transGrId = Long.parseLong(getUserAttribute(request).get("transgroup_id").toString());
+        Long transGrId = Long.parseLong(getUserAttribute(request).get("user_transgroup_id").toString());
 
 
         if (fieldsCreateMangaDTO.isFieldsEmpty()) {
@@ -305,6 +307,7 @@ public class UserController {
     }
 
 
+    @CacheEvict(allEntries = true, value = {"transGroupInfo"})
     @PostMapping("/addnewprojectmangathumbnail")
     public ResponseEntity addNewProjectMangaThumbnail(
             ServletRequest request,

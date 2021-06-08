@@ -716,20 +716,15 @@ public class UserService {
         // get remaining mangaList to return
         List<MangaChapterDTO> mangaList = mangaRepository.getLatestChapterFromManga();
         if (mangaList.isEmpty()) {
-            Map<String, Object> err = Map.of(
-                    "err", "List manga not found!"
-
-            );
+            Map<String, Object> err = Map.of("err", "List manga not found!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(),
                     HttpStatus.ACCEPTED);
         }
 
-        Comparator<MangaChapterDTO> compareById = (MangaChapterDTO mc1, MangaChapterDTO mc2) -> mc1.getManga_id().compareTo(mc2.getManga_id());
-        Collections.sort(mangaList, compareById); // sort mangaList by id
 
         Map<String, Object> msg = Map.of(
-                "msg", "delete manga successfully!",
-                "mangaList", mangaList
+                "msg", "Delete manga successfully!",
+                "manga_id", mangaId
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
@@ -875,7 +870,8 @@ public class UserService {
         mangaRepository.saveAndFlush(manga);
 
         Map<String, Object> msg = Map.of(
-                "msg", "Added manga's thumbnail , add new manga successfully"
+                "msg", "Added manga's thumbnail , add new manga successfully",
+                "manga", manga
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
                 HttpStatus.OK);

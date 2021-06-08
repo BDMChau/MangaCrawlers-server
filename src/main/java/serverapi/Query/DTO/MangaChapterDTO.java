@@ -21,6 +21,7 @@ public class MangaChapterDTO {
     private Long manga_id;
     private String manga_name;
     private String thumbnail;
+    private String status;
     private float stars;
 
     public MangaChapterDTO(Long manga_id, String manga_name, String thumbnail, float stars) {
