@@ -222,7 +222,7 @@ public class AdminService {
     }
 
 
-    //////////////
+    /////////////////// action: delete
     public ResponseEntity deleteUser(Long userId, Long adminId) {
         Boolean isAdmin = isUserAdmin(userId);
         if (!isAdmin) {
@@ -301,82 +301,51 @@ public class AdminService {
 
     }
 
-    /////////////////// transgroup & manga
+
     public ResponseEntity deleteManga(Long adminId, Long mangaId) {
-
         Boolean isAdmin = isUserAdmin(adminId);
-
         if (!isAdmin) {
-
-            Map<String, Object> err = Map.of(
-                    "err", "You are not allowed to access this resource!"
-            );
+            Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
             return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
                     HttpStatus.FORBIDDEN);
         }
 
-        Optional<Manga> mangaOptional = mangaRepos.findById (mangaId);
-
-        if(mangaOptional.isEmpty ()){
-            Map<String, Object> err = Map.of(
-                    "err", "manga not found!"
-
-            );
+        Optional<Manga> mangaOptional = mangaRepos.findById(mangaId);
+        if (mangaOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "manga not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
                     HttpStatus.BAD_REQUEST);
         }
+        Manga manga = mangaOptional.get();
 
-        Manga manga = mangaOptional.get ();
+        mangaRepos.delete(manga);
 
-        mangaRepos.delete (manga);
-
-        List<MangaChapterDTO> mangaList = mangaRepos.getLatestChapterFromManga ();
-
-        if(mangaList.isEmpty ()){
-            Map<String, Object> err = Map.of(
-                    "err", "list manga not found!"
-
-            );
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(),
-                    HttpStatus.ACCEPTED);
-        }
-
-        Comparator<MangaChapterDTO> compareById = (MangaChapterDTO mc1, MangaChapterDTO mc2) -> mc1.getManga_id ().compareTo(mc2.getManga_id ());
-        Collections.sort(mangaList, compareById); // sort users by id
 
         Map<String, Object> msg = Map.of(
-                "msg", "delete manga successfully!",
-                "mangaList", mangaList
+                "msg", "Delete manga successfully!",
+                "manga_id", mangaId
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
+
     @Transactional
     public ResponseEntity deletetransGroup(Long adminId, Long transGroupId) {
-
         Boolean isAdmin = isUserAdmin(adminId);
-
         if (!isAdmin) {
-
-            Map<String, Object> err = Map.of(
-                    "err", "You are not allowed to access this resource!"
-            );
+            Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
             return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
                     HttpStatus.FORBIDDEN);
         }
 
-        Optional<TransGroup> transGroupOptional = transGroupRepos.findById (transGroupId);
-
-        if(transGroupOptional.isEmpty ()){
-
-            Map<String, Object> err = Map.of(
-                    "err", "transgroup not found!"
-            );
+        Optional<TransGroup> transGroupOptional = transGroupRepos.findById(transGroupId);
+        if (transGroupOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "transgroup not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
                     HttpStatus.BAD_REQUEST);
         }
+        TransGroup transGroup = transGroupOptional.get();
 
-        TransGroup transGroup = transGroupOptional.get ();
 
         List<User> userList = (List<User>) transGroup.getUsers();
         List<Manga> mangaList = (List<Manga>) transGroup.getMangas();
@@ -391,26 +360,14 @@ public class AdminService {
 
         transGroupRepos.delete(transGroup);
 
-        List<TransGroup> transGroupsList = transGroupRepos.findAll ();
-        if(transGroupsList.isEmpty ()){
-            Map<String, Object> err = Map.of(
-                    "err", "List transgroup not found!"
-
-            );
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(),
-                    HttpStatus.ACCEPTED);
-        }
-
-        Comparator<TransGroup> compareById = (TransGroup tg1, TransGroup tg2) -> tg1.getTransgroup_id ().compareTo(tg2.getTransgroup_id ());
-        Collections.sort(transGroupsList, compareById); // sort users by id
 
         Map<String, Object> msg = Map.of(
                 "msg", "delete transgroup successfully!",
-                "transgroups", transGroupsList
+                "transgroup_id", transGroupId
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-
     }
+
 
     ////////////////// report
     public ResponseEntity getAllUsers(Long userId) {
