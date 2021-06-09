@@ -1,4 +1,4 @@
-package serverapi.Configuration.Middleware;
+package serverapi.Configuration.Filters;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

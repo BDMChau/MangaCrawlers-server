@@ -1,4 +1,4 @@
-package serverapi.Middleware;
+package serverapi.Filters;
 
 import com.google.gson.Gson;
 import io.jsonwebtoken.Claims;
@@ -8,7 +8,6 @@ import io.jsonwebtoken.Jwts;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import serverapi.Api.Response;
-import serverapi.Security.AccountVerification;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -47,12 +46,6 @@ public class TokenVerification implements Filter {
                     .parseClaimsJws(token);
             Claims tokenBody = tokenParsed.getBody();
             Map<String, Object> tokenPayload = (HashMap<String, Object>) tokenBody.get("payload");
-
-
-            // Account verification checking
-            Boolean accountStatus = (Boolean) tokenPayload.get("user_isVerified");
-            Boolean isVerified = new AccountVerification(accountStatus).cheking();
-
 
 
             req.setAttribute("user", tokenPayload);

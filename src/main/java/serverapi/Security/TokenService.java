@@ -34,7 +34,6 @@ public class TokenService {
         String token = Jwts.builder()
                 .claim("payload", payload)
                 .signWith(SignatureAlgorithm.HS256, System.getenv("JWT_KEY").getBytes(StandardCharsets.UTF_8))
-                //.setExpiration(new Date(System.currentTimeMillis() + 600000))
                 .compressWith(CompressionCodecs.DEFLATE)
                 .compact();
 

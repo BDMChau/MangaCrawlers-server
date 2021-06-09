@@ -11,7 +11,7 @@ import serverapi.Api.Response;
 import serverapi.Helpers.RoundNumber;
 import serverapi.Query.DTO.*;
 import serverapi.Query.Repository.*;
-import serverapi.SharedServices.Cache.CacheService;
+import serverapi.Configuration.Cache.CacheService;
 import serverapi.SharedServices.CloudinaryUploader;
 import serverapi.StaticFiles.UserAvatarCollection;
 import serverapi.Tables.Author.Author;

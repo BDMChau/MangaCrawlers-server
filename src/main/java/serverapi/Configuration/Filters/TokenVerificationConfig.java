@@ -1,4 +1,4 @@
-package serverapi.Configuration.Middleware;
+package serverapi.Configuration.Filters;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,11 +8,11 @@ public class TokenVerificationConfig {
 
 
     @Bean
-    public FilterRegistrationBean<serverapi.Middleware.TokenVerification> verifyToken(){
-        FilterRegistrationBean<serverapi.Middleware.TokenVerification> registrationBean
+    public FilterRegistrationBean<serverapi.Filters.TokenVerification> verifyToken(){
+        FilterRegistrationBean<serverapi.Filters.TokenVerification> registrationBean
                 = new FilterRegistrationBean<>();
 
-        registrationBean.setFilter(new serverapi.Middleware.TokenVerification());
+        registrationBean.setFilter(new serverapi.Filters.TokenVerification());
         registrationBean.addUrlPatterns("/api/user/*");
         registrationBean.addUrlPatterns("/api/admin/*");
 

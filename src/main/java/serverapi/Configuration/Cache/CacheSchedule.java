@@ -1,4 +1,4 @@
-package serverapi.SharedServices.Cache;
+package serverapi.Configuration.Cache;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Configuration;
