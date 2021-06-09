@@ -1,4 +1,4 @@
-package serverapi.Filters;
+package serverapi.Authentication.Filters;
 
 import com.google.gson.Gson;
 import io.jsonwebtoken.Claims;
