@@ -35,13 +35,14 @@ public class AuthController {
     private static String authorizationRequestBaseUri = "oauth2/authorization";
 
 
-    @Lazy
+    // Note*: @Autowired clientRegistrationRepository before @Autowired authorizedClientService
+    @Autowired
+    private ClientRegistrationRepository clientRegistrationRepository;
+
     @Autowired
     private OAuth2AuthorizedClientService authorizedClientService;
 
-    @Lazy
-    @Autowired
-    private ClientRegistrationRepository clientRegistrationRepository;
+
 
     @Autowired
     public AuthController(AuthService authService) {
@@ -154,7 +155,7 @@ public class AuthController {
                         authorizationRequestBaseUri + "/" + registration.getRegistrationId()));
 
 
-        System.err.println("User logged in with google oauth");
+        System.err.println("User requested to log in with google oauth");
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get urls oauth google susscessfully",
@@ -197,6 +198,14 @@ public class AuthController {
                     HttpStatus.OK);
         }
         return null;
+    }
+
+
+
+    @GetMapping("oauthgooglesigninfailed")
+    public String oauthGoogleSignInFailed(){
+
+        return "Request to login with Google is failed!";
     }
 
 
