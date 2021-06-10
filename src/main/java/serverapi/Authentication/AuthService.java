@@ -330,7 +330,8 @@ public class AuthService {
 
 
         // redirect to client
-        responseHttpServlel.sendRedirect(System.getenv("ORIGIN_CLIENT"));
+        //responseHttpServlel.sendRedirect(System.getenv("ORIGIN_CLIENT"));
+        responseHttpServlel.sendRedirect("https://mangacrawlers-58f1e.web.app");
 
         Map<String, Object> msg = Map.of("msg", "Signin with oauth google susscessfully");
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
