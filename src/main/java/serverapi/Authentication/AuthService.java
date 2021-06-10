@@ -1,9 +1,11 @@
 package serverapi.Authentication;
 
+import com.cloudinary.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import serverapi.Api.Response;
 import serverapi.Authentication.POJO.SignPOJO;
 import serverapi.Security.HashSHA512;
@@ -33,6 +35,39 @@ public class AuthService {
     Mailer mailer;
 
 
+    private Map<String, Serializable> getCustomFieldsUser(User user) {
+        Long id = user.getUser_id();
+        String name = user.getUser_name();
+        String email = user.getUser_email();
+        String avatar = user.getUser_avatar();
+        Boolean isAdmin = user.getUser_isAdmin();
+        Boolean isVerified = user.getUser_isVerified();
+        Optional<TransGroup> transGroup = Optional.ofNullable(user.getTransgroup());
+
+        Map<String, Serializable> userFields = new HashMap<>();
+        if (transGroup.isEmpty()) {
+            userFields.put("user_id", id);
+            userFields.put("user_name", name);
+            userFields.put("user_email", email);
+            userFields.put("user_avatar", avatar);
+            userFields.put("user_isAdmin", isAdmin);
+            userFields.put("user_isVerified", isVerified);
+
+        } else {
+            userFields.put("user_id", id);
+            userFields.put("user_name", name);
+            userFields.put("user_email", email);
+            userFields.put("user_avatar", avatar);
+            userFields.put("user_isAdmin", isAdmin);
+            userFields.put("user_isVerified", isVerified);
+            userFields.put("user_transgroup_id", transGroup.get().getTransgroup_id());
+        }
+
+        return userFields;
+    }
+
+
+    //////////////////////////////////////////////////////////////
     public ResponseEntity signUp(SignPOJO signPOJO) throws NoSuchAlgorithmException, MessagingException {
         Optional<User> userOptional = authRepository.findByEmail(signPOJO.getUser_email());
         if (userOptional.isPresent()) {
@@ -93,6 +128,14 @@ public class AuthService {
         }
         User user = optionalUser.get();
 
+
+        // this user just created account with google oauth, so the password will be null
+        if (user.getUser_password() == null) {
+            Map<String, String> error = Map.of("err", "This user does not have password!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
+        }
+
+
         HashSHA512 hashingSHA512 = new HashSHA512();
         Boolean comparePass = hashingSHA512.compare(signPOJO.getUser_password(), user.getUser_password());
         if (!comparePass) {
@@ -106,43 +149,11 @@ public class AuthService {
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
         }
 
-
-        Long id = user.getUser_id();
-        String name = user.getUser_name();
-        String email = user.getUser_email();
-        String avatar = user.getUser_avatar();
-        Boolean isAdmin = user.getUser_isAdmin();
-        Optional<TransGroup> transGroup = Optional.ofNullable(user.getTransgroup());
-
-        Map<String, Serializable> userData = new HashMap<>();
-        if (transGroup.isEmpty()) {
-            userData.put("user_id", id);
-            userData.put("user_name", name);
-            userData.put("user_email", email);
-            userData.put("user_avatar", avatar);
-            userData.put("user_isAdmin", isAdmin);
-            userData.put("user_isVerified", isVerified);
-
-        } else {
-            userData.put("user_id", id);
-            userData.put("user_name", name);
-            userData.put("user_email", email);
-            userData.put("user_avatar", avatar);
-            userData.put("user_isAdmin", isAdmin);
-            userData.put("user_isVerified", isVerified);
-            userData.put("user_transgroup_id",transGroup.get().getTransgroup_id());
-        }
-
+        Map userData = getCustomFieldsUser(user);
 
         TokenService tokenService = new TokenService();
         String token = tokenService.genHS256(userData);
 
-//        String token = Jwts.builder()
-//                .claim("user", userData)
-//                .signWith(SignatureAlgorithm.HS256, System.getenv("JWT_KEY").getBytes(StandardCharsets.UTF_8))
-//                //.setExpiration(new Date(System.currentTimeMillis() + 600000))
-//                .compressWith(CompressionCodecs.DEFLATE)
-//                .compact();
 
         Map<String, Object> msg = Map.of(
                 "msg", "Sign in success",
@@ -247,4 +258,88 @@ public class AuthService {
         Map<String, String> msg = Map.of("msg", "Verify account successfully!");
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
+
+
+    ////////////////////////////// OAuth /////////////////////////////////////
+    ResponseEntity oauthGoogleSignInSusscess(String userInfoEndpointUri, OAuth2AuthorizedClient client) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity entity = new HttpEntity("", headers);
+
+        String token = "";
+        Map userData = new HashMap();
+
+        if (!StringUtils.isEmpty(userInfoEndpointUri)) {
+            headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + client.getAccessToken().getTokenValue());
+            ResponseEntity response = restTemplate.exchange(userInfoEndpointUri, HttpMethod.GET, entity, Map.class);
+
+            Map userAttributes = (Map) response.getBody();
+            System.err.println("UserData OAuth GG: " + userAttributes);
+
+
+            Optional<User> optionalUser = authRepository.findByEmail((String) userAttributes.get("email"));
+            if (optionalUser.isEmpty()) {
+                // if email does not exist >> create a new user
+                System.err.println("create new user");
+
+                User newUser = new User();
+                newUser.setUser_name((String) userAttributes.get("name"));
+                newUser.setUser_email((String) userAttributes.get("email"));
+                newUser.setCreatedAt(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+                newUser.setUser_password(null);
+                newUser.setUser_isAdmin(false);
+                newUser.setUser_isVerified(true);
+
+                UserAvatarCollection userAvatarCollection = new UserAvatarCollection();
+                if (userAttributes.get("picture") == null || userAttributes.get("picture").equals("")) {
+                    newUser.setUser_avatar(userAvatarCollection.getAvatar_member());
+                } else {
+                    newUser.setUser_avatar((String) userAttributes.get("picture"));
+                }
+
+                authRepository.saveAndFlush(newUser);
+
+                userData = getCustomFieldsUser(newUser);
+                TokenService tokenService = new TokenService();
+                token = tokenService.genHS256(userData);
+            } else {
+                // if email exist >> return user data
+                System.err.println("user exited");
+                User user = optionalUser.get();
+
+                Boolean isVerified = user.getUser_isVerified();
+                if (Boolean.FALSE.equals(isVerified)) {
+                    user.setUser_isVerified(true);
+                    authRepository.saveAndFlush(user);
+                }
+
+                userData = getCustomFieldsUser(user);
+                TokenService tokenService = new TokenService();
+                token = tokenService.genHS256(userData);
+            }
+
+        }
+
+
+        if (userData.isEmpty() || token.equals("")) {
+            Map<String, Object> err = Map.of(
+                    "err", "Login with Google is failed!",
+                    "token", "",
+                    "user", new HashMap<>()
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Signin with oauth google susscessfully",
+                "token", token,
+                "user", userData
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                HttpStatus.OK);
+
+    }
+
 }

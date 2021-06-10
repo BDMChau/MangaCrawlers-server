@@ -46,11 +46,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().permitAll()
                 .and()
                 .oauth2Login()
-                .defaultSuccessUrl(System.getenv("ORIGIN_LOCAL"))
+                .defaultSuccessUrl("/api/auth/oauthgooglesigninsusscess")
 //                .failureUrl("/api/auth/oauthgooglesigninfailed")
                 .clientRegistrationRepository(clientRegistrationRepository)
                 .authorizedClientService(authorizedClientService);
-//                .loginPage("/api/auth/oauthgooglesignin");
+
     }
 
 

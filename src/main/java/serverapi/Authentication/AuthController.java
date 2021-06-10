@@ -139,8 +139,10 @@ public class AuthController {
         return authService.confirmVerification(signPOJO);
     }
 
-    @GetMapping("/oauthgooglesignin")
-    public ResponseEntity oauthGoogleSignIn() {
+
+    //////////////////////// OAuth ///////////////////////////////
+    @GetMapping("/geturloauthgoogle")
+    public ResponseEntity getUrlOauthGoogle() {
         Iterable<ClientRegistration> clientRegistrations = null;
 
         ResolvableType type = ResolvableType.forInstance(clientRegistrationRepository).as(Iterable.class);
@@ -148,6 +150,11 @@ public class AuthController {
             clientRegistrations = (Iterable<ClientRegistration>) clientRegistrationRepository;
         }
 
+        if(clientRegistrations == null) {
+            Map<String, Object> err = Map.of("err", "Request to login with Google is failed!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
 
         Map<String, String> oauth2AuthenticationUrls = new HashMap<>();
         clientRegistrations.forEach(registration ->
@@ -177,27 +184,9 @@ public class AuthController {
         String userInfoEndpointUri = client.getClientRegistration()
                 .getProviderDetails().getUserInfoEndpoint().getUri();
 
-        if (!StringUtils.isEmpty(userInfoEndpointUri)) {
-            RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + client.getAccessToken()
-                    .getTokenValue());
-            HttpEntity entity = new HttpEntity("", headers);
-            ResponseEntity response = restTemplate
-                    .exchange(userInfoEndpointUri, HttpMethod.GET, entity, Map.class);
-            Map userAttributes = (Map) response.getBody();
 
-            System.err.println(userAttributes);
+        return authService.oauthGoogleSignInSusscess(userInfoEndpointUri, client);
 
-
-            Map<String, Object> msg = Map.of(
-                    "msg", "Login with oauth google susscessfully",
-                    "user", userAttributes.isEmpty() ? new HashMap<>() {} : userAttributes
-            );
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
-                    HttpStatus.OK);
-        }
-        return null;
     }
 
 
