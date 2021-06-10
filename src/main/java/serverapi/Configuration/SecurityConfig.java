@@ -17,6 +17,7 @@ import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCo
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
+import serverapi.Authentication.RegistrationOauth;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +26,12 @@ import java.util.stream.Collectors;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private static List<String> clients = Arrays.asList("google");
+
+    @Autowired
+    private ClientRegistrationRepository clientRegistrationRepository;
+
+    @Autowired
+    private OAuth2AuthorizedClientService authorizedClientService;
 
 
     @Override
@@ -41,50 +47,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .oauth2Login()
                 .defaultSuccessUrl(System.getenv("ORIGIN_LOCAL"))
-                .failureUrl("/api/auth/oauthgooglesigninfailed")
-                .clientRegistrationRepository(clientRegistrationRepository())
-                .authorizedClientService(authorizedClientService())
-                .loginPage("/api/auth/oauthgooglesignin");
-    }
-
-
-    @Bean
-    public ClientRegistrationRepository clientRegistrationRepository() {
-        List<ClientRegistration> registrations = clients.stream()
-                .map(client -> getRegistration(client))
-                .filter(registration -> registration != null)
-                .collect(Collectors.toList());
-
-        return new InMemoryClientRegistrationRepository(registrations);
-    }
-
-
-    @Bean
-    public OAuth2AuthorizedClientService authorizedClientService() {
-
-        return new InMemoryOAuth2AuthorizedClientService(
-                clientRegistrationRepository());
+//                .failureUrl("/api/auth/oauthgooglesigninfailed")
+                .clientRegistrationRepository(clientRegistrationRepository)
+                .authorizedClientService(authorizedClientService);
+//                .loginPage("/api/auth/oauthgooglesignin");
     }
 
 
 
 
-    public ClientRegistration getRegistration(String client) {
-        String clientId = System.getenv("GOOGLE_CLIENT_ID");
-        if (clientId == null) {
-            return null;
-        }
-        String clientSecret = System.getenv("GOOGLE_CLIENT_SECRET");
 
-        if (client.equals("google")) {
-            return CommonOAuth2Provider.GOOGLE.getBuilder(client)
-                    .clientId(clientId).clientSecret(clientSecret).build();
-        }
-//        else if (client.equals("facebook")) {
-//            return CommonOAuth2Provider.FACEBOOK.getBuilder(client)
-//                    .clientId(clientId).clientSecret(clientSecret).build();
-//        }
 
-        return null;
-    }
 }
