@@ -1,8 +1,6 @@
 package serverapi.Authentication;
 
-import com.cloudinary.utils.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ResolvableType;
 import org.springframework.http.*;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
@@ -10,8 +8,6 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.ui.Model;
-import org.springframework.web.client.RestTemplate;
 import serverapi.Api.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
@@ -20,6 +16,8 @@ import serverapi.Authentication.POJO.SignPOJO;
 import serverapi.Enums.isValidEnum;
 
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -41,7 +39,6 @@ public class AuthController {
 
     @Autowired
     private OAuth2AuthorizedClientService authorizedClientService;
-
 
 
     @Autowired
@@ -150,7 +147,7 @@ public class AuthController {
             clientRegistrations = (Iterable<ClientRegistration>) clientRegistrationRepository;
         }
 
-        if(clientRegistrations == null) {
+        if (clientRegistrations == null) {
             Map<String, Object> err = Map.of("err", "Request to login with Google is failed!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
                     HttpStatus.BAD_REQUEST);
@@ -174,7 +171,8 @@ public class AuthController {
 
 
     @GetMapping("/oauthgooglesigninsusscess")
-    public ResponseEntity oauthGoogleSignInSusscess(OAuth2AuthenticationToken authentication) {
+    public ResponseEntity oauthGoogleSignInSusscess(OAuth2AuthenticationToken authentication, HttpServletResponse response) throws IOException {
+        System.err.println(authentication);
         OAuth2AuthorizedClient client = authorizedClientService
                 .loadAuthorizedClient(
                         authentication.getAuthorizedClientRegistrationId(),
@@ -185,14 +183,19 @@ public class AuthController {
                 .getProviderDetails().getUserInfoEndpoint().getUri();
 
 
-        return authService.oauthGoogleSignInSusscess(userInfoEndpointUri, client);
-
+        return authService.oauthGoogleSignInSusscess(userInfoEndpointUri, client, response);
     }
 
 
+    @GetMapping("getdataoauthgoogle")
+    public ResponseEntity getDataOAuthGoogle() {
+
+        return authService.getDataOAuthGoogle();
+    }
+
 
     @GetMapping("oauthgooglesigninfailed")
-    public String oauthGoogleSignInFailed(){
+    public String oauthGoogleSignInFailed() {
 
         return "Request to login with Google is failed!";
     }

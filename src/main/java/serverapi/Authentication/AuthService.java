@@ -1,6 +1,9 @@
 package serverapi.Authentication;
 
 import com.cloudinary.utils.StringUtils;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
@@ -17,6 +20,8 @@ import serverapi.Tables.TransGroup.TransGroup;
 import serverapi.Tables.User.User;
 
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -25,6 +30,10 @@ import java.util.*;
 @Service
 public class AuthService {
     private final AuthRepository authRepository;
+
+    // token and userData for OAuth Google
+    private String token = "";
+    private Map userData = new HashMap();
 
     @Autowired
     public AuthService(AuthRepository authRepository) {
@@ -156,7 +165,7 @@ public class AuthService {
 
 
         Map<String, Object> msg = Map.of(
-                "msg", "Sign in success",
+                "msg", "Sign in successfully!",
                 "token", token,
                 "user", userData
         );
@@ -261,15 +270,13 @@ public class AuthService {
 
 
     ////////////////////////////// OAuth /////////////////////////////////////
-    ResponseEntity oauthGoogleSignInSusscess(String userInfoEndpointUri, OAuth2AuthorizedClient client) {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        HttpEntity entity = new HttpEntity("", headers);
+    ResponseEntity oauthGoogleSignInSusscess(String userInfoEndpointUri, OAuth2AuthorizedClient client, HttpServletResponse responseHttpServlel) throws IOException {
 
-        String token = "";
-        Map userData = new HashMap();
 
         if (!StringUtils.isEmpty(userInfoEndpointUri)) {
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            HttpEntity entity = new HttpEntity("", headers);
             headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + client.getAccessToken().getTokenValue());
             ResponseEntity response = restTemplate.exchange(userInfoEndpointUri, HttpMethod.GET, entity, Map.class);
 
@@ -299,9 +306,9 @@ public class AuthService {
 
                 authRepository.saveAndFlush(newUser);
 
-                userData = getCustomFieldsUser(newUser);
+                this.userData = getCustomFieldsUser(newUser);
                 TokenService tokenService = new TokenService();
-                token = tokenService.genHS256(userData);
+                this.token = tokenService.genHS256(userData);
             } else {
                 // if email exist >> return user data
                 System.err.println("user exited");
@@ -313,24 +320,30 @@ public class AuthService {
                     authRepository.saveAndFlush(user);
                 }
 
-                userData = getCustomFieldsUser(user);
+                this.userData = getCustomFieldsUser(user);
                 TokenService tokenService = new TokenService();
-                token = tokenService.genHS256(userData);
+                this.token = tokenService.genHS256(userData);
+                System.err.println("dfghdfnfghndfnfthgynmfghjmghm,yfkmhjm,hmhjm");
             }
 
         }
 
 
-        if (userData.isEmpty() || token.equals("")) {
-            Map<String, Object> err = Map.of(
-                    "err", "Login with Google is failed!",
-                    "token", "",
-                    "user", new HashMap<>()
-            );
+        // redirect to client
+        responseHttpServlel.sendRedirect(System.getenv("ORIGIN_CLIENT"));
+
+        Map<String, Object> msg = Map.of("msg", "Signin with oauth google susscessfully");
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                HttpStatus.OK);
+    }
+
+
+    public ResponseEntity getDataOAuthGoogle() {
+        if (this.userData.isEmpty() || this.token.equals("")) {
+            Map<String, Object> err = Map.of("err", "Notthing from OAuth Google!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
                     HttpStatus.BAD_REQUEST);
         }
-
 
         Map<String, Object> msg = Map.of(
                 "msg", "Signin with oauth google susscessfully",
@@ -339,7 +352,6 @@ public class AuthService {
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
                 HttpStatus.OK);
-
     }
 
 }
