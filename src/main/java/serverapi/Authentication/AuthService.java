@@ -139,7 +139,7 @@ public class AuthService {
 
 
         // this user just created account with google oauth, so the password will be null
-        if (user.getUser_password() == null) {
+        if (user.getUser_password().equals("")) {
             Map<String, String> error = Map.of("err", "This user does not have password!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
         }
@@ -271,8 +271,6 @@ public class AuthService {
 
     ////////////////////////////// OAuth /////////////////////////////////////
     ResponseEntity oauthGoogleSignInSusscess(String userInfoEndpointUri, OAuth2AuthorizedClient client, HttpServletResponse responseHttpServlel) throws IOException {
-
-
         if (!StringUtils.isEmpty(userInfoEndpointUri)) {
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
@@ -296,6 +294,7 @@ public class AuthService {
                 newUser.setUser_password(null);
                 newUser.setUser_isAdmin(false);
                 newUser.setUser_isVerified(true);
+                newUser.setUser_password("");
 
                 UserAvatarCollection userAvatarCollection = new UserAvatarCollection();
                 if (userAttributes.get("picture") == null || userAttributes.get("picture").equals("")) {
