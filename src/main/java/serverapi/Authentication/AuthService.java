@@ -329,7 +329,7 @@ public class AuthService {
 
 
         // redirect to client
-        //responseHttpServlel.sendRedirect(System.getenv("ORIGIN_CLIENT"));
+//        responseHttpServlel.sendRedirect(System.getenv("ORIGIN_CLIENT"));
         responseHttpServlel.sendRedirect("https://mangacrawlers-58f1e.web.app");
 
         Map<String, Object> msg = Map.of("msg", "Signin with oauth google susscessfully");
@@ -345,10 +345,15 @@ public class AuthService {
                     HttpStatus.BAD_REQUEST);
         }
 
+        Map userDataToResponse = this.userData;
+        String tokenToResponse = this.token;
+        this.userData = new HashMap();
+        this.token = "new HashMap()";
+
         Map<String, Object> msg = Map.of(
                 "msg", "Signin with oauth google susscessfully",
-                "token", token,
-                "user", userData
+                "token", tokenToResponse,
+                "user", userDataToResponse
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
                 HttpStatus.OK);
