@@ -32,9 +32,9 @@ public class MangaConfigSchedule {
     }
 
 
-    @Async
-//    @Scheduled(cron = "* * */23 * * ?") // every 23 hours
-    @Scheduled(fixedRate = 86400000)
+//    @Async
+////    @Scheduled(cron = "* * */23 * * ?") // every 23 hours
+//    @Scheduled(fixedRate = 86400000)
     public void updateViewsToManga() {
         List<MangaViewDTO> listViewsMangas = mangaRepository.getTotalView();
 
