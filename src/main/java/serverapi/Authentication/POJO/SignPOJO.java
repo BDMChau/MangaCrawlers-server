@@ -1,5 +1,6 @@
 package serverapi.Authentication.POJO;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import java.util.regex.Pattern;
 @Data
 @NoArgsConstructor
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SignPOJO {
     private String user_name;
     private String user_email;

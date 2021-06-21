@@ -1,9 +1,7 @@
 package serverapi.Authentication;
 
 import com.cloudinary.utils.StringUtils;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import net.minidev.json.JSONObject;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
@@ -28,8 +26,9 @@ import java.util.*;
 
 
 @Service
+@NoArgsConstructor
 public class AuthService {
-    private final AuthRepository authRepository;
+    private AuthRepository authRepository;
 
     // token and userData for OAuth Google
     private String token = "";

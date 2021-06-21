@@ -7,6 +7,10 @@ target/
 ####
 local.env
 
+### test.propperties
+test-application.properties
+
+
 ### STS ###
 .apt_generated
 .classpath

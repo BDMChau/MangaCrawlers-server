@@ -1,17 +1,18 @@
 package serverapi.Authentication;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.ResolvableType;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import serverapi.Api.Response;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailException;
 import org.springframework.web.bind.annotation.*;
+import serverapi.Api.Response;
 import serverapi.Authentication.POJO.SignPOJO;
 import serverapi.Enums.isValidEnum;
 
@@ -23,7 +24,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
-
 
 @RestController
 @RequestMapping("/api/auth")
@@ -45,6 +45,7 @@ public class AuthController {
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
+
 
 
     //////////////////////////////////////////////////////////
@@ -202,7 +203,7 @@ public class AuthController {
 
 
     /////////////////// auto call http every 25 minutes to wake up app on heroku
-    @GetMapping("/autocallhttp")
+    @GetMapping("autocallhttp")
     public ResponseEntity autoCallHttp() {
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("ICT"));
 
