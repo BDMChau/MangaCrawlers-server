@@ -27,7 +27,7 @@ import java.util.*;
 
 @Service
 @NoArgsConstructor
-public class AuthService {
+public class AuthService implements IAuthService {
     private AuthRepository authRepository;
 
     // token and userData for OAuth Google
@@ -269,7 +269,7 @@ public class AuthService {
 
 
     ////////////////////////////// OAuth /////////////////////////////////////
-    ResponseEntity oauthGoogleSignInSusscess(String userInfoEndpointUri, OAuth2AuthorizedClient client, HttpServletResponse responseHttpServlel) throws IOException {
+    public ResponseEntity oauthGoogleSignInSusscess(String userInfoEndpointUri, OAuth2AuthorizedClient client, HttpServletResponse responseHttpServlel) throws IOException {
         if (!StringUtils.isEmpty(userInfoEndpointUri)) {
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
