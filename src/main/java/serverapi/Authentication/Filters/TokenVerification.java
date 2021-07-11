@@ -60,7 +60,7 @@ public class TokenVerification implements Filter {
                 res.setCharacterEncoding("UTF-8");
 
                 if (err.contains("MalformedJwtException")) {
-                    Map<String, String> error = Map.of("err", "Invalid Format Token!");
+                    Map<String, String> error = Map.of("err", "Invalid Token Format!");
                     ResJsonMiddleware(res, res.getContentType(), res.getCharacterEncoding(), res.getStatus(), HttpStatus.UNAUTHORIZED, error);
 
                 } else if (err.contains("SignatureException")) {
