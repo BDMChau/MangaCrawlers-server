@@ -1,9 +1,7 @@
 package serverapi.Authentication;
 
 import com.cloudinary.utils.StringUtils;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import net.minidev.json.JSONObject;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
@@ -28,8 +26,9 @@ import java.util.*;
 
 
 @Service
-public class AuthService {
-    private final AuthRepository authRepository;
+@NoArgsConstructor
+public class AuthService implements IAuthService {
+    private AuthRepository authRepository;
 
     // token and userData for OAuth Google
     private String token = "";
@@ -270,7 +269,7 @@ public class AuthService {
 
 
     ////////////////////////////// OAuth /////////////////////////////////////
-    ResponseEntity oauthGoogleSignInSusscess(String userInfoEndpointUri, OAuth2AuthorizedClient client, HttpServletResponse responseHttpServlel) throws IOException {
+    public ResponseEntity oauthGoogleSignInSusscess(String userInfoEndpointUri, OAuth2AuthorizedClient client, HttpServletResponse responseHttpServlel) throws IOException {
         if (!StringUtils.isEmpty(userInfoEndpointUri)) {
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();

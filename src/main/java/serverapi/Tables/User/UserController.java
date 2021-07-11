@@ -157,7 +157,7 @@ public class UserController {
 
 
     ////////////////////////// Translation Group parts /////////////////////////////
-    @CacheEvict(allEntries = true, value = {"allmangas"})
+    @CacheEvict(allEntries = true, value = {"allmangas", "transGroupInfo", "mangaInfoUploadPage"})
     @PostMapping("/uploadchapterimgs")
     public ResponseEntity uploadChapterImgs(
             ServletRequest request,

@@ -18,7 +18,8 @@ public class CacheSchedule {
 
     @Async
     @CacheEvict(allEntries = true, value = {"weeklyMangas"})
-    @Scheduled(cron = "0 0 0 */7 * ?")
+//    @Scheduled(cron = "0 0 0 */7 * ?")
+    @Scheduled(fixedRate = 604800000)
     public void evictCacheWeeklyMangas() {
         Calendar calendar = Calendar.getInstance();
         System.err.println("Evict Cache weeklyMangas every 7 days: " + calendar.getTime());
