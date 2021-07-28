@@ -8,7 +8,8 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import serverapi.Api.Response;
-import serverapi.Authentication.POJO.SignPOJO;
+import serverapi.Authentication.PojoAndValidation.Pojo.SignInPojo;
+import serverapi.Authentication.PojoAndValidation.Pojo.SignPOJO;
 import serverapi.Security.HashSHA512;
 import serverapi.Security.RandomBytes;
 import serverapi.Security.TokenService;
@@ -128,8 +129,8 @@ public class AuthService implements IAuthService {
     }
 
 
-    public ResponseEntity signIn(SignPOJO signPOJO) {
-        Optional<User> optionalUser = authRepository.findByEmail(signPOJO.getUser_email());
+    public ResponseEntity signIn(SignInPojo signInPojo) {
+        Optional<User> optionalUser = authRepository.findByEmail(signInPojo.getUser_email());
         if (!optionalUser.isPresent()) {
             Map<String, String> error = Map.of("err", "Email is not existed!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
@@ -145,7 +146,7 @@ public class AuthService implements IAuthService {
 
 
         HashSHA512 hashingSHA512 = new HashSHA512();
-        Boolean comparePass = hashingSHA512.compare(signPOJO.getUser_password(), user.getUser_password());
+        Boolean comparePass = hashingSHA512.compare(signInPojo.getUser_password(), user.getUser_password());
         if (!comparePass) {
             Map<String, String> error = Map.of("err", "Password does not match!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);

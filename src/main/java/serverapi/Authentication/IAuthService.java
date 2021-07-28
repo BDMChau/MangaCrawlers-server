@@ -3,7 +3,8 @@ package serverapi.Authentication;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import serverapi.Authentication.POJO.SignPOJO;
+import serverapi.Authentication.PojoAndValidation.Pojo.SignInPojo;
+import serverapi.Authentication.PojoAndValidation.Pojo.SignPOJO;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletResponse;
@@ -14,7 +15,7 @@ public interface IAuthService {
 
     public ResponseEntity signUp(SignPOJO signPOJO) throws NoSuchAlgorithmException, MessagingException;
 
-    public ResponseEntity signIn(SignPOJO signPOJO);
+    public ResponseEntity signIn(SignInPojo signInPojo);
 
     public ResponseEntity requestChangePassword(SignPOJO signPOJO) throws MessagingException, NoSuchAlgorithmException;
 

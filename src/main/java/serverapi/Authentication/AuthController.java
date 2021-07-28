@@ -11,13 +11,18 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import serverapi.Api.Response;
-import serverapi.Authentication.POJO.SignPOJO;
+import serverapi.Authentication.PojoAndValidation.Pojo.SignInPojo;
+import serverapi.Authentication.PojoAndValidation.Pojo.SignPOJO;
+import serverapi.Authentication.PojoAndValidation.Validation;
 import serverapi.Enums.isValidEnum;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
@@ -28,7 +33,7 @@ import java.util.TimeZone;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    private final AuthService authService;
+    private final IAuthService authService;
 
     private static String authorizationRequestBaseUri = "oauth2/authorization";
 
@@ -42,11 +47,14 @@ public class AuthController {
 
 
     @Autowired
-    public AuthController(AuthService authService) {
+    public AuthController(IAuthService authService) {
         this.authService = authService;
     }
 
-
+    @InitBinder
+    public void InitBinder(WebDataBinder binder){
+        binder.addValidators(new Validation());
+    }
 
     //////////////////////////////////////////////////////////
 
@@ -76,19 +84,27 @@ public class AuthController {
 
     @PostMapping("/signin")
     @ResponseBody
-    public ResponseEntity signIn(@RequestBody SignPOJO signPOJO) throws NoSuchAlgorithmException {
-        if (signPOJO.isValidSignIn() == isValidEnum.missing_credentials) {
-            Map<String, String> error = Map.of("err", "Missing credentials!");
+    public ResponseEntity signIn(@Valid @RequestBody SignInPojo signInPojo, BindingResult bindingResult) throws NoSuchAlgorithmException {
+//        if (signPOJO.isValidSignIn() == isValidEnum.missing_credentials) {
+//            Map<String, String> error = Map.of("err", "Missing credentials!");
+//            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(),
+//                    HttpStatus.BAD_REQUEST);
+//
+//        } else if (signPOJO.isValidSignIn() == isValidEnum.email_invalid) {
+//            Map<String, String> error = Map.of("err", "Invalid email!");
+//            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
+//        }
+
+        if(bindingResult.hasErrors()){
+            String errMsg = bindingResult.getAllErrors().get(0).getCode();
+
+            Map<String, String> error = Map.of("err", errMsg);
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(),
                     HttpStatus.BAD_REQUEST);
-
-        } else if (signPOJO.isValidSignIn() == isValidEnum.email_invalid) {
-            Map<String, String> error = Map.of("err", "Invalid email!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
         }
 
 
-        return authService.signIn(signPOJO);
+        return authService.signIn(signInPojo);
     }
 
 
