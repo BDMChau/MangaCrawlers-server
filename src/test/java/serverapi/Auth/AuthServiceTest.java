@@ -8,7 +8,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import serverapi.Authentication.AuthRepository;
-import serverapi.Authentication.AuthService;
+import serverapi.Authentication.Service.AuthService;
 
 
 @RunWith(SpringRunner.class)
@@ -26,9 +26,7 @@ public class AuthServiceTest {
 
 //    @Before
 //    private void setup(){
-//        SignPOJO signPOJO = new SignPOJO();
-//        signPOJO.setUser_email("bdmchau105@gmail.com");
-//        signPOJO.setUser_password("MinhChau105");
+//
 //
 //
 //        Map<String, Object> msg = Map.of(
@@ -42,9 +40,7 @@ public class AuthServiceTest {
 //
 //    @Test
 //    public void signIn() throws Exception {
-//        SignPOJO signPOJO = new SignPOJO();
-//        signPOJO.setUser_email("bdmchau105@gmail.com");
-//        signPOJO.setUser_password("MinhChau105");
+//
 //
 //
 //        Map<String, Object> msg = Map.of(

@@ -9,9 +9,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SignInPojo {
-    private String user_email;
+public class ChangePassPojo {
     private String user_password;
+    private String user_change_pass_token;
+    private String user_verify_token;
 
 
 }

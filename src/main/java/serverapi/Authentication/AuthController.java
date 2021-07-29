@@ -15,10 +15,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import serverapi.Api.Response;
+import serverapi.Authentication.PojoAndValidation.Pojo.ChangePassPojo;
 import serverapi.Authentication.PojoAndValidation.Pojo.SignInPojo;
-import serverapi.Authentication.PojoAndValidation.Pojo.SignPOJO;
+import serverapi.Authentication.PojoAndValidation.Pojo.SignUpPojo;
 import serverapi.Authentication.PojoAndValidation.Validation;
-import serverapi.Enums.isValidEnum;
+import serverapi.Authentication.Service.Interface.IAuthService;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletResponse;
@@ -51,8 +52,9 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @InitBinder
-    public void InitBinder(WebDataBinder binder){
+
+    @InitBinder({"signInPojo", "signUpPojo", "changePassPojo"})
+    public void InitBinder(WebDataBinder binder) {
         binder.addValidators(new Validation());
     }
 
@@ -61,41 +63,23 @@ public class AuthController {
     @CacheEvict(allEntries = true, value = {"allusers"})
     @PostMapping("/signup")
     @ResponseBody
-    public ResponseEntity signUp(@RequestBody SignPOJO signPOJO) throws NoSuchAlgorithmException, MessagingException {
-        if (signPOJO.isValidSignUp() == isValidEnum.missing_credentials) {
-            Map<String, String> error = Map.of("err", "Missing credentials!");
+    public ResponseEntity signUp(@Valid @RequestBody SignUpPojo signUpPojo, BindingResult bindingResult) throws NoSuchAlgorithmException, MessagingException {
+        if (bindingResult.hasErrors()) {
+            String errMsg = bindingResult.getAllErrors().get(0).getCode();
+
+            Map<String, String> error = Map.of("err", errMsg);
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(),
                     HttpStatus.BAD_REQUEST);
-
-        } else if (signPOJO.isValidSignUp() == isValidEnum.password_strong_fail) {
-            Map<String, String> error = Map.of("err", "Eight characters, at least one letter and 1 number for " +
-                    "password required!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
-
-        } else if (signPOJO.isValidSignUp() == isValidEnum.email_invalid) {
-            Map<String, String> error = Map.of("err", "Invalid email!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
         }
 
-
-        return authService.signUp(signPOJO);
+        return authService.signUp(signUpPojo);
     }
 
 
     @PostMapping("/signin")
     @ResponseBody
     public ResponseEntity signIn(@Valid @RequestBody SignInPojo signInPojo, BindingResult bindingResult) throws NoSuchAlgorithmException {
-//        if (signPOJO.isValidSignIn() == isValidEnum.missing_credentials) {
-//            Map<String, String> error = Map.of("err", "Missing credentials!");
-//            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(),
-//                    HttpStatus.BAD_REQUEST);
-//
-//        } else if (signPOJO.isValidSignIn() == isValidEnum.email_invalid) {
-//            Map<String, String> error = Map.of("err", "Invalid email!");
-//            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
-//        }
-
-        if(bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             String errMsg = bindingResult.getAllErrors().get(0).getCode();
 
             Map<String, String> error = Map.of("err", errMsg);
@@ -110,47 +94,46 @@ public class AuthController {
 
     @PostMapping("/requestchangepass")
     @ResponseBody
-    public ResponseEntity requestChangePassword(@RequestBody SignPOJO signPOJO) throws MailException,
+    public ResponseEntity requestChangePassword(@RequestBody Map<String, String> data) throws MailException,
             MessagingException, NoSuchAlgorithmException {
-        if (signPOJO.isNullEmail()) {
-            Map<String, String> error = Map.of("err", "Missing credentials!");
+
+        if (data.get("user_email") == null || data.get("user_email").equals("")) {
+            Map<String, String> error = Map.of("err", "Missing email!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(),
                     HttpStatus.BAD_REQUEST);
         }
+        String userEmail = data.get("user_email");
 
-        return authService.requestChangePassword(signPOJO);
+        return authService.requestChangePassword(userEmail);
     }
 
 
     @PutMapping("/changepass")
     @ResponseBody
-    public ResponseEntity changePassword(@RequestBody SignPOJO signPOJO) throws MailException, MessagingException,
+    public ResponseEntity changePassword(@Valid @RequestBody ChangePassPojo changePassPojo, BindingResult bindingResult) throws MailException, MessagingException,
             NoSuchAlgorithmException {
-        if (signPOJO.isValidChangePassword()) {
-            Map<String, String> error = Map.of("err", "Body request wrong!" +
-                    " please try " +
-                    "again!");
+        if (bindingResult.hasErrors()) {
+            String errMsg = bindingResult.getAllErrors().get(0).getCode();
+
+            Map<String, String> error = Map.of("err", errMsg);
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(),
                     HttpStatus.BAD_REQUEST);
         }
 
-        return authService.changePassword(signPOJO);
+        return authService.changePassword(changePassPojo);
     }
-
 
     @PostMapping("/confirmverification")
     @ResponseBody
-    public ResponseEntity confirmVerification(@RequestBody SignPOJO signPOJO) throws MailException, MessagingException,
-            NoSuchAlgorithmException {
-        if (signPOJO.isValidTokenVerifyAccount()) {
-            Map<String, String> error = Map.of("err", "Body request wrong!" +
-                    " please try " +
-                    "again!");
+    public ResponseEntity confirmVerification(@Valid @RequestBody Map<String, String> data) throws MailException {
+        if (data.get("user_verify_token") == null || data.get("user_verify_token").equals("")) {
+            Map<String, String> error = Map.of("err", "Missing token for verification");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(),
                     HttpStatus.BAD_REQUEST);
         }
+        String token = data.get("user_verify_token");
 
-        return authService.confirmVerification(signPOJO);
+        return authService.confirmVerification(token);
     }
 
 

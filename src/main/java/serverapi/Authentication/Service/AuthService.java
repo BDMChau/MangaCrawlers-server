@@ -1,4 +1,4 @@
-package serverapi.Authentication;
+package serverapi.Authentication.Service;
 
 import com.cloudinary.utils.StringUtils;
 import lombok.NoArgsConstructor;
@@ -8,8 +8,11 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import serverapi.Api.Response;
+import serverapi.Authentication.AuthRepository;
+import serverapi.Authentication.PojoAndValidation.Pojo.ChangePassPojo;
 import serverapi.Authentication.PojoAndValidation.Pojo.SignInPojo;
-import serverapi.Authentication.PojoAndValidation.Pojo.SignPOJO;
+import serverapi.Authentication.PojoAndValidation.Pojo.SignUpPojo;
+import serverapi.Authentication.Service.Interface.IAuthService;
 import serverapi.Security.HashSHA512;
 import serverapi.Security.RandomBytes;
 import serverapi.Security.TokenService;
@@ -77,32 +80,28 @@ public class AuthService implements IAuthService {
 
 
     //////////////////////////////////////////////////////////////
-    public ResponseEntity signUp(SignPOJO signPOJO) throws NoSuchAlgorithmException, MessagingException {
-        Optional<User> userOptional = authRepository.findByEmail(signPOJO.getUser_email());
+    public ResponseEntity signUp(SignUpPojo signUpPojo) throws NoSuchAlgorithmException, MessagingException {
+        Optional<User> userOptional = authRepository.findByEmail(signUpPojo.getUser_email());
         if (userOptional.isPresent()) {
             Map<String, String> error = Map.of("err", "Email is existed!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
         }
 
         HashSHA512 hashingSHA512 = new HashSHA512();
-        String hashedPassword = hashingSHA512.hash(signPOJO.getUser_password());
-        signPOJO.setUser_password(hashedPassword);
+        String hashedPassword = hashingSHA512.hash(signUpPojo.getUser_password());
+        signUpPojo.setUser_password(hashedPassword);
 
 
         User newUser = new User();
-        newUser.setUser_name(signPOJO.getUser_name());
-        newUser.setUser_email(signPOJO.getUser_email());
-        newUser.setUser_password(signPOJO.getUser_password());
+        newUser.setUser_name(signUpPojo.getUser_name());
+        newUser.setUser_email(signUpPojo.getUser_email());
+        newUser.setUser_password(signUpPojo.getUser_password());
         newUser.setUser_isAdmin(false);
         newUser.setUser_isVerified(false);
         newUser.setCreatedAt(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
 
         UserAvatarCollection userAvatarCollection = new UserAvatarCollection();
-        if (signPOJO.isNullAvatar()) {
-            newUser.setUser_avatar(userAvatarCollection.getAvatar_member());
-        } else {
-            newUser.setUser_avatar(signPOJO.getUser_avatar());
-        }
+        newUser.setUser_avatar(userAvatarCollection.getAvatar_member());
 
         // send mail to verify account
         Integer ThreeDays = (1000 * 60 * 60 * 24) * 3; // 3 days in miliseconds
@@ -114,8 +113,8 @@ public class AuthService implements IAuthService {
         newUser.setToken_verify_createdAt(timeExpired);
 
 
-        String userName = signPOJO.getUser_name();
-        String userEmail = signPOJO.getUser_email();
+        String userName = signUpPojo.getUser_name();
+        String userEmail = signUpPojo.getUser_email();
         mailer.sendMailToVerifyAccount(userName, userEmail, hashedToken);
 
 
@@ -173,8 +172,8 @@ public class AuthService implements IAuthService {
     }
 
 
-    public ResponseEntity requestChangePassword(SignPOJO signPOJO) throws MessagingException, NoSuchAlgorithmException {
-        Optional<User> userOptional = authRepository.findByEmail(signPOJO.getUser_email());
+    public ResponseEntity requestChangePassword(String email) throws MessagingException, NoSuchAlgorithmException {
+        Optional<User> userOptional = authRepository.findByEmail(email);
         if (!userOptional.isPresent()) {
             Map<String, String> error = Map.of("err", "Email is not existed!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
@@ -200,9 +199,9 @@ public class AuthService implements IAuthService {
     }
 
 
-    public ResponseEntity changePassword(SignPOJO signPOJO) throws NoSuchAlgorithmException {
+    public ResponseEntity changePassword(ChangePassPojo changePassPojo) throws NoSuchAlgorithmException {
         Long currentTime = Calendar.getInstance().getTimeInMillis(); // by miliseconds
-        String token = signPOJO.getUser_change_pass_token();
+        String token = changePassPojo.getUser_change_pass_token();
 
         Optional<User> userOptional = authRepository.findByTokenResetPass(token);
         if (userOptional.isEmpty()) {
@@ -219,8 +218,8 @@ public class AuthService implements IAuthService {
                     HttpStatus.BAD_REQUEST);
         }
 
-        String newPasswrod = signPOJO.getUser_password();
-        String hashedNewPassword = new HashSHA512().hash(newPasswrod);
+        String newPassword = changePassPojo.getUser_password();
+        String hashedNewPassword = new HashSHA512().hash(newPassword);
         user.setUser_password(hashedNewPassword);
 
         user.setToken_reset_pass_createdAt(null);
@@ -232,9 +231,8 @@ public class AuthService implements IAuthService {
     }
 
 
-    public ResponseEntity confirmVerification(SignPOJO signPOJO) {
+    public ResponseEntity confirmVerification(String token) {
         long currentTime = Calendar.getInstance().getTimeInMillis(); // by miliseconds
-        String token = signPOJO.getUser_verify_token();
 
         Optional<User> userOptional = authRepository.findByTokenVerify(token);
         if (userOptional.isEmpty()) {
