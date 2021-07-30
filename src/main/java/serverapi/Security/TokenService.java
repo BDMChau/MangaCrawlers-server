@@ -13,6 +13,7 @@ public class TokenService {
 
     public String genHS256() {
         String token = Jwts.builder()
+                .claim("payload", "")
                 .signWith(SignatureAlgorithm.HS256, System.getenv("JWT_KEY").getBytes(StandardCharsets.UTF_8))
                 .compressWith(CompressionCodecs.DEFLATE)
                 .compact();
@@ -20,8 +21,9 @@ public class TokenService {
         return token;
     }
 
-    public String genHS256(int milisecondExpired) {
+    public String genHS256(long milisecondExpired) {
         String token = Jwts.builder()
+                .claim("payload", "")
                 .signWith(SignatureAlgorithm.HS256, System.getenv("JWT_KEY").getBytes(StandardCharsets.UTF_8))
                 .setExpiration(new Date(System.currentTimeMillis() + milisecondExpired))
                 .compressWith(CompressionCodecs.DEFLATE)
@@ -40,7 +42,7 @@ public class TokenService {
         return token;
     }
 
-    public String genHS256(Object payload, int milisecondExpired) {
+    public String genHS256(Object payload, long milisecondExpired) {
         String token = Jwts.builder()
                 .claim("payload", payload)
                 .signWith(SignatureAlgorithm.HS256, System.getenv("JWT_KEY").getBytes(StandardCharsets.UTF_8))

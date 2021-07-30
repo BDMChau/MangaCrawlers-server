@@ -160,7 +160,8 @@ public class AuthService implements IAuthService {
         Map userData = getCustomFieldsUser(user);
 
         TokenService tokenService = new TokenService();
-        String token = tokenService.genHS256(userData);
+        long expirationTime = 86400000L * 30; // 30 days
+        String token = tokenService.genHS256(userData, expirationTime);
 
 
         Map<String, Object> msg = Map.of(
