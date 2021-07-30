@@ -1,4 +1,4 @@
-package serverapi.StaticFiles;
+package serverapi.Helpers;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

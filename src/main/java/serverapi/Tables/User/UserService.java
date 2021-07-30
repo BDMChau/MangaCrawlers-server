@@ -13,7 +13,7 @@ import serverapi.Query.DTO.*;
 import serverapi.Query.Repository.*;
 import serverapi.Configuration.Cache.CacheService;
 import serverapi.SharedServices.CloudinaryUploader;
-import serverapi.StaticFiles.UserAvatarCollection;
+import serverapi.Helpers.UserAvatarCollection;
 import serverapi.Tables.Author.Author;
 import serverapi.Tables.Chapter.Chapter;
 import serverapi.Tables.ChapterComments.ChapterComments;

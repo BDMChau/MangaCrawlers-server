@@ -125,7 +125,7 @@ public class AuthController {
 
     @PostMapping("/confirmverification")
     @ResponseBody
-    public ResponseEntity confirmVerification(@Valid @RequestBody Map<String, String> data) throws MailException {
+    public ResponseEntity confirmVerification(@RequestBody Map<String, String> data) throws MailException {
         if (data.get("user_verify_token") == null || data.get("user_verify_token").equals("")) {
             Map<String, String> error = Map.of("err", "Missing token for verification");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(),

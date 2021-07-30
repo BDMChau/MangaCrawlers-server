@@ -17,7 +17,7 @@ import serverapi.Security.HashSHA512;
 import serverapi.Security.RandomBytes;
 import serverapi.Security.TokenService;
 import serverapi.SharedServices.Mailer;
-import serverapi.StaticFiles.UserAvatarCollection;
+import serverapi.Helpers.UserAvatarCollection;
 import serverapi.Tables.TransGroup.TransGroup;
 import serverapi.Tables.User.User;
 
