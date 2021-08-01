@@ -3,7 +3,7 @@ package serverapi.Query.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import serverapi.Tables.TransGroup.TransGroup;
+import serverapi.Tables.UserTables.TransGroup.TransGroup;
 
 import java.util.Optional;
 

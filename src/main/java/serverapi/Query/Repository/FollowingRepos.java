@@ -1,15 +1,13 @@
 package serverapi.Query.Repository;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import serverapi.Query.DTO.FollowingDTO;
-import serverapi.Query.DTO.ReportUserFollowMangaDTO;
-import serverapi.Tables.FollowingManga.FollowingManga;
-import serverapi.Tables.User.User;
+import serverapi.Tables.UserTables.FollowingManga.FollowingManga;
+import serverapi.Tables.UserTables.User.User;
 
 import javax.transaction.Transactional;
 import java.util.List;

@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import serverapi.Query.DTO.ChapterDTO;
-import serverapi.Tables.Chapter.Chapter;
+import serverapi.Tables.MangaTables.Chapter.Chapter;
 
 import java.util.List;
 

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import serverapi.Query.DTO.GenreDTO;
 import serverapi.Query.DTO.MangaGenreDTO;
-import serverapi.Tables.Genre.Genre;
+import serverapi.Tables.MangaTables.Genre.Genre;
 
 import java.util.List;
 

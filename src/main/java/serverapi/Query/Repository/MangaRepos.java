@@ -9,9 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import serverapi.Query.DTO.*;
 import serverapi.Tables.Manga.Manga;
-import serverapi.Tables.UpdateView.UpdateView;
 
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 

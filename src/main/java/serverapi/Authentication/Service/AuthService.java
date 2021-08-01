@@ -13,13 +13,13 @@ import serverapi.Authentication.PojoAndValidation.Pojo.ChangePassPojo;
 import serverapi.Authentication.PojoAndValidation.Pojo.SignInPojo;
 import serverapi.Authentication.PojoAndValidation.Pojo.SignUpPojo;
 import serverapi.Authentication.Service.Interface.IAuthService;
+import serverapi.Helpers.UserAvatarCollection;
 import serverapi.Security.HashSHA512;
 import serverapi.Security.RandomBytes;
 import serverapi.Security.TokenService;
 import serverapi.SharedServices.Mailer;
-import serverapi.Helpers.UserAvatarCollection;
-import serverapi.Tables.TransGroup.TransGroup;
-import serverapi.Tables.User.User;
+import serverapi.Tables.UserTables.TransGroup.TransGroup;
+import serverapi.Tables.UserTables.User.User;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletResponse;

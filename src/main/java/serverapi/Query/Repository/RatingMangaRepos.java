@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import serverapi.Query.DTO.AverageStarDTO;
 import serverapi.Query.DTO.RatingMangaDTO;
-import serverapi.Tables.RatingManga.RatingManga;
+import serverapi.Tables.MangaTables.RatingManga.RatingManga;
 
 import java.util.List;
 
