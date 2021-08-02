@@ -2,8 +2,8 @@ package serverapi.Tables.UserTables.User;
 
 import serverapi.Query.DTO.ChapterDTO;
 import serverapi.Query.DTO.MangaChapterDTO;
-import serverapi.Query.Repository.ChapterRepos;
-import serverapi.Query.Repository.MangaRepos;
+import serverapi.Query.Repository.Manga.ChapterRepos;
+import serverapi.Query.Repository.Manga.MangaRepos;
 
 import java.util.ArrayList;
 import java.util.Comparator;

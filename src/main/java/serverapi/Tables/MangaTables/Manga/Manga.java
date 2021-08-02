@@ -1,4 +1,4 @@
-package serverapi.Tables.Manga;
+package serverapi.Tables.MangaTables.Manga;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -6,9 +6,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.Tables.MangaGenre.MangaGenre;
 import serverapi.Tables.MangaTables.Author.Author;
 import serverapi.Tables.MangaTables.Chapter.Chapter;
+import serverapi.Tables.MangaTables.MangaGenre.MangaGenre;
 import serverapi.Tables.MangaTables.RatingManga.RatingManga;
 import serverapi.Tables.MangaTables.UpdateView.UpdateView;
 import serverapi.Tables.UserTables.FollowingManga.FollowingManga;

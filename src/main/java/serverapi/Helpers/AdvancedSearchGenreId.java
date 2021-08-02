@@ -1,13 +1,11 @@
 package serverapi.Helpers;
 
-import org.springframework.http.ResponseEntity;
 import serverapi.Query.DTO.MangaChapterDTO;
 import serverapi.Query.DTO.MangaGenreDTO;
-import serverapi.Query.Repository.MangaRepos;
+import serverapi.Query.Repository.Manga.MangaRepos;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class AdvancedSearchGenreId {
 

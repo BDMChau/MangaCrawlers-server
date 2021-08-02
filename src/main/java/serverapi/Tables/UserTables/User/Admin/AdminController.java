@@ -7,7 +7,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import serverapi.Query.Repository.UserRepos;
+import serverapi.Query.Repository.User.UserRepos;
 import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.User.POJO.TransGroupPOJO;
 import serverapi.Tables.User.POJO.UserPOJO;

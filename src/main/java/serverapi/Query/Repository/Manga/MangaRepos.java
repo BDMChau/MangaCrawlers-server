@@ -1,4 +1,4 @@
-package serverapi.Query.Repository;
+package serverapi.Query.Repository.Manga;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import serverapi.Query.DTO.*;
-import serverapi.Tables.Manga.Manga;
+import serverapi.Tables.MangaTables.Manga.Manga;
 
 import java.util.List;
 import java.util.Optional;

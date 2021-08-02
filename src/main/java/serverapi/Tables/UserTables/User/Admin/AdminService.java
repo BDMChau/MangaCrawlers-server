@@ -7,8 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Query.DTO.*;
-import serverapi.Query.Repository.*;
-import serverapi.Tables.Manga.Manga;
+import serverapi.Query.Repository.Manga.ChapterRepos;
+import serverapi.Query.Repository.Manga.MangaRepos;
+import serverapi.Query.Repository.User.FollowingRepos;
+import serverapi.Query.Repository.User.TransGroupRepos;
+import serverapi.Query.Repository.User.UserRepos;
+import serverapi.Tables.MangaTables.Manga.Manga;
 import serverapi.Tables.UserTables.TransGroup.TransGroup;
 import serverapi.Tables.UserTables.User.User;
 

@@ -1,4 +1,4 @@
-package serverapi.Tables.Manga;
+package serverapi.Tables.MangaTables.Manga;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,11 +10,15 @@ import serverapi.Api.Response;
 import serverapi.Helpers.AdvancedSearchGenreId;
 import serverapi.Helpers.OffsetBasedPageRequest;
 import serverapi.Query.DTO.*;
-import serverapi.Query.Repository.*;
+import serverapi.Query.Repository.Manga.ChapterRepos;
+import serverapi.Query.Repository.Manga.GenreRepos;
+import serverapi.Query.Repository.Manga.MangaRepos;
+import serverapi.Query.Repository.Manga.UpdateViewRepos;
+import serverapi.Query.Repository.User.ChapterCommentsRepos;
 import serverapi.Query.Specification.MangaSpecification;
+import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.MangaTables.Chapter.Chapter;
 import serverapi.Tables.MangaTables.Genre.Genre;
-import serverapi.Tables.Manga.POJO.MangaPOJO;
 import serverapi.Tables.MangaTables.UpdateView.UpdateView;
 
 import java.time.LocalDateTime;

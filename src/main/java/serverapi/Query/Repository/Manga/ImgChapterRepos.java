@@ -1,4 +1,4 @@
-package serverapi.Query.Repository;
+package serverapi.Query.Repository.Manga;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

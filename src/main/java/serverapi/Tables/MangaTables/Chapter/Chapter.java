@@ -7,9 +7,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.Tables.Manga.Manga;
 import serverapi.Tables.MangaTables.ChapterComments.ChapterComments;
 import serverapi.Tables.MangaTables.ImageChapter.ImageChapter;
+import serverapi.Tables.MangaTables.Manga.Manga;
 import serverapi.Tables.UserTables.ReadingHistory.ReadingHistory;
 
 import javax.persistence.*;

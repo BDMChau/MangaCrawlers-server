@@ -1,4 +1,4 @@
-package serverapi.Tables.Manga;
+package serverapi.Tables.MangaTables.Manga;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;

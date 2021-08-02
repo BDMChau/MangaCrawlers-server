@@ -7,11 +7,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Helpers.OffsetBasedPageRequest;
-import serverapi.Query.DTO.*;
-import serverapi.Query.Repository.ChapterCommentsRepos;
-import serverapi.Query.Repository.ChapterRepos;
-import serverapi.Query.Repository.ImgChapterRepos;
-import serverapi.Query.Repository.MangaRepos;
+import serverapi.Query.DTO.ChapterDTO;
+import serverapi.Query.DTO.ChapterImgDTO;
+import serverapi.Query.DTO.CommentExportDTO;
+import serverapi.Query.Repository.Manga.ChapterRepos;
+import serverapi.Query.Repository.Manga.ImgChapterRepos;
+import serverapi.Query.Repository.Manga.MangaRepos;
+import serverapi.Query.Repository.User.ChapterCommentsRepos;
 
 import java.util.List;
 import java.util.Map;

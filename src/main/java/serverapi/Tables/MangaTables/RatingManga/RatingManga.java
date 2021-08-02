@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.Tables.Manga.Manga;
+import serverapi.Tables.MangaTables.Manga.Manga;
 import serverapi.Tables.UserTables.User.User;
 
 import javax.persistence.*;

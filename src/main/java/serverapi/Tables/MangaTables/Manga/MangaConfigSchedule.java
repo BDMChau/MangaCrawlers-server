@@ -1,12 +1,12 @@
-package serverapi.Tables.Manga;
+package serverapi.Tables.MangaTables.Manga;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import serverapi.Query.DTO.MangaViewDTO;
-import serverapi.Query.Repository.MangaRepos;
-import serverapi.Query.Repository.UpdateViewRepos;
+import serverapi.Query.Repository.Manga.MangaRepos;
+import serverapi.Query.Repository.Manga.UpdateViewRepos;
 import serverapi.Tables.MangaTables.UpdateView.UpdateView;
 
 import java.util.Calendar;

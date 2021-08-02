@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.Tables.MangaGenre.MangaGenre;
+import serverapi.Tables.MangaTables.MangaGenre.MangaGenre;
 
 import javax.persistence.*;
 import java.util.Collection;

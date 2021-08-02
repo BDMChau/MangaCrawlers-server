@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Query.DTO.AuthorMangaDTO;
-import serverapi.Query.Repository.AuthorRepos;
+import serverapi.Query.Repository.Manga.AuthorRepos;
 
 import java.util.List;
 import java.util.Map;
