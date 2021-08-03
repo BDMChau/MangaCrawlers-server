@@ -46,10 +46,10 @@ public class UpdateView {
             updatable = false,
             columnDefinition = "timestamp with time zone"
     )
-    private Calendar createdAt;
+    private Calendar created_at;
 
-    public UpdateView(Long totalviews, Calendar createdAt) {
+    public UpdateView(Long totalviews, Calendar created_at) {
         this.totalviews = totalviews;
-        this.createdAt = createdAt;
+        this.created_at = created_at;
     }
 }

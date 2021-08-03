@@ -1,4 +1,4 @@
-package serverapi.Query.DTO;
+package serverapi.Query.DTOs.TablesDTOs;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,9 +28,9 @@ public class UserReadingHistoryDTO {
 
     private Long chapter_id;
     private String chapter_name;
-    private Calendar createdAt;
+    private Calendar created_at;
 
-    public UserReadingHistoryDTO(Long readingHistory_id, Calendar reading_History_time, Long user_id, Long manga_id, String manga_name, String thumbnail, float stars, Long views, int date_publications, String status, Long chapter_id, String chapter_name, Calendar createdAt) {
+    public UserReadingHistoryDTO(Long readingHistory_id, Calendar reading_History_time, Long user_id, Long manga_id, String manga_name, String thumbnail, float stars, Long views, int date_publications, String status, Long chapter_id, String chapter_name, Calendar created_at) {
         this.readingHistory_id = readingHistory_id;
         this.reading_History_time = reading_History_time;
         this.user_id = user_id;
@@ -43,6 +43,6 @@ public class UserReadingHistoryDTO {
         this.status = status;
         this.chapter_id = chapter_id;
         this.chapter_name = chapter_name;
-        this.createdAt = createdAt;
+        this.created_at = created_at;
     }
 }

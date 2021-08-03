@@ -1,4 +1,4 @@
-package serverapi.Query.DTO;
+package serverapi.Query.DTOs.TablesDTOs;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -41,7 +41,7 @@ public class ImageChapter {
             updatable = true,
             columnDefinition = "timestamp with time zone"
     )
-    private Calendar createdAt;
+    private Calendar created_at;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)

@@ -2,7 +2,7 @@ package serverapi.Query.Specification;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
-import serverapi.Query.DTO.SearchCriteriaDTO;
+import serverapi.Query.DTOs.FeaturesDTOs.SearchCriteriaDTO;
 import serverapi.Tables.MangaTables.Manga.Manga;
 
 import javax.persistence.criteria.CriteriaBuilder;

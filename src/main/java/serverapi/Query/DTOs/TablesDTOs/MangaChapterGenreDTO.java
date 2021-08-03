@@ -1,4 +1,4 @@
-package serverapi.Query.DTO;
+package serverapi.Query.DTOs.TablesDTOs;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +13,7 @@ public class MangaChapterGenreDTO {
 
     private Long chapter_id;
     private String chapter_name;
-    private Calendar createdAt;
+    private Calendar created_at;
 
     private Long manga_id;
     private String manga_name;
@@ -24,12 +24,12 @@ public class MangaChapterGenreDTO {
     private String description;
     private String genre_color;
 
-    public MangaChapterGenreDTO(Long chapter_id, String chapter_name, Calendar createdAt, Long manga_id,
+    public MangaChapterGenreDTO(Long chapter_id, String chapter_name, Calendar created_at, Long manga_id,
                                 String manga_name, String thumbnail, Long genre_id, String genre_name,
                                 String description, String genre_color) {
         this.chapter_id = chapter_id;
         this.chapter_name = chapter_name;
-        this.createdAt = createdAt;
+        this.created_at = created_at;
 
         this.manga_id = manga_id;
         this.manga_name = manga_name;

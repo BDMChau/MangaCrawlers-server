@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import serverapi.Query.DTO.CommentExportDTO;
-import serverapi.Query.DTO.MangaChapterDTO;
+import serverapi.Query.DTOs.FeaturesDTOs.CommentExportDTO;
+import serverapi.Query.DTOs.TablesDTOs.MangaChapterDTO;
 import serverapi.Tables.MangaTables.ChapterComments.ChapterComments;
 import serverapi.Tables.UserTables.User.User;
 

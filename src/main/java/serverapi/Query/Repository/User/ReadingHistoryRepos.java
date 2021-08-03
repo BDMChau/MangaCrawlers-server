@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import serverapi.Query.DTO.UserReadingHistoryDTO;
+import serverapi.Query.DTOs.TablesDTOs.UserReadingHistoryDTO;
 import serverapi.Tables.UserTables.ReadingHistory.ReadingHistory;
 import serverapi.Tables.UserTables.User.User;
 

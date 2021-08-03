@@ -6,7 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
-import serverapi.Query.DTO.*;
+import serverapi.Query.DTOs.FeaturesDTOs.ReportDTOs.ReportTopMangaDTO;
+import serverapi.Query.DTOs.FeaturesDTOs.ReportDTOs.ReportUserFollowMangaDTO;
+import serverapi.Query.DTOs.FeaturesDTOs.ReportDTOs.ReportsDTO;
+import serverapi.Query.DTOs.FeaturesDTOs.ReportDTOs.UserRDTO;
+import serverapi.Query.DTOs.TablesDTOs.AuthorMangaDTO;
 import serverapi.Query.Repository.Manga.ChapterRepos;
 import serverapi.Query.Repository.Manga.MangaRepos;
 import serverapi.Query.Repository.User.FollowingRepos;
@@ -85,7 +89,7 @@ public class AdminService {
             getUserInfo.forEach(item -> {
 
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
-                Integer monthOfUser = Integer.parseInt(simpleDateFormat.format(item.getCreatedAt().getTime()));
+                Integer monthOfUser = Integer.parseInt(simpleDateFormat.format(item.getCreated_at().getTime()));
 
                 if (monthOfUser == finalI) {
 
@@ -140,7 +144,7 @@ public class AdminService {
             mangasInfo.forEach(item -> {
 
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
-                Integer monthOfUser = Integer.parseInt(simpleDateFormat.format(item.getCreatedAt().getTime()));
+                Integer monthOfUser = Integer.parseInt(simpleDateFormat.format(item.getCreated_at().getTime()));
 
                 if (monthOfUser == finalI) {
 
@@ -194,7 +198,7 @@ public class AdminService {
 
             getTransGroupInfo.forEach(item -> {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
-                Integer monthOfUser = Integer.parseInt(simpleDateFormat.format(item.getCreatedAt().getTime()));
+                Integer monthOfUser = Integer.parseInt(simpleDateFormat.format(item.getCreated_at().getTime()));
 
                 if (monthOfUser == finalI) {
 

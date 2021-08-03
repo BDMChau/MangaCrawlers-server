@@ -98,7 +98,7 @@ public class AuthService implements IAuthService {
         newUser.setUser_password(signUpPojo.getUser_password());
         newUser.setUser_isAdmin(false);
         newUser.setUser_isVerified(false);
-        newUser.setCreatedAt(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+        newUser.setCreated_at(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
 
         UserAvatarCollection userAvatarCollection = new UserAvatarCollection();
         newUser.setUser_avatar(userAvatarCollection.getAvatar_member());
@@ -110,7 +110,7 @@ public class AuthService implements IAuthService {
         String token = new RandomBytes().randomBytes(32);
         String hashedToken = new HashSHA512().hash(token);
         newUser.setToken_verify(hashedToken);
-        newUser.setToken_verify_createdAt(timeExpired);
+        newUser.setToken_verify_created_at(timeExpired);
 
 
         String userName = signUpPojo.getUser_name();
@@ -187,7 +187,7 @@ public class AuthService implements IAuthService {
         String token = new RandomBytes().randomBytes(32);
         String hashedToken = new HashSHA512().hash(token);
         user.setToken_reset_pass(hashedToken);
-        user.setToken_reset_pass_createdAt(timeExpired);
+        user.setToken_reset_pass_created_at(timeExpired);
 
         String userEmail = user.getUser_email();
         String userName = user.getUser_name();
@@ -212,7 +212,7 @@ public class AuthService implements IAuthService {
         }
         User user = userOptional.get();
 
-        Long tokenExpiredAt = Long.parseLong(user.getToken_reset_pass_createdAt());
+        Long tokenExpiredAt = Long.parseLong(user.getToken_reset_pass_created_at());
         if (currentTime >= tokenExpiredAt || tokenExpiredAt == null) {
             Map<String, String> err = Map.of("err", "Token has expired!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
@@ -223,7 +223,7 @@ public class AuthService implements IAuthService {
         String hashedNewPassword = new HashSHA512().hash(newPassword);
         user.setUser_password(hashedNewPassword);
 
-        user.setToken_reset_pass_createdAt(null);
+        user.setToken_reset_pass_created_at(null);
         user.setToken_reset_pass(null);
         authRepository.save(user);
 
@@ -244,10 +244,10 @@ public class AuthService implements IAuthService {
         User user = userOptional.get();
 
 
-        Long tokenExpiredAt = Long.parseLong(user.getToken_verify_createdAt());
+        Long tokenExpiredAt = Long.parseLong(user.getToken_verify_created_at());
         if (currentTime >= tokenExpiredAt || tokenExpiredAt == null) {
             user.setToken_verify(null);
-            user.setToken_verify_createdAt(null);
+            user.setToken_verify_created_at(null);
 
             Map<String, String> err = Map.of(
                     "err", "Token has expired!",
@@ -260,7 +260,7 @@ public class AuthService implements IAuthService {
 
         user.setUser_isVerified(true);
         user.setToken_verify(null);
-        user.setToken_verify_createdAt(null);
+        user.setToken_verify_created_at(null);
         authRepository.save(user);
 
         Map<String, String> msg = Map.of("msg", "Verify account successfully!");
@@ -289,7 +289,7 @@ public class AuthService implements IAuthService {
                 User newUser = new User();
                 newUser.setUser_name((String) userAttributes.get("name"));
                 newUser.setUser_email((String) userAttributes.get("email"));
-                newUser.setCreatedAt(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+                newUser.setCreated_at(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
                 newUser.setUser_password(null);
                 newUser.setUser_isAdmin(false);
                 newUser.setUser_isVerified(true);

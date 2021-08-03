@@ -57,14 +57,14 @@ public class TransGroup {
                 updatable = true,
                 columnDefinition = "timestamp with time zone"
         )
-        private Calendar createdAt;
+        private Calendar created_at;
 
 
-        public TransGroup(String transgroup_name, String transgroup_email, String transgroup_desc,Calendar createdAt) {
+        public TransGroup(String transgroup_name, String transgroup_email, String transgroup_desc,Calendar created_at) {
             this.transgroup_name = transgroup_name;
             this.transgroup_email = transgroup_email;
             this.transgroup_desc = transgroup_desc;
-            this.createdAt = createdAt;
+            this.created_at= created_at;
         }
 
 

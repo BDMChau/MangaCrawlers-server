@@ -154,11 +154,11 @@ public class Manga {
             updatable = true,
             columnDefinition = "timestamp with time zone"
     )
-    private Calendar createdAt;
+    private Calendar created_at;
 
 
     public Manga(String manga_name, String status, String description, float stars, Long views,
-                 String thumbnail, int date_publications, Calendar createdAt) {
+                 String thumbnail, int date_publications, Calendar created_at) {
 
         this.manga_name = manga_name;
         this.status = status;
@@ -167,7 +167,7 @@ public class Manga {
         this.views = views;
         this.thumbnail = thumbnail;
         this.date_publications = date_publications;
-        this.createdAt = createdAt;
+        this.created_at= created_at;
 
     }
 

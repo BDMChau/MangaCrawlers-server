@@ -4,8 +4,8 @@ package serverapi.Query.Repository.Manga;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import serverapi.Query.DTO.GenreDTO;
-import serverapi.Query.DTO.MangaGenreDTO;
+import serverapi.Query.DTOs.TablesDTOs.GenreDTO;
+import serverapi.Query.DTOs.TablesDTOs.MangaGenreDTO;
 import serverapi.Tables.MangaTables.Genre.Genre;
 
 import java.util.List;

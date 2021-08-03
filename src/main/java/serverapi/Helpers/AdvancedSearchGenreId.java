@@ -1,7 +1,7 @@
 package serverapi.Helpers;
 
-import serverapi.Query.DTO.MangaChapterDTO;
-import serverapi.Query.DTO.MangaGenreDTO;
+import serverapi.Query.DTOs.TablesDTOs.MangaChapterDTO;
+import serverapi.Query.DTOs.TablesDTOs.MangaGenreDTO;
 import serverapi.Query.Repository.Manga.MangaRepos;
 
 import java.util.ArrayList;

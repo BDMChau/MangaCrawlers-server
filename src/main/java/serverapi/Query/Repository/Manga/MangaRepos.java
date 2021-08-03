@@ -7,7 +7,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import serverapi.Query.DTO.*;
+import serverapi.Query.DTOs.FeaturesDTOs.UpdateViewDTO;
+import serverapi.Query.DTOs.TablesDTOs.*;
 import serverapi.Tables.MangaTables.Manga.Manga;
 
 import java.util.List;

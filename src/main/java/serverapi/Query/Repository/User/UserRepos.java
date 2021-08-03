@@ -4,7 +4,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import serverapi.Query.DTO.*;
+import serverapi.Query.DTOs.FeaturesDTOs.ReportDTOs.ReportTopMangaDTO;
+import serverapi.Query.DTOs.FeaturesDTOs.ReportDTOs.ReportUserFollowMangaDTO;
+import serverapi.Query.DTOs.FeaturesDTOs.ReportDTOs.UserRDTO;
+import serverapi.Query.DTOs.TablesDTOs.ChapterDTO;
+import serverapi.Query.DTOs.TablesDTOs.MangaDTO;
+import serverapi.Query.DTOs.TablesDTOs.UserTransGroupDTO;
 import serverapi.Tables.UserTables.TransGroup.TransGroup;
 import serverapi.Tables.UserTables.User.User;
 

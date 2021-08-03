@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import serverapi.Query.DTO.MangaViewDTO;
+import serverapi.Query.DTOs.TablesDTOs.MangaViewDTO;
 import serverapi.Query.Repository.Manga.MangaRepos;
 import serverapi.Query.Repository.Manga.UpdateViewRepos;
 import serverapi.Tables.MangaTables.UpdateView.UpdateView;
@@ -44,7 +44,7 @@ public class MangaConfigSchedule {
         listViewsMangas.forEach(item -> {
             Long mangaId = item.getManga_id();
             Long totalViews = item.getViews();
-            Calendar createdAt = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            Calendar created_at = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
             Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
 
@@ -60,7 +60,7 @@ public class MangaConfigSchedule {
 
             UpdateView view = new UpdateView();
             view.setTotalviews(totalViews);
-            view.setCreatedAt(createdAt);
+            view.setCreated_at(created_at);
             view.setManga(manga);
 
             updateViewRepos.saveAndFlush(view);

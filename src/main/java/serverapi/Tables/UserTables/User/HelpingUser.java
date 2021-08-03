@@ -1,7 +1,7 @@
 package serverapi.Tables.UserTables.User;
 
-import serverapi.Query.DTO.ChapterDTO;
-import serverapi.Query.DTO.MangaChapterDTO;
+import serverapi.Query.DTOs.TablesDTOs.ChapterDTO;
+import serverapi.Query.DTOs.TablesDTOs.MangaChapterDTO;
 import serverapi.Query.Repository.Manga.ChapterRepos;
 import serverapi.Query.Repository.Manga.MangaRepos;
 
@@ -40,7 +40,7 @@ public class HelpingUser {
                             MangaChapterDTO mangaChapterDTO = new MangaChapterDTO();
                             mangaChapterDTO.setChapter_id(chapter.getChapter_id());
                             mangaChapterDTO.setChapter_name(chapter.getChapter_name());
-                            mangaChapterDTO.setCreatedAt(chapter.getCreatedAt());
+                            mangaChapterDTO.setCreated_at(chapter.getCreated_at());
                             mangaChapterDTO.setManga_id(manga.getManga_id());
                             mangaChapterDTO.setManga_name(manga.getManga_name());
                             mangaChapterDTO.setThumbnail(manga.getThumbnail());
@@ -55,7 +55,7 @@ public class HelpingUser {
                         MangaChapterDTO mangaChapterDTO = new MangaChapterDTO();
                         mangaChapterDTO.setChapter_id(0L);
                         mangaChapterDTO.setChapter_name(" ");
-                        mangaChapterDTO.setCreatedAt(null);
+                        mangaChapterDTO.setCreated_at(null);
                         mangaChapterDTO.setManga_id(manga.getManga_id());
                         mangaChapterDTO.setManga_name(manga.getManga_name());
                         mangaChapterDTO.setThumbnail(manga.getThumbnail());

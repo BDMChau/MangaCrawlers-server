@@ -3,8 +3,8 @@ package serverapi.Query.Repository.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import serverapi.Query.DTO.AverageStarDTO;
-import serverapi.Query.DTO.RatingMangaDTO;
+import serverapi.Query.DTOs.FeaturesDTOs.AverageStarDTO;
+import serverapi.Query.DTOs.FeaturesDTOs.RatingMangaDTO;
 import serverapi.Tables.MangaTables.RatingManga.RatingManga;
 
 import java.util.List;

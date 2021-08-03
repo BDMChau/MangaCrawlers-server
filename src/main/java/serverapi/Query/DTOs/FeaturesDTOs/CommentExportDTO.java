@@ -1,4 +1,4 @@
-package serverapi.Query.DTO;
+package serverapi.Query.DTOs.FeaturesDTOs;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.Calendar;
 public class CommentExportDTO {
 
     public CommentExportDTO(Long user_id, String user_name, String user_email, String user_avatar,
-                            Long chapter_id, String chapter_name, Calendar createdAt,
+                            Long chapter_id, String chapter_name, Calendar created_at,
                             Long chaptercmt_id, Calendar chaptercmt_time, String chaptercmt_content) {
         this.user_id = user_id;
         this.user_name = user_name;
@@ -20,7 +20,7 @@ public class CommentExportDTO {
         this.user_avatar = user_avatar;
         this.chapter_id = chapter_id;
         this.chapter_name = chapter_name;
-        this.createdAt = createdAt;
+        this.created_at = created_at;
         this.chaptercmt_id = chaptercmt_id;
         this.chaptercmt_time = chaptercmt_time;
         this.chaptercmt_content = chaptercmt_content;
@@ -33,7 +33,7 @@ public class CommentExportDTO {
 
     private Long chapter_id;
     private String chapter_name;
-    private Calendar createdAt;
+    private Calendar created_at;
 
     private Long chaptercmt_id;
     private Calendar chaptercmt_time;

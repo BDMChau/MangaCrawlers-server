@@ -1,29 +1,27 @@
-package serverapi.Query.DTO;
+package serverapi.Query.DTOs.TablesDTOs;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Calendar;
-
 @Getter
 @Setter
 @NoArgsConstructor
-public class ReportTopMangaDTO {
+public class MangaDTO {
 
-    private Long author_id;
-    private String author_name;
+    public MangaDTO(Long manga_id, String manga_name, String thumbnail) {
+        this.manga_id = manga_id;
+        this.manga_name = manga_name;
+        this.thumbnail = thumbnail;
+    }
 
-    public ReportTopMangaDTO(Long author_id, String author_name, Long manga_id, String manga_name, String thumbnail, float stars, Long views, int date_publications, Calendar createdAt) {
-        this.author_id = author_id;
-        this.author_name = author_name;
+    public MangaDTO(Long manga_id, String manga_name, String thumbnail, float stars, Long views, int date_publications) {
         this.manga_id = manga_id;
         this.manga_name = manga_name;
         this.thumbnail = thumbnail;
         this.stars = stars;
         this.views = views;
         this.date_publications = date_publications;
-        this.createdAt = createdAt;
     }
 
     private Long manga_id;
@@ -32,6 +30,6 @@ public class ReportTopMangaDTO {
     private float stars;
     private Long views;
     private int date_publications;
-    private Calendar createdAt;
+
 
 }

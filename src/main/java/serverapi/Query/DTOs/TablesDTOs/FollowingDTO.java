@@ -1,4 +1,4 @@
-package serverapi.Query.DTO;
+package serverapi.Query.DTOs.TablesDTOs;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +13,7 @@ public class FollowingDTO {
 
     public FollowingDTO(Long followId, Long manga_id, String manga_name, String status,
                         String description, float stars, Long views, String thumbnail,
-                        int date_publications, Calendar manga_createdAt  ) {
+                        int date_publications, Calendar manga_created_at  ) {
         FollowId = followId;
         this.manga_id = manga_id;
         this.manga_name = manga_name;
@@ -23,7 +23,7 @@ public class FollowingDTO {
         this.views = views;
         this.thumbnail = thumbnail;
         this.date_publications = date_publications;
-        this.manga_createdAt = manga_createdAt;
+        this.manga_created_at = manga_created_at;
 
     }
 
@@ -37,7 +37,7 @@ public class FollowingDTO {
     private Long views;
     private String thumbnail;
     private int date_publications;
-    private Calendar manga_createdAt;
+    private Calendar manga_created_at;
 
 
 }

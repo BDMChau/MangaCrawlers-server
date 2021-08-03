@@ -1,4 +1,4 @@
-package serverapi.Query.DTO;
+package serverapi.Query.DTOs.TablesDTOs;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +24,7 @@ public class AuthorMangaDTO {
     private Long views;
     private String thumbnail;
     private int date_publications;
-    private Calendar manga_createdAt;
+    private Calendar manga_created_at;
 
 
     public AuthorMangaDTO(String author_name, String manga_name) {
@@ -33,7 +33,7 @@ public class AuthorMangaDTO {
     }
 
     public AuthorMangaDTO(Long author_id, String author_name, Long manga_id, String manga_name, String status, String description,
-                          float stars, Long views, String thumbnail, int date_publications, Calendar manga_createdAt) {
+                          float stars, Long views, String thumbnail, int date_publications, Calendar manga_created_at) {
         this.author_id = author_id;
         this.author_name = author_name;
         this.manga_id = manga_id;
@@ -44,14 +44,14 @@ public class AuthorMangaDTO {
         this.views = views;
         this.thumbnail = thumbnail;
         this.date_publications = date_publications;
-        this.manga_createdAt = manga_createdAt;
+        this.manga_created_at = manga_created_at;
 
 
     }
 
     public AuthorMangaDTO(Long chapters_length, Long author_id,
                           String author_name, Long manga_id, String manga_name, String status, String description,
-                          float stars, Long views, String thumbnail, int date_publications, Calendar manga_createdAt) {
+                          float stars, Long views, String thumbnail, int date_publications, Calendar manga_created_at) {
         Chapters_length = chapters_length;
         this.author_id = author_id;
         this.author_name = author_name;
@@ -63,7 +63,7 @@ public class AuthorMangaDTO {
         this.views = views;
         this.thumbnail = thumbnail;
         this.date_publications = date_publications;
-        this.manga_createdAt = manga_createdAt;
+        this.manga_created_at = manga_created_at;
     }
 
 

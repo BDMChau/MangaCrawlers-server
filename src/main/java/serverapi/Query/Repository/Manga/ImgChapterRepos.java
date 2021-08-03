@@ -3,7 +3,7 @@ package serverapi.Query.Repository.Manga;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import serverapi.Query.DTO.ChapterImgDTO;
+import serverapi.Query.DTOs.TablesDTOs.ChapterImgDTO;
 import serverapi.Tables.MangaTables.ImageChapter.ImageChapter;
 
 import java.util.List;

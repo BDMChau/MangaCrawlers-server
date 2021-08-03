@@ -1,4 +1,4 @@
-package serverapi.Query.DTO;
+package serverapi.Query.DTOs.FeaturesDTOs.ReportDTOs;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,12 +10,12 @@ import java.util.Calendar;
 @Setter
 @NoArgsConstructor
 public class UserRDTO {
-    public UserRDTO(Long user_id, Calendar createdAt) {
+    public UserRDTO(Long user_id, Calendar created_at) {
         this.user_id = user_id;
-        this.createdAt = createdAt;
+        this.created_at = created_at;
     }
 
     private Long user_id;
-    private Calendar createdAt;
+    private Calendar created_at;
 
 }

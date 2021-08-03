@@ -1,4 +1,4 @@
-package serverapi.Query.DTO;
+package serverapi.Query.DTOs.TablesDTOs;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,13 +7,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class MangaGenreDTO {
-    public MangaGenreDTO(Long genre_id, String genre_name, String color, String genre_description, Long manga_id) {
+public class GenreDTO {
+
+    public GenreDTO(Long genre_id, String genre_name, String color, String genre_description) {
         this.genre_id = genre_id;
         this.genre_name = genre_name;
         this.color = color;
         this.genre_description = genre_description;
-        this.manga_id = manga_id;
     }
 
     private Long genre_id;
@@ -21,5 +21,4 @@ public class MangaGenreDTO {
     private String color;
     private String genre_description;
 
-    private Long manga_id;
 }

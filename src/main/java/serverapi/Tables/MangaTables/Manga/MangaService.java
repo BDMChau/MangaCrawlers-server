@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 import serverapi.Api.Response;
 import serverapi.Helpers.AdvancedSearchGenreId;
 import serverapi.Helpers.OffsetBasedPageRequest;
-import serverapi.Query.DTO.*;
+import serverapi.Query.DTOs.FeaturesDTOs.*;
+import serverapi.Query.DTOs.TablesDTOs.*;
 import serverapi.Query.Repository.Manga.ChapterRepos;
 import serverapi.Query.Repository.Manga.GenreRepos;
 import serverapi.Query.Repository.Manga.MangaRepos;
@@ -156,7 +157,7 @@ public class MangaService {
         listViewsMangas.forEach(item -> {
             Long mangaId = item.getManga_id();
             Long totalViews = item.getViews();
-            Calendar createdAt = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            Calendar created_at = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
             Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
 
@@ -172,7 +173,7 @@ public class MangaService {
 
             UpdateView view = new UpdateView();
             view.setTotalviews(totalViews);
-            view.setCreatedAt(createdAt);
+            view.setCreated_at(created_at);
             view.setManga(manga);
 
             updateViewRepos.save(view);
@@ -322,14 +323,14 @@ public class MangaService {
         List<UpdateViewDTO> listCurrentDaily = mangaRepository.getWeekly(1,0);
         listCurrentDaily.forEach (item->{
             System.err.println ("item in listcurrent "+item.getManga_id ());
-            System.err.println ("item in listcurrent "+item.getCreatedAt ().getFirstDayOfWeek ());
+            System.err.println ("item in listcurrent "+item.getCreated_at ().getFirstDayOfWeek ());
 
         });
         System.err.println ("datecurrent"+ LocalDateTime.now ());
         List<UpdateViewDTO> listPreviousDaily = mangaRepository.getWeekly(2, 1);
         listPreviousDaily.forEach (item->{
             System.err.println ("item in lisprev "+item.getManga_id ());
-            System.err.println ("item in listprev "+item.getCreatedAt ().getFirstDayOfWeek ());
+            System.err.println ("item in listprev "+item.getCreated_at ().getFirstDayOfWeek ());
 
         });
 

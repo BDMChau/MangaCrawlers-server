@@ -1,4 +1,4 @@
-package serverapi.Query.DTO;
+package serverapi.Query.DTOs.TablesDTOs;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,8 +13,8 @@ public class ChapterCommentsDTO {
 
     public ChapterCommentsDTO(Long user_id, String user_name, String user_email, String user_avatar,
                               Long manga_id, String manga_name, String status, String description,
-                              float stars, Long views, String thumbnail, int date_publications, Calendar manga_createdAt,
-                              Long chapter_id, String chapter_name, Calendar createdAt, Long chaptercmt_id, Calendar chaptercmt_time, String chaptercmt_content) {
+                              float stars, Long views, String thumbnail, int date_publications, Calendar manga_created_at,
+                              Long chapter_id, String chapter_name, Calendar created_at, Long chaptercmt_id, Calendar chaptercmt_time, String chaptercmt_content) {
         this.user_id = user_id;
         this.user_name = user_name;
         this.user_email = user_email;
@@ -27,10 +27,10 @@ public class ChapterCommentsDTO {
         this.views = views;
         this.thumbnail = thumbnail;
         this.date_publications = date_publications;
-        this.manga_createdAt = manga_createdAt;
+        this.manga_created_at = manga_created_at;
         this.chapter_id = chapter_id;
         this.chapter_name = chapter_name;
-        this.createdAt = createdAt;
+        this.created_at = created_at;
         this.chaptercmt_id = chaptercmt_id;
         this.chaptercmt_time = chaptercmt_time;
         this.chaptercmt_content = chaptercmt_content;
@@ -39,7 +39,7 @@ public class ChapterCommentsDTO {
 
 
     public ChapterCommentsDTO(Long user_id, String user_name, String user_email, String user_avatar,
-                              Long chapter_id, String chapter_name, Calendar createdAt,
+                              Long chapter_id, String chapter_name, Calendar created_at,
                               Long chaptercmt_id, Calendar chaptercmt_time, String chaptercmt_content) {
         this.user_id = user_id;
         this.user_name = user_name;
@@ -47,7 +47,7 @@ public class ChapterCommentsDTO {
         this.user_avatar = user_avatar;
         this.chapter_id = chapter_id;
         this.chapter_name = chapter_name;
-        this.createdAt = createdAt;
+        this.created_at = created_at;
         this.chaptercmt_id = chaptercmt_id;
         this.chaptercmt_time = chaptercmt_time;
         this.chaptercmt_content = chaptercmt_content;
@@ -66,11 +66,11 @@ public class ChapterCommentsDTO {
     private Long views;
     private String thumbnail;
     private int date_publications;
-    private Calendar manga_createdAt;
+    private Calendar manga_created_at;
 
     private Long chapter_id;
     private String chapter_name;
-    private Calendar createdAt;
+    private Calendar created_at;
 
     private Long chaptercmt_id;
     private Calendar chaptercmt_time;

@@ -83,28 +83,28 @@ public class User {
     private String token_reset_pass;
 
     @Column(nullable = true)
-    private String token_reset_pass_createdAt;
+    private String token_reset_pass_created_at;
 
     @Column(columnDefinition = "TEXT", nullable = true)
     private String token_verify;
 
     @Column(nullable = true)
-    private String token_verify_createdAt;
+    private String token_verify_created_at;
 
     @Column(
             nullable = false,
             updatable = true,
             columnDefinition = "timestamp with time zone"
     )
-    private Calendar createdAt;
+    private Calendar created_at;
 
     public User(String user_name, String user_email, String user_password, String user_avatar, Boolean user_isAdmin,
-                Calendar createdAt) {
+                Calendar created_at) {
         this.user_name = user_name;
         this.user_email = user_email;
         this.user_password = user_password;
         this.user_avatar = user_avatar;
         this.user_isAdmin = user_isAdmin;
-        this.createdAt = createdAt;
+        this.created_at = created_at;
     }
 }

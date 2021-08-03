@@ -11,7 +11,11 @@ import serverapi.Api.Response;
 import serverapi.Configuration.Cache.CacheService;
 import serverapi.Helpers.RoundNumber;
 import serverapi.Helpers.UserAvatarCollection;
-import serverapi.Query.DTO.*;
+import serverapi.Query.DTOs.FeaturesDTOs.CommentExportDTO;
+import serverapi.Query.DTOs.TablesDTOs.FollowingDTO;
+import serverapi.Query.DTOs.TablesDTOs.MangaChapterDTO;
+import serverapi.Query.DTOs.TablesDTOs.UserReadingHistoryDTO;
+import serverapi.Query.DTOs.TablesDTOs.UserTransGroupDTO;
 import serverapi.Query.Repository.Manga.*;
 import serverapi.Query.Repository.User.*;
 import serverapi.SharedServices.CloudinaryUploader;
@@ -321,7 +325,7 @@ public class UserService {
 
         commentExportDTO.setChapter_id(chapterComments.getChapter().getChapter_id());
         commentExportDTO.setChapter_name(chapterComments.getChapter().getChapter_name());
-        commentExportDTO.setCreatedAt(chapterComments.getChapter().getCreatedAt());
+        commentExportDTO.setCreated_at(chapterComments.getChapter().getCreated_at());
 
         commentExportDTO.setChaptercmt_id(chapterComments.getChaptercmt_id());
         commentExportDTO.setChaptercmt_content(chapterComments.getChaptercmt_content());
@@ -508,7 +512,7 @@ public class UserService {
 
         Chapter chapter = new Chapter();
         chapter.setChapter_name(chapterName);
-        chapter.setCreatedAt(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+        chapter.setCreated_at(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
         chapter.setManga(manga);
         chapterRepos.saveAndFlush(chapter);
 
@@ -530,15 +534,15 @@ public class UserService {
             String publicId = (String) responseFromCloudinary.get("public_id");
 
             // format date
-            // String createdAtFromCloudinary = (String) responseFromCloudinary.get("created_at");
+            // String created_atFromCloudinary = (String) responseFromCloudinary.get("created_at");
             // DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-            // Date date = dateFormat.parse(createdAtFromCloudinary);
-            // Calendar createdAt = dateFormat.getCalendar();
+            // Date date = dateFormat.parse(created_atFromCloudinary);
+            // Calendar created_at = dateFormat.getCalendar();
 
 
             ImageChapter imageChapter = new ImageChapter();
             imageChapter.setImgchapter_url(securedUrl);
-//            imageChapter.setCreatedAt(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+//            imageChapter.setcreated_at(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
             imageChapter.setImgchapter_public_id_cloudinary(publicId);
             imageChapter.setChapter(chapter);
             imgChapterRepos.saveAndFlush(imageChapter);
@@ -572,7 +576,7 @@ public class UserService {
         TransGroup transGroup = new TransGroup();
         transGroup.setTransgroup_name(groupName);
         transGroup.setTransgroup_email(user.getUser_email());
-        transGroup.setCreatedAt(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+        transGroup.setCreated_at(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
         if (groupDesc.isEmpty()) {
             transGroup.setTransgroup_desc("");
         } else {
@@ -820,7 +824,7 @@ public class UserService {
         manga.setDescription(fieldsCreateMangaDTO.getDescription());
         manga.setAuthor(author);
         manga.setTransgroup(transGroup);
-        manga.setCreatedAt(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+        manga.setCreated_at(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
         mangaRepository.saveAndFlush(manga);
         System.err.println("03");
 

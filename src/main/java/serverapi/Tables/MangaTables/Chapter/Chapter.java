@@ -70,13 +70,13 @@ public class Chapter {
             updatable = false,
             columnDefinition = "timestamp with time zone"
     )
-    private Calendar createdAt;
+    private Calendar created_at;
 
 
-    public Chapter(float chapter_number, String chapter_name, int views, Calendar createdAt) {
+    public Chapter(float chapter_number, String chapter_name, int views, Calendar created_at) {
         this.chapter_number = chapter_number;
         this.chapter_name = chapter_name;
         this.views = views;
-        this.createdAt = createdAt;
+        this.created_at= created_at;
     }
 }
