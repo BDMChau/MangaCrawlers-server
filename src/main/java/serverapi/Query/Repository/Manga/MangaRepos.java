@@ -1,5 +1,6 @@
 package serverapi.Query.Repository.Manga;
 
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,27 +26,29 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
 //    Optional<Manga> findChapter(@Param("manga_id") Long manga_id, @Param("chapter_id") Long chapter_id);
 
 
-    @Query("SELECT new serverapi.Query.DTO.MangaChapterDTO(c.chapter_id, c.chapter_name, c.createdAt, m.manga_id," +
+    @Query("SELECT new serverapi.Query.DTOs.TablesDTOs.MangaChapterDTO(c.chapter_id, c.chapter_name, c.created_at, m.manga_id," +
             " m.manga_name, m.thumbnail) FROM Manga m JOIN m.chapters c WHERE c.chapter_id = (SELECT MAX(ct.chapter_id) FROM Manga mg INNER JOIN mg.chapters ct " +
             "WHERE mg.manga_id = m.manga_id ) Order by c.chapter_id Desc")
     List<MangaChapterDTO> getLatestChapterFromManga();
 
 
-    @Query("SELECT new serverapi.Query.DTO.MangaChapterDTO(c.chapter_id, c.chapter_name, c.createdAt, m.manga_id," +
+    @Query("SELECT new serverapi.Query.DTOs.TablesDTOs.MangaChapterDTO(c.chapter_id, c.chapter_name, c.created_at, m.manga_id," +
             " m.manga_name, m.thumbnail) FROM Manga m JOIN m.chapters c WHERE c.chapter_id = (SELECT MAX(ct.chapter_id) FROM Manga mg INNER JOIN mg.chapters ct " +
             "WHERE mg.manga_id = m.manga_id ) AND m.manga_id =?1 Order by c.chapter_id Desc")
     Optional<MangaChapterDTO> getLatestChapterFromMangaByMangaId(Long manga_id);
 
 
-    @Query("SELECT new serverapi.Query.DTO.MangaChapterDTO(c.chapter_id, c.chapter_name, c.createdAt, m.manga_id," +
+    @Query("SELECT new serverapi.Query.DTOs.TablesDTOs.MangaChapterDTO(c.chapter_id, c.chapter_name, c.created_at, m.manga_id," +
             " m.manga_name, m.thumbnail) FROM Manga m JOIN m.chapters c JOIN TransGroup tg ON tg.transgroup_id = m.transgroup WHERE c.chapter_id = (SELECT MAX(ct.chapter_id) FROM Manga mg INNER JOIN mg.chapters ct " +
             "WHERE mg.manga_id = m.manga_id ) AND tg.transgroup_id =?1 Order by c.chapter_id Desc")
     List<MangaChapterDTO> getLatestChapterFromMangaByTransgroup(Long transgroup_id);
 
 
-    @Query("SELECT new serverapi.Query.DTO.MangaChapterDTO(m.manga_id," +
+    @Query("SELECT new serverapi.Query.DTOs.TablesDTOs.MangaChapterDTO(m.manga_id," +
             " m.manga_name, m.thumbnail, m.stars) FROM Manga m JOIN TransGroup tg ON tg.transgroup_id = m.transgroup WHERE tg.transgroup_id =?1")
-    List<MangaChapterDTO> getMangaByTransgroup(Long transgroup_id);
+    default List<MangaChapterDTO> getMangaByTransgroup(Long transgroup_id) {
+        return null;
+    }
 
 
     @Query(value = "SELECT * FROM Manga ORDER BY RANDOM() LIMIT :quantity", nativeQuery = true)
@@ -64,7 +67,7 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
     List<Manga> getTop(@Param("quantity") Integer quantity);
 
 
-    @Query("SELECT new serverapi.Query.DTO.MangaChapterGenreDTO(c.chapter_id, c.chapter_name, c.createdAt, m" +
+    @Query("SELECT new serverapi.Query.DTOs.TablesDTOs.MangaChapterGenreDTO(c.chapter_id, c.chapter_name, c.created_at, m" +
             ".manga_id,m.manga_name, m.thumbnail, g.genre_id, g.genre_name, g.genre_description, g.genre_color) FROM " +
             "Manga m JOIN m.chapters c JOIN m.mangaGenres mg ON mg.manga = m.manga_id JOIN Genre g ON g.genre_id = mg.genre  " +
             "WHERE c.chapter_id = (SELECT MAX(ct.chapter_id) FROM Manga mg INNER JOIN mg.chapters ct WHERE mg.manga_id = m.manga_id " +
@@ -78,48 +81,48 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
 //    List<TotalViews> getTotalViews ();
 
 
-    @Query(value = "SELECT new serverapi.Query.DTO.MangaViewDTO(Sum(c.views),m.manga_id,m.manga_name) FROM Manga m " +
+    @Query(value = "SELECT new serverapi.Query.DTOs.TablesDTOs.MangaViewDTO(Sum(c.views),m.manga_id,m.manga_name) FROM Manga m " +
             "JOIN m.chapters c GROUP BY m.manga_id, m.manga_name ")
     List<MangaViewDTO> getTotalView();
 
 
 //    @Query("SELECT new serverapi.Query.DTO.UpdateViewDTO(m.manga_id,m.manga_name, m.thumbnail, m.description, m.status, m.stars," +
-//            "m.views, m.date_publications, m.createdAt, u.updatedview_id, u.totalviews, u.createdAt) " +
+//            "m.views, m.date_publications, m.created_at, u.updatedview_id, u.totalviews, u.created_at) " +
 //            "FROM UpdateView u JOIN u.manga m " +
-//            "WHERE u.createdAt >= (current_date - (:from_time )) and u.createdAt <= (current_date - (:to_time)) ")
+//            "WHERE u.created_at >= (current_date - (:from_time )) and u.created_at <= (current_date - (:to_time)) ")
 //    List<UpdateViewDTO> getWeekly(@Param("from_time") int from_time, @Param("to_time") int to_time);
 
 
-    @Query("SELECT new serverapi.Query.DTO.UpdateViewDTO(m.manga_id,m.manga_name, m.thumbnail, m.description, m.status, m.stars," +
-            "m.views, m.date_publications, m.createdAt, u.updatedview_id, u.totalviews, u.createdAt) " +
+    @Query("SELECT new serverapi.Query.DTOs.TablesDTOs.UpdateViewDTO(m.manga_id,m.manga_name, m.thumbnail, m.description, m.status, m.stars," +
+            "m.views, m.date_publications, m.created_at, u.updatedview_id, u.totalviews, u.created_at) " +
             "FROM UpdateView u JOIN u.manga m " +
-            "WHERE DATE(u.createdAt) >= (CURRENT_DATE - :from_time) and DATE(u.createdAt) < (CURRENT_DATE - :to_time)")
+            "WHERE DATE(u.created_at) >= (CURRENT_DATE - :from_time) and DATE(u.created_at) < (CURRENT_DATE - :to_time)")
     List<UpdateViewDTO> getWeekly(@Param("from_time") int from_time, @Param("to_time") int to_time);
 
 
 
-    @Query("SELECT new serverapi.Query.DTO.AuthorMangaDTO( a.author_id, a.author_name," +
+    @Query("SELECT new serverapi.Query.DTOs.TablesDTOs.AuthorMangaDTO( a.author_id, a.author_name," +
             " m.manga_id, m.manga_name, m.status, m.description, m.stars, " +
-            "m.views, m.thumbnail, m.date_publications, m.createdAt)" +
+            "m.views, m.thumbnail, m.date_publications, m.created_at)" +
             " FROM Author a JOIN a.mangas m WHERE m.manga_id = ?1")
     Optional<AuthorMangaDTO> getAllByMangaId(Long manga_id);
 
 
 
-    @Query("SELECT new serverapi.Query.DTO.AuthorMangaDTO( a.author_id, a.author_name," +
+    @Query("SELECT new serverapi.Query.DTOs.TablesDTOs.AuthorMangaDTO( a.author_id, a.author_name," +
             " m.manga_id, m.manga_name, m.status, m.description, m.stars, " +
-            "m.views, m.thumbnail, m.date_publications, m.createdAt)" +
+            "m.views, m.thumbnail, m.date_publications, m.created_at)" +
             " FROM Author a JOIN a.mangas m")
     List<AuthorMangaDTO> getAllMangas();
 
-    @Query("SELECT new serverapi.Query.DTO.AuthorMangaDTO( COUNT(c.chapter_id), a.author_id, a.author_name," +
+    @Query("SELECT new serverapi.Query.DTOs.TablesDTOs.AuthorMangaDTO( COUNT(c.chapter_id), a.author_id, a.author_name," +
             " m.manga_id, m.manga_name, m.status, m.description, m.stars, " +
-            "m.views, m.thumbnail, m.date_publications, m.createdAt) " +
+            "m.views, m.thumbnail, m.date_publications, m.created_at) " +
             "FROM Author a JOIN a.mangas m JOIN m.chapters c GROUP BY a.author_id, a.author_name, " +
-            "m.manga_id, m.manga_name, m.status, m.description, m.stars, m.views, m.thumbnail, m.date_publications, m.createdAt")
+            "m.manga_id, m.manga_name, m.status, m.description, m.stars, m.views, m.thumbnail, m.date_publications, m.created_at")
     List<AuthorMangaDTO> getAllMangasInfo();
 
-    @Query("SELECT new serverapi.Query.DTO.GenreDTO(g.genre_id, g.genre_name, g.genre_color, g.genre_description) " +
+    @Query("SELECT new serverapi.Query.DTOs.TablesDTOs.GenreDTO(g.genre_id, g.genre_name, g.genre_color, g.genre_description) " +
             "FROM" +
             " " +
             "Manga m JOIN m.mangaGenres mg ON mg.manga = m.manga_id JOIN Genre g ON g.genre_id = mg.genre  " +
@@ -127,7 +130,7 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
     List<GenreDTO> findGenresByMangId(Long manga_id);
 
 
-    @Query("SELECT new serverapi.Query.DTO.ChapterDTO(c.chapter_id, c.chapter_name, c.createdAt) FROM " +
+    @Query("SELECT new serverapi.Query.DTOs.TablesDTOs.ChapterDTO(c.chapter_id, c.chapter_name, c.created_at) FROM " +
             "Manga m JOIN m.chapters c " +
             "WHERE m.manga_id = ?1")
     List<ChapterDTO> findChaptersbyMangaId(Long manga_id);

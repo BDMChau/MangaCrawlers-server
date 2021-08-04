@@ -18,7 +18,7 @@ public interface FollowingRepos extends JpaRepository<FollowingManga, Long> {
 
     @Query("SELECT new serverapi.Query.DTO.FollowingDTO(f.followingmanga_id, " +
             "m.manga_id, m.manga_name, m.status, m.description, m.stars, m.views, m.thumbnail, m.date_publications, m" +
-            ".createdAt) FROM " +
+            ".created_at) FROM " +
             "FollowingManga f JOIN f.user u ON u.user_id = f.user JOIN f.manga m ON f.manga = m.manga_id " +
             "WHERE u.user_id =?1")
     List<FollowingDTO> findByUserId(Long userId);
@@ -39,7 +39,7 @@ public interface FollowingRepos extends JpaRepository<FollowingManga, Long> {
     void deleteAllFollowByUserId(@Param("user") User user);
 
 
-//   "SELECT new serverapi.Query.DTO.MangaChapterGenreDTO(c.chapter_id, c.chapter_name, c.createdAt, m" +
+//   "SELECT new serverapi.Query.DTO.MangaChapterGenreDTO(c.chapter_id, c.chapter_name, c.created_at, m" +
 //           ".manga_id,m.manga_name, m.thumbnail, g.genre_id, g.genre_name, g.genre_description, g.genre_color) FROM
 //           " +
 //           "Manga m JOIN m.chapters c JOIN m.mangaGenres mg ON mg.manga = m.manga_id JOIN Genre g ON g.genre_id =
@@ -49,7 +49,7 @@ public interface FollowingRepos extends JpaRepository<FollowingManga, Long> {
 //           "AND g.genre_id =?1) Order by c.chapter_id Desc"
 //   @Query("SELECT new serverapi.Query.DTO.FollowingDTO(f.followingmanga_id, " +
 //           "m.manga_id, m.manga_name, m.status, m.description, m.stars, m.views, m.thumbnail, m.date_publications,
-//           m.createdAt) FROM " +
+//           m.created_at) FROM " +
 //           "FollowingManga f JOIN f.user u ON u.user_id = f.user JOIN f.manga m ON f.manga = m.manga_id " +
 //           "WHERE u.user_id = ?1")
 //   List<FollowingDTO> FindByUserId(Long UserId);

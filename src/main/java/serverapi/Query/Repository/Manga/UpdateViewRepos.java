@@ -14,10 +14,10 @@ import java.util.List;
 public interface UpdateViewRepos extends JpaRepository<UpdateView, Long>, JpaSpecificationExecutor<UpdateView> {
 
 
-    @Query("SELECT new serverapi.Query.DTO.UpdateViewDTO(m.manga_id,m.manga_name, m.thumbnail, m.description, m.status, m.stars," +
-            "m.views, m.date_publications, m.createdAt, u.updatedview_id, u.totalviews, u.createdAt) " +
+    @Query(value = "SELECT new serverapi.Query.DTOs.FeaturesDTOs.UpdateViewDTO(m.manga_id,m.manga_name, m.thumbnail, m.description, m.status, m.stars," +
+            "m.views, m.date_publications, m.created_at, u.updatedview_id, u.totalviews, u.created_at) " +
             "FROM UpdateView u JOIN u.manga m " +
-            "WHERE u.createdAt >= current_date - :from_time and u.createdAt < current_date - :to_time ")
+            "WHERE u.created_at >= current_date - :from_time and u.created_at < current_date - :to_time", nativeQuery = true)
     List<UpdateViewDTO> getWeekly(@Param("from_time")int from_time, @Param("to_time") int to_time);
 
 }

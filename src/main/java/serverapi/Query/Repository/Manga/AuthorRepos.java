@@ -16,7 +16,7 @@ public interface AuthorRepos extends JpaRepository<Author, Long> {
     List<Author> findAllAuthor();
 
 
-    @Query(" SELECT new serverapi.Query.DTO.AuthorMangaDTO(a.author_name, m.manga_name) FROM Author a JOIN a.mangas" +
+    @Query(" SELECT new serverapi.Query.DTOs.TablesDTOs.AuthorMangaDTO(a.author_name, m.manga_name) FROM Author a JOIN a.mangas" +
             " m ")
     List<AuthorMangaDTO> getNameAuthorManga();
 
