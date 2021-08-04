@@ -16,7 +16,7 @@ import java.util.List;
 @Repository
 public interface FollowingRepos extends JpaRepository<FollowingManga, Long> {
 
-    @Query("SELECT new serverapi.Query.DTO.FollowingDTO(f.followingmanga_id, " +
+    @Query("SELECT new serverapi.Query.DTOs.TablesDTOs.FollowingDTO(f.followingmanga_id, " +
             "m.manga_id, m.manga_name, m.status, m.description, m.stars, m.views, m.thumbnail, m.date_publications, m" +
             ".created_at) FROM " +
             "FollowingManga f JOIN f.user u ON u.user_id = f.user JOIN f.manga m ON f.manga = m.manga_id " +

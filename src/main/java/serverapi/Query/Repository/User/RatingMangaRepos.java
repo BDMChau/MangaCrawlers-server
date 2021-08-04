@@ -1,5 +1,6 @@
 package serverapi.Query.Repository.User;
 
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -19,7 +20,7 @@ public interface RatingMangaRepos extends JpaRepository<RatingManga, Long> {
             ".user_id =?1")
     List<RatingMangaDTO> ratingManga(Long userId);
 
-    @Query("SELECT new serverapi.Query.DTO.AverageStarDTO(AVG(rm.value), m.manga_id) FROM RatingManga rm JOIN rm" +
+    @Query("SELECT new serverapi.Query.DTOs.FeaturesDTOs.AverageStarDTO(AVG(rm.value), m.manga_id) FROM RatingManga rm JOIN rm" +
             ".manga m GROUP BY m.manga_id ")
     List<AverageStarDTO> avgRatingManga();
 
