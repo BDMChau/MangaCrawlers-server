@@ -14,9 +14,6 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import serverapi.Authentication.RegistrationOauth;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -80,16 +77,6 @@ public class GlobalConfiguration {
 //        con.getResponseCode();
 //    }
 
-        @Bean
-    public void autoCallHttp() throws IOException {
-        URL url = new URL("https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=-CCtZxvsChw&format=json");
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("GET");
-        con.connect();
-        con.getResponseCode();
-            System.err.println(con.getResponseMessage());
-            System.err.println(con.getResponseCode());
-    }
 
 
 }

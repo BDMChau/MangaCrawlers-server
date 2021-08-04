@@ -201,6 +201,25 @@ public class AuthController {
     }
 
 
+    ///////////////// youtube bot music
+    @GetMapping("youtubeapikey")
+    public ResponseEntity getYoutubeApiKey() {
+        String apiKey = System.getenv("YOUTUBE_API_KEY");
+        if (apiKey == null || apiKey.equals("")) {
+            Map<String, Object> msg = Map.of("err", "api_key for youtube bot was failed");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get api_key for youtube bot susscessfully",
+                "api_key", apiKey
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                HttpStatus.OK);
+    }
+
+
     /////////////////// auto call http every 25 minutes to wake up app on heroku
     @GetMapping("autocallhttp")
     public ResponseEntity autoCallHttp() {
