@@ -13,7 +13,6 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +34,7 @@ public class TokenVerification implements Filter {
                 res.setCharacterEncoding("UTF-8");
 
                 Map<String, String> error = Map.of("err", "Missing Token!");
-                ResJsonMiddleware(res, res.getContentType(), res.getCharacterEncoding(), res.getStatus(),
+                new Response().ResponseJsonMiddleware(res, gson, res.getContentType(), res.getCharacterEncoding(), res.getStatus(),
                         HttpStatus.UNAUTHORIZED, error);
                 return;
             }
@@ -61,19 +60,19 @@ public class TokenVerification implements Filter {
 
                 if (err.contains("MalformedJwtException")) {
                     Map<String, String> error = Map.of("err", "Invalid Token Format!");
-                    ResJsonMiddleware(res, res.getContentType(), res.getCharacterEncoding(), res.getStatus(), HttpStatus.UNAUTHORIZED, error);
+                    new Response().ResponseJsonMiddleware(res, gson, res.getContentType(), res.getCharacterEncoding(), res.getStatus(), HttpStatus.UNAUTHORIZED, error);
 
                 } else if (err.contains("SignatureException")) {
                     Map<String, String> error = Map.of("err", "Invalid Key Token!");
-                    ResJsonMiddleware(res, res.getContentType(), res.getCharacterEncoding(), res.getStatus(), HttpStatus.UNAUTHORIZED, error);
+                    new Response().ResponseJsonMiddleware(res, gson, res.getContentType(), res.getCharacterEncoding(), res.getStatus(), HttpStatus.UNAUTHORIZED, error);
 
                 } else if (err.contains("ExpiredJwtException")) {
                     Map<String, String> error = Map.of("err", "Token Expired!");
-                    ResJsonMiddleware(res, res.getContentType(), res.getCharacterEncoding(), res.getStatus(), HttpStatus.UNAUTHORIZED, error);
+                    new Response().ResponseJsonMiddleware(res, gson, res.getContentType(), res.getCharacterEncoding(), res.getStatus(), HttpStatus.UNAUTHORIZED, error);
 
                 } else if (err.contains("IllegalArgumentException")) {
                     Map<String, String> error = Map.of("err", "Illegal Argument Token!");
-                    ResJsonMiddleware(res, res.getContentType(), res.getCharacterEncoding(), res.getStatus(), HttpStatus.UNAUTHORIZED, error);
+                    new Response().ResponseJsonMiddleware(res, gson, res.getContentType(), res.getCharacterEncoding(), res.getStatus(), HttpStatus.UNAUTHORIZED, error);
                 }
             }
 
@@ -82,19 +81,7 @@ public class TokenVerification implements Filter {
         }
     }
 
-    private void ResJsonMiddleware(HttpServletResponse res, String contentType, String charSet, int httpCode,
-                                   HttpStatus httpStatus, Object content) throws IOException {
-        PrintWriter printWriter = res.getWriter();
 
-        res.setContentType(contentType);
-        res.setCharacterEncoding(charSet);
-
-        Response responseHelper = new Response(httpCode, httpStatus, content);
-        String responseHelperString = this.gson.toJson(responseHelper);
-
-        printWriter.print(responseHelperString);
-        printWriter.flush();
-    }
 
     @Override
     public void init(FilterConfig filterConfig) {

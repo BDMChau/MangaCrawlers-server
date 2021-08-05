@@ -403,14 +403,14 @@ public class AdminService {
 
 
     public ResponseEntity getAllMangas(Long userId) {
-        Boolean isAdmin = isUserAdmin(userId);
-        if (!isAdmin) {
-            Map<String, Object> err = Map.of(
-                    "err", "You are not allowed to access this resource!"
-            );
-            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
-                    HttpStatus.FORBIDDEN);
-        }
+//        Boolean isAdmin = isUserAdmin(userId);
+//        if (!isAdmin) {
+//            Map<String, Object> err = Map.of(
+//                    "err", "You are not allowed to access this resource!"
+//            );
+//            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+//                    HttpStatus.FORBIDDEN);
+//        }
 
         List<AuthorMangaDTO> mangas = mangaRepos.getAllMangasInfo();
 

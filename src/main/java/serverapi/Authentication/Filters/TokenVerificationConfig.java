@@ -19,5 +19,16 @@ public class TokenVerificationConfig {
         return registrationBean;
     }
 
+    @Bean
+    public FilterRegistrationBean<TokenVerificationAdmin> verifyTokenAdmin(){
+        FilterRegistrationBean<TokenVerificationAdmin> registrationBean
+                = new FilterRegistrationBean<>();
+
+        registrationBean.setFilter(new TokenVerificationAdmin());
+        registrationBean.addUrlPatterns("/api/admin/*");
+        registrationBean.setOrder(2);
+        return registrationBean;
+    }
+
 
 }
