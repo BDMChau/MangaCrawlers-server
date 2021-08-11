@@ -11,8 +11,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import serverapi.Authentication.AuthController;
-import serverapi.Authentication.Service.AuthService;
+import serverapi.authentication.AuthController;
+import serverapi.authentication.service.AuthService;
 
 import java.util.Map;
 

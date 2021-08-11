@@ -7,8 +7,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import serverapi.Authentication.AuthRepository;
-import serverapi.Authentication.Service.AuthService;
+import serverapi.authentication.AuthRepository;
+import serverapi.authentication.service.AuthService;
 
 
 @RunWith(SpringRunner.class)
