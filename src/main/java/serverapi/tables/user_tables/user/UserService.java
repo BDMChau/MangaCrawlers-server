@@ -18,7 +18,7 @@ import serverapi.query.repository.user.*;
 import serverapi.sharing_services.CloudinaryUploader;
 import serverapi.tables.manga_tables.author.Author;
 import serverapi.tables.manga_tables.chapter.Chapter;
-import serverapi.tables.manga_tables.chapter_comments.ChapterComments;
+import serverapi.tables.manga_tables.manga_comments.MangaComments;
 import serverapi.tables.manga_tables.genre.Genre;
 import serverapi.tables.manga_tables.image_chapter.ImageChapter;
 import serverapi.tables.manga_tables.manga.Manga;
@@ -309,27 +309,27 @@ public class UserService {
         }
         User user = userOptional.get();
 
-        ChapterComments chapterComments = new ChapterComments();
-        chapterComments.setChapter(chapter);
-        chapterComments.setUser(user);
-        chapterComments.setChaptercmt_content(content);
-        chapterComments.setChaptercmt_time(timeUpdated);
-        chapterCommentsRepos.saveAndFlush(chapterComments);
+        MangaComments mangaComments = new MangaComments();
+        mangaComments.setChapter(chapter);
+        mangaComments.setUser(user);
+        mangaComments.setMangacomment_content(content);
+        mangaComments.setMangacomment_time(timeUpdated);
+        chapterCommentsRepos.saveAndFlush(mangaComments);
 
         CommentExportDTO commentExportDTO = new CommentExportDTO();
 
-        commentExportDTO.setChapter_id(chapterComments.getChapter().getChapter_id());
-        commentExportDTO.setChapter_name(chapterComments.getChapter().getChapter_name());
-        commentExportDTO.setCreated_at(chapterComments.getChapter().getCreated_at());
+        commentExportDTO.setChapter_id(mangaComments.getChapter().getChapter_id());
+        commentExportDTO.setChapter_name(mangaComments.getChapter().getChapter_name());
+        commentExportDTO.setCreated_at(mangaComments.getChapter().getCreated_at());
 
-        commentExportDTO.setChaptercmt_id(chapterComments.getChaptercmt_id());
-        commentExportDTO.setChaptercmt_content(chapterComments.getChaptercmt_content());
-        commentExportDTO.setChaptercmt_time(chapterComments.getChaptercmt_time());
+        commentExportDTO.setChaptercmt_id(mangaComments.getMangacomment_id());
+        commentExportDTO.setChaptercmt_content(mangaComments.getMangacomment_content());
+        commentExportDTO.setChaptercmt_time(mangaComments.getMangacomment_time());
 
-        commentExportDTO.setUser_id(chapterComments.getUser().getUser_id());
-        commentExportDTO.setUser_email(chapterComments.getUser().getUser_email());
-        commentExportDTO.setUser_name(chapterComments.getUser().getUser_name());
-        commentExportDTO.setUser_avatar(chapterComments.getUser().getUser_avatar());
+        commentExportDTO.setUser_id(mangaComments.getUser().getUser_id());
+        commentExportDTO.setUser_email(mangaComments.getUser().getUser_email());
+        commentExportDTO.setUser_name(mangaComments.getUser().getUser_name());
+        commentExportDTO.setUser_avatar(mangaComments.getUser().getUser_avatar());
 
 
         Map<String, Object> msg = Map.of(
