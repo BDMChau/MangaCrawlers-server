@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.tables.manga_tables.chapter_comments.ChapterComments;
+import serverapi.tables.manga_tables.manga_comments.MangaComments;
 import serverapi.tables.user_tables.following_manga.FollowingManga;
 import serverapi.tables.manga_tables.rating_manga.RatingManga;
 import serverapi.tables.user_tables.reading_history.ReadingHistory;
@@ -41,7 +41,7 @@ public class User {
 
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Collection<ChapterComments> chapterComments;
+    private Collection<MangaComments> mangaComments;
 
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
