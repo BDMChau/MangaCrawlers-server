@@ -1,4 +1,4 @@
-package serverapi.tables.User.Admin;
+package serverapi.tables.user_tables.user.admin;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,6 @@ import serverapi.query.repository.user.UserRepos;
 import serverapi.tables.Manga.POJO.MangaPOJO;
 import serverapi.tables.User.POJO.TransGroupPOJO;
 import serverapi.tables.User.POJO.UserPOJO;
-import serverapi.tables.user_tables.user.admin.AdminService;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
