@@ -1,12 +1,10 @@
-package serverapi.tables.manga_tables.manga_comment_relations;
-
+package serverapi.tables.user_tables.user_relations;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.tables.manga_tables.manga_comments.MangaComments;
 import serverapi.tables.user_tables.user.User;
 
 import javax.persistence.*;
@@ -16,28 +14,27 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@Table(name = "manga_comment_relations")
-public class CommentRelations {
+@Table(name = "user_comment_relations")
+public class UserRelations {
     @Id
     @SequenceGenerator(
-            name = "manga_comment_relations_sequence",
-            sequenceName = "manga_comment_relations_sequence",
+            name = "user_relations_sequence",
+            sequenceName = "user_relations_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "manga_comment_relations_sequence" // same as NAME in SequenceGenerator
+            generator = "user_relations_sequence" // same as NAME in SequenceGenerator
     )
-    private Long manga_comment_relation_id;
+    private Long user_relation_id;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_manga_comment_id")
-    private MangaComments parent_comment_id;
+    @JoinColumn(name = "parent_user_id")
+    private User parent_user_id;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "child_manga_comment_id")
-    private MangaComments child_comment_id;
-
+    @JoinColumn(name = "child_user_id")
+    private User child_user_id;
 }

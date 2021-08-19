@@ -312,8 +312,8 @@ public class UserService {
         MangaComments mangaComments = new MangaComments();
         mangaComments.setChapter(chapter);
         mangaComments.setUser(user);
-        mangaComments.setMangacomment_content(content);
-        mangaComments.setMangacomment_time(timeUpdated);
+        mangaComments.setManga_comment_content(content);
+        mangaComments.setManga_comment_time(timeUpdated);
         chapterCommentsRepos.saveAndFlush(mangaComments);
 
         CommentExportDTO commentExportDTO = new CommentExportDTO();
@@ -322,9 +322,9 @@ public class UserService {
         commentExportDTO.setChapter_name(mangaComments.getChapter().getChapter_name());
         commentExportDTO.setCreated_at(mangaComments.getChapter().getCreated_at());
 
-        commentExportDTO.setChaptercmt_id(mangaComments.getMangacomment_id());
-        commentExportDTO.setChaptercmt_content(mangaComments.getMangacomment_content());
-        commentExportDTO.setChaptercmt_time(mangaComments.getMangacomment_time());
+        commentExportDTO.setChaptercmt_id(mangaComments.getManga_comment_id());
+        commentExportDTO.setChaptercmt_content(mangaComments.getManga_comment_content());
+        commentExportDTO.setChaptercmt_time(mangaComments.getManga_comment_time());
 
         commentExportDTO.setUser_id(mangaComments.getUser().getUser_id());
         commentExportDTO.setUser_email(mangaComments.getUser().getUser_email());
