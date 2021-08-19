@@ -86,7 +86,7 @@ public class ChapterService {
 //    public ResponseEntity getCommentsChapter(Long chapterId, int amount, int from) {
 //
 //        //get list comments in 1 chapter
-//        List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsChapter (chapterId, amount, from);
+//        List<MangaCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsChapter (chapterId, amount, from);
 //
 //        if (chapterCommentsDTOList.isEmpty()) {
 //            Map<String, Object> msg = Map.of("msg", "No comment found!");

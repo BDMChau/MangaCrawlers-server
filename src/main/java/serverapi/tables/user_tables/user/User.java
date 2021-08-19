@@ -11,6 +11,7 @@ import serverapi.tables.user_tables.following_manga.FollowingManga;
 import serverapi.tables.manga_tables.rating_manga.RatingManga;
 import serverapi.tables.user_tables.reading_history.ReadingHistory;
 import serverapi.tables.user_tables.trans_group.TransGroup;
+import serverapi.tables.user_tables.user_relations.UserRelations;
 
 import javax.persistence.*;
 import java.util.Calendar;
@@ -50,6 +51,14 @@ public class User {
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<RatingManga> ratingMangas;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "parent_user_id", cascade = CascadeType.ALL)
+    private Collection<UserRelations> parentUserRelations;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "child_user_id", cascade = CascadeType.ALL)
+    private Collection<UserRelations> childUserRelations;
 
 
     @JsonManagedReference
