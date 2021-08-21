@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@Table(name = "user_relations")
+@Table(name = "user_comment_relations")
 public class UserRelations {
     @Id
     @SequenceGenerator(
