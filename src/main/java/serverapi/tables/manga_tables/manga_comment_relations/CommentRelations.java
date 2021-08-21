@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import serverapi.tables.manga_tables.manga_comments.MangaComments;
-import serverapi.tables.user_tables.user.User;
 
 import javax.persistence.*;
 
@@ -20,24 +19,24 @@ import javax.persistence.*;
 public class CommentRelations {
     @Id
     @SequenceGenerator(
-            name = "mangacommentrelations_sequence",
-            sequenceName = "mangacommentrelations_sequence",
+            name = "manga_comment_relations_sequence",
+            sequenceName = "manga_comment_relations_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "mangacommentrelations_sequence" // same as NAME in SequenceGenerator
+            generator = "manga_comment_relations_sequence" // same as NAME in SequenceGenerator
     )
-    private Long mangacommentrelation_id;
+    private Long manga_comment_relation_id;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_mangacomment_id")
-    private MangaComments parent;
+    private MangaComments parent_id;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "child_mangacomment_id")
-    private MangaComments child;
+    private MangaComments child_id;
 
 }

@@ -20,9 +20,9 @@ public interface ChapterCommentsRepos extends JpaRepository<MangaComments, Long>
 
     @Query("SELECT new serverapi.query.dtos.features.CommentExportDTO(u.user_id, u.user_name, u.user_email, u.user_avatar, " +
             "c.chapter_id, c.chapter_name, c.created_at, " +
-            "cm.mangacomment_id, cm.mangacomment_time, cm.mangacomment_content) " +
+            "cm.manga_comment_id, cm.manga_comment_time, cm.manga_comment_content) " +
             " FROM MangaComments cm JOIN cm.chapter c JOIN cm.user u JOIN Manga m ON m.manga_id = c.manga WHERE c" +
-            ".chapter_id =?1 ORDER BY cm.mangacomment_time DESC")
+            ".chapter_id =?1 ORDER BY cm.manga_comment_time DESC")
     List<CommentExportDTO> getCommentsChapter(Long chapter_id, Pageable pageable);
 
 //    @Query("SELECT new serverapi.Query.DTO.CommentExportDTO(u.user_id, u.user_name, u.user_email, u.user_avatar, " +
@@ -36,12 +36,12 @@ public interface ChapterCommentsRepos extends JpaRepository<MangaComments, Long>
 
     @Query("SELECT new serverapi.query.dtos.features.CommentExportDTO(u.user_id, u.user_name, u.user_email, u.user_avatar, " +
             "c.chapter_id, c.chapter_name, c.created_at, " +
-            "cm.mangacomment_id, cm.mangacomment_time, cm.mangacomment_content) " +
+            "cm.manga_comment_id, cm.manga_comment_time, cm.manga_comment_content) " +
             "FROM MangaComments cm JOIN cm.chapter c JOIN cm.user u JOIN Manga m ON m.manga_id = c.manga " +
             "WHERE m.manga_id =?1 " +
-            "AND cm.mangacomment_id =(SELECT MAX(cmt.mangacomment_id) " +
+            "AND cm.manga_comment_id =(SELECT MAX(cmt.manga_comment_id) " +
             "FROM MangaComments cmt JOIN cmt.chapter ct " +
-            "WHERE cmt.chapter = c.chapter_id ) ORDER BY cm.mangacomment_time DESC "
+            "WHERE cmt.chapter = c.chapter_id ) ORDER BY cm.manga_comment_time DESC "
     )
     List<CommentExportDTO> getCommentsManga(Long manga_id, Pageable pageable);
 
