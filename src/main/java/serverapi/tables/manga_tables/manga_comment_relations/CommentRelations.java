@@ -20,24 +20,24 @@ import javax.persistence.*;
 public class CommentRelations {
     @Id
     @SequenceGenerator(
-            name = "manga_comment_relations_sequence",
-            sequenceName = "manga_comment_relations_sequence",
+            name = "mangacommentrelations_sequence",
+            sequenceName = "mangacommentrelations_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "manga_comment_relations_sequence" // same as NAME in SequenceGenerator
+            generator = "mangacommentrelations_sequence" // same as NAME in SequenceGenerator
     )
-    private Long manga_comment_relation_id;
+    private Long mangacommentrelation_id;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_manga_comment_id")
-    private MangaComments parent_comment_id;
+    @JoinColumn(name = "parent_mangacomment_id")
+    private MangaComments parent;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "child_manga_comment_id")
-    private MangaComments child_comment_id;
+    @JoinColumn(name = "child_mangacomment_id")
+    private MangaComments child;
 
 }

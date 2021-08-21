@@ -1,6 +1,5 @@
 package serverapi.tables.manga_tables.manga_comments;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
@@ -8,12 +7,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import serverapi.tables.manga_tables.chapter.Chapter;
 import serverapi.tables.manga_tables.manga.Manga;
-import serverapi.tables.manga_tables.manga_comment_relations.CommentRelations;
 import serverapi.tables.user_tables.user.User;
 
 import javax.persistence.*;
 import java.util.Calendar;
-import java.util.Collection;
 
 @Entity
 @Getter
@@ -32,7 +29,7 @@ public class MangaComments {
             strategy = GenerationType.SEQUENCE,
             generator = "mangacomment_sequence" // same as NAME in SequenceGenerator
     )
-    private Long manga_comment_id;
+    private Long mangacomment_id;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
@@ -49,17 +46,9 @@ public class MangaComments {
     @JoinColumn(name = "chapter_id")
     private Chapter chapter;
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "parent_comment_id", cascade = CascadeType.ALL)
-    private Collection<CommentRelations> parentCommentRelations;
-
-    @JsonBackReference
-    @OneToMany(mappedBy = "child_comment_id", cascade = CascadeType.ALL)
-    private Collection<CommentRelations> childCommentRelations;
-
     @Column(columnDefinition = "timestamp with time zone", nullable = false)
-    private Calendar manga_comment_time;
+    private Calendar mangacomment_time;
 
     @Column(columnDefinition = "TEXT", nullable = false)
-    private String manga_comment_content;
+    private String mangacomment_content;
 }

@@ -9,12 +9,12 @@ import java.util.Calendar;
 @Getter
 @Setter
 @NoArgsConstructor
-public class MangaCommentsDTO {
+public class ChapterCommentsDTO {
 
-    public MangaCommentsDTO(Long user_id, String user_name, String user_email, String user_avatar,
-                            Long manga_id, String manga_name, String status, String description,
-                            float stars, Long views, String thumbnail, int date_publications, Calendar manga_created_at,
-                            Long chapter_id, String chapter_name, Calendar created_at, Long chaptercmt_id, Calendar chaptercmt_time, String chaptercmt_content) {
+    public ChapterCommentsDTO(Long user_id, String user_name, String user_email, String user_avatar,
+                              Long manga_id, String manga_name, String status, String description,
+                              float stars, Long views, String thumbnail, int date_publications, Calendar manga_created_at,
+                              Long chapter_id, String chapter_name, Calendar created_at, Long chaptercmt_id, Calendar chaptercmt_time, String chaptercmt_content) {
         this.user_id = user_id;
         this.user_name = user_name;
         this.user_email = user_email;
@@ -38,9 +38,9 @@ public class MangaCommentsDTO {
 
 
 
-    public MangaCommentsDTO(Long user_id, String user_name, String user_email, String user_avatar,
-                            Long chapter_id, String chapter_name, Calendar created_at,
-                            Long chaptercmt_id, Calendar chaptercmt_time, String chaptercmt_content) {
+    public ChapterCommentsDTO(Long user_id, String user_name, String user_email, String user_avatar,
+                              Long chapter_id, String chapter_name, Calendar created_at,
+                              Long chaptercmt_id, Calendar chaptercmt_time, String chaptercmt_content) {
         this.user_id = user_id;
         this.user_name = user_name;
         this.user_email = user_email;
