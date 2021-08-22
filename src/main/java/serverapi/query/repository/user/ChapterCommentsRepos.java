@@ -45,11 +45,12 @@ public interface ChapterCommentsRepos extends JpaRepository<MangaComments, Long>
     )
     List<CommentExportDTO> getCommentsManga(Long manga_id, Pageable pageable);
 
+
     @Query("SELECT new serverapi.query.dtos.features.CommentExportDTO(u.user_id, u.user_name, u.user_email, u.user_avatar, " +
-            "cm.manga_comment_id, cm.manga_comment_time, cm.manga_comment_content, cmtRel.child_comment_id) " +
-            "FROM MangaComments cm JOIN CommentRelations cmtRel ON cmtRel.child_comment_id = cm.manga_comment_id JOIN cm.user u " +
+            "cm.manga_comment_id, cm.manga_comment_time, cm.manga_comment_content, cmtRel.manga_comment_relation_id) " +
+            "FROM CommentRelations cmtRel, MangaComments cm JOIN cm.user u " +
             "JOIN Manga m ON m.manga_id = cm.manga " +
-            "WHERE m.manga_id = ?1"
+            "WHERE cmtRel.child_comment_id = cm.manga_comment_id AND m.manga_id = ?1"
     )
     List<CommentExportDTO> getCommentsTest(Long manga_id, Pageable pageable);
 

@@ -4,9 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 @Getter
 @Setter
@@ -35,7 +33,7 @@ public class CommentExportDTO {
                             Long chaptercmt_id,
                             Calendar chaptercmt_time,
                             String chaptercmt_content,
-                            List comments
+                            Long child_cmt_id
     ) {
         this.user_id = user_id;
         this.user_name = user_name;
@@ -44,7 +42,7 @@ public class CommentExportDTO {
         this.chaptercmt_id = chaptercmt_id;
         this.chaptercmt_time = chaptercmt_time;
         this.chaptercmt_content = chaptercmt_content;
-        this.comments = comments;
+        this.child_cmt_id = child_cmt_id;
 
     }
 
@@ -62,5 +60,5 @@ public class CommentExportDTO {
     private Calendar chaptercmt_time;
     private String chaptercmt_content;
 
-    private List comments = new ArrayList<>();
+    private long child_cmt_id;
 }
