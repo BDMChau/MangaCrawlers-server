@@ -13,7 +13,7 @@ import serverapi.query.dtos.features.CommentExportDTO;
 import serverapi.query.repository.manga.ChapterRepos;
 import serverapi.query.repository.manga.ImgChapterRepos;
 import serverapi.query.repository.manga.MangaRepos;
-import serverapi.query.repository.user.ChapterCommentsRepos;
+import serverapi.query.repository.user.MangaCommentsRepos;
 
 import java.util.List;
 import java.util.Map;
@@ -25,14 +25,14 @@ public class ChapterService {
     private final ChapterRepos chapterRepos;
     private final ImgChapterRepos imgChapterRepos;
     private final MangaRepos mangaRepos;
-    private final ChapterCommentsRepos chapterCommentsRepos;
+    private final MangaCommentsRepos mangaCommentsRepos;
 
     @Autowired
-    public ChapterService(ChapterRepos chapterRepos, ImgChapterRepos imgChapterRepos, MangaRepos mangaRepos, ChapterCommentsRepos chapterCommentsRepos) {
+    public ChapterService(ChapterRepos chapterRepos, ImgChapterRepos imgChapterRepos, MangaRepos mangaRepos, MangaCommentsRepos mangaCommentsRepos) {
         this.chapterRepos = chapterRepos;
         this.imgChapterRepos = imgChapterRepos;
         this.mangaRepos = mangaRepos;
-        this.chapterCommentsRepos= chapterCommentsRepos;
+        this.mangaCommentsRepos = mangaCommentsRepos;
     }
 
 
@@ -86,7 +86,7 @@ public class ChapterService {
 //    public ResponseEntity getCommentsChapter(Long chapterId, int amount, int from) {
 //
 //        //get list comments in 1 chapter
-//        List<ChapterCommentsDTO> chapterCommentsDTOList = chapterCommentsRepos.getCommentsChapter (chapterId, amount, from);
+//        List<MangaCommentDTOs> chapterCommentsDTOList = chapterCommentsRepos.getCommentsChapter (chapterId, amount, from);
 //
 //        if (chapterCommentsDTOList.isEmpty()) {
 //            Map<String, Object> msg = Map.of("msg", "No comment found!");
@@ -121,7 +121,7 @@ public class ChapterService {
         //get list comments in 1 chapter
         Pageable pageable = new OffsetBasedPageRequest (from, amount);
         System.out.println ("pageable "+pageable.getPageNumber ());
-        List<CommentExportDTO> commentExportDTOS = chapterCommentsRepos.getCommentsChapter (chapterId, pageable);
+        List<CommentExportDTO> commentExportDTOS = mangaCommentsRepos.getCommentsChapter (chapterId, pageable);
 
         if (commentExportDTOS.isEmpty()) {
             Map<String, Object> msg = Map.of("msg", "No comments found!");

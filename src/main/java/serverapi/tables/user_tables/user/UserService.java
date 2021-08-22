@@ -42,7 +42,7 @@ public class UserService {
     private final UserRepos userRepos;
     private final ReadingHistoryRepos readingHistoryRepos;
     private final ChapterRepos chapterRepos;
-    private final ChapterCommentsRepos chapterCommentsRepos;
+    private final MangaCommentsRepos mangaCommentsRepos;
     private final RatingMangaRepos ratingMangaRepos;
     private final TransGroupRepos transGroupRepos;
     private final GenreRepos genreRepos;
@@ -57,7 +57,7 @@ public class UserService {
     @Autowired
     public UserService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos,
                        ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos,
-                       ChapterCommentsRepos chapterCommentsRepos, RatingMangaRepos ratingMangaRepos,
+                       MangaCommentsRepos mangaCommentsRepos, RatingMangaRepos ratingMangaRepos,
                        TransGroupRepos transGroupRepos, GenreRepos genreRepos, MangaGenreRepos mangaGenreRepos,
                        AuthorRepos authorRepos, ImgChapterRepos imgChapterRepos) {
         this.mangaRepository = mangaRepository;
@@ -65,7 +65,7 @@ public class UserService {
         this.userRepos = userRepos;
         this.readingHistoryRepos = readingHistoryRepos;
         this.chapterRepos = chapterRepos;
-        this.chapterCommentsRepos = chapterCommentsRepos;
+        this.mangaCommentsRepos = mangaCommentsRepos;
         this.ratingMangaRepos = ratingMangaRepos;
         this.transGroupRepos = transGroupRepos;
         this.genreRepos = genreRepos;
@@ -314,7 +314,7 @@ public class UserService {
         mangaComments.setUser(user);
         mangaComments.setManga_comment_content(content);
         mangaComments.setManga_comment_time(timeUpdated);
-        chapterCommentsRepos.saveAndFlush(mangaComments);
+        mangaCommentsRepos.saveAndFlush(mangaComments);
 
         CommentExportDTO commentExportDTO = new CommentExportDTO();
 

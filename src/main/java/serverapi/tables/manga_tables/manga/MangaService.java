@@ -15,7 +15,7 @@ import serverapi.query.repository.manga.ChapterRepos;
 import serverapi.query.repository.manga.GenreRepos;
 import serverapi.query.repository.manga.MangaRepos;
 import serverapi.query.repository.manga.UpdateViewRepos;
-import serverapi.query.repository.user.ChapterCommentsRepos;
+import serverapi.query.repository.user.MangaCommentsRepos;
 import serverapi.query.specification.MangaSpecification;
 import serverapi.tables.Manga.POJO.MangaPOJO;
 import serverapi.tables.manga_tables.chapter.Chapter;
@@ -36,16 +36,16 @@ public class MangaService {
     private final ChapterRepos chapterRepository;
     private final UpdateViewRepos updateViewRepos;
     private final GenreRepos genreRepository;
-    private final ChapterCommentsRepos chapterCommentsRepos;
+    private final MangaCommentsRepos mangaCommentsRepos;
 
     @Autowired
     public MangaService(MangaRepos mangaRepository, ChapterRepos chapterRepository, UpdateViewRepos updateViewRepos,
-                        GenreRepos genreRepository, ChapterCommentsRepos chapterCommentsRepos) {
+                        GenreRepos genreRepository, MangaCommentsRepos mangaCommentsRepos) {
         this.mangaRepository = mangaRepository;
         this.chapterRepository = chapterRepository;
         this.updateViewRepos = updateViewRepos;
         this.genreRepository = genreRepository;
-        this.chapterCommentsRepos = chapterCommentsRepos;
+        this.mangaCommentsRepos = mangaCommentsRepos;
     }
 
     public ResponseEntity updateViewsChapter(Long mangaId, Long chapterId, MangaPOJO mangaPOJO) {
@@ -521,7 +521,7 @@ public class MangaService {
 
 
         Pageable pageable = new OffsetBasedPageRequest(from, amount);
-        List<CommentExportDTO> commentsOfChapters = chapterCommentsRepos.getCommentsManga(mangaId, pageable);
+        List<CommentExportDTO> commentsOfChapters = mangaCommentsRepos.getCommentsManga(mangaId, pageable);
 
         if (commentsOfChapters.isEmpty()) {
             Map<String, Object> msg = Map.of(

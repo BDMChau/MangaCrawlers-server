@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import serverapi.tables.manga_tables.author.Author;
 import serverapi.tables.manga_tables.chapter.Chapter;
+import serverapi.tables.manga_tables.manga_comments.MangaComments;
 import serverapi.tables.manga_tables.manga_genre.MangaGenre;
 import serverapi.tables.manga_tables.rating_manga.RatingManga;
 import serverapi.tables.manga_tables.update_view.UpdateView;
@@ -76,6 +77,10 @@ public class Manga {
     @JsonBackReference
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
     private Collection<UpdateView> updateViews;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
+    private Collection<MangaComments> mangaComments;
 
 //    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //    @JoinTable(name = "manga_genre", // create a table manga_genre
