@@ -114,6 +114,22 @@ public class MangaController {
         return mangaService.getCommentsManga(mangaId, from, amount);
     }
 
+
+    @PostMapping("/getcmtstest")
+    public ResponseEntity getCmtsTest(@RequestBody CommentPOJO commentPOJO) {
+
+        Long mangaId = Long.parseLong(commentPOJO.getManga_id());
+
+        int from = commentPOJO.getFrom();
+        System.out.println("from_ " + from);
+
+        int amount = commentPOJO.getAmount();
+        System.out.println("amount_ " + amount);
+
+        return mangaService.getCmtsTest(mangaId, from, amount);
+    }
+
+
     @PostMapping("/advancedsearch")
     public ResponseEntity searchMangasByGenres(@RequestBody Map data) {
 

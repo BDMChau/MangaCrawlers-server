@@ -540,6 +540,39 @@ public class MangaService {
 
     }
 
+
+    public ResponseEntity getCmtsTest(Long mangaId, int from, int amount) {
+        Optional<AuthorMangaDTO> mangaOptional = mangaRepository.getAllByMangaId(mangaId);
+
+        if (mangaOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Manga not found!"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+
+        Pageable pageable = new OffsetBasedPageRequest(from, amount);
+        List<CommentExportDTO> comments = chapterCommentsRepos.getCommentsTest(mangaId, pageable);
+        if (comments.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "No comments found!"
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get chapter comments successfully!",
+                "manga_info", mangaOptional,
+                "comments", comments
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+
+    }
+
+
     public ResponseEntity searchMangasByGenres(List<Long> listGenreId) {
 
         if (listGenreId.isEmpty()) {
