@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import serverapi.query.dtos.features.CommentExportDTO;
-import serverapi.query.dtos.tables.MangaChapterDTO;
 import serverapi.query.dtos.tables.MangaCommentDTOs;
 import serverapi.tables.manga_tables.manga_comments.MangaComments;
 import serverapi.tables.user_tables.user.User;
@@ -64,7 +63,7 @@ public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
             "FROM CommentRelations cr INNER JOIN MangaComments cm ON cm.manga_comment_id = cr.child_id.manga_comment_id " +
             "left join cm.user " +
             "left join cm.manga " +
-            "left join cm.chapter")
+            "left join cm.chapter WHERE cm.manga.manga_id = 5")
     List<MangaCommentDTOs> getCommentsManga03();
 
 
