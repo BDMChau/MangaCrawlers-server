@@ -58,7 +58,7 @@ public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
             "left join cm.chapter ")
     List<MangaCommentDTOs> getCommentsManga02();
 
-    @Query("SELECT new serverapi.query.dtos.tables.MangaCommentDTOs(cm.user.user_id, cm.chapter.chapter_id, cm.manga.manga_id," +
+    @Query("SELECT new serverapi.query.dtos.tables.MangaCommentDTOs(cm.user.user_id, cm.manga.manga_id, cm.chapter.chapter_id, " +
             "cm.manga_comment_id, cm.manga_comment_content, cr.manga_comment_relation_id, cr.parent_id.manga_comment_id, cr.child_id.manga_comment_id) "+
             "FROM CommentRelations cr INNER JOIN MangaComments cm ON cm.manga_comment_id = cr.child_id.manga_comment_id " +
             "left join cm.user " +
@@ -67,6 +67,23 @@ public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
     List<MangaCommentDTOs> getCommentsManga03();
 
 
+    @Query("SELECT new serverapi.query.dtos.tables.MangaCommentDTOs(cm.user.user_id, cm.manga.manga_id, cm.chapter.chapter_id, " +
+            "cm.manga_comment_id, cm.manga_comment_content, cr.manga_comment_relation_id, cr.parent_id.manga_comment_id, cr.child_id.manga_comment_id) "+
+            "FROM CommentRelations cr INNER JOIN MangaComments cm ON cm.manga_comment_id = cr.child_id.manga_comment_id " +
+            "left join cm.user " +
+            "left join cm.manga " +
+            "left join cm.chapter " +
+            "WHERE cm.manga.manga_id = ?1 ORDER BY cm.manga_comment_time DESC")
+    List<MangaCommentDTOs> getCommentsByMangaId(Long mangaId, Pageable pageable);
+
+    @Query("SELECT new serverapi.query.dtos.tables.MangaCommentDTOs(cm.user.user_id, cm.manga.manga_id, cm.chapter.chapter_id, " +
+            "cm.manga_comment_id, cm.manga_comment_content, cr.manga_comment_relation_id, cr.parent_id.manga_comment_id, cr.child_id.manga_comment_id) "+
+            "FROM CommentRelations cr INNER JOIN MangaComments cm ON cm.manga_comment_id = cr.child_id.manga_comment_id " +
+            "left join cm.user " +
+            "left join cm.manga " +
+            "left join cm.chapter " +
+            "WHERE cm.chapter.chapter_id = ?1 ORDER BY cm.manga_comment_time DESC")
+    List<CommentExportDTO> getCommentsByChapter(Long chapterId, Pageable pageable);
 
     @Transactional
     @Modifying
