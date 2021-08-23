@@ -31,12 +31,12 @@ public class CommentRelations {
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_manga_comment_id")
+    @JoinColumn(name = "parent_mangacomment_id")
     private MangaComments parent_id;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "child_manga_comment_id")
+    @JoinColumn(name = "child_mangacomment_id")
     private MangaComments child_id;
 
 }
