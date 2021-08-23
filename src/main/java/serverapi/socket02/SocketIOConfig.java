@@ -14,7 +14,7 @@ public class SocketIOConfig {
     private boolean allowCustomRequests = true;
     private int upgradeTimeout = 1000000;
     private int pingTimeout = 6000000;
-    private int pingInterval = 25000;
+    private int pingInterval = 250000;
 
 
     @Bean

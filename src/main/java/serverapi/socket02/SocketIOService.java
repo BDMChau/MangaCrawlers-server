@@ -37,51 +37,49 @@ public class SocketIOService implements ISocketIOService {
     @Override
     public void start() {
         socketIOServer.addConnectListener(client -> {
-            System.out.println("Client: " + getIpByClient(client) + " Connected!");
+            System.out.println("newMessage");
 
-            client.sendEvent("newMessage", "You're connected successfully...");
-
-
-            System.out.println("hello");
-            String userId = getParamsByClient(client);
-            System.out.println(userId);
-            if (userId != null) {
-                clientMap.put(userId, client);
-                pushMessageToUser(userId, "hello");
-
-            }
+//            String userId = getParamsByClient(client);
+//            if (userId != null) {
+//                clientMap.put(userId, client);
+//                pushMessageToUser(userId, "hello");
+//            }
         });
 
+
+
+        socketIOServer.addEventListener("sendMessage", String.class, (client, data, ackSender) -> {
+            System.out.println("client");
+            System.out.println(client);
+            System.out.println(data);
+            System.out.println(ackSender);
+            String clientIp = getIpByClient(client);
+        });
 
         socketIOServer.addDisconnectListener(client -> {
             String clientIp = getIpByClient(client);
             String userId = getParamsByClient(client);
-            System.out.println(userId);
+            System.out.println("disconnected");
             if (userId != null) {
                 clientMap.remove(userId);
                 client.disconnect();
             }
         });
 
-
-        socketIOServer.addEventListener("newMessage", String.class, (client, data, ackSender) -> {
-            String clientIp = getIpByClient(client);
-        });
-
         socketIOServer.start();
-
-
-        new Thread(() -> {
-            int i = 0;
-            while (true) {
-                try {
-                    Thread.sleep(3000);
-                    socketIOServer.getBroadcastOperations().sendEvent("myBroadcast", "Broadcast message ");
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+//
+//
+//        new Thread(() -> {
+//            int i = 0;
+//            while (true) {
+//                try {
+//                    Thread.sleep(3000);
+//                    socketIOServer.getBroadcastOperations().sendEvent("myBroadcast", "Broadcast message ");
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }).start();
     }
 
 
