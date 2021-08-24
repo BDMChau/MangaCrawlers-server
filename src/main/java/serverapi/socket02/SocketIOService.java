@@ -37,32 +37,33 @@ public class SocketIOService implements ISocketIOService {
     @Override
     public void start() {
         socketIOServer.addConnectListener(client -> {
-            System.out.println("newMessage");
 
-//            String userId = getParamsByClient(client);
-//            if (userId != null) {
-//                clientMap.put(userId, client);
-//                pushMessageToUser(userId, "hello");
-//            }
         });
 
 
 
-        socketIOServer.addEventListener("sendMessage", String.class, (client, data, ackSender) -> {
-            System.out.println("client");
-            System.out.println(client);
+        socketIOServer.addEventListener("sendMessage", Map.class, (client, data, ackSender) -> {
+
+
             System.out.println(data);
-            System.out.println(ackSender);
             String clientIp = getIpByClient(client);
+            String userId = getParamsByClient(client);
+            if (userId != null) {
+                clientMap.put(userId, client);
+                pushMessageToUser(userId, "hello");
+            }
         });
+
+
 
         socketIOServer.addDisconnectListener(client -> {
             String clientIp = getIpByClient(client);
             String userId = getParamsByClient(client);
-            System.out.println("disconnected");
             if (userId != null) {
                 clientMap.remove(userId);
                 client.disconnect();
+                System.err.println("Disconnected!");
+
             }
         });
 
