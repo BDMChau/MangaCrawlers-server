@@ -1,4 +1,4 @@
-package serverapi.socket02;
+package serverapi.socket;
 
 import com.corundumstudio.socketio.SocketConfig;
 import com.corundumstudio.socketio.SocketIOServer;

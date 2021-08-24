@@ -1,4 +1,4 @@
-package serverapi.socket02;
+package serverapi.socket;
 
 public interface ISocketIOService {
     /**
