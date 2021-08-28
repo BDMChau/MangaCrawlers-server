@@ -9,6 +9,8 @@ import lombok.Setter;
 import serverapi.tables.manga_tables.manga_comments.MangaComments;
 import serverapi.tables.user_tables.following_manga.FollowingManga;
 import serverapi.tables.manga_tables.rating_manga.RatingManga;
+import serverapi.tables.user_tables.notificate.notification_replies.NotificationReplies;
+import serverapi.tables.user_tables.notificate.notifications.Notifications;
 import serverapi.tables.user_tables.reading_history.ReadingHistory;
 import serverapi.tables.user_tables.trans_group.TransGroup;
 import serverapi.tables.user_tables.user_relations.userRelations;
@@ -59,6 +61,14 @@ public class User {
     @JsonBackReference
     @OneToMany(mappedBy = "child_id", cascade = CascadeType.ALL)
     private Collection<userRelations> childUserRelations;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Collection<Notifications> notification;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Collection<NotificationReplies> notification_reply;
 
 
     @JsonManagedReference
