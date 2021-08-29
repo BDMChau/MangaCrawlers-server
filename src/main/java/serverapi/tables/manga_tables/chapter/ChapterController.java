@@ -6,8 +6,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import serverapi.tables.Manga.POJO.CommentPOJO;
-import serverapi.tables.Manga.POJO.MangaPOJO;
+import serverapi.tables.manga_tables.manga.pojo.CommentPOJO;
+import serverapi.tables.manga_tables.manga.pojo.MangaPOJO;
+
 
 @RestController
 @RequestMapping("/api/chapter")

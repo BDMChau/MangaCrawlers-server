@@ -1,4 +1,4 @@
-package serverapi.tables.User.POJO;
+package serverapi.tables.user_tables.user.pojo;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import serverapi.api.Response;
 import serverapi.query.dtos.tables.FieldsCreateMangaDTO;
-import serverapi.tables.Manga.POJO.CommentPOJO;
-import serverapi.tables.Manga.POJO.MangaPOJO;
-import serverapi.tables.Manga.POJO.RatingPOJO;
+
 import serverapi.tables.User.POJO.TransGroupPOJO;
-import serverapi.tables.User.POJO.UserPOJO;
+
+import serverapi.tables.manga_tables.manga.pojo.CommentPOJO;
+import serverapi.tables.manga_tables.manga.pojo.MangaPOJO;
+import serverapi.tables.manga_tables.manga.pojo.RatingPOJO;
+import serverapi.tables.user_tables.user.pojo.UserPOJO;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;

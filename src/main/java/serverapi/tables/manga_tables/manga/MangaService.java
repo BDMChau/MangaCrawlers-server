@@ -17,9 +17,10 @@ import serverapi.query.repository.manga.MangaRepos;
 import serverapi.query.repository.manga.UpdateViewRepos;
 import serverapi.query.repository.user.MangaCommentsRepos;
 import serverapi.query.specification.MangaSpecification;
-import serverapi.tables.Manga.POJO.MangaPOJO;
+
 import serverapi.tables.manga_tables.chapter.Chapter;
 import serverapi.tables.manga_tables.genre.Genre;
+import serverapi.tables.manga_tables.manga.pojo.MangaPOJO;
 import serverapi.tables.manga_tables.update_view.UpdateView;
 
 import java.time.LocalDateTime;

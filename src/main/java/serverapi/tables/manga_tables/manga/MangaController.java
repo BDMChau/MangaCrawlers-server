@@ -5,8 +5,9 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import serverapi.tables.Manga.POJO.CommentPOJO;
-import serverapi.tables.Manga.POJO.MangaPOJO;
+import serverapi.tables.manga_tables.manga.pojo.CommentPOJO;
+import serverapi.tables.manga_tables.manga.pojo.MangaPOJO;
+
 
 import java.util.ArrayList;
 import java.util.List;
