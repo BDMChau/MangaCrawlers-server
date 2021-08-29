@@ -1,4 +1,4 @@
-package serverapi.tables.Manga.POJO;
+package serverapi.tables.manga_tables.manga.pojo;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

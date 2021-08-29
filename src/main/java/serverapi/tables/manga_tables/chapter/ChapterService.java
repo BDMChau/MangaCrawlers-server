@@ -7,12 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.api.Response;
 import serverapi.helpers.OffsetBasedPageRequest;
+import serverapi.query.dtos.features.CommentExportDTO;
 import serverapi.query.dtos.tables.ChapterDTO;
 import serverapi.query.dtos.tables.ChapterImgDTO;
-import serverapi.query.dtos.features.CommentExportDTO;
 import serverapi.query.repository.manga.ChapterRepos;
 import serverapi.query.repository.manga.ImgChapterRepos;
-import serverapi.query.repository.manga.MangaRepos;
 import serverapi.query.repository.user.MangaCommentsRepos;
 
 import java.util.List;
@@ -24,14 +23,12 @@ public class ChapterService {
 
     private final ChapterRepos chapterRepos;
     private final ImgChapterRepos imgChapterRepos;
-    private final MangaRepos mangaRepos;
     private final MangaCommentsRepos mangaCommentsRepos;
 
     @Autowired
-    public ChapterService(ChapterRepos chapterRepos, ImgChapterRepos imgChapterRepos, MangaRepos mangaRepos, MangaCommentsRepos mangaCommentsRepos) {
+    public ChapterService(ChapterRepos chapterRepos, ImgChapterRepos imgChapterRepos, MangaCommentsRepos mangaCommentsRepos) {
         this.chapterRepos = chapterRepos;
         this.imgChapterRepos = imgChapterRepos;
-        this.mangaRepos = mangaRepos;
         this.mangaCommentsRepos = mangaCommentsRepos;
     }
 
