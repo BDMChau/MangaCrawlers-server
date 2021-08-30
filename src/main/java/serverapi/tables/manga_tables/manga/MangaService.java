@@ -25,6 +25,7 @@ import serverapi.tables.manga_tables.update_view.UpdateView;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
@@ -509,7 +510,7 @@ public class MangaService {
 
     public ResponseEntity getCommentsManga(Long mangaId, int from, int amount) {
 
-        //get list comments in 1 chapter
+        //get manga's informations
         Optional<AuthorMangaDTO> mangaOptional = mangaRepository.getAllByMangaId(mangaId);
 
         if (mangaOptional.isEmpty()) {
@@ -520,22 +521,159 @@ public class MangaService {
                     HttpStatus.BAD_REQUEST);
         }
 
-
+        // get manga's comments
         Pageable pageable = new OffsetBasedPageRequest(from, amount);
-        List<CommentExportDTO> commentsOfChapters = mangaCommentsRepos.getCommentsManga(mangaId, pageable);
+        List<MangaCommentDTOs> commentsManga = mangaCommentsRepos.getCommentsManga(mangaId, pageable);
 
-        if (commentsOfChapters.isEmpty()) {
+        if (commentsManga.isEmpty()) {
             Map<String, Object> msg = Map.of(
                     "msg", "No comments found!"
             );
             return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
         }
 
+        List<MangaCommentDTOs> terracesComments = new ArrayList<>();
+
+        commentsManga.forEach(terracesLevel00 ->{
+
+            AtomicBoolean level0 = new AtomicBoolean(false);
+            commentsManga.forEach(terracesLevel01 ->{
+
+                MangaCommentDTOs child = new MangaCommentDTOs();
+                AtomicBoolean level01 = new AtomicBoolean(false);
+                commentsManga.forEach(terracesLevel02 ->{
+
+//                    if(terracesLevel00.getManga_comment_id().equals(terracesLevel01.getParent_id())
+//                            && terracesLevel01.getManga_comment_id().equals(terracesLevel02.getParent_id())
+//                            && terracesLevel01.getChild_id() != terracesLevel01.getParent_id()
+//                            && terracesLevel02.getChild_id() != terracesLevel02.getParent_id()){
+//
+//                        System.err.println("this is level 0!!");
+//
+//                        MangaCommentDTOs childLevel0 = new MangaCommentDTOs();
+//
+//                        childLevel0.setUser_id(terracesLevel00.getUser_id());
+//                        childLevel0.setUser_name(terracesLevel00.getUser_name());
+//                        childLevel0.setUser_email(terracesLevel00.getUser_email());
+//
+//                        childLevel0.setManga_id(terracesLevel00.getManga_id());
+//
+//                        childLevel0.setChapter_id(terracesLevel00.getChapter_id());
+//                        childLevel0.setChapter_name(terracesLevel00.getChapter_name());
+//                        childLevel0.setCreated_at(terracesLevel00.getCreated_at());
+//
+//                        childLevel0.setManga_comment_id(terracesLevel00.getManga_comment_id());
+//                        childLevel0.setManga_comment_time(terracesLevel00.getManga_comment_time());
+//                        childLevel0.setManga_comment_content(terracesLevel00.getManga_comment_content());
+//
+//                        childLevel0.setManga_comment_image_id(terracesLevel00.getManga_comment_image_id());
+//                        childLevel0.setImage_url(terracesLevel00.getImage_url());
+//
+//                        terracesComments.add(childLevel0);
+//                        level00.set(true);
+//
+//                    }
+
+                    if(terracesLevel00.getManga_comment_id().equals(terracesLevel01.getParent_id())
+                            && terracesLevel01.getManga_comment_id().equals(terracesLevel02.getParent_id())
+                            && terracesLevel01.getChild_id() != terracesLevel01.getParent_id()
+                            && terracesLevel02.getChild_id() != terracesLevel02.getParent_id()){
+
+                        CommentTreesDTO commentTreesDTO = new CommentTreesDTO();
+
+                        System.err.println("this is level 02!!!!!!!!");
+
+                        // adding to commentTreDto
+                        CommentTreesDTO childCommentTreesDTO = new CommentTreesDTO();
+
+                        childCommentTreesDTO.setUser_id(terracesLevel02.getUser_id());
+                        childCommentTreesDTO.setUser_name(terracesLevel02.getUser_name());
+                        childCommentTreesDTO.setUser_email(terracesLevel02.getUser_email());
+
+                        childCommentTreesDTO.setManga_id(terracesLevel02.getManga_id());
+
+                        childCommentTreesDTO.setChapter_id(terracesLevel02.getChapter_id());
+                        childCommentTreesDTO.setChapter_name(terracesLevel02.getChapter_name());
+                        childCommentTreesDTO.setCreated_at(terracesLevel02.getCreated_at());
+
+                        childCommentTreesDTO.setManga_comment_id(terracesLevel02.getManga_comment_id());
+                        childCommentTreesDTO.setManga_comment_time(terracesLevel02.getManga_comment_time());
+                        childCommentTreesDTO.setManga_comment_content(terracesLevel02.getManga_comment_content());
+
+                        childCommentTreesDTO.setManga_comment_image_id(terracesLevel02.getManga_comment_image_id());
+                        childCommentTreesDTO.setImage_url(terracesLevel02.getImage_url());
+
+                        commentTreesDTO.getTerraces_comments_02nd().add(childCommentTreesDTO);
+
+                        //////
+                        if(!level01.get()){
+                            commentTreesDTO.setUser_id(terracesLevel01.getUser_id());
+                            commentTreesDTO.setUser_name(terracesLevel01.getUser_name());
+                            commentTreesDTO.setUser_email(terracesLevel01.getUser_email());
+
+                            commentTreesDTO.setManga_id(terracesLevel01.getManga_id());
+
+                            commentTreesDTO.setChapter_id(terracesLevel01.getChapter_id());
+                            commentTreesDTO.setChapter_name(terracesLevel01.getChapter_name());
+                            commentTreesDTO.setCreated_at(terracesLevel01.getCreated_at());
+
+                            commentTreesDTO.setManga_comment_id(terracesLevel01.getManga_comment_id());
+                            commentTreesDTO.setManga_comment_time(terracesLevel01.getManga_comment_time());
+                            commentTreesDTO.setManga_comment_content(terracesLevel01.getManga_comment_content());
+
+                            commentTreesDTO.setManga_comment_image_id(terracesLevel01.getManga_comment_image_id());
+                            commentTreesDTO.setImage_url(terracesLevel01.getImage_url());
+
+                            child.getTerraces_comments_01st().add(commentTreesDTO);
+                            level01.set(true);
+                        }
+                        if(!level0.get()){
+
+                            child.setUser_id(terracesLevel00.getUser_id());
+                            child.setUser_name(terracesLevel00.getUser_name());
+                            child.setUser_email(terracesLevel00.getUser_email());
+
+                            child.setManga_id(terracesLevel00.getManga_id());
+
+                            child.setChapter_id(terracesLevel00.getChapter_id());
+                            child.setChapter_name(terracesLevel00.getChapter_name());
+                            child.setCreated_at(terracesLevel00.getCreated_at());
+
+                            child.setManga_comment_id(terracesLevel00.getManga_comment_id());
+                            child.setManga_comment_time(terracesLevel00.getManga_comment_time());
+                            child.setManga_comment_content(terracesLevel00.getManga_comment_content());
+
+                            child.setManga_comment_image_id(terracesLevel00.getManga_comment_image_id());
+                            child.setImage_url(terracesLevel00.getImage_url());
+
+                            terracesComments.add(child);
+                            level0.set(true);
+                        }
+
+                    }
+
+                    //if level 01
+
+
+                    // if level 00
+
+
+                });
+
+
+            });
+        });
+        if(terracesComments.isEmpty()){
+            Map<String, Object> msg = Map.of(
+                    "msg", "No comments found!"
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
 
         Map<String, Object> msg = Map.of(
-                "msg", "Get chapter comments successfully!",
+                "msg", "Get manga's comments successfully!",
                 "manga_info", mangaOptional,
-                "comments", commentsOfChapters
+                "comments", terracesComments
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 

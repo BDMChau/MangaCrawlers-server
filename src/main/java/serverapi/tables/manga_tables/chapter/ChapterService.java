@@ -10,6 +10,7 @@ import serverapi.helpers.OffsetBasedPageRequest;
 import serverapi.query.dtos.tables.ChapterDTO;
 import serverapi.query.dtos.tables.ChapterImgDTO;
 import serverapi.query.dtos.features.CommentExportDTO;
+import serverapi.query.dtos.tables.MangaCommentDTOs;
 import serverapi.query.repository.manga.ChapterRepos;
 import serverapi.query.repository.manga.ImgChapterRepos;
 import serverapi.query.repository.manga.MangaRepos;
@@ -112,16 +113,10 @@ public class ChapterService {
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
 
-        //check mangaId of this chapter != mangaId input
-        Long mangaIdofChapter = chapterOptional.get ().getManga ().getManga_id ();
-        if(mangaIdofChapter != mangaId){
-            Map<String, Object> msg = Map.of("msg", "This manga doesn't have this chapter!");
-            return new ResponseEntity<>(new Response(404, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
-        }
         //get list comments in 1 chapter
         Pageable pageable = new OffsetBasedPageRequest (from, amount);
         System.out.println ("pageable "+pageable.getPageNumber ());
-        List<CommentExportDTO> commentExportDTOS = mangaCommentsRepos.getCommentsChapter (chapterId, pageable);
+        List<MangaCommentDTOs> commentExportDTOS = mangaCommentsRepos.getCommentsChapter (chapterId, pageable);
 
         if (commentExportDTOS.isEmpty()) {
             Map<String, Object> msg = Map.of("msg", "No comments found!");

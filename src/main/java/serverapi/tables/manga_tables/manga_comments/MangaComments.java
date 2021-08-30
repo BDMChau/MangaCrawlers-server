@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import serverapi.tables.manga_tables.chapter.Chapter;
 import serverapi.tables.manga_tables.manga.Manga;
+import serverapi.tables.manga_tables.manga_comment_images.CommentImages;
 import serverapi.tables.manga_tables.manga_comment_relations.CommentRelations;
 import serverapi.tables.manga_tables.rating_manga.RatingManga;
 import serverapi.tables.user_tables.user.User;
@@ -57,6 +58,10 @@ public class MangaComments {
     @JsonBackReference
     @OneToMany(mappedBy = "child_id", cascade = CascadeType.ALL)
     private Collection<CommentRelations> child_commentRelations;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "manga_comment", cascade = CascadeType.ALL)
+    private Collection<CommentImages> comment_image;
 
     @Column(columnDefinition = "timestamp with time zone", nullable = false)
     private Calendar manga_comment_time;
