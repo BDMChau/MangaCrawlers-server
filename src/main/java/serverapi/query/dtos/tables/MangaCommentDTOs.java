@@ -34,6 +34,7 @@ public class MangaCommentDTOs {
     private Long manga_comment_relation_id;
     private Long parent_id;
     private Long child_id;
+    private String level;
 
     private Long manga_comment_image_id;
     private String image_url;
@@ -46,7 +47,7 @@ public class MangaCommentDTOs {
                             Long manga_id,
                             Long chapter_id,
                             Long manga_comment_id, Calendar manga_comment_time, String manga_comment_content,
-                            Long manga_comment_relation_id, Long parent_id, Long child_id,
+                            Long manga_comment_relation_id, Long parent_id, Long child_id, String level,
                             Long manga_comment_image_id, String image_url) {
         this.user_id = user_id;
         this.user_name = user_name;
@@ -60,8 +61,10 @@ public class MangaCommentDTOs {
         this.manga_comment_relation_id = manga_comment_relation_id;
         this.parent_id = parent_id;
         this.child_id = child_id;
+        this.level = level;
         this.manga_comment_image_id = manga_comment_image_id;
         this.image_url = image_url;
+
     }
 
     // for manga's comment
@@ -69,7 +72,7 @@ public class MangaCommentDTOs {
                             Long manga_id,
                             Long chapter_id, String chapter_name, Calendar created_at,
                             Long manga_comment_id, Calendar manga_comment_time, String manga_comment_content,
-                            Long manga_comment_relation_id, Long parent_id, Long child_id,
+                            Long manga_comment_relation_id, Long parent_id, Long child_id, String level,
                             Long manga_comment_image_id, String image_url) {
         this.user_id = user_id;
         this.user_name = user_name;
@@ -85,8 +88,10 @@ public class MangaCommentDTOs {
         this.manga_comment_relation_id = manga_comment_relation_id;
         this.parent_id = parent_id;
         this.child_id = child_id;
+        this.level = level;
         this.manga_comment_image_id = manga_comment_image_id;
         this.image_url = image_url;
+
     }
 
     //for check
@@ -122,6 +127,7 @@ public class MangaCommentDTOs {
         this.manga_comment_image_id = manga_comment_image_id;
         this.image_url = image_url;
         this.terraces_comments_01st = terraces_comments_01st;
+
     }
 
     //for manga's comment child

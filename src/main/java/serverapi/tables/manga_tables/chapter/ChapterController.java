@@ -57,15 +57,15 @@ public class ChapterController {
         Long chapterId = Long.parseLong(commentPOJO.getChapter_id ());
         System.out.println ("chapterId"+chapterId);
 
+
         int from = commentPOJO.getFrom ();
         System.out.println ("from_"+from);
 
         int amount = commentPOJO.getAmount();
         System.out.println("amount_" + amount);
 
-        Long mangaId = Long.parseLong (commentPOJO.getManga_id ());
 
-        return chapterService.getCommentsChapter(mangaId ,chapterId, amount, from);
+        return chapterService.getCommentsChapter(chapterId, amount, from);
     }
 
 

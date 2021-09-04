@@ -39,4 +39,6 @@ public class CommentRelations {
     @JoinColumn(name = "child_mangacomment_id")
     private MangaComments child_id;
 
+    @Column(columnDefinition = "TEXT", nullable = true)
+    private String level;
 }

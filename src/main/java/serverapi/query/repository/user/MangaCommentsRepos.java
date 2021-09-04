@@ -50,7 +50,7 @@ public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
             "cm.manga.manga_id, "+
             "cm.chapter.chapter_id, " +
             "cm.manga_comment_id, cm.manga_comment_time, cm.manga_comment_content, " +
-            "cr.manga_comment_relation_id, cr.parent_id.manga_comment_id, cr.child_id.manga_comment_id, " +
+            "cr.manga_comment_relation_id, cr.parent_id.manga_comment_id, cr.child_id.manga_comment_id, cr.level, " +
             "ci.manga_comment_image_id, ci.image_url) " +
             "FROM CommentRelations cr INNER JOIN MangaComments cm ON cm.manga_comment_id = cr.child_id.manga_comment_id " +
             "left join cm.user " +
@@ -65,30 +65,51 @@ public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
             "cm.manga.manga_id, "+
             "cm.chapter.chapter_id, cm.chapter.chapter_name, cm.chapter.created_at, " +
             "cm.manga_comment_id, cm.manga_comment_time, cm.manga_comment_content, " +
-            "cr.manga_comment_relation_id, cr.parent_id.manga_comment_id, cr.child_id.manga_comment_id, " +
+            "cr.manga_comment_relation_id, cr.parent_id.manga_comment_id, cr.child_id.manga_comment_id, cr.level, " +
             "ci.manga_comment_image_id, ci.image_url ) " +
             "FROM CommentRelations cr INNER JOIN MangaComments cm ON cm.manga_comment_id = cr.child_id.manga_comment_id " +
             "left join cm.user " +
             "left join cm.manga " +
             "left join cm.chapter " +
             "left join cm.comment_image ci " +
-            "WHERE cm.manga.manga_id = ?1 ORDER BY cm.manga_comment_time DESC ")
-    List<MangaCommentDTOs> getCommentsManga(Long manga_id, Pageable pageable);
+            "WHERE cm.manga.manga_id = ?1 " +
+            "AND cr.level =?2 " +
+            "ORDER BY cm.manga_comment_time DESC ")
+    List<MangaCommentDTOs> getCommentsManga(Long manga_id, String level, Pageable pageable);
+
+    @Query("SELECT new serverapi.query.dtos.tables.MangaCommentDTOs(" +
+            "cm.user.user_id, cm.user.user_name, cm.user.user_email, cm.user.user_avatar, " +
+            "cm.manga.manga_id, "+
+            "cm.chapter.chapter_id, cm.chapter.chapter_name, cm.chapter.created_at, " +
+            "cm.manga_comment_id, cm.manga_comment_time, cm.manga_comment_content, " +
+            "cr.manga_comment_relation_id, cr.parent_id.manga_comment_id, cr.child_id.manga_comment_id, cr.level, " +
+            "ci.manga_comment_image_id, ci.image_url ) " +
+            "FROM CommentRelations cr INNER JOIN MangaComments cm ON cm.manga_comment_id = cr.child_id.manga_comment_id " +
+            "left join cm.user " +
+            "left join cm.manga " +
+            "left join cm.chapter " +
+            "left join cm.comment_image ci " +
+            "WHERE cm.manga.manga_id = ?1 " +
+            "AND cr.level =?2 " +
+            "ORDER BY cm.manga_comment_time DESC ")
+    List<MangaCommentDTOs> getCommentsMangaLevels(Long manga_id, String level);
 
     @Query("SELECT new serverapi.query.dtos.tables.MangaCommentDTOs(" +
             "cm.user.user_id, cm.user.user_name, cm.user.user_email, cm.user.user_avatar, " +
             "cm.manga.manga_id, "+
             "cm.chapter.chapter_id, " +
             "cm.manga_comment_id, cm.manga_comment_time, cm.manga_comment_content, " +
-            "cr.manga_comment_relation_id, cr.parent_id.manga_comment_id, cr.child_id.manga_comment_id, " +
+            "cr.manga_comment_relation_id, cr.parent_id.manga_comment_id, cr.child_id.manga_comment_id, cr.level, " +
             "ci.manga_comment_image_id, ci.image_url) " +
             "FROM CommentRelations cr INNER JOIN MangaComments cm ON cm.manga_comment_id = cr.child_id.manga_comment_id " +
             "left join cm.user " +
             "left join cm.manga " +
             "left join cm.chapter " +
             "left join cm.comment_image ci " +
-            "WHERE cm.chapter.chapter_id = ?1 ORDER BY cm.manga_comment_time DESC ")
-    List<MangaCommentDTOs> getCommentsChapter(Long chapter_id, Pageable pageable);
+            "WHERE cm.chapter.chapter_id = ?1 " +
+            "AND cr.level =?2 " +
+            "ORDER BY cm.manga_comment_time DESC ")
+    List<MangaCommentDTOs> getCommentsChapter(Long chapter_id, String level, Pageable pageable);
 
 
 

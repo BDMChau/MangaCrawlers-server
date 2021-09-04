@@ -103,7 +103,7 @@ public class ChapterService {
 //        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 //    }
 
-    public ResponseEntity getCommentsChapter(Long mangaId, Long chapterId, int amount, int from) {
+    public ResponseEntity getCommentsChapter(Long chapterId, int amount, int from) {
 
 
         //check chapterId is empty
@@ -116,7 +116,8 @@ public class ChapterService {
         //get list comments in 1 chapter
         Pageable pageable = new OffsetBasedPageRequest (from, amount);
         System.out.println ("pageable "+pageable.getPageNumber ());
-        List<MangaCommentDTOs> commentExportDTOS = mangaCommentsRepos.getCommentsChapter (chapterId, pageable);
+        String level = "";
+        List<MangaCommentDTOs> commentExportDTOS = mangaCommentsRepos.getCommentsChapter (chapterId, level, pageable);
 
         if (commentExportDTOS.isEmpty()) {
             Map<String, Object> msg = Map.of("msg", "No comments found!");
