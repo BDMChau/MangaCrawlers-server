@@ -539,7 +539,6 @@ public class MangaService {
         //Get all level in manga
         level = "01";
         List<MangaCommentDTOs> terracesLevel01 = mangaCommentsRepos.getCommentsMangaLevels(mangaId, level);
-        List<CommentTreesDTO> listCommentLevel01 = new ArrayList<>();
 
         AtomicBoolean isTerracesLevel01 = new AtomicBoolean(false);
         if(!terracesLevel01.isEmpty()){
@@ -553,7 +552,6 @@ public class MangaService {
         if(!terracesLevel02.isEmpty()){
             isTerracesLevel02.set(true);
         }
-
 
             terracesLevel00.forEach(level00 -> {
 
@@ -585,31 +583,10 @@ public class MangaService {
                     terracesLevel01.forEach(level01 -> {
 
                         if(level00.getManga_comment_id() == level01.getParent_id()){
+
                             System.err.println("this is level 01");
-
                             CommentTreesDTO commentLevel01 = new CommentTreesDTO();
-
-                            commentLevel01.setUser_id(level01.getUser_id());
-                            commentLevel01.setUser_email(level01.getUser_email());
-                            commentLevel01.setUser_name(level01.getUser_name());
-                            commentLevel01.setUser_avatar(level01.getUser_avatar());
-
-                            commentLevel01.setManga_id(level01.getManga_id());
-
-                            commentLevel01.setChapter_id(level01.getChapter_id());
-                            commentLevel01.setChapter_name(level01.getChapter_name());
-                            commentLevel01.setCreated_at(level01.getCreated_at());
-
-                            commentLevel01.setManga_comment_id(level01.getManga_comment_id());
-                            commentLevel01.setManga_comment_time(level01.getManga_comment_time());
-                            commentLevel01.setManga_comment_content(level01.getManga_comment_content());
-                            System.err.println("Manga_Comment_id: "+level01.getManga_comment_id());
-
-                            commentLevel01.setManga_comment_image_id(level01.getManga_comment_image_id());
-                            commentLevel01.setImage_url(level01.getImage_url());
-
-                            listCommentLevel01.add(commentLevel01);
-
+                            getCommentTreeDTO(commentLevel01,level00, level01);
 
                             // add list comment level01 into mangacomment list
                             if(!mangaComments.isEmpty()){
@@ -619,30 +596,14 @@ public class MangaService {
                                 mangaComments.get(index).getTerraces_comments_01st().add(commentLevel01);
 
                                 if(isTerracesLevel02.get()){
+
                                     terracesLevel02.forEach(level02 ->{
 
                                         if(level01.getManga_comment_id() == level02.getParent_id()){
 
                                             CommentTreesDTO commentLevel02 = new CommentTreesDTO();
 
-                                            commentLevel02.setUser_id(level02.getUser_id());
-                                            commentLevel02.setUser_email(level02.getUser_email());
-                                            commentLevel02.setUser_name(level02.getUser_name());
-                                            commentLevel02.setUser_avatar(level02.getUser_avatar());
-
-                                            commentLevel02.setManga_id(level02.getManga_id());
-
-                                            commentLevel02.setChapter_id(level02.getChapter_id());
-                                            commentLevel02.setChapter_name(level02.getChapter_name());
-                                            commentLevel02.setCreated_at(level02.getCreated_at());
-
-                                            commentLevel02.setManga_comment_id(level02.getManga_comment_id());
-                                            commentLevel02.setManga_comment_time(level02.getManga_comment_time());
-                                            commentLevel02.setManga_comment_content(level02.getManga_comment_content());
-                                            System.err.println("Manga_Comment_id at level02: "+level02.getManga_comment_id());
-
-                                            commentLevel02.setManga_comment_image_id(level02.getManga_comment_image_id());
-                                            commentLevel02.setImage_url(level02.getImage_url());
+                                            getCommentTreeDTO(commentLevel02, level01, level02);
 
                                             int indexAtLevel02 = mangaComments.get(index).getTerraces_comments_01st().indexOf(commentLevel01);
 
@@ -653,9 +614,7 @@ public class MangaService {
                                     });
                                 }
 
-
                             }
-                            System.err.println("empty mẹ r");
                         }
                     });
                 }
@@ -783,5 +742,33 @@ public class MangaService {
                 "genres", genresInput
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    ///sub functions
+
+    private void getCommentTreeDTO (CommentTreesDTO commentTreesDTO, MangaCommentDTOs level01, MangaCommentDTOs level02){
+
+        commentTreesDTO.setFrom_user_id(level01.getUser_id());
+        commentTreesDTO.setFrom_user_name(level01.getUser_name());
+        commentTreesDTO.setFrom_user_avatar(level01.getUser_avatar());
+
+        commentTreesDTO.setUser_id(level02.getUser_id());
+        commentTreesDTO.setUser_email(level02.getUser_email());
+        commentTreesDTO.setUser_name(level02.getUser_name());
+        commentTreesDTO.setUser_avatar(level02.getUser_avatar());
+
+        commentTreesDTO.setManga_id(level02.getManga_id());
+
+        commentTreesDTO.setChapter_id(level02.getChapter_id());
+        commentTreesDTO.setChapter_name(level02.getChapter_name());
+        commentTreesDTO.setCreated_at(level02.getCreated_at());
+
+        commentTreesDTO.setManga_comment_id(level02.getManga_comment_id());
+        commentTreesDTO.setManga_comment_time(level02.getManga_comment_time());
+        commentTreesDTO.setManga_comment_content(level02.getManga_comment_content());
+
+        commentTreesDTO.setManga_comment_image_id(level02.getManga_comment_image_id());
+        commentTreesDTO.setImage_url(level02.getImage_url());
+
     }
 }

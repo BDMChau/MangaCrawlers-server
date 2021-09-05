@@ -43,6 +43,10 @@ public class User {
     private Collection<ReadingHistory> readingHistory;
 
     @JsonBackReference
+    @OneToMany(mappedBy = "to_user", cascade = CascadeType.ALL)
+    private Collection<MangaComments> to_mangaComments;
+
+    @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<MangaComments> mangaComments;
 
