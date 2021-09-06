@@ -322,21 +322,21 @@ public class MangaService {
 
 
     public ResponseEntity getDailyMangas() {
-        List<UpdateViewDTO> listCurrentDaily = mangaRepository.getWeekly(1,0);
-        listCurrentDaily.forEach (item->{
-            System.err.println ("item in listcurrent "+item.getManga_id ());
-            System.err.println ("item in listcurrent "+item.getCreated_at ().getFirstDayOfWeek ());
+        List<UpdateViewDTO> listCurrentDaily = mangaRepository.getWeekly(1, 0);
+        listCurrentDaily.forEach(item -> {
+            System.err.println("item in listcurrent " + item.getManga_id());
+            System.err.println("item in listcurrent " + item.getCreated_at().getFirstDayOfWeek());
 
         });
-        System.err.println ("datecurrent"+ LocalDateTime.now ());
+        System.err.println("datecurrent" + LocalDateTime.now());
         List<UpdateViewDTO> listPreviousDaily = mangaRepository.getWeekly(2, 1);
-        listPreviousDaily.forEach (item->{
-            System.err.println ("item in lisprev "+item.getManga_id ());
-            System.err.println ("item in listprev "+item.getCreated_at ().getFirstDayOfWeek ());
+        listPreviousDaily.forEach(item -> {
+            System.err.println("item in lisprev " + item.getManga_id());
+            System.err.println("item in listprev " + item.getCreated_at().getFirstDayOfWeek());
 
         });
 
-        System.err.println ("listPreviousDaily check "+listPreviousDaily.isEmpty ());
+        System.err.println("listPreviousDaily check " + listPreviousDaily.isEmpty());
         if (listCurrentDaily.isEmpty()) {
             System.err.println("Current list daily empty!");
             Map<String, Object> err = Map.of("err", "Nothing from daily mangas ranking!");
@@ -358,7 +358,7 @@ public class MangaService {
                         DailyMangaDTO dailyMangaDTO = new DailyMangaDTO();
 
                         Long views = listCurrentDaily.get(i).getTotalviews() - listPreviousDaily.get(j).getTotalviews();
-                        System.err.println ("Compare "+views);
+                        System.err.println("Compare " + views);
                         dailyMangaDTO.setManga_id(listCurrentDaily.get(i).getManga_id());
                         dailyMangaDTO.setViews(listCurrentDaily.get(i).getTotalviews());
                         dailyMangaDTO.setView_compares(views);
@@ -396,7 +396,7 @@ public class MangaService {
 
                         Long views =
                                 listCurrentDaily.get(j).getTotalviews() - listPreviousDaily.get(i).getTotalviews();
-                        System.err.println ("Compare "+views);
+                        System.err.println("Compare " + views);
 
                         dailyMangaDTO.setManga_id(listCurrentDaily.get(j).getManga_id());
                         dailyMangaDTO.setViews(listCurrentDaily.get(j).getTotalviews());
@@ -433,7 +433,7 @@ public class MangaService {
         }
 
         top10Mangas.forEach(item -> {
-            System.err.println ("item iD này "+item.getManga_id ());
+            System.err.println("item iD này " + item.getManga_id());
             mangas.forEach(manga -> {
                 if (item.getManga_id() == manga.getManga_id()) {
                     listDailyRanking.add(manga);
@@ -509,118 +509,107 @@ public class MangaService {
 
 
     public ResponseEntity getCommentsManga(Long mangaId, int from, int amount) {
+        String level = "";
 
-        String level ="";
-        //get manga's informations
         Optional<AuthorMangaDTO> mangaOptional = mangaRepository.getAllByMangaId(mangaId);
-
         if (mangaOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of(
-                    "msg", "Manga not found!"
-            );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(),
+            Map<String, Object> err = Map.of("err", "Manga not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
                     HttpStatus.BAD_REQUEST);
         }
 
-        // get manga's comments
-        List<MangaCommentDTOs> mangaComments = new ArrayList<>();
-
-        Pageable pageable = new OffsetBasedPageRequest(from, amount);
+        // get manga's comments in db
         level = "00";
-        List<MangaCommentDTOs> terracesLevel00 = mangaCommentsRepos.getCommentsManga(mangaId, level, pageable);
-
-        if (terracesLevel00.isEmpty()) {
-            Map<String, Object> msg = Map.of(
-                    "msg", "No comments found!"
-            );
+        Pageable pageable = new OffsetBasedPageRequest(from, amount);
+        List<MangaCommentDTOs> cmtsLv00 = mangaCommentsRepos.getCommentsManga(mangaId, level, pageable);
+        if (cmtsLv00.isEmpty()) {
+            Map<String, Object> msg = Map.of("msg", "No comments found!");
             return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
         }
 
-        //Get all level in manga
+
         level = "01";
-        List<MangaCommentDTOs> terracesLevel01 = mangaCommentsRepos.getCommentsMangaLevels(mangaId, level);
+        AtomicBoolean isLv01 = new AtomicBoolean(false);
 
-        AtomicBoolean isTerracesLevel01 = new AtomicBoolean(false);
-        if(!terracesLevel01.isEmpty()){
-            isTerracesLevel01.set(true);
+        List<MangaCommentDTOs> cmtsLv01 = mangaCommentsRepos.getCommentsMangaLevels(mangaId, level);
+        if (!cmtsLv01.isEmpty()) {
+            isLv01.set(true);
         }
-        // level 02
+
+
         level = "02";
-        List<MangaCommentDTOs> terracesLevel02 = mangaCommentsRepos.getCommentsMangaLevels(mangaId, level);
-
-        AtomicBoolean isTerracesLevel02 = new AtomicBoolean(false);
-        if(!terracesLevel02.isEmpty()){
-            isTerracesLevel02.set(true);
+        List<MangaCommentDTOs> cmtsLv02 = mangaCommentsRepos.getCommentsMangaLevels(mangaId, level);
+        AtomicBoolean isLv02 = new AtomicBoolean(false);
+        if (!cmtsLv02.isEmpty()) {
+            isLv02.set(true);
         }
 
-            terracesLevel00.forEach(level00 -> {
 
-                MangaCommentDTOs commentLevel00 = new MangaCommentDTOs();
+        // format cmts to response
+        List<MangaCommentDTOs> mangaComments = new ArrayList<>();
 
-                commentLevel00.setUser_id(level00.getUser_id());
-                commentLevel00.setUser_email(level00.getUser_email());
-                commentLevel00.setUser_name(level00.getUser_name());
-                commentLevel00.setUser_avatar(level00.getUser_avatar());
+        cmtsLv00.forEach(cmtLv00 -> {
+            MangaCommentDTOs commentLevel00 = new MangaCommentDTOs();
 
-                commentLevel00.setManga_id(level00.getManga_id());
+            commentLevel00.setUser_id(cmtLv00.getUser_id());
+            commentLevel00.setUser_email(cmtLv00.getUser_email());
+            commentLevel00.setUser_name(cmtLv00.getUser_name());
+            commentLevel00.setUser_avatar(cmtLv00.getUser_avatar());
 
-                commentLevel00.setChapter_id(level00.getChapter_id());
-                commentLevel00.setChapter_name(level00.getChapter_name());
-                commentLevel00.setCreated_at(level00.getCreated_at());
+            commentLevel00.setManga_id(cmtLv00.getManga_id());
 
-                commentLevel00.setManga_comment_id(level00.getManga_comment_id());
-                commentLevel00.setManga_comment_time(level00.getManga_comment_time());
-                commentLevel00.setManga_comment_content(level00.getManga_comment_content());
-                System.err.println("MangaCommentId In level00 "+level00.getManga_comment_id());
+            commentLevel00.setChapter_id(cmtLv00.getChapter_id());
+            commentLevel00.setChapter_name(cmtLv00.getChapter_name());
+            commentLevel00.setCreated_at(cmtLv00.getCreated_at());
 
-                commentLevel00.setManga_comment_image_id(level00.getManga_comment_image_id());
-                commentLevel00.setImage_url(level00.getImage_url());
+            commentLevel00.setManga_comment_id(cmtLv00.getManga_comment_id());
+            commentLevel00.setManga_comment_time(cmtLv00.getManga_comment_time());
+            commentLevel00.setManga_comment_content(cmtLv00.getManga_comment_content());
+            System.err.println("MangaCommentId In level00 " + cmtLv00.getManga_comment_id());
 
-                mangaComments.add(commentLevel00);
+            commentLevel00.setManga_comment_image_id(cmtLv00.getManga_comment_image_id());
+            commentLevel00.setImage_url(cmtLv00.getImage_url());
 
-                if(isTerracesLevel01.get()){
+            mangaComments.add(commentLevel00);
 
-                    terracesLevel01.forEach(level01 -> {
+            if (isLv01.get()) {
+                cmtsLv01.forEach(cmtLv01 -> {
+                    if (cmtLv00.getManga_comment_id() == cmtLv01.getParent_id()) {
 
-                        if(level00.getManga_comment_id() == level01.getParent_id()){
+                        System.err.println("this is level 01");
+                        CommentTreesDTO commentLevel01 = new CommentTreesDTO();
+                        getCommentTreeDTO(commentLevel01, cmtLv00, cmtLv01);
 
-                            System.err.println("this is level 01");
-                            CommentTreesDTO commentLevel01 = new CommentTreesDTO();
-                            getCommentTreeDTO(commentLevel01,level00, level01);
+                        // add list comment level01 into mangaComments
+                        if (!mangaComments.isEmpty()) {
+                            System.err.println("ko có empty");
+                            int index = mangaComments.indexOf(commentLevel00);
+                            System.err.println("Index " + index);
+                            mangaComments.get(index).getTerraces_comments_01st().add(commentLevel01);
 
-                            // add list comment level01 into mangacomment list
-                            if(!mangaComments.isEmpty()){
-                                System.err.println("ko có empty");
-                                int index = mangaComments.indexOf(commentLevel00);
-                                        System.err.println("Index "+index);
-                                mangaComments.get(index).getTerraces_comments_01st().add(commentLevel01);
+                            if (isLv02.get()) {
+                                cmtsLv02.forEach(cmtLv02 -> {
+                                    if (cmtLv01.getManga_comment_id() == cmtLv02.getParent_id()) {
+                                        CommentTreesDTO commentLevel02 = new CommentTreesDTO();
 
-                                if(isTerracesLevel02.get()){
+                                        getCommentTreeDTO(commentLevel02, cmtLv01, cmtLv02);
 
-                                    terracesLevel02.forEach(level02 ->{
+                                        int indexAtLevel02 = mangaComments.get(index).getTerraces_comments_01st().indexOf(commentLevel01);
 
-                                        if(level01.getManga_comment_id() == level02.getParent_id()){
+                                        System.err.println("indexAtLevel02 " + indexAtLevel02);
 
-                                            CommentTreesDTO commentLevel02 = new CommentTreesDTO();
-
-                                            getCommentTreeDTO(commentLevel02, level01, level02);
-
-                                            int indexAtLevel02 = mangaComments.get(index).getTerraces_comments_01st().indexOf(commentLevel01);
-
-                                            System.err.println("indexAtLevel02 "+indexAtLevel02);
-
-                                            mangaComments.get(index).getTerraces_comments_01st().get(indexAtLevel02).getTerraces_comments_02nd().add(commentLevel02);
-                                        }
-                                    });
-                                }
-
+                                        mangaComments.get(index).getTerraces_comments_01st().get(indexAtLevel02).getTerraces_comments_02nd().add(commentLevel02);
+                                    }
+                                });
                             }
-                        }
-                    });
-                }
 
-            });
-        if(mangaComments.isEmpty()){
+                        }
+                    }
+                });
+            }
+
+        });
+        if (mangaComments.isEmpty()) {
             Map<String, Object> msg = Map.of(
                     "msg", "No comments found!"
             );
@@ -744,13 +733,23 @@ public class MangaService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
-    ///sub functions
 
-    private void getCommentTreeDTO (CommentTreesDTO commentTreesDTO, MangaCommentDTOs level01, MangaCommentDTOs level02){
+
+
+
+    /////////////// sub functions /////////////////
+
+    /**
+    /*
+     * @param  level01 this is ghi tiếp đi
+     * @param  level02 this is ghi tiếp đi
+     */
+    private void getCommentTreeDTO(CommentTreesDTO commentTreesDTO, MangaCommentDTOs level01, MangaCommentDTOs level02) {
 
         commentTreesDTO.setFrom_user_id(level01.getUser_id());
         commentTreesDTO.setFrom_user_name(level01.getUser_name());
         commentTreesDTO.setFrom_user_avatar(level01.getUser_avatar());
+
 
         commentTreesDTO.setUser_id(level02.getUser_id());
         commentTreesDTO.setUser_email(level02.getUser_email());
