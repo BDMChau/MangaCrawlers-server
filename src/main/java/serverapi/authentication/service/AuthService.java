@@ -128,8 +128,8 @@ public class AuthService implements IAuthService {
     }
 
 
-    public ResponseEntity signIn(SignInPojo signInPojo) {
-        Optional<User> optionalUser = authRepository.findByEmail(signInPojo.getUser_email());
+    public ResponseEntity signIn(String userEmail, String userPassword) {
+        Optional<User> optionalUser = authRepository.findByEmail(userEmail);
         if (!optionalUser.isPresent()) {
             Map<String, String> error = Map.of("err", "Email is not existed!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
@@ -145,7 +145,7 @@ public class AuthService implements IAuthService {
 
 
         HashSHA512 hashingSHA512 = new HashSHA512();
-        Boolean comparePass = hashingSHA512.compare(signInPojo.getUser_password(), user.getUser_password());
+        Boolean comparePass = hashingSHA512.compare(userPassword, user.getUser_password());
         if (!comparePass) {
             Map<String, String> error = Map.of("err", "Password does not match!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);

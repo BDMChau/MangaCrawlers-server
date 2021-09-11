@@ -16,7 +16,7 @@ public interface IAuthService {
 
     public ResponseEntity signUp(SignUpPojo signUpPojo) throws NoSuchAlgorithmException, MessagingException;
 
-    public ResponseEntity signIn(SignInPojo signInPojo);
+    public ResponseEntity signIn(String userEmail, String userPassword);
 
     public ResponseEntity requestChangePassword(String email) throws MessagingException, NoSuchAlgorithmException;
 

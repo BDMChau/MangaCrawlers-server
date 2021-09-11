@@ -5,13 +5,16 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import serverapi.authentication.pojo.SignInPojo;
 import serverapi.authentication.service.AuthService;
 import serverapi.authentication.service.Interface.IAuthService;
 import serverapi.helpers.HelpersTest;
@@ -24,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(AuthController.class)
+@AutoConfigureMockMvc(addFilters = false)
 public class AuthControllerTest {
 
     @Autowired
@@ -37,6 +41,8 @@ public class AuthControllerTest {
 
     @Test
     public void testSignIn() throws Exception {
+        HelpersTest helpersTest = new HelpersTest();
+
         String uri = "/api/auth/signin";
         Map<String, String> dataObj = Map.of(
                 "user_email", "bdmchau105@gmail.com",
@@ -44,19 +50,23 @@ public class AuthControllerTest {
         );
 
         String inputJson = new HelpersTest().mapToJson(dataObj);
-        MvcResult mvcResult = mockMvc.perform(post(uri)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(inputJson)).andReturn();
 
-        System.err.println(mvcResult.getResponse().getContentAsString());
-        System.err.println(mvcResult.getResponse().getStatus());
-        assertEquals(200, statusRes);
-        assertEquals(contentRes, "Sign in successfully!");
+        MockHttpServletResponse controllerRes = mockMvc.perform(post(uri)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(inputJson))
+                .andReturn()
+                .getResponse();
+
+        assertEquals(200, controllerRes.getStatus());
+
+
 
     }
 
 //    @Test
-//    public void testSignIn() throws Exception {
+//    public void testSignInService() throws Exception {
+//        HelpersTest helpersTest = new HelpersTest();
+//
 //        String uri = "/api/auth/signin";
 //        Map<String, String> dataObj = Map.of(
 //                "user_email", "bdmchau105@gmail.com",
@@ -64,17 +74,16 @@ public class AuthControllerTest {
 //        );
 //
 //        String inputJson = new HelpersTest().mapToJson(dataObj);
-//        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)
-//                .contentType(MediaType.APPLICATION_JSON_VALUE).content(inputJson)).andReturn();
 //
-//        int statusRes = mvcResult.getResponse().getStatus();
-//        String contentRes = mvcResult.getResponse().getContentAsString();
+//        Map<String, Object> msg = Map.of(
+//                "msg", "Sign in successfully!"
+//        );
 //
-////        System.err.println(statusRes);
-////        System.err.println(mvcResult.getResponse());
+//        OngoingStubbing ongoingStubbing = Mockito.when(restTemplate.getForEntity(url + uri, AuthService.class)).thenReturn(new ResponseEntity(msg, HttpStatus.OK));
 //
-//        assertEquals(200, statusRes);
-//        assertEquals(contentRes, "Sign in successfully!");
+//        ResponseEntity serviceRes = authService.signIn(dataObj.get("user_email"), dataObj.get("user_password"));
+//
+//        System.err.println(ongoingStubbing);
 //    }
 
 }

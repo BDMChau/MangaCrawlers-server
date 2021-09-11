@@ -88,7 +88,7 @@ public class AuthController {
         }
 
 
-        return authService.signIn(signInPojo);
+        return authService.signIn(signInPojo.getUser_email(), signInPojo.getUser_password());
     }
 
 

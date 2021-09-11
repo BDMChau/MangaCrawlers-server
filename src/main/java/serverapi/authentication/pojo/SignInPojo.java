@@ -12,6 +12,4 @@ import lombok.Setter;
 public class SignInPojo {
     private String user_email;
     private String user_password;
-
-
 }
