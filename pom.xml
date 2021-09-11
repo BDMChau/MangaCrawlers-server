@@ -119,6 +119,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!-- Switch back from Spring Boot 2.x standard HikariCP to Tomcat JDBC,
