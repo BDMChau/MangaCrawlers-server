@@ -1,27 +1,12 @@
-package serverapi.Auth;
+package serverapi.authentication;
 
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
-import serverapi.authentication.AuthRepository;
 import serverapi.authentication.service.AuthService;
 
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@ActiveProfiles("test")
-@TestPropertySource(locations="classpath:test-application.properties")
+
 public class AuthServiceTest {
-
-    @MockBean
-    AuthRepository authRepository;
-
-    @Autowired
-    private AuthService authService;
 
 
 //    @Before
