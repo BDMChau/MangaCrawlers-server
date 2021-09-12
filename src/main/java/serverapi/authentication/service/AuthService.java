@@ -68,7 +68,27 @@ public class AuthService implements IAuthService {
         } else {
             userFields.put("user_id", id);
             userFields.put("user_name", name);
-        
+            userFields.put("user_email", email);
+            userFields.put("user_avatar", avatar);
+            userFields.put("user_isAdmin", isAdmin);
+            userFields.put("user_isVerified", isVerified);
+            userFields.put("user_transgroup_id", transGroup.get().getTransgroup_id());
+        }
+
+        return userFields;
+    }
+
+
+    //////////////////////////////////////////////////////////////
+    public ResponseEntity signUp(SignUpPojo signUpPojo) throws NoSuchAlgorithmException, MessagingException {
+        Optional<User> userOptional = authRepository.findByEmail(signUpPojo.getUser_email());
+        if (userOptional.isPresent()) {
+            Map<String, String> error = Map.of("err", "Email is existed!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
+        }
+
+        HashSHA512 hashingSHA512 = new HashSHA512();
+        String hashedPassword = hashingSHA512.hash(signUpPojo.getUser_password());
         signUpPojo.setUser_password(hashedPassword);
 
 
