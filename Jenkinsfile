@@ -3,8 +3,7 @@ node {
     def mvnHome
     stage('Preparation') { // for display purposes
         // Get some code from a GitHub repository
-        git 'https://github.com/BDMChau/MangaCrawlers-server'
-        git branch: 'form-returning---for-jenkins-',
+        git url: 'https://github.com/BDMChau/MangaCrawlers-server', branch: 'form-returning---for-jenkins-'
 
         // Get the Maven tool.
         // ** NOTE: This 'M3' Maven tool must be configured
