@@ -71,7 +71,7 @@ public class AuthControllerTest {
         Map<String, Object> msg = Map.of("msg", "Sign in successfully!");
         ResponseEntity expectedResponseEntity = new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
-        
+
 
         Mockito.when(authService.signIn(dataObj.get("user_email"), dataObj.get("user_password"))).thenReturn(expectedResponseEntity);
 
@@ -80,8 +80,7 @@ public class AuthControllerTest {
                         .content(inputJson))
                 .andReturn()
                 .getResponse();
-
-
+        
         assertEquals(200, response.getStatus());
         assertEquals(true, response.getContentAsString().contains("Sign in successfully!"));
     }
