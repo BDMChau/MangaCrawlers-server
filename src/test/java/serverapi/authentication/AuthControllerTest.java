@@ -81,6 +81,7 @@ public class AuthControllerTest {
                 .andReturn()
                 .getResponse();
 
+        
         assertEquals(200, response.getStatus());
         assertEquals(true, response.getContentAsString().contains("Sign in successfully!"));
     }
