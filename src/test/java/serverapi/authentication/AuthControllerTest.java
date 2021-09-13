@@ -71,6 +71,7 @@ public class AuthControllerTest {
         Map<String, Object> msg = Map.of("msg", "Sign in successfully!");
         ResponseEntity expectedResponseEntity = new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
+        
 
         Mockito.when(authService.signIn(dataObj.get("user_email"), dataObj.get("user_password"))).thenReturn(expectedResponseEntity);
 
