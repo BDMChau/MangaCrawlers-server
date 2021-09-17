@@ -128,11 +128,11 @@ public class AuthService implements IAuthService {
     }
 
 
-    public ResponseEntity signIn(String userEmail, String userPassword) {
+    public Map signIn(String userEmail, String userPassword) {
         Optional<User> optionalUser = authRepository.findByEmail(userEmail);
         if (!optionalUser.isPresent()) {
             Map<String, String> error = Map.of("err", "Email is not existed!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
+            return error;
         }
         User user = optionalUser.get();
 
@@ -140,7 +140,7 @@ public class AuthService implements IAuthService {
         // this user just created account with google oauth, so the password will be null
         if (user.getUser_password().equals("")) {
             Map<String, String> error = Map.of("err", "This user does not have password!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
+            return error;
         }
 
 
@@ -148,13 +148,13 @@ public class AuthService implements IAuthService {
         Boolean comparePass = hashingSHA512.compare(userPassword, user.getUser_password());
         if (!comparePass) {
             Map<String, String> error = Map.of("err", "Password does not match!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
+            return error;
         }
 
         Boolean isVerified = user.getUser_isVerified();
         if (Boolean.FALSE.equals(isVerified)) {
             Map<String, String> error = Map.of("err", "Check email to verify the account!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
+            return error;
         }
 
         Map userData = getCustomFieldsUser(user);
@@ -169,7 +169,7 @@ public class AuthService implements IAuthService {
                 "token", token,
                 "user", userData
         );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        return msg;
     }
 
 

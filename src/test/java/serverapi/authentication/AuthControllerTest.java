@@ -64,16 +64,10 @@ public class AuthControllerTest {
 
         Map<String, String> dataObj = Map.of(
                 "user_email", "bdmchau105@gmail.com",
-                "user_password", "MinhChau105"
+                "user_password", "MinhTriet1234"
         );
         String inputJson = new HelpersTest().mapToJson(dataObj);
 
-        Map<String, Object> msg = Map.of("msg", "Sign in successfully!");
-        ResponseEntity expectedResponseEntity = new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-
-
-
-        Mockito.when(authService.signIn(dataObj.get("user_email"), dataObj.get("user_password"))).thenReturn(expectedResponseEntity);
 
         MockHttpServletResponse response = mockMvc.perform(post(uri)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -81,8 +75,29 @@ public class AuthControllerTest {
                 .andReturn()
                 .getResponse();
 
-
+        System.err.println(response.getContentAsString());
         assertEquals(200, response.getStatus());
-        assertEquals(true, response.getContentAsString().contains("Sign in successfully!"));
+    }
+
+    @Test
+    public void testSignUp() throws Exception {
+        String uri = "/api/auth/signup";
+
+        Map<String, String> dataObj = Map.of(
+                "user_name", "Minh Chou",
+                "user_email", "bdmchau105@gmail.com",
+                "user_password", "MinhTrietttttt"
+        );
+        String inputJson = new HelpersTest().mapToJson(dataObj);
+
+
+        MockHttpServletResponse response = mockMvc.perform(post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(inputJson))
+                .andReturn()
+                .getResponse();
+
+        System.err.println(response.getContentAsString());
+        assertEquals(200, response.getStatus());
     }
 }

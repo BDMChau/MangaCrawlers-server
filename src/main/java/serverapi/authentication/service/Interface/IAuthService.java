@@ -11,12 +11,13 @@ import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 public interface IAuthService {
 
     public ResponseEntity signUp(SignUpPojo signUpPojo) throws NoSuchAlgorithmException, MessagingException;
 
-    public ResponseEntity signIn(String userEmail, String userPassword);
+    public Map signIn(String userEmail, String userPassword);
 
     public ResponseEntity requestChangePassword(String email) throws MessagingException, NoSuchAlgorithmException;
 
