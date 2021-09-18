@@ -1,11 +1,12 @@
-package serverapi.socket;
+package serverapi.socket.socketio;
 
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
+import serverapi.socket.MySocketService;
+import serverapi.socket.message.SocketMessage;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -17,6 +18,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class SocketIOService implements ISocketIOService {
     private static Map<String, SocketIOClient> clientMap = new ConcurrentHashMap<>();
+    private SocketMessage socketMessage = new SocketMessage();
+
+    private final MySocketService mySocketService;
+
+    @Autowired
+    public SocketIOService(MySocketService mySocketService){
+        this.mySocketService = mySocketService;
+    }
 
     @Autowired
     private SocketIOServer socketIOServer;
@@ -37,33 +46,33 @@ public class SocketIOService implements ISocketIOService {
     @Override
     public void start() {
         socketIOServer.addConnectListener(client -> {
-
+            // handle new connection
         });
 
 
-
-        socketIOServer.addEventListener("sendMessage", Map.class, (client, data, ackSender) -> {
-
-
-            System.out.println(data);
+        // listen event from client
+        socketIOServer.addEventListener("sendMessageFromClient", Map.class, (client, data, ackSender) -> {
             String clientIp = getIpByClient(client);
-            String userId = getParamsByClient(client);
-            if (userId != null) {
-                clientMap.put(userId, client);
-                pushMessageToUser(userId, "hello");
+
+            String userId = String.valueOf(data.get("userId"));
+            String message = String.valueOf(data.get("message"));
+
+            socketMessage.setUserId(userId);
+            socketMessage.setMessage(message);
+
+            if (!socketMessage.getUserId().isEmpty()) {
+                clientMap.put(socketMessage.getUserId(), client);
+                pushMessageToUser(socketMessage);
             }
         });
 
 
-
         socketIOServer.addDisconnectListener(client -> {
             String clientIp = getIpByClient(client);
-            String userId = getParamsByClient(client);
-            if (userId != null) {
-                clientMap.remove(userId);
+            if (socketMessage.getUserId() != null) {
+                clientMap.remove(socketMessage.getUserId());
                 client.disconnect();
-                System.err.println("Disconnected!");
-
+                System.err.println(socketMessage.getUserId() + " Disconnected!");
             }
         });
 
@@ -84,8 +93,7 @@ public class SocketIOService implements ISocketIOService {
     }
 
 
-
-    @Override
+    ///////////////////////////////////////////
     public void stop() {
         if (socketIOServer != null) {
             socketIOServer.stop();
@@ -93,24 +101,23 @@ public class SocketIOService implements ISocketIOService {
         }
     }
 
-    @Override
-    public void pushMessageToUser(String userId, String msgContent) {
-        SocketIOClient client = clientMap.get(userId);
+
+    public void pushMessageToUser(SocketMessage socketMessage) {
+        SocketIOClient client = clientMap.get(socketMessage.getUserId());
         if (client != null) {
-            client.sendEvent("newMessage", "You're connected ebdfb...");
+            mySocketService.setSocketMessage(socketMessage);
+            mySocketService.setClient(client);
+
+            mySocketService.test();
+
         }
     }
 
 
 
-    ///////////////////////////////////////////
-
     private String getParamsByClient(SocketIOClient client) {
         Map<String, List<String>> params = client.getHandshakeData().getUrlParams();
-        List<String> userIdList = params.get("userId");
-        if (!CollectionUtils.isEmpty(userIdList)) {
-            return userIdList.get(0);
-        }
+
         return null;
     }
 

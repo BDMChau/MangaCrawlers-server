@@ -1,4 +1,4 @@
-package serverapi.socket;
+package serverapi.socket.socketio;
 
 import com.corundumstudio.socketio.SocketConfig;
 import com.corundumstudio.socketio.SocketIOServer;
@@ -33,7 +33,7 @@ public class SocketIOConfig {
         config.setPingTimeout(pingTimeout);
         config.setPingInterval(pingInterval);
 
-        System.err.println("Socket server initialized!");
+        System.out.println("Socket server initialized!");
         return new SocketIOServer(config);
     }
 
