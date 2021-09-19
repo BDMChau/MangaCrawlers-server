@@ -147,14 +147,31 @@ public class UserController {
     }
 
 
-    @PostMapping("/addcommentchapter")
+    @PostMapping("/addcommentmanga")
     public ResponseEntity addCommentChapter(@RequestBody CommentPOJO commentPOJO, ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
-        Long chapterId = Long.parseLong(commentPOJO.getChapter_id());
-        String content = commentPOJO.getChaptercmt_content();
 
-        return userService.addCommentChapter(chapterId, userId, content);
+        String strUserID = getUserAttribute(request).get("user_id").toString();
+        Long userID = Long.parseLong(strUserID);
+
+        Long toUserID = Long.parseLong(commentPOJO.getTo_user_id());
+        Long mangaID = Long.parseLong(commentPOJO.getManga_id());
+
+        Long chapterID = 0L;
+        if(!commentPOJO.getChapter_id().equals("") ){
+            chapterID = Long.parseLong(commentPOJO.getChapter_id());
+        }
+
+        Long parentID = 0L;
+        if(!commentPOJO.getParent_id().equals("") ){
+            parentID = Long.parseLong(commentPOJO.getParent_id());
+        }
+
+        String content = commentPOJO.getManga_comment_content();
+        String level = commentPOJO.getLevel();
+        String imageUrl = commentPOJO.getImage_url();
+
+
+        return userService.addCommentManga(toUserID, userID, mangaID, chapterID, content, level, imageUrl, parentID);
     }
 
 
