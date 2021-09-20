@@ -148,7 +148,6 @@ public class AdminService {
                 Integer monthOfUser = Integer.parseInt(simpleDateFormat.format(item.getCreated_at().getTime()));
 
                 if (monthOfUser == finalI) {
-
                     mangaList.add(item);
                     System.out.println("them " + finalI);
 
