@@ -1,4 +1,4 @@
-package serverapi.tables.user_tables.user.admin;
+package serverapi.tables.User.Admin;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +8,12 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import serverapi.query.repository.user.UserRepos;
+
 import serverapi.tables.User.POJO.TransGroupPOJO;
+
 import serverapi.tables.manga_tables.manga.pojo.MangaPOJO;
 import serverapi.tables.user_tables.user.admin.AdminService;
+import serverapi.tables.user_tables.user.pojo.MangaChapterPOJO;
 import serverapi.tables.user_tables.user.pojo.UserPOJO;
 
 import javax.servlet.ServletRequest;
@@ -97,7 +100,6 @@ public class AdminController {
     }
 
 
-
     @CacheEvict(allEntries = true, value = {"allmangas"})
     @DeleteMapping("/deletemanga")
     public ResponseEntity deleteManga(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
@@ -110,7 +112,6 @@ public class AdminController {
     }
 
 
-
     @DeleteMapping("/deletetransgroup")
     public ResponseEntity deleteTransGroup(@RequestBody TransGroupPOJO transGroupPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -121,6 +122,32 @@ public class AdminController {
         return adminService.deletetransGroup(adminId, transGroupId);
     }
 
+
+    @PutMapping("/editmanga")
+    public ResponseEntity editManga(@RequestBody MangaChapterPOJO mangaChapterPOJO, ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long adminId = Long.parseLong(StrUserId);
+
+        Long mangaId = mangaChapterPOJO.getManga_id();
+        String mangaName = mangaChapterPOJO.getManga_name();
+        String authorName = mangaChapterPOJO.getAuthor_name();
+
+        Long chapterId = mangaChapterPOJO.getChapter_id();
+        String chapterName = mangaChapterPOJO.getChapter_name();
+
+        return adminService.editManga(adminId, mangaId, mangaName, authorName, chapterId, chapterName);
+    }
+
+
+    @DeleteMapping("/deletechapter")
+    public ResponseEntity deleteChapter(@RequestBody MangaChapterPOJO mangaChapterPOJO, ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long adminId = Long.parseLong(StrUserId);
+
+        Long chapterId = mangaChapterPOJO.getChapter_id();
+
+        return adminService.deleteChapter(adminId, chapterId);
+    }
 
     /////////////////////////// chart report
     @GetMapping("/reporttransgroup")
