@@ -122,7 +122,7 @@ public class AdminController {
         return adminService.deletetransGroup(adminId, transGroupId);
     }
 
-
+    @CacheEvict(allEntries = true, value = {"mangaPage"})
     @PutMapping("/editmanga")
     public ResponseEntity editManga(@RequestBody MangaChapterPOJO mangaChapterPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -136,7 +136,7 @@ public class AdminController {
         return adminService.editManga(adminId, mangaId, mangaName, authorId, authorName);
     }
 
-
+    @CacheEvict(allEntries = true, value = {"mangaPage"})
     @DeleteMapping("/deletechapter")
     public ResponseEntity deleteChapter(@RequestBody MangaChapterPOJO mangaChapterPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
