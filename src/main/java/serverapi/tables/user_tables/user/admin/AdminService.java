@@ -400,51 +400,30 @@ public class AdminService {
     }
 
 
-    public ResponseEntity editManga(Long adminId, Long mangaId, String mangaName, String authorName, Long chapterId, String chapterName) {
+    public ResponseEntity editManga(Long adminId, Long mangaId, String mangaName, String authorName) {
         Boolean isAdmin = isUserAdmin(adminId);
         if (!isAdmin) {
             Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
             return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(), HttpStatus.FORBIDDEN);
         }
+        
+        Optional<Manga> mangaOptional = mangaRepos.findById(mangaId);
+        if (mangaOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "manga not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+        Manga manga = mangaOptional.get();
+//        System.err.println(mangaOptional.get().getAuthor().getAuthor_name());
+//        Author author = mangaOptional.get().getAuthor();
 
-        Manga manga = null;
-        Author author = null;
-        if (mangaId != 0L) {
-            Optional<Manga> mangaOptional = mangaRepos.findById(mangaId);
-            if (mangaOptional.isEmpty()) {
-                Map<String, Object> err = Map.of("err", "manga not found!");
-                return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
-            }
-            manga = mangaOptional.get();
-            author = mangaOptional.get().getAuthor();
-
-            if (!mangaName.isEmpty()) {
-                manga.setManga_name(mangaName);
-            }
-
-            if (!authorName.isEmpty()) {
-                author.setAuthor_name(authorName);
-            }
-
-            mangaRepos.save(manga);
+        if (!mangaName.equals("")) {
+            manga.setManga_name(mangaName);
         }
 
-
-        if (chapterId != 0L) {
-            Optional<Chapter> chapterOptional = chapterRepos.findById(chapterId);
-            if (chapterOptional.isEmpty()) {
-                Map<String, Object> err = Map.of("err", "chapter not found!");
-                return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
-            }
-            Chapter chapter = chapterOptional.get();
-
-
-            if (!chapterName.isEmpty()) {
-                chapter.setChapter_name(chapterName);
-            }
-
-            chapterRepos.save(chapter);
-        }
+//        if (!authorName.equals("")) {
+//            author.setAuthor_name(authorName);
+//        }
+        mangaRepos.save(manga);
 
         Map<String, Object> msg = Map.of(
                 "msg", "edit manga or and chapter OK!",

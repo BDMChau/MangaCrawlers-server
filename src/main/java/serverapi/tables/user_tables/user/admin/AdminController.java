@@ -132,10 +132,7 @@ public class AdminController {
         String mangaName = mangaChapterPOJO.getManga_name();
         String authorName = mangaChapterPOJO.getAuthor_name();
 
-        Long chapterId = mangaChapterPOJO.getChapter_id();
-        String chapterName = mangaChapterPOJO.getChapter_name();
-
-        return adminService.editManga(adminId, mangaId, mangaName, authorName, chapterId, chapterName);
+        return adminService.editManga(adminId, mangaId, mangaName, authorName);
     }
 
 
