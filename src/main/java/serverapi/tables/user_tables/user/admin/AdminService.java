@@ -424,16 +424,23 @@ public class AdminService {
         }
         Author author = authorOptional.get();
 
-        manga.setManga_name(mangaName);
-        author.setAuthor_name(authorName);
+        if(!mangaName.equals("")){
+            manga.setManga_name(mangaName);
+        }
 
-        mangaRepos.save(manga);
-        authorRepos.save(author);
+        if(!authorName.equals("")){
+            author.setAuthor_name(authorName);
+        }
+
+        mangaRepos.saveAndFlush(manga);
+        authorRepos.saveAndFlush(author);
+
+        Optional<AuthorMangaDTO> mangaToRes = mangaRepos.getAllByMangaId(mangaId);
 
 
         Map<String, Object> msg = Map.of(
                 "msg", "edit manga OK!",
-                "manga", manga
+                "manga", mangaToRes.get()
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
