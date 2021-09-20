@@ -288,26 +288,30 @@ public class UserService {
     }
 
     public ResponseEntity addCommentManga(Long toUserID, Long userID, Long mangaID, Long chapterID, String content, String level, String imageUrl, long parentID) {
-        AtomicBoolean isEmpty = new AtomicBoolean(false);
+
+        System.err.println("aaaaaaaa");
         Calendar timeUpdated = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         Optional<Chapter> chapterOptional = chapterRepos.findById(chapterID);
         Optional<Manga> mangaOptional = mangaRepository.findById(mangaID);
         Optional<User> toUserOptional = userRepos.findById(toUserID);
         Optional<User> userOptional = userRepos.findById(userID);
 
+        System.err.println("line 299");
 
-        if (chapterOptional.isEmpty()) {
+        Chapter chapter = null;
+        if (!chapterOptional.isEmpty()) {
 
-           if(mangaOptional.isEmpty()){
-
-               Map<String, Object> msg = Map.of(
-                       "msg", "Empty manga!"
-               );
-               return new ResponseEntity<>(new Response(202, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-           }
+            chapter = chapterOptional.get();
         }
+        if(mangaOptional.isEmpty()){
+
+            Map<String, Object> msg = Map.of(
+                    "msg", "Empty manga!"
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
+        System.err.println("line 310");
         Manga manga = mangaOptional.get();
-        Chapter chapter = chapterOptional.get();
 
 
         if (userOptional.isEmpty()) {
@@ -318,7 +322,7 @@ public class UserService {
         }
         User user = userOptional.get();
 
-
+        System.err.println("line 323");
         if (userOptional.isEmpty()) {
 
             Map<String, Object> msg = Map.of(
@@ -373,35 +377,8 @@ public class UserService {
             commentImageRepos.saveAndFlush(commentImages);
         }
 
-        MangaCommentDTOs mangaCommentDTOs = new MangaCommentDTOs();
-
-        mangaCommentDTOs.setTo_user_id(toUser.getUser_id());
-        mangaCommentDTOs.setTo_user_name(toUser.getUser_name());
-        mangaCommentDTOs.setTo_user_avatar(toUser.getUser_avatar());
-
-        mangaCommentDTOs.setUser_id(user.getUser_id());
-        mangaCommentDTOs.setUser_name(user.getUser_name());
-        mangaCommentDTOs.setUser_avatar(user.getUser_avatar());
-
-        mangaCommentDTOs.setManga_id(manga.getManga_id());
-
-        mangaCommentDTOs.setChapter_id(chapter.getChapter_id());
-        mangaCommentDTOs.setChapter_name(chapter.getChapter_name());
-        mangaCommentDTOs.setCreated_at(chapter.getCreated_at());
-
-        mangaCommentDTOs.setManga_comment_id(mangaComments.getManga_comment_id());
-        mangaCommentDTOs.setManga_comment_time(mangaComments.getManga_comment_time());
-        mangaCommentDTOs.setManga_comment_content(mangaComments.getManga_comment_content());
-
-        mangaCommentDTOs.setParent_id(parent.getManga_comment_id());
-
-        mangaCommentDTOs.setImage_url(imageUrl);
-
-
         Map<String, Object> msg = Map.of(
-                "msg", "add comment successfully!",
-                "comment_info",mangaCommentDTOs
-
+                "msg", "add comment successfully!"
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
 

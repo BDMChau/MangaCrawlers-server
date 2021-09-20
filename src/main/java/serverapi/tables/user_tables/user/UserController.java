@@ -156,15 +156,25 @@ public class UserController {
         Long toUserID = Long.parseLong(commentPOJO.getTo_user_id());
         Long mangaID = Long.parseLong(commentPOJO.getManga_id());
 
+        System.err.println("chapterID");
         Long chapterID = 0L;
-        if(!commentPOJO.getChapter_id().equals("") ){
+        if(commentPOJO.getChapter_id() == null){
+            System.err.println("CHapter id null");
+        }else{
             chapterID = Long.parseLong(commentPOJO.getChapter_id());
+            System.err.println("ChapterID "+chapterID);
         }
 
+        System.err.println("user controller");
         Long parentID = 0L;
-        if(!commentPOJO.getParent_id().equals("") ){
+        if(commentPOJO.getParent_id() == null){
+            System.err.println("Parent ID is null");
+        }else{
             parentID = Long.parseLong(commentPOJO.getParent_id());
+            System.err.println("parenID: "+parentID);
         }
+        System.err.println("chapterID "+chapterID);
+        System.err.println("parentID "+parentID);
 
         String content = commentPOJO.getManga_comment_content();
         String level = commentPOJO.getLevel();
