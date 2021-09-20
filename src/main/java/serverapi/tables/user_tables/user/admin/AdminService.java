@@ -141,6 +141,7 @@ public class AdminService {
             System.err.println("lỗi" + finalI);
             List<Manga> mangaList = new ArrayList<>();
 
+            
             mangasInfo.forEach(item -> {
 
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
