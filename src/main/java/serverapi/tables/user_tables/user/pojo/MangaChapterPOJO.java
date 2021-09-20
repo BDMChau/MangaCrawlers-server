@@ -8,6 +8,8 @@ import lombok.Setter;
 public class MangaChapterPOJO {
     Long manga_id;
     String manga_name;
+
+    Long author_id;
     String author_name;
 
     Long chapter_id;

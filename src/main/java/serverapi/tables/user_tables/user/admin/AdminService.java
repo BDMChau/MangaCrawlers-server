@@ -11,6 +11,7 @@ import serverapi.query.dtos.features.ReportDTOs.ReportUserFollowMangaDTO;
 import serverapi.query.dtos.features.ReportDTOs.ReportsDTO;
 import serverapi.query.dtos.features.ReportDTOs.UserRDTO;
 import serverapi.query.dtos.tables.AuthorMangaDTO;
+import serverapi.query.repository.manga.AuthorRepos;
 import serverapi.query.repository.manga.ChapterRepos;
 import serverapi.query.repository.manga.MangaRepos;
 import serverapi.query.repository.user.FollowingRepos;
@@ -34,16 +35,18 @@ public class AdminService {
     private final MangaRepos mangaRepos;
     private final TransGroupRepos transGroupRepos;
     private final ChapterRepos chapterRepos;
+    private final AuthorRepos authorRepos;
 
 
     @Autowired
     public AdminService(UserRepos userRepos, FollowingRepos followingRepos, MangaRepos mangaRepos,
-                        TransGroupRepos transGroupRepos, ChapterRepos chapterRepos) {
+                        TransGroupRepos transGroupRepos, ChapterRepos chapterRepos, AuthorRepos authorRepos) {
         this.userRepos = userRepos;
         this.followingRepos = followingRepos;
         this.mangaRepos = mangaRepos;
         this.transGroupRepos = transGroupRepos;
         this.chapterRepos = chapterRepos;
+        this.authorRepos = authorRepos;
     }
 
 
@@ -400,7 +403,7 @@ public class AdminService {
     }
 
 
-    public ResponseEntity editManga(Long adminId, Long mangaId, String mangaName, String authorName) {
+    public ResponseEntity editManga(Long adminId, Long mangaId, String mangaName, Long authorId, String authorName) {
         Boolean isAdmin = isUserAdmin(adminId);
         if (!isAdmin) {
             Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
@@ -413,20 +416,23 @@ public class AdminService {
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
         Manga manga = mangaOptional.get();
-//        System.err.println(mangaOptional.get().getAuthor().getAuthor_name());
-//        Author author = mangaOptional.get().getAuthor();
 
-        if (!mangaName.equals("")) {
-            manga.setManga_name(mangaName);
+        Optional<Author> authorOptional = authorRepos.findById(authorId);
+        if (mangaOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "author not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
+        Author author = authorOptional.get();
 
-//        if (!authorName.equals("")) {
-//            author.setAuthor_name(authorName);
-//        }
+        manga.setManga_name(mangaName);
+        author.setAuthor_name(authorName);
+
         mangaRepos.save(manga);
+        authorRepos.save(author);
+
 
         Map<String, Object> msg = Map.of(
-                "msg", "edit manga or and chapter OK!",
+                "msg", "edit manga OK!",
                 "manga", manga
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
