@@ -68,8 +68,8 @@ public class AuthController {
             String errMsg = bindingResult.getAllErrors().get(0).getCode();
 
             Map<String, String> error = Map.of("err", errMsg);
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(),
+                    HttpStatus.ACCEPTED);
         }
 
         return authService.signUp(signUpPojo);
@@ -83,8 +83,8 @@ public class AuthController {
             String errMsg = bindingResult.getAllErrors().get(0).getCode();
 
             Map<String, String> error = Map.of("err", errMsg);
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(),
+                    HttpStatus.ACCEPTED);
         }
 
 
