@@ -16,6 +16,8 @@ import serverapi.query.repository.manga.MangaRepos;
 import serverapi.query.repository.user.FollowingRepos;
 import serverapi.query.repository.user.TransGroupRepos;
 import serverapi.query.repository.user.UserRepos;
+import serverapi.tables.manga_tables.author.Author;
+import serverapi.tables.manga_tables.chapter.Chapter;
 import serverapi.tables.manga_tables.manga.Manga;
 import serverapi.tables.user_tables.trans_group.TransGroup;
 import serverapi.tables.user_tables.user.User;
@@ -141,13 +143,13 @@ public class AdminService {
             System.err.println("lỗi" + finalI);
             List<Manga> mangaList = new ArrayList<>();
 
+
             mangasInfo.forEach(item -> {
 
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
                 Integer monthOfUser = Integer.parseInt(simpleDateFormat.format(item.getCreated_at().getTime()));
 
                 if (monthOfUser == finalI) {
-
                     mangaList.add(item);
                     System.out.println("them " + finalI);
 
@@ -371,6 +373,86 @@ public class AdminService {
     }
 
 
+    public ResponseEntity deleteChapter(Long adminId, Long chapterId) {
+        Boolean isAdmin = isUserAdmin(adminId);
+        if (!isAdmin) {
+            Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
+                    HttpStatus.FORBIDDEN);
+        }
+
+        Optional<Chapter> chapterOptional = chapterRepos.findById(chapterId);
+        if (chapterOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "chapter not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        Chapter chapter = chapterOptional.get();
+
+//        chapterRepos.deleteById(chapterId);
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Delete chapter successfully!",
+                "chapter", chapter
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
+    public ResponseEntity editManga(Long adminId, Long mangaId, String mangaName, String authorName, Long chapterId, String chapterName) {
+        Boolean isAdmin = isUserAdmin(adminId);
+        if (!isAdmin) {
+            Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(), HttpStatus.FORBIDDEN);
+        }
+
+        Manga manga = null;
+        Author author = null;
+        if (mangaId != 0L) {
+            Optional<Manga> mangaOptional = mangaRepos.findById(mangaId);
+            if (mangaOptional.isEmpty()) {
+                Map<String, Object> err = Map.of("err", "manga not found!");
+                return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+            }
+            manga = mangaOptional.get();
+            author = mangaOptional.get().getAuthor();
+
+            if (!mangaName.isEmpty()) {
+                manga.setManga_name(mangaName);
+            }
+
+            if (!authorName.isEmpty()) {
+                author.setAuthor_name(authorName);
+            }
+
+            mangaRepos.save(manga);
+        }
+
+
+        if (chapterId != 0L) {
+            Optional<Chapter> chapterOptional = chapterRepos.findById(chapterId);
+            if (chapterOptional.isEmpty()) {
+                Map<String, Object> err = Map.of("err", "chapter not found!");
+                return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+            }
+            Chapter chapter = chapterOptional.get();
+
+
+            if (!chapterName.isEmpty()) {
+                chapter.setChapter_name(chapterName);
+            }
+
+            chapterRepos.save(chapter);
+        }
+
+        Map<String, Object> msg = Map.of(
+                "msg", "edit manga or and chapter OK!",
+                "manga", manga
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
     ////////////////// report
     public ResponseEntity getAllUsers(Long userId) {
         Boolean isAdmin = isUserAdmin(userId);
@@ -397,8 +479,6 @@ public class AdminService {
                 "users", users
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-
-
     }
 
 
