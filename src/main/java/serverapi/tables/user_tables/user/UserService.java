@@ -300,14 +300,11 @@ public class UserService {
 
         Chapter chapter = null;
         if (!chapterOptional.isEmpty()) {
-
             chapter = chapterOptional.get();
         }
-        if(mangaOptional.isEmpty()){
 
-            Map<String, Object> msg = Map.of(
-                    "msg", "Empty manga!"
-            );
+        if(mangaOptional.isEmpty()){
+            Map<String, Object> msg = Map.of("msg", "Empty manga!");
             return new ResponseEntity<>(new Response(202, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
         }
         System.err.println("line 310");
@@ -315,28 +312,21 @@ public class UserService {
 
 
         if (userOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of(
-                    "msg", "Empty user!"
-            );
+            Map<String, Object> msg = Map.of("msg", "Empty user!");
             return new ResponseEntity<>(new Response(202, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
         }
         User user = userOptional.get();
 
         System.err.println("line 323");
         if (userOptional.isEmpty()) {
-
-            Map<String, Object> msg = Map.of(
-                    "msg", "To user empty!"
-            );
+            Map<String, Object> msg = Map.of("msg", "To user empty!");
             return new ResponseEntity<>(new Response(202, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
         }
         User toUser = toUserOptional.get();
 
 
         if(level == null || level.isEmpty()){
-            Map<String, Object> msg = Map.of(
-                    "msg", "level cannot be null!"
-            );
+            Map<String, Object> msg = Map.of("msg", "level cannot be null!");
             return new ResponseEntity<>(new Response(202, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
         }
     /*---------------------------------------------------------------------------------------------------------*/
@@ -344,7 +334,7 @@ public class UserService {
         MangaComments mangaComments = new MangaComments();
 
         mangaComments.setManga(manga);
-        mangaComments.setChapter(chapter);
+        mangaComments.setChapter(chapter); // if chapter null >> set null
         mangaComments.setUser(user);
         mangaComments.setTo_user(toUser);
         mangaComments.setManga_comment_content(content);
@@ -368,8 +358,7 @@ public class UserService {
         commentRelationRepos.saveAndFlush(commentRelations);
 
         System.err.println("line 366");
-        if(!imageUrl.isEmpty() || imageUrl != null){
-
+        if(imageUrl != null || !imageUrl.isEmpty()){
             CommentImages commentImages = new CommentImages();
 
             commentImages.setImage_url(imageUrl);
@@ -377,11 +366,14 @@ public class UserService {
             commentImageRepos.saveAndFlush(commentImages);
         }
 
-        Map<String, Object> msg = Map.of(
-                "msg", "add comment successfully!"
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
 
+        // response
+        if(chapter == null){
+            //...
+        }
+
+        Map<String, Object> msg = Map.of("msg", "add comment successfully!");
+        return new ResponseEntity<>(new Response(200, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
     }
 
 
