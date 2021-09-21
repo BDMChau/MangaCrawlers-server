@@ -12,6 +12,7 @@ public class CommentPOJO {
     private String to_user_id;
     private String manga_id;
     private String chapter_id;
+    private String manga_comment_id;
     private String manga_comment_content;
     private String image_url;
     private String level;

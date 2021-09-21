@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import serverapi.api.Response;
 import serverapi.query.dtos.tables.FieldsCreateMangaDTO;
-
 import serverapi.tables.User.POJO.TransGroupPOJO;
-
 import serverapi.tables.manga_tables.manga.pojo.CommentPOJO;
 import serverapi.tables.manga_tables.manga.pojo.MangaPOJO;
 import serverapi.tables.manga_tables.manga.pojo.RatingPOJO;
@@ -150,40 +148,83 @@ public class UserController {
     @PostMapping("/addcommentmanga")
     public ResponseEntity addCommentManga(@RequestBody CommentPOJO commentPOJO, ServletRequest request) {
 
-        String strUserID = getUserAttribute(request).get("user_id").toString();
-        Long userID = Long.parseLong(strUserID);
-
-        Long toUserID = Long.parseLong(commentPOJO.getTo_user_id());
-        Long mangaID = Long.parseLong(commentPOJO.getManga_id());
-
-        System.err.println("chapterID");
+        /**
+         * Declare variables
+         */
+        Long mangaID = 0L;
         Long chapterID = 0L;
-        if(commentPOJO.getChapter_id() == null){
-            System.err.println("CHapter id null");
-        }else{
-            chapterID = Long.parseLong(commentPOJO.getChapter_id());
-            System.err.println("ChapterID "+chapterID);
-        }
-
-        System.err.println("user controller");
         Long parentID = 0L;
-        if(commentPOJO.getParent_id() == null){
-            System.err.println("Parent ID is null");
-        }else{
-            parentID = Long.parseLong(commentPOJO.getParent_id());
-            System.err.println("parenID: "+parentID);
-        }
-        System.err.println("chapterID "+chapterID);
-        System.err.println("parentID "+parentID);
+        Long toUserID = 0L;
 
+        String strUserID = getUserAttribute(request).get("user_id").toString();
         String content = commentPOJO.getManga_comment_content();
         String level = commentPOJO.getLevel();
         String imageUrl = commentPOJO.getImage_url();
 
+        /**
+         * Format variables necessary include: mangaID, UserID, chapterID, parentID, toUserID
+         */
+        Long userID = Long.parseLong(strUserID);
+        mangaID = Long.parseLong(commentPOJO.getManga_id());
 
+        //toUserID
+        if (commentPOJO.getTo_user_id() != null) {
+            toUserID = Long.parseLong(commentPOJO.getTo_user_id());
+        }
+
+        //ChapterID
+        if (commentPOJO.getChapter_id() != null) {
+            chapterID = Long.parseLong(commentPOJO.getChapter_id());
+        }
+
+        //parentID
+        if(commentPOJO.getParent_id() != null){
+            parentID = Long.parseLong(commentPOJO.getParent_id());
+        }
         return userService.addCommentManga(toUserID, userID, mangaID, chapterID, content, level, imageUrl, parentID);
     }
 
+
+    @PostMapping("/updatecomment")
+    public ResponseEntity updateComment(@RequestBody CommentPOJO commentPOJO, ServletRequest request) {
+
+        /**
+         * Declare variables
+         */
+        String commentContent = commentPOJO.getManga_comment_content();
+        String strUserID = getUserAttribute(request).get("user_id").toString();
+        Long toUserID = 0L;
+
+        /**
+         * Format variable necessary
+         */
+        Long userID = Long.parseLong(strUserID);
+        Long formatCommentID = Long.parseLong(commentPOJO.getManga_comment_id());
+
+
+        if(commentPOJO.getTo_user_id() != null){
+            toUserID = Long.parseLong(commentPOJO.getTo_user_id());
+        }
+
+
+        return userService.updateComment(userID, toUserID, formatCommentID, commentContent);
+    }
+
+    @PostMapping("/deletecomment")
+    public ResponseEntity deleteComment(@RequestBody CommentPOJO commentPOJO, ServletRequest request) {
+
+        /**
+         * Declare variables
+         */
+        String strUserID = getUserAttribute(request).get("user_id").toString();
+        /**
+         * Format variable necessary
+         */
+        Long userID = Long.parseLong(strUserID);
+        Long formatCommentID = Long.parseLong(commentPOJO.getManga_comment_id());
+
+        return userService.deleteComment(userID, formatCommentID);
+    }
 
     ////////////////////////// Translation Group parts /////////////////////////////
     @CacheEvict(allEntries = true, value = {"allmangas", "transGroupInfo", "mangaInfoUploadPage"})
