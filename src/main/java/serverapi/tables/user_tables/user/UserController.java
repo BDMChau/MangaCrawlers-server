@@ -148,7 +148,7 @@ public class UserController {
 
 
     @PostMapping("/addcommentmanga")
-    public ResponseEntity addCommentChapter(@RequestBody CommentPOJO commentPOJO, ServletRequest request) {
+    public ResponseEntity addCommentManga(@RequestBody CommentPOJO commentPOJO, ServletRequest request) {
 
         String strUserID = getUserAttribute(request).get("user_id").toString();
         Long userID = Long.parseLong(strUserID);
