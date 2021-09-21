@@ -137,6 +137,18 @@ public class AdminController {
     }
 
     @CacheEvict(allEntries = true, value = {"mangaPage"})
+    @PutMapping("/editchapter")
+    public ResponseEntity editChapter(@RequestBody MangaChapterPOJO mangaChapterPOJO, ServletRequest request) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long adminId = Long.parseLong(StrUserId);
+
+        Long chapterId = mangaChapterPOJO.getChapter_id();
+        String chapterName = mangaChapterPOJO.getChapter_name();
+
+        return adminService.editChapter(adminId, chapterId, chapterName);
+    }
+
+    @CacheEvict(allEntries = true, value = {"mangaPage"})
     @DeleteMapping("/deletechapter")
     public ResponseEntity deleteChapter(@RequestBody MangaChapterPOJO mangaChapterPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();

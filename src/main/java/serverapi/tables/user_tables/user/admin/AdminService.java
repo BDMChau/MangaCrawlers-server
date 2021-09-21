@@ -444,6 +444,36 @@ public class AdminService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
+
+    public ResponseEntity editChapter(Long adminId, Long chapterId, String chapterName) {
+        Boolean isAdmin = isUserAdmin(adminId);
+        if (!isAdmin) {
+            Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(), HttpStatus.FORBIDDEN);
+        }
+
+        Optional<Chapter> chapterOptional = chapterRepos.findById(chapterId);
+        if (chapterOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "manga not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+        Chapter chapter = chapterOptional.get();
+
+        if(!chapterName.equals("")){
+            chapter.setChapter_name(chapterName);
+        }
+
+        chapterRepos.saveAndFlush(chapter);
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "edit chapter OK!",
+                "chapter", chapter
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
     ////////////////// report
     public ResponseEntity getAllUsers(Long userId) {
         Boolean isAdmin = isUserAdmin(userId);
