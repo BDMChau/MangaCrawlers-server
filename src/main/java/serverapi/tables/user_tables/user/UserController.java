@@ -11,11 +11,11 @@ import org.springframework.web.multipart.MultipartFile;
 import serverapi.api.Response;
 import serverapi.query.dtos.tables.FieldsCreateMangaDTO;
 
-import serverapi.tables.User.POJO.TransGroupPOJO;
 
 import serverapi.tables.manga_tables.manga.pojo.CommentPOJO;
 import serverapi.tables.manga_tables.manga.pojo.MangaPOJO;
 import serverapi.tables.manga_tables.manga.pojo.RatingPOJO;
+import serverapi.tables.user_tables.user.pojo.TransGroupPOJO;
 import serverapi.tables.user_tables.user.pojo.UserPOJO;
 
 import javax.servlet.ServletRequest;
