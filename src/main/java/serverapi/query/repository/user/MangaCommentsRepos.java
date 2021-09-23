@@ -88,7 +88,7 @@ public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
             "WHERE cm.manga.manga_id = ?1 " +
             "AND cr.level =?2 " +
             "ORDER BY cm.manga_comment_time DESC ")
-    List<MangaCommentDTOs> getCommentsManga(Long manga_id, String level, Pageable pageable);
+    List<MangaCommentDTOs> getCommentsManga(Long mangaId, String level, Pageable pageable);
 
     /**
      * Use for get manga comments to_user by using manga_id, level, to_user_id
