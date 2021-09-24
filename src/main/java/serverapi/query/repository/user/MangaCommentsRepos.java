@@ -7,11 +7,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import serverapi.query.dtos.tables.MangaCommentDTOs;
+import serverapi.tables.manga_tables.manga_comment_images.CommentImages;
 import serverapi.tables.manga_tables.manga_comments.MangaComments;
 import serverapi.tables.user_tables.user.User;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
@@ -88,7 +90,7 @@ public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
             "WHERE cm.manga.manga_id = ?1 " +
             "AND cr.level =?2 " +
             "ORDER BY cm.manga_comment_time DESC ")
-    List<MangaCommentDTOs> getCommentsManga(Long mangaId, String level, Pageable pageable);
+    List<MangaCommentDTOs> getCommentsManga(Long manga_id, String level, Pageable pageable);
 
     /**
      * Use for get manga comments to_user by using manga_id, level, to_user_id
@@ -166,6 +168,7 @@ public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
             "AND cr.level =?2 " +
             "ORDER BY cm.manga_comment_time DESC ")
     List<MangaCommentDTOs> getCommentsChapter(Long chapter_id, String level, Pageable pageable);
+
 
 
 
