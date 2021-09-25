@@ -145,6 +145,7 @@ public class UserController {
         return userService.removeAvatar(userId);
     }
 
+<<<<<<< Updated upstream
 
     @PostMapping("/addcommentmanga")
     public ResponseEntity addCommentManga(CommentPOJO commentPOJO, ServletRequest request) throws IOException {
@@ -231,6 +232,94 @@ public class UserController {
 
         return userService.deleteComment(userID, formatCommentID);
     }
+=======
+//
+//    @PostMapping("/addcommentmanga")
+//    public ResponseEntity addCommentManga(@Valid CommentPOJO commentPOJO, ServletRequest request) throws IOException {
+//
+//        /**
+//         * Declare variables
+//         */
+//        Long mangaID;
+//        Long chapterID = 0L;
+//        Long parentID = 0L;
+//        Long toUserID = 0L;
+//
+//        String strUserID = getUserAttribute(request).get("user_id").toString();
+//        String content = commentPOJO.getManga_comment_content();
+//        String level = commentPOJO.getLevel();
+//        MultipartFile imageUrl = commentPOJO.getImage_url();
+//
+//        /**
+//         * Format variables necessary include: mangaID, UserID, chapterID, parentID, toUserID
+//         */
+//        Long userID = Long.parseLong(strUserID);
+//        mangaID = Long.parseLong(commentPOJO.getManga_id());
+//
+//        //toUserID
+//        if (commentPOJO.getTo_user_id() != null || !commentPOJO.getTo_user_id().equals("")) {
+//            toUserID = Long.parseLong(commentPOJO.getTo_user_id());
+//        }
+//
+//        System.err.println("line 177");
+//        //ChapterID
+//        if (!commentPOJO.getChapter_id().equals("")) {
+//            chapterID = Long.parseLong(commentPOJO.getChapter_id());
+//        }
+//
+//        //parentID
+//        if(!commentPOJO.getParent_id().equals("")){
+//            parentID = Long.parseLong(commentPOJO.getParent_id());
+//        }
+//        return userService.addCommentManga(toUserID, userID, mangaID, chapterID, content, level, imageUrl, parentID);
+//    }
+//
+//
+//    @PostMapping("/updatecomment")
+//    public ResponseEntity updateComment(@Valid CommentPOJO commentPOJO, ServletRequest request) throws IOException {
+//
+//        /**
+//         * Declare variables
+//         */
+//        String content = commentPOJO.getManga_comment_content();
+//        String strUserID = getUserAttribute(request).get("user_id").toString();
+//        MultipartFile imageUrl = commentPOJO.getImage_url();
+//
+//        Long toUserID = 0L;
+//
+//        /**
+//         * Format variable necessary
+//         */
+//        System.err.println("line 205");
+//        Long userID = Long.parseLong(strUserID);
+//        System.err.println("line 207");
+//        Long formatCommentID = Long.parseLong(commentPOJO.getManga_comment_id());
+//
+//
+//        if(!commentPOJO.getTo_user_id().equals("")){
+//            toUserID = Long.parseLong(commentPOJO.getTo_user_id());
+//        }
+//
+//        System.err.println("line 215");
+//        return userService.updateComment(userID, toUserID, formatCommentID, content, imageUrl);
+//    }
+//
+//    @PostMapping("/deletecomment")
+//    public ResponseEntity deleteComment(@RequestBody CommentPOJO commentPOJO, ServletRequest request) {
+//
+//        /**
+//         * Declare variables
+//         */
+//        String strUserID = getUserAttribute(request).get("user_id").toString();
+//        /**
+//         * Format variable necessary
+//         */
+//        Long userID = Long.parseLong(strUserID);
+//        Long formatCommentID = Long.parseLong(commentPOJO.getManga_comment_id());
+//
+//        return userService.deleteComment(userID, formatCommentID);
+//    }
+>>>>>>> Stashed changes
 
     ////////////////////////// Translation Group parts /////////////////////////////
     @CacheEvict(allEntries = true, value = {"allmangas", "transGroupInfo", "mangaInfoUploadPage"})

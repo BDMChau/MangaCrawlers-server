@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import serverapi.tables.manga_tables.author.Author;
 import serverapi.tables.manga_tables.chapter.Chapter;
-import serverapi.tables.manga_tables.manga_comments.MangaComments;
+import serverapi.tables.manga_comment.manga_comments.MangaComments;
 import serverapi.tables.manga_tables.manga_genre.MangaGenre;
 import serverapi.tables.manga_tables.rating_manga.RatingManga;
 import serverapi.tables.manga_tables.update_view.UpdateView;
@@ -84,33 +84,6 @@ public class Manga {
     @JsonBackReference
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
     private Collection<Notifications> notification;
-
-//    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @JoinTable(name = "manga_genre", // create a table manga_genre
-//            joinColumns = @JoinColumn(name = "manga_id"), // foreign key of class manga
-//            inverseJoinColumns = @JoinColumn(name = "genre_id") // foreign key of class genre
-//    )
-//    private Collection<Genre> genre;
-//
-//
-//    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @JoinTable(name = "manga_transgroup", // create a table manga_transgroup
-//            joinColumns = @JoinColumn(name = "manga_id"), // foreign key of class manga
-//            inverseJoinColumns = @JoinColumn(name = "transgroup_id") // foreign key of class transgroup
-//    )
-//    private Collection<TransGroup> transGroup;
-//
-//
-//    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @JoinTable(name = "following_manga", // create a table following_manga
-//            joinColumns = @JoinColumn(name = "manga_id"), // foreign key of class manga
-//            inverseJoinColumns = @JoinColumn(name = "user_id") // foreign key of class user
-//    )
-//    private Collection<Users> user;
-
-
-    /////////////////////////////
-
 
 
     @Column(

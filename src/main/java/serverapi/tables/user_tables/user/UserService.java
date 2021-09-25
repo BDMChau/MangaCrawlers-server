@@ -20,9 +20,9 @@ import serverapi.tables.manga_tables.chapter.Chapter;
 import serverapi.tables.manga_tables.genre.Genre;
 import serverapi.tables.manga_tables.image_chapter.ImageChapter;
 import serverapi.tables.manga_tables.manga.Manga;
-import serverapi.tables.manga_tables.manga_comment_images.CommentImages;
-import serverapi.tables.manga_tables.manga_comment_relations.CommentRelations;
-import serverapi.tables.manga_tables.manga_comments.MangaComments;
+import serverapi.tables.manga_comment.manga_comment_images.CommentImages;
+import serverapi.tables.manga_comment.manga_comment_relations.CommentRelations;
+import serverapi.tables.manga_comment.manga_comments.MangaComments;
 import serverapi.tables.manga_tables.manga_genre.MangaGenre;
 import serverapi.tables.manga_tables.rating_manga.RatingManga;
 import serverapi.tables.user_tables.following_manga.FollowingManga;
@@ -285,203 +285,73 @@ public class UserService {
     }
 
 
-    public ResponseEntity addCommentManga(Long toUserID, Long userID, Long mangaID, Long chapterID,
-                                          String content, String level, MultipartFile imageUrl,
-                                          Long parentID) throws IOException {
-
-        /**
-         * Check variable
-         */
-        Calendar timeUpdated = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        Optional<Chapter> chapterOptional = chapterRepos.findById(chapterID);
-        Optional<Manga> mangaOptional = mangaRepository.findById(mangaID);
-        Optional<User> userOptional = userRepos.findById(userID);
-        Optional<User> toUserOptional = userRepos.findById(toUserID);
-
-        Chapter chapter = null;
-        if (!chapterOptional.isEmpty()) {
-            chapter = chapterOptional.get();
-        }
-
-        if(mangaOptional.isEmpty()){
-            Map<String, Object> msg = Map.of("msg", "Empty manga!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
-        }
-        Manga manga = mangaOptional.get();
-
-
-        if (userOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "Empty user!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
-        }
-        User user = userOptional.get();
-
-        User toUser = user;
-        if (!toUserOptional.isEmpty()) {
-            toUser = toUserOptional.get();
-        }
-
-        if(level == null || level.isEmpty()){
-            Map<String, Object> msg = Map.of("msg", "level cannot be null!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
-        }
-    /*---------------------------------------------------------------------------------------------------------*/
-        /* Add comment */
-        MangaComments mangaComments = new MangaComments();
-
-        mangaComments.setManga(manga);
-        mangaComments.setChapter(chapter); // if chapter null >> set null
-        mangaComments.setUser(user);
-        mangaComments.setTo_user(toUser);
-        mangaComments.setManga_comment_content(content);
-        mangaComments.setManga_comment_time(timeUpdated);
-        mangaCommentsRepos.saveAndFlush(mangaComments);
-
-        if(parentID == 0L) {
-            parentID = mangaComments.getManga_comment_id();
-        }
-        Optional<MangaComments> parentOptional = mangaCommentsRepos.findById(parentID);
-        MangaComments parent = parentOptional.get();
-
-        CommentRelations commentRelations = new CommentRelations();
-
-        commentRelations.setChild_id(mangaComments);
-        commentRelations.setParent_id(parent);
-        commentRelations.setLevel(level);
-        commentRelationRepos.saveAndFlush(commentRelations);
-
-        String image_url = null;
-        if (imageUrl != null) {
-
-            CloudinaryUploader cloudinaryUploader = new CloudinaryUploader();
-            Map cloudinaryResponse = cloudinaryUploader.uploadImg(
-                    imageUrl.getBytes(),
-                    manga.getManga_name(),
-                    "user_comment_images",
-                    false
-
-            );
-            String securedUrl = (String) cloudinaryResponse.get("secure_url");
-
-            CommentImages commentImages = new CommentImages();
-
-            commentImages.setImage_url(securedUrl);
-            commentImages.setManga_comment(mangaComments);
-            commentImageRepos.saveAndFlush(commentImages);
-            image_url = securedUrl;
-        }
-
-        /**
-         * Response
-         */
-        MangaCommentDTOs exportComment = new MangaCommentDTOs();
-
-        exportComment.setTo_user_id(toUser.getUser_id());
-        exportComment.setTo_user_name(toUser.getUser_name());
-        exportComment.setTo_user_avatar(toUser.getUser_avatar());
-
-        exportComment.setUser_id(user.getUser_id());
-        exportComment.setUser_name(user.getUser_name());
-        exportComment.setUser_avatar(user.getUser_avatar());
-
-        exportComment.setManga_id(manga.getManga_id());
-
-        if(chapter != null){
-
-            exportComment.setChapter_id(chapter.getChapter_id());
-            exportComment.setChapter_name(chapter.getChapter_name());
-            exportComment.setCreated_at(chapter.getCreated_at());
-        }
-
-        exportComment.setManga_comment_id(mangaComments.getManga_comment_id());
-        exportComment.setManga_comment_time(mangaComments.getManga_comment_time());
-        exportComment.setManga_comment_content(mangaComments.getManga_comment_content());
-
-        exportComment.setParent_id(parent.getManga_comment_id());
-
-        exportComment.setImage_url(image_url);
-
-        Map<String, Object> msg = Map.of(
-                "msg", "add comment successfully!",
-                "comment_information",exportComment
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
-    }
-
-    public ResponseEntity updateComment(Long userID, Long toUserID, Long commentID, String commentContent, MultipartFile imageUrl) {
-        /**
-         * Declare variable
-         */
-        Optional<User> userOptional = userRepos.findById(userID);
-        Optional<MangaComments> mangaCommentsOptional = mangaCommentsRepos.findById(commentID);
-        Optional<User> toUserOptional = userRepos.findById(toUserID);
-
-        if (userOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "user cannot be null!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
-        }
-
-        if (mangaCommentsOptional.isEmpty()){
-            Map<String, Object> msg = Map.of("msg", "comment cannot be null!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
-        }
-        MangaComments mangaComments = mangaCommentsOptional.get();
-
-        User toUser = null;
-        if(!toUserOptional.isEmpty()){
-            toUser = toUserOptional.get();
-        }
-
-
-        /**
-         * Update comment
-         */
-
-        // if tagging someone
-        if (toUser != null) {
-            mangaComments.setTo_user(toUser);
-        }
-
-        Optional<CommentImages> commentImagesOptional = commentImageRepos.getCommentImagesByManga_comment(commentID);
-        String sub_imageUrl = "";
-        if (!commentImagesOptional.isEmpty()) {
-            CommentImages commentImages = commentImagesOptional.get();
-            sub_imageUrl = commentImages.getImage_url();
-        }
-
-
-        // if content is "", update comment will become delete comment
-        if (commentContent.equals("")) {
-            if (imageUrl.equals("")) {
-                mangaComments.setIs_deprecated(true);
-                mangaCommentsRepos.save(mangaComments);
-
-                Map<String, Object> msg = Map.of(
-                        "msg", "delete comment successfully!"
-                );
-                return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-            }
-        }
-        if (imageUrl != null) {
-            if(!imageUrl.equals(sub_imageUrl) && !imageUrl.equals("")){
-                CloudinaryUploader cloudinaryUploader = new CloudinaryUploader();
-                try {
-                    Map cloudinaryResponse = cloudinaryUploader.deleteImg(sub_imageUrl);
-                } catch (IOException e) {
-                    System.err.println("error line 471"+e);
-                    e.printStackTrace();
-                }
-
-            }
-            mangaCommentsRepos.delete(mangaComments);
-            Map<String, Object> msg = Map.of(
-                    "msg", "delete comment successfully!"
-            );
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-        }
-        System.err.println("line 459");
-        // check to import images or delete images
-//        if(imageUrl != null){
+//    public ResponseEntity addCommentManga(Long toUserID, Long userID, Long mangaID, Long chapterID,
+//                                          String content, String level, MultipartFile imageUrl,
+//                                          Long parentID) throws IOException {
+//
+//        /**
+//         * Check variable
+//         */
+//        Calendar timeUpdated = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+//        Optional<Chapter> chapterOptional = chapterRepos.findById(chapterID);
+//        Optional<Manga> mangaOptional = mangaRepository.findById(mangaID);
+//        Optional<User> userOptional = userRepos.findById(userID);
+//        Optional<User> toUserOptional = userRepos.findById(toUserID);
+//
+//        Chapter chapter = null;
+//        if (!chapterOptional.isEmpty()) {
+//            chapter = chapterOptional.get();
+//        }
+//
+//        if(mangaOptional.isEmpty()){
+//            Map<String, Object> msg = Map.of("msg", "Empty manga!");
+//            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+//        }
+//        Manga manga = mangaOptional.get();
+//
+//
+//        if (userOptional.isEmpty()) {
+//            Map<String, Object> msg = Map.of("msg", "Empty user!");
+//            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+//        }
+//        User user = userOptional.get();
+//
+//        User toUser = user;
+//        if (!toUserOptional.isEmpty()) {
+//            toUser = toUserOptional.get();
+//        }
+//
+//        if(level == null || level.isEmpty()){
+//            Map<String, Object> msg = Map.of("msg", "level cannot be null!");
+//            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+//        }
+//    /*---------------------------------------------------------------------------------------------------------*/
+//        /* Add comment */
+//        MangaComments mangaComments = new MangaComments();
+//
+//        mangaComments.setManga(manga);
+//        mangaComments.setChapter(chapter); // if chapter null >> set null
+//        mangaComments.setUser(user);
+//        mangaComments.setTo_user(toUser);
+//        mangaComments.setManga_comment_content(content);
+//        mangaComments.setManga_comment_time(timeUpdated);
+//        mangaCommentsRepos.saveAndFlush(mangaComments);
+//
+//        if(parentID == 0L) {
+//            parentID = mangaComments.getManga_comment_id();
+//        }
+//        Optional<MangaComments> parentOptional = mangaCommentsRepos.findById(parentID);
+//        MangaComments parent = parentOptional.get();
+//
+//        CommentRelations commentRelations = new CommentRelations();
+//
+//        commentRelations.setChild_id(mangaComments);
+//        commentRelations.setParent_id(parent);
+//        commentRelations.setLevel(level);
+//        commentRelationRepos.saveAndFlush(commentRelations);
+//
+//        String image_url = null;
+//        if (imageUrl != null) {
 //
 //            CloudinaryUploader cloudinaryUploader = new CloudinaryUploader();
 //            Map cloudinaryResponse = cloudinaryUploader.uploadImg(
@@ -500,45 +370,178 @@ public class UserService {
 //            commentImageRepos.saveAndFlush(commentImages);
 //            image_url = securedUrl;
 //        }
-
-        mangaComments.setManga_comment_content(commentContent);
-        mangaCommentsRepos.save(mangaComments);
-
-        Map<String, Object> msg = Map.of(
-                "msg", "update comment successfully!",
-                "comment_information", mangaComments
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
-
-    public ResponseEntity deleteComment(Long userID, Long commentID){
-
-        /**
-         * Declare variable
-         */
-        Optional<User> userOptional = userRepos.findById(userID);
-        Optional<MangaComments> mangaCommentsOptional = mangaCommentsRepos.findById(commentID);
-
-        if(userOptional.isEmpty()){
-            Map<String, Object> msg = Map.of("msg", "user cannot be null!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
-        }
-
-        if (mangaCommentsOptional.isEmpty()){
-            Map<String, Object> msg = Map.of("msg", "comment cannot be null!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
-        }
-        MangaComments mangaComments = mangaCommentsOptional.get();
-        /**
-         * Update comment
-         */
-        mangaCommentsRepos.delete(mangaComments);
-
-        Map<String, Object> msg = Map.of(
-                "msg", "delete comment successfully!"
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
+//
+//        /**
+//         * Response
+//         */
+//        MangaCommentDTOs exportComment = new MangaCommentDTOs();
+//
+//        exportComment.setTo_user_id(toUser.getUser_id());
+//        exportComment.setTo_user_name(toUser.getUser_name());
+//        exportComment.setTo_user_avatar(toUser.getUser_avatar());
+//
+//        exportComment.setUser_id(user.getUser_id());
+//        exportComment.setUser_name(user.getUser_name());
+//        exportComment.setUser_avatar(user.getUser_avatar());
+//
+//        exportComment.setManga_id(manga.getManga_id());
+//
+//        if(chapter != null){
+//
+//            exportComment.setChapter_id(chapter.getChapter_id());
+//            exportComment.setChapter_name(chapter.getChapter_name());
+//            exportComment.setCreated_at(chapter.getCreated_at());
+//        }
+//
+//        exportComment.setManga_comment_id(mangaComments.getManga_comment_id());
+//        exportComment.setManga_comment_time(mangaComments.getManga_comment_time());
+//        exportComment.setManga_comment_content(mangaComments.getManga_comment_content());
+//
+//        exportComment.setParent_id(parent.getManga_comment_id());
+//
+//        exportComment.setImage_url(image_url);
+//
+//        Map<String, Object> msg = Map.of(
+//                "msg", "add comment successfully!",
+//                "comment_information",exportComment
+//        );
+//        return new ResponseEntity<>(new Response(200, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
+//    }
+//
+//    public ResponseEntity updateComment(Long userID, Long toUserID, Long commentID, String commentContent, MultipartFile imageUrl) {
+//        /**
+//         * Declare variable
+//         */
+//        Optional<User> userOptional = userRepos.findById(userID);
+//        Optional<MangaComments> mangaCommentsOptional = mangaCommentsRepos.findById(commentID);
+//        Optional<User> toUserOptional = userRepos.findById(toUserID);
+//
+//        if (userOptional.isEmpty()) {
+//            Map<String, Object> msg = Map.of("msg", "user cannot be null!");
+//            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+//        }
+//
+//        if (mangaCommentsOptional.isEmpty()){
+//            Map<String, Object> msg = Map.of("msg", "comment cannot be null!");
+//            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+//        }
+//        MangaComments mangaComments = mangaCommentsOptional.get();
+//
+//        User toUser = null;
+//        if(!toUserOptional.isEmpty()){
+//            toUser = toUserOptional.get();
+//        }
+//
+//
+//        /**
+//         * Update comment
+//         */
+//
+//        // Get image_url in this comment
+//        Optional<CommentImages> commentImagesOptional = commentImageRepos.getCommentImagesByManga_comment(commentID);
+//        String sub_imageUrl = "";
+//        if (!commentImagesOptional.isEmpty()) {
+//            CommentImages commentImages = commentImagesOptional.get();
+//            sub_imageUrl = commentImages.getImage_url();
+//        }
+//
+//        // if tagging someone
+//        if (toUser != null) {
+//            mangaComments.setTo_user(toUser);
+//        }
+//
+//        /**
+//         * if commentContent && imagesUrl = ""
+//         * update comment will become delete comment by set isDeprecated = true;
+//         */
+//        if (commentContent.equals("")) {
+//            if (imageUrl.equals("")) {
+//                mangaComments.setIs_deprecated(true);
+//                mangaCommentsRepos.save(mangaComments);
+//
+//                Map<String, Object> msg = Map.of(
+//                        "msg", "delete comment successfully!"
+//                );
+//                return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+//            }
+//        }
+//
+//        if (imageUrl != null) {
+//            if(!imageUrl.equals(sub_imageUrl) && !imageUrl.equals("")){
+//                CloudinaryUploader cloudinaryUploader = new CloudinaryUploader();
+//                try {
+//                    Map cloudinaryResponse = cloudinaryUploader.deleteImg(sub_imageUrl);
+//                } catch (IOException e) {
+//                    System.err.println("error line 471"+e);
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//            Map<String, Object> msg = Map.of(
+//                    "msg", "delete comment successfully!"
+//            );
+//            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+//        }
+//        System.err.println("line 459");
+//        // check to import images or delete images
+////        if(imageUrl != null){
+////
+////            CloudinaryUploader cloudinaryUploader = new CloudinaryUploader();
+////            Map cloudinaryResponse = cloudinaryUploader.uploadImg(
+////                    imageUrl.getBytes(),
+////                    manga.getManga_name(),
+////                    "user_comment_images",
+////                    false
+////
+////            );
+////            String securedUrl = (String) cloudinaryResponse.get("secure_url");
+////
+////            CommentImages commentImages = new CommentImages();
+////
+////            commentImages.setImage_url(securedUrl);
+////            commentImages.setManga_comment(mangaComments);
+////            commentImageRepos.saveAndFlush(commentImages);
+////            image_url = securedUrl;
+////        }
+//
+//        mangaComments.setManga_comment_content(commentContent);
+//        mangaCommentsRepos.save(mangaComments);
+//
+//        Map<String, Object> msg = Map.of(
+//                "msg", "update comment successfully!",
+//                "comment_information", mangaComments
+//        );
+//        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+//    }
+//
+//    public ResponseEntity deleteComment(Long userID, Long commentID){
+//
+//        /**
+//         * Declare variable
+//         */
+//        Optional<User> userOptional = userRepos.findById(userID);
+//        Optional<MangaComments> mangaCommentsOptional = mangaCommentsRepos.findById(commentID);
+//
+//        if(userOptional.isEmpty()){
+//            Map<String, Object> msg = Map.of("msg", "user cannot be null!");
+//            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+//        }
+//
+//        if (mangaCommentsOptional.isEmpty()){
+//            Map<String, Object> msg = Map.of("msg", "comment cannot be null!");
+//            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+//        }
+//        MangaComments mangaComments = mangaCommentsOptional.get();
+//        /**
+//         * Update comment
+//         */
+//        mangaCommentsRepos.delete(mangaComments);
+//
+//        Map<String, Object> msg = Map.of(
+//                "msg", "delete comment successfully!"
+//        );
+//        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+//    }
 
 
     public ResponseEntity ratingManga(Long userId, Long mangaId, Float newValue) {

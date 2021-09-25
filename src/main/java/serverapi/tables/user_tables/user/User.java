@@ -6,7 +6,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.tables.manga_tables.manga_comments.MangaComments;
+import serverapi.tables.manga_comment.manga_comment_likes.CommentLikes;
+import serverapi.tables.manga_comment.manga_comment_tags.CommentTags;
+import serverapi.tables.manga_comment.manga_comments.MangaComments;
 import serverapi.tables.user_tables.following_manga.FollowingManga;
 import serverapi.tables.manga_tables.rating_manga.RatingManga;
 import serverapi.tables.user_tables.notificate.notification_replies.NotificationReplies;
@@ -18,6 +20,7 @@ import serverapi.tables.user_tables.user_relations.userRelations;
 import javax.persistence.*;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Getter
@@ -41,10 +44,6 @@ public class User {
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<ReadingHistory> readingHistory;
-
-    @JsonBackReference
-    @OneToMany(mappedBy = "to_user", cascade = CascadeType.ALL)
-    private Collection<MangaComments> to_mangaComments;
 
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -73,6 +72,14 @@ public class User {
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<NotificationReplies> notification_reply;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Collection<CommentLikes> commentLikes;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Collection<CommentTags> commentTags;
 
 
     @JsonManagedReference

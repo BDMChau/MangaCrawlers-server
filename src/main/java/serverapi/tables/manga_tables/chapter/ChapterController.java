@@ -50,23 +50,23 @@ public class ChapterController {
     }
 
 
-    @Transactional
-    @PostMapping("/getcommentschapter")
-    public ResponseEntity getCommentsChapter(@RequestBody CommentPOJO commentPOJO) {
-
-        Long chapterId = Long.parseLong(commentPOJO.getChapter_id ());
-        System.out.println ("chapterId"+chapterId);
-
-
-        int from = commentPOJO.getFrom ();
-        System.out.println ("from_"+from);
-
-        int amount = commentPOJO.getAmount();
-        System.out.println("amount_" + amount);
-
-
-        return chapterService.getCommentsChapter(chapterId, amount, from);
-    }
+//    @Transactional
+//    @PostMapping("/getcommentschapter")
+//    public ResponseEntity getCommentsChapter(@RequestBody CommentPOJO commentPOJO) {
+//
+//        Long chapterId = Long.parseLong(commentPOJO.getChapter_id ());
+//        System.out.println ("chapterId"+chapterId);
+//
+//
+//        int from = commentPOJO.getFrom ();
+//        System.out.println ("from_"+from);
+//
+//        int amount = commentPOJO.getAmount();
+//        System.out.println("amount_" + amount);
+//
+//
+//        return chapterService.getCommentsChapter(chapterId, amount, from);
+//    }
 
 
 }
