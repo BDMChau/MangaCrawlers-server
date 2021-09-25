@@ -147,7 +147,7 @@ public class UserController {
 
 
     @PostMapping("/addcommentmanga")
-    public ResponseEntity addCommentManga(@Valid CommentPOJO commentPOJO, ServletRequest request) throws IOException {
+    public ResponseEntity addCommentManga(CommentPOJO commentPOJO, ServletRequest request) throws IOException {
 
         /**
          * Declare variables
