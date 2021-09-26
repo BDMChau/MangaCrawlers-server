@@ -11,6 +11,7 @@ import serverapi.api.Response;
 import serverapi.helpers.AdvancedSearchGenreId;
 import serverapi.helpers.OffsetBasedPageRequest;
 import serverapi.query.dtos.features.*;
+import serverapi.query.dtos.features.MangaCommentDTOs.CommentTreesDTO;
 import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
 import serverapi.query.dtos.tables.*;
 import serverapi.query.repository.manga.ChapterRepos;
@@ -789,30 +790,26 @@ public class MangaService {
      * @param  level01 this is ghi tiếp đi
      * @param  level02 this is ghi tiếp đi
      */
-    private void getCommentTreeDTO(CommentTreesDTO commentTreesDTO, MangaCommentDTOs level01, MangaCommentDTOs level02) {
-
-        commentTreesDTO.setTo_user_id(level01.getUser_id());
-        commentTreesDTO.setTo_user_name(level01.getUser_name());
-        commentTreesDTO.setTo_user_avatar(level01.getUser_avatar());
-
-        commentTreesDTO.setUser_id(level02.getUser_id());
-        commentTreesDTO.setUser_name(level02.getUser_name());
-        commentTreesDTO.setUser_avatar(level02.getUser_avatar());
-
-        commentTreesDTO.setManga_id(level02.getManga_id());
-
-        commentTreesDTO.setChapter_id(level02.getChapter_id());
-        commentTreesDTO.setChapter_name(level02.getChapter_name());
-        commentTreesDTO.setCreated_at(level02.getCreated_at());
-
-        commentTreesDTO.setManga_comment_id(level02.getManga_comment_id());
-        commentTreesDTO.setManga_comment_time(level02.getManga_comment_time());
-        commentTreesDTO.setManga_comment_content(level02.getManga_comment_content());
-
-        commentTreesDTO.setParent_id(level02.getParent_id());
-
-        commentTreesDTO.setManga_comment_image_id(level02.getManga_comment_image_id());
-        commentTreesDTO.setImage_url(level02.getImage_url());
-
-    }
+//    private void getCommentTreeDTO(CommentTreesDTO commentTreesDTO, MangaCommentDTOs level01, MangaCommentDTOs level02) {
+//
+//        commentTreesDTO.setUser_id(level02.getUser_id());
+//        commentTreesDTO.setUser_name(level02.getUser_name());
+//        commentTreesDTO.setUser_avatar(level02.getUser_avatar());
+//
+//        commentTreesDTO.setManga_id(level02.getManga_id());
+//
+//        commentTreesDTO.setChapter_id(level02.getChapter_id());
+//        commentTreesDTO.setChapter_name(level02.getChapter_name());
+//        commentTreesDTO.setCreated_at(level02.getCreated_at());
+//
+//        commentTreesDTO.setManga_comment_id(level02.getManga_comment_id());
+//        commentTreesDTO.setManga_comment_time(level02.getManga_comment_time());
+//        commentTreesDTO.setManga_comment_content(level02.getManga_comment_content());
+//
+//        commentTreesDTO.setParent_id(level02.getParent_id());
+//
+//        commentTreesDTO.setManga_comment_image_id(level02.getManga_comment_image_id());
+//        commentTreesDTO.setImage_url(level02.getImage_url());
+//
+//    }
 }
