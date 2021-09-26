@@ -232,6 +232,13 @@ public class UserController {
         return userService.deleteComment(userID, formatCommentID);
     }
 
+    @PostMapping("/searchusers")
+    public ResponseEntity searchUsers(@RequestBody Map data) {
+        String valToSearch = (String) data.get("value");
+
+        return userService.searchUsers(valToSearch);
+    }
+
     ////////////////////////// Translation Group parts /////////////////////////////
     @CacheEvict(allEntries = true, value = {"allmangas", "transGroupInfo", "mangaInfoUploadPage"})
     @PostMapping("/uploadchapterimgs")
@@ -278,9 +285,6 @@ public class UserController {
     public ResponseEntity getTransGroupInfo(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
-        System.err.println("user_transgroup_id: " + getUserAttribute(request).get("user_transgroup_id"));
-        System.err.println("userID: " + userId);
-
 
         if (getUserAttribute(request).get("user_transgroup_id") == null) {
             Map<String, String> error = Map.of("err", "Login again before visit this page, thank you!");
@@ -330,7 +334,7 @@ public class UserController {
         Long userId = Long.parseLong(StrUserId);
 
         Long transGroupId = Long.parseLong(transGroupPOJO.getTransgroup_id());
-
+        System.err.println("acascacacacs" + transGroupId);
         return userService.deletetransGroup(userId, transGroupId);
     }
 

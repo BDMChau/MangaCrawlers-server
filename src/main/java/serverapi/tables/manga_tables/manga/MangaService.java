@@ -17,7 +17,7 @@ import serverapi.query.repository.manga.GenreRepos;
 import serverapi.query.repository.manga.MangaRepos;
 import serverapi.query.repository.manga.UpdateViewRepos;
 import serverapi.query.repository.user.MangaCommentsRepos;
-import serverapi.query.specification.MangaSpecification;
+import serverapi.query.specification.Specificationn;
 import serverapi.tables.manga_tables.chapter.Chapter;
 import serverapi.tables.manga_tables.genre.Genre;
 import serverapi.tables.manga_tables.manga.pojo.MangaPOJO;
@@ -524,10 +524,10 @@ public class MangaService {
      * @return search result
      */
     public ResponseEntity searchMangasByName(String mangaName) {
-        MangaSpecification specific =
-                new MangaSpecification(new SearchCriteriaDTO("manga_name", ":", mangaName));
+        Specificationn specificationn = new Specificationn(new SearchCriteriaDTO("manga_name", ":", mangaName));
+        Specificationn.SearchingManga searchingManga = specificationn.new SearchingManga();
 
-        List<Manga> searchingResults = mangaRepository.findAll(specific);
+        List<Manga> searchingResults = mangaRepository.findAll(searchingManga);
 
         if (searchingResults.isEmpty()) {
             Map<String, Object> err = Map.of(
