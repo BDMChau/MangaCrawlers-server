@@ -321,7 +321,6 @@ public class AuthService implements IAuthService {
                 this.userData = getCustomFieldsUser(user);
                 TokenService tokenService = new TokenService();
                 this.token = tokenService.genHS256(userData);
-                System.err.println("dfghdfnfghndfnfthgynmfghjmghm,yfkmhjm,hmhjm");
             }
 
         }

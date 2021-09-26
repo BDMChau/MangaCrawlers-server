@@ -159,7 +159,7 @@ public class AuthController {
                         authorizationRequestBaseUri + "/" + registration.getRegistrationId()));
 
 
-        System.err.println("User requested to log in with google oauth");
+        System.out.println("User requested to log in with google oauth");
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get urls oauth google susscessfully",
