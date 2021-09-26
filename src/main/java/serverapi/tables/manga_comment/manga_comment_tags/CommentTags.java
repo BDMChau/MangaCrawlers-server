@@ -15,7 +15,6 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@RequiredArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "manga_comment_tags")
 public class CommentTags {
@@ -41,5 +40,11 @@ public class CommentTags {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Column(
+            nullable = false,
+            columnDefinition = "int"
+    )
+    private int off_set;
 
 }

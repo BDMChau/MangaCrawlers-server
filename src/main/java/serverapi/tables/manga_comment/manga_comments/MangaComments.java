@@ -57,7 +57,7 @@ public class MangaComments {
     @JoinColumn(name = "chapter_id")
     private Chapter chapter;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "boolean default false", nullable = false)
     private Boolean is_deprecated;
 
     @JsonBackReference
@@ -85,4 +85,8 @@ public class MangaComments {
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String manga_comment_content;
+
+    @Column(columnDefinition = "integer default 0" , nullable = false)
+    private int count_like;
+
 }

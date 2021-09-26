@@ -1,17 +1,12 @@
 package serverapi.tables.manga_tables.chapter;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.api.Response;
-import serverapi.helpers.OffsetBasedPageRequest;
-import serverapi.query.dtos.features.CommentExportDTO;
 import serverapi.query.dtos.tables.ChapterDTO;
 import serverapi.query.dtos.tables.ChapterImgDTO;
-import serverapi.query.dtos.features.CommentExportDTO;
-import serverapi.query.dtos.tables.MangaCommentDTOs;
 import serverapi.query.repository.manga.ChapterRepos;
 import serverapi.query.repository.manga.ImgChapterRepos;
 import serverapi.query.repository.user.MangaCommentsRepos;
