@@ -57,9 +57,8 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
      */
     @Query("SELECT new serverapi.query.dtos.tables.MangaChapterDTO(m.manga_id," +
             " m.manga_name, m.thumbnail, m.stars) FROM Manga m JOIN TransGroup tg ON tg.transgroup_id = m.transgroup WHERE tg.transgroup_id =?1")
-    default List<MangaChapterDTO> getMangaByTransgroup(Long transgroup_id) {
-        return null;
-    }
+    List<MangaChapterDTO> getMangaByTransgroup(Long transgroup_id);
+
 
 
     @Query(value = "SELECT * FROM Manga ORDER BY RANDOM() LIMIT :quantity", nativeQuery = true)

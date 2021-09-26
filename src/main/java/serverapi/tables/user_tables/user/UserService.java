@@ -138,7 +138,7 @@ public class UserService {
 
         if (atomicBoolean.get() == true) {
             Map<String, Object> msg = Map.of(
-                    "msg", "Update readinghistory successfully!"
+                    "msg", "Update reading history successfully!"
 
             );
             return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
