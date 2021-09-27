@@ -7,7 +7,7 @@ public class EventsName {
     String UPDATE_SOCKETID = "updateSocketId";
 
     // from client
-    String SPECIFIC_USERS = "sendMessageToSpectificUsers_server";
+    String SPECIFIC_USERS = "sendMessageToSpecificUsers_server";
     String ALL_USERS = "sendMessageToAllUsers_server";
 
     // to client

@@ -139,6 +139,7 @@ public class SocketIOService implements ISocketIOService {
         return null;
     }
 
+
     // Get the connected client ip address
     private String getIpByClient(SocketIOClient client) {
         String sa = client.getRemoteAddress().toString();

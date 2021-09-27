@@ -41,16 +41,6 @@ public class Notifications {
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="notification_type_id")
-    private NotificationTypes notification_type;
-
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="notification_exam_title_id")
-    private NotificationExampleTitles notification_example_title;
-
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="user_id")
     private User user;
 
@@ -58,6 +48,17 @@ public class Notifications {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="manga_id")
     private Manga manga;
+
+
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name ="notification_type_id")
+    private NotificationTypes notification_type;
+
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name ="notification_exam_title_id")
+    private NotificationExampleTitles notification_example_title;
 
     @JsonBackReference
     @OneToMany(mappedBy = "notifications", cascade = CascadeType.ALL)

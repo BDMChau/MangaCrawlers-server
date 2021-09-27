@@ -57,9 +57,6 @@ public class TransGroup {
         @Column(columnDefinition = "boolean default false", nullable = false)
         private Boolean is_deprecated;
 
-        @Column(columnDefinition = "text", nullable = true)
-        private String transgroup_members;
-
         @Column(
                 nullable = false,
                 updatable = true,
