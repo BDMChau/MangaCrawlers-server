@@ -6,6 +6,9 @@ import lombok.Getter;
 public class EventsName {
     String UPDATE_SOCKETID = "updateSocketId";
 
+    String SEND_OK = "sendmessage_ok";
+    String SEND_FAILED = "sendmessage_failed";
+
     // from client
     String SPECIFIC_USERS = "sendMessageToSpecificUsers_server";
     String ALL_USERS = "sendMessageToAllUsers_server";

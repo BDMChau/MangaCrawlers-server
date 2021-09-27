@@ -54,30 +54,18 @@ public class MySocketService {
         Object message = socketMessage.getMessage();
 
         identificationList.forEach(identification -> {
-            String typeOfIdentification = identification.getClass().getName();
-            if (typeOfIdentification.equals("java.lang.String")) {
+            String type = identification.getClass().getName();
+
+            if (type.equals("java.lang.String")) {
                 String userEmail = String.valueOf(identification);
-
                 Optional<User> userOptional = userRepos.findByEmail(userEmail);
-                if (!userOptional.isEmpty()) {
-                    UUID sessionId = userOptional.get().getSocket_session_id();
 
-                    for (SocketIOClient client : allClients) {
-                        if (client.getSessionId().equals(senderClient.getSessionId()) == false) {
-                            if (client.getSessionId().equals(sessionId))
-                                client.sendEvent(EVENTs_NAME.getFROM_SERVER_TO_SPECIFIC_USERS(), message);
-                        }
-                    }
-                }
-
-            } else if (typeOfIdentification.equals("java.lang.Integer")) {
+                sendToUsersExceptSender(userOptional, message);
+            } else if (type.equals("java.lang.Integer")) {
                 Long userId = Long.parseLong(String.valueOf(identification));
+                Optional<User> userOptional = userRepos.findById(userId);
 
-                Optional<User> user = userRepos.findById(userId);
-                if (!user.isEmpty()) {
-
-                }
-
+                sendToUsersExceptSender(userOptional, message);
             }
         });
     }
@@ -86,12 +74,37 @@ public class MySocketService {
     public void pushMessageToAllUsersExceptSender() {
         Object message = socketMessage.getMessage();
 
+        sendAll(message);
+    }
+
+
+    ////////////////////////////////////////////////////////
+    private void sendToUsersExceptSender(Optional<User> userOptional, Object message) {
+        if (userOptional.isEmpty()) {
+            senderClient.sendEvent(EVENTs_NAME.getSEND_FAILED(), "failed");
+
+        } else {
+            UUID sessionId = userOptional.get().getSocket_session_id();
+
+            for (SocketIOClient client : allClients) {
+                if (!client.getSessionId().equals(senderClient.getSessionId())) {
+                    if (client.getSessionId().equals(sessionId)) {
+                        client.sendEvent(EVENTs_NAME.getFROM_SERVER_TO_SPECIFIC_USERS(), message);
+                    }
+                }
+            }
+
+            senderClient.sendEvent(EVENTs_NAME.getSEND_OK(), "ok");
+        }
+    }
+
+
+    private void sendAll(Object message) {
         for (SocketIOClient client : allClients) {
             if (client.getSessionId().equals(senderClient.getSessionId()) == false) {
                 client.sendEvent(EVENTs_NAME.getFROM_SERVER_TO_SPECIFIC_USERS(), message);
             }
         }
     }
-
 
 }
