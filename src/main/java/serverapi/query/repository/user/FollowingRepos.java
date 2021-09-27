@@ -29,10 +29,6 @@ public interface FollowingRepos extends JpaRepository<FollowingManga, Long> {
 //    List<ReportUserFollowMangaDTO>findAllFollwingManga(Pageable pageable);
 
 
-
-
-
-
     @Transactional
     @Modifying
     @Query("DELETE FROM FollowingManga f WHERE f.user =:user")

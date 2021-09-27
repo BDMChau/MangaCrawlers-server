@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import serverapi.api.Response;
 import serverapi.query.dtos.tables.FieldsCreateMangaDTO;
-
-
+import serverapi.tables.User.POJO.TransGroupPOJO;
 import serverapi.tables.manga_tables.manga.pojo.CommentPOJO;
 import serverapi.tables.manga_tables.manga.pojo.MangaPOJO;
 import serverapi.tables.manga_tables.manga.pojo.RatingPOJO;
@@ -21,6 +20,7 @@ import serverapi.tables.user_tables.user.pojo.UserPOJO;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -147,16 +147,98 @@ public class UserController {
     }
 
 
-    @PostMapping("/addcommentchapter")
-    public ResponseEntity addCommentChapter(@RequestBody CommentPOJO commentPOJO, ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
-        Long chapterId = Long.parseLong(commentPOJO.getChapter_id());
-        String content = commentPOJO.getChaptercmt_content();
+    @PostMapping("/addcommentmanga")
+    public ResponseEntity addCommentManga(CommentPOJO commentPOJO, ServletRequest request) throws IOException {
 
-        return userService.addCommentChapter(chapterId, userId, content);
+        /**
+         * Declare variables
+         */
+        Long mangaID;
+        Long chapterID = 0L;
+        Long parentID = 0L;
+        Long toUserID = 0L;
+
+        String strUserID = getUserAttribute(request).get("user_id").toString();
+        String content = commentPOJO.getManga_comment_content();
+        String level = commentPOJO.getLevel();
+        MultipartFile imageUrl = commentPOJO.getImage_url();
+
+        /**
+         * Format variables necessary include: mangaID, UserID, chapterID, parentID, toUserID
+         */
+        Long userID = Long.parseLong(strUserID);
+        mangaID = Long.parseLong(commentPOJO.getManga_id());
+
+        //toUserID
+        if (commentPOJO.getTo_user_id() != null || !commentPOJO.getTo_user_id().equals("")) {
+            toUserID = Long.parseLong(commentPOJO.getTo_user_id());
+        }
+
+        System.err.println("line 177");
+        //ChapterID
+        if (!commentPOJO.getChapter_id().equals("")) {
+            chapterID = Long.parseLong(commentPOJO.getChapter_id());
+        }
+
+        //parentID
+        if(!commentPOJO.getParent_id().equals("")){
+            parentID = Long.parseLong(commentPOJO.getParent_id());
+        }
+        return userService.addCommentManga(toUserID, userID, mangaID, chapterID, content, level, imageUrl, parentID);
     }
 
+
+    @PostMapping("/updatecomment")
+    public ResponseEntity updateComment(@Valid CommentPOJO commentPOJO, ServletRequest request) throws IOException {
+
+        /**
+         * Declare variables
+         */
+        String content = commentPOJO.getManga_comment_content();
+        String strUserID = getUserAttribute(request).get("user_id").toString();
+        MultipartFile imageUrl = commentPOJO.getImage_url();
+
+        Long toUserID = 0L;
+
+        /**
+         * Format variable necessary
+         */
+        System.err.println("line 205");
+        Long userID = Long.parseLong(strUserID);
+        System.err.println("line 207");
+        Long formatCommentID = Long.parseLong(commentPOJO.getManga_comment_id());
+
+
+        if(!commentPOJO.getTo_user_id().equals("")){
+            toUserID = Long.parseLong(commentPOJO.getTo_user_id());
+        }
+
+        System.err.println("line 215");
+        return userService.updateComment(userID, toUserID, formatCommentID, content, imageUrl);
+    }
+
+    @PostMapping("/deletecomment")
+    public ResponseEntity deleteComment(@RequestBody CommentPOJO commentPOJO, ServletRequest request) {
+
+        /**
+         * Declare variables
+         */
+        String strUserID = getUserAttribute(request).get("user_id").toString();
+        /**
+         * Format variable necessary
+         */
+        Long userID = Long.parseLong(strUserID);
+        Long formatCommentID = Long.parseLong(commentPOJO.getManga_comment_id());
+
+        return userService.deleteComment(userID, formatCommentID);
+    }
+
+    @PostMapping("/searchusers")
+    public ResponseEntity searchUsers(@RequestBody Map data) {
+        String valToSearch = (String) data.get("value");
+
+        return userService.searchUsers(valToSearch);
+    }
 
     ////////////////////////// Translation Group parts /////////////////////////////
     @CacheEvict(allEntries = true, value = {"allmangas", "transGroupInfo", "mangaInfoUploadPage"})
@@ -204,9 +286,6 @@ public class UserController {
     public ResponseEntity getTransGroupInfo(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
-        System.err.println("user_transgroup_id: " + getUserAttribute(request).get("user_transgroup_id"));
-        System.err.println("userID: " + userId);
-
 
         if (getUserAttribute(request).get("user_transgroup_id") == null) {
             Map<String, String> error = Map.of("err", "Login again before visit this page, thank you!");
@@ -256,7 +335,7 @@ public class UserController {
         Long userId = Long.parseLong(StrUserId);
 
         Long transGroupId = Long.parseLong(transGroupPOJO.getTransgroup_id());
-
+        System.err.println("acascacacacs" + transGroupId);
         return userService.deletetransGroup(userId, transGroupId);
     }
 

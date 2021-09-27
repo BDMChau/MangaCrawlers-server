@@ -21,8 +21,6 @@ public class HelpingUser {
     public List getMangaList(Long transGroupId) {
         List<MangaChapterDTO> mangaList = new ArrayList<>();
         List<MangaChapterDTO> listManga = mangaRepository.getMangaByTransgroup(transGroupId);
-        System.err.println("listManga.isEmpty() " + listManga.isEmpty());
-
 
         if (!listManga.isEmpty()) {
             List<ChapterDTO> listChapters = chapterRepos.getAllChapter();

@@ -56,6 +56,9 @@ public class MangaComments {
     @JoinColumn(name = "chapter_id")
     private Chapter chapter;
 
+    @Column(nullable = false)
+    private Boolean is_deprecated;
+
     @JsonBackReference
     @OneToMany(mappedBy = "parent_id", cascade = CascadeType.ALL)
     private Collection<CommentRelations> parent_commentRelations;

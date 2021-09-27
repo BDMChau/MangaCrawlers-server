@@ -2,6 +2,7 @@ package serverapi.query.repository.user;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import serverapi.query.dtos.features.ReportDTOs.ReportTopMangaDTO;
@@ -10,6 +11,8 @@ import serverapi.query.dtos.features.ReportDTOs.UserRDTO;
 import serverapi.query.dtos.tables.ChapterDTO;
 import serverapi.query.dtos.tables.MangaDTO;
 import serverapi.query.dtos.tables.UserTransGroupDTO;
+import serverapi.query.specification.Specificationn;
+import serverapi.tables.manga_tables.manga.Manga;
 import serverapi.tables.user_tables.trans_group.TransGroup;
 import serverapi.tables.user_tables.user.User;
 
@@ -17,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserRepos extends JpaRepository<User, Long> {
+public interface UserRepos extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
     @Query("SELECT new serverapi.query.dtos.tables.ChapterDTO(c.chapter_id, c.chapter_name, c.created_at) FROM Chapter c JOIN c.readingHistories rd WHERE c.chapter_id =?1 ")
     List<ChapterDTO> findChapterByReadingHistory(Long chapter_id);
@@ -54,5 +57,6 @@ public interface UserRepos extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u JOIN u.transgroup WHERE u.user_id = ?1")
     Optional<TransGroup> getTransGroupById(Long userId);
+
 }
 
