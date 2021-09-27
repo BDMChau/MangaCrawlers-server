@@ -1,6 +1,7 @@
 package serverapi.tables.user_tables.user;
 
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -829,10 +830,10 @@ public class UserService {
         }
         TransGroup transGroup = transGroupOptional.get();
 
+        List<User> listUsers = (List<User>) transGroup.getUsers();
+        Hibernate.initialize(listUsers);
+
         List<MangaChapterDTO> mangaList = new HelpingUser(mangaRepository, chapterRepos).getMangaList(transGroupId);
-        System.err.println("mangaList");
-        System.err.println(mangaList);
-        List<UserTransGroupDTO> listUsers = userRepos.getUsersTransGroup(transGroupId);
 
 
         Map<String, Object> msg = Map.of(

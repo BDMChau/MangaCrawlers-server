@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import serverapi.tables.manga_tables.manga.Manga;
+import serverapi.tables.user_tables.notificate.notification_replies.NotificationReplies;
 import serverapi.tables.user_tables.user.User;
 
 import javax.persistence.*;
@@ -43,6 +44,7 @@ public class TransGroup {
         @OneToMany(mappedBy = "transgroup")
         private Collection<User> users;
 
+
         @Column(columnDefinition = "varchar(100)", nullable = false)
         private String transgroup_name;
 
@@ -52,8 +54,11 @@ public class TransGroup {
         @Column(columnDefinition = "varchar(50)", nullable = false)
         private String transgroup_email;
 
-//        @Column(columnDefinition = "false", nullable = false)
-//        private Boolean is_deprecated;
+        @Column(columnDefinition = "boolean default false", nullable = false)
+        private Boolean is_deprecated;
+
+        @Column(columnDefinition = "text", nullable = true)
+        private String transgroup_members;
 
         @Column(
                 nullable = false,
@@ -63,12 +68,6 @@ public class TransGroup {
         private Calendar created_at;
 
 
-        public TransGroup(String transgroup_name, String transgroup_email, String transgroup_desc,Calendar created_at) {
-            this.transgroup_name = transgroup_name;
-            this.transgroup_email = transgroup_email;
-            this.transgroup_desc = transgroup_desc;
-            this.created_at= created_at;
-        }
 
 
 }
