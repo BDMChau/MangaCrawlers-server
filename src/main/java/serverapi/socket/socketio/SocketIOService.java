@@ -6,30 +6,33 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import serverapi.socket.MySocketService;
+import serverapi.socket.message.EventsName;
 import serverapi.socket.message.SocketMessage;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
 public class SocketIOService implements ISocketIOService {
-    private static Map<String, SocketIOClient> clientMap = new ConcurrentHashMap<>();
+    private EventsName EVENTs_NAME = new EventsName();
+    private static Map<Object, SocketIOClient> clientMap = new ConcurrentHashMap<>();
     private SocketMessage socketMessage = new SocketMessage();
 
     private final MySocketService mySocketService;
 
     @Autowired
-    public SocketIOService(MySocketService mySocketService){
+    public SocketIOService(MySocketService mySocketService) {
         this.mySocketService = mySocketService;
     }
 
     @Autowired
     private SocketIOServer socketIOServer;
-
 
 
     @PostConstruct
@@ -50,70 +53,85 @@ public class SocketIOService implements ISocketIOService {
         });
 
 
-        // listen event from client
-        socketIOServer.addEventListener("sendMessageFromClient", Map.class, (client, data, ackSender) -> {
-            String clientIp = getIpByClient(client);
+        ///////////// listen event from client /////////////
+        socketIOServer.addEventListener(EVENTs_NAME.getUPDATE_SOCKETID(), Map.class, (client, data, ackSender) -> {
+            if (data.get("user_id") == null) {
+                stop();
+                return;
+            }
+            Long userId = Long.parseLong(String.valueOf(data.get("user_id")));
+            UUID sessionId = client.getSessionId();
 
-            String userId = String.valueOf(data.get("userId"));
+            mySocketService.updateSocketId(userId, sessionId);
+        });
+
+
+        socketIOServer.addEventListener(EVENTs_NAME.getSPECIFIC_USERS(), Map.class, (client, data, ackSender) -> {
+            List usersIdentification = (List) data.get("users_identification"); // an user_identification can be String user_email or Integer user_id
             String message = String.valueOf(data.get("message"));
 
-            socketMessage.setUserId(userId);
-            socketMessage.setMessage(message);
+            SocketIOClient senderClient = client;
+            Collection<SocketIOClient> clients = socketIOServer.getAllClients();
 
-            if (!socketMessage.getUserId().isEmpty()) {
-                clientMap.put(socketMessage.getUserId(), client);
-                pushMessageToUser(socketMessage);
-            }
+            socketMessage.setUsersIdentification(usersIdentification);
+            socketMessage.setMessage(message);
+            pushMessageToUsersExceptSender(socketMessage, clients, senderClient);
         });
+
+
+        socketIOServer.addEventListener(EVENTs_NAME.getALL_USERS(), Map.class, (client, data, ackSender) -> {
+            String message = String.valueOf(data.get("message"));
+
+            SocketIOClient senderClient = client;
+            Collection<SocketIOClient> clients = socketIOServer.getAllClients();
+
+            socketMessage.setMessage(message);
+            pushMessageToAllUsersExceptSender(socketMessage, clients, senderClient);
+        });
+
+
 
 
         socketIOServer.addDisconnectListener(client -> {
-            String clientIp = getIpByClient(client);
-            if (socketMessage.getUserId() != null) {
-                clientMap.remove(socketMessage.getUserId());
-                client.disconnect();
-                System.err.println(socketMessage.getUserId() + " Disconnected!");
-            }
+            client.disconnect();
+            socketMessage.getUsersIdentification().forEach(identification -> {
+                clientMap.remove(identification);
+            });
         });
 
+
         socketIOServer.start();
-//
-//
-//        new Thread(() -> {
-//            int i = 0;
-//            while (true) {
-//                try {
-//                    Thread.sleep(3000);
-//                    socketIOServer.getBroadcastOperations().sendEvent("myBroadcast", "Broadcast message ");
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }).start();
     }
 
 
-    ///////////////////////////////////////////
+
+    ////////////////////////////////// prepare before call method in MySocketService class /////////////////////////////////////
+    public void pushMessageToUsersExceptSender(SocketMessage socketMessage, Collection<SocketIOClient> clients, SocketIOClient senderClient) {
+        mySocketService.setSocketMessage(socketMessage);
+        mySocketService.setAllClients(clients);
+        mySocketService.setSenderClient(senderClient);
+
+        mySocketService.pushMessageToUsersExceptSender();
+    }
+
+
+    public void pushMessageToAllUsersExceptSender(SocketMessage socketMessage, Collection<SocketIOClient> clients, SocketIOClient senderClient) {
+        mySocketService.setSocketMessage(socketMessage);
+        mySocketService.setAllClients(clients);
+        mySocketService.setSenderClient(senderClient);
+
+        mySocketService.pushMessageToAllUsersExceptSender();
+    }
+
+
+
+    ///////////////// stuffs //////////////////
     public void stop() {
         if (socketIOServer != null) {
             socketIOServer.stop();
             socketIOServer = null;
         }
     }
-
-
-    public void pushMessageToUser(SocketMessage socketMessage) {
-        SocketIOClient client = clientMap.get(socketMessage.getUserId());
-        if (client != null) {
-            mySocketService.setSocketMessage(socketMessage);
-            mySocketService.setClient(client);
-
-            mySocketService.test();
-
-        }
-    }
-
-
 
     private String getParamsByClient(SocketIOClient client) {
         Map<String, List<String>> params = client.getHandshakeData().getUrlParams();
@@ -129,3 +147,24 @@ public class SocketIOService implements ISocketIOService {
     }
 
 }
+
+
+
+//        new Thread(() -> {
+//            int i = 0;
+//            while (true) {
+//                try {
+//                    Thread.sleep(3000);
+//                    socketIOServer.getBroadcastOperations().sendEvent("sendToAllClients", "Broadcast message "); // send to all clients
+
+//        Collection<SocketIOClient> clients = server.getAllClients();
+//        for (SocketIOClient client : clients) {
+//            if(client.getSessionId().equals(senderClient.getSessionId()) == false){ // send all clients except sender
+//                client.sendEvent(Events.modifyTrain, modifiedTrain);
+//            }
+//        }
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }).start();

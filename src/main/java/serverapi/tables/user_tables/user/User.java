@@ -18,6 +18,7 @@ import serverapi.tables.user_tables.user_relations.userRelations;
 import javax.persistence.*;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -113,6 +114,9 @@ public class User {
 
     @Column(nullable = true)
     private String token_verify_created_at;
+
+    @Column(nullable = true)
+    private UUID socket_session_id;
 
     @Column(
             nullable = false,

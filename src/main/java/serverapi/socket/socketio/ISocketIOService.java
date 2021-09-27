@@ -1,6 +1,9 @@
 package serverapi.socket.socketio;
 
+import com.corundumstudio.socketio.SocketIOClient;
 import serverapi.socket.message.SocketMessage;
+
+import java.util.Collection;
 
 public interface ISocketIOService {
     /**
@@ -13,10 +16,8 @@ public interface ISocketIOService {
      */
     void stop();
 
-    /**
-     * Push information to specified client
-     *
-     * @param socketMessage: SocketMessage class to receive message from client
-     */
-    void pushMessageToUser(SocketMessage socketMessage);
+
+    void pushMessageToUsersExceptSender(SocketMessage socketMessage, Collection<SocketIOClient> clients , SocketIOClient senderClient);
+
+    void pushMessageToAllUsersExceptSender(SocketMessage socketMessage, Collection<SocketIOClient> clients , SocketIOClient senderClient);
 }

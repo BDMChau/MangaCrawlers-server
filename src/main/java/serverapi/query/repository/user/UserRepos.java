@@ -28,10 +28,10 @@ public interface UserRepos extends JpaRepository<User, Long>, JpaSpecificationEx
     @Query("SELECT new serverapi.query.dtos.tables.MangaDTO(m.manga_id, m.manga_name, m.thumbnail) FROM Manga m JOIN m.readingHistories rd WHERE m.manga_id =?1 ")
     List<MangaDTO> findMangaByReadingHistory(Long manga_id);
 
-    @Query("SELECT new serverapi.query.dtos.features.ReportDTOs.ReportUserFollowMangaDTO(COUNT(u.user_id), a.author_id, a.author_name, m.manga_id, m.manga_name, m.thumbnail, m.stars, m.views, m.date_publications)"+
+    @Query("SELECT new serverapi.query.dtos.features.ReportDTOs.ReportUserFollowMangaDTO(COUNT(u.user_id), a.author_id, a.author_name, m.manga_id, m.manga_name, m.thumbnail, m.stars, m.views, m.date_publications)" +
             "FROM FollowingManga fm JOIN fm.manga m JOIN fm.user u JOIN m.author a GROUP BY a.author_id, a.author_name, m.manga_id, m.manga_name, m.thumbnail, m.stars, m.views, m.date_publications" +
             " ORDER BY COUNT(u.user_id) DESC")
-    List<ReportUserFollowMangaDTO>findAllFollwingManga(Pageable pageable);
+    List<ReportUserFollowMangaDTO> findAllFollwingManga(Pageable pageable);
 
 
 //    @Query("SELECT new serverapi.Query.DTO.UserTransgroupDTO(u.user_id, u.user_name, u.user_email, user_avatar," +
@@ -58,5 +58,8 @@ public interface UserRepos extends JpaRepository<User, Long>, JpaSpecificationEx
     @Query("SELECT u FROM User u JOIN u.transgroup WHERE u.user_id = ?1")
     Optional<TransGroup> getTransGroupById(Long userId);
 
+
+    @Query("SELECT u FROM User u WHERE u.user_email = ?1")
+    Optional<User> findByEmail(String email);
 }
 
