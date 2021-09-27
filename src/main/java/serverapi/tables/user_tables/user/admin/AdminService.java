@@ -435,7 +435,7 @@ public class AdminService {
         mangaRepos.saveAndFlush(manga);
         authorRepos.saveAndFlush(author);
 
-        Optional<AuthorMangaDTO> mangaToRes = mangaRepos.getAllByMangaId(manga.getManga_id());
+        Optional<AuthorMangaDTO> mangaToRes = mangaRepos.getMangaInfoByMangaID(manga.getManga_id());
 
         Map<String, Object> msg = Map.of(
                 "msg", "edit manga OK!",
