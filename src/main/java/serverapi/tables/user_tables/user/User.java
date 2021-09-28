@@ -9,7 +9,7 @@ import lombok.Setter;
 import serverapi.tables.manga_tables.manga_comment.manga_comment_likes.CommentLikes;
 import serverapi.tables.manga_tables.manga_comment.manga_comment_tags.CommentTags;
 import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
-import serverapi.tables.user_tables.Notification.Notifications.Notifications;
+import serverapi.tables.user_tables.notification.notifications.Notifications;
 import serverapi.tables.user_tables.following_manga.FollowingManga;
 import serverapi.tables.manga_tables.rating_manga.RatingManga;
 import serverapi.tables.user_tables.report.report_replies.ReportReplies;

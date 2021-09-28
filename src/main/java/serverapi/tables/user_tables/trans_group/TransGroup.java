@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import serverapi.tables.manga_tables.manga.Manga;
-import serverapi.tables.user_tables.notificate.notification_replies.NotificationReplies;
 import serverapi.tables.user_tables.user.User;
 
 import javax.persistence.*;

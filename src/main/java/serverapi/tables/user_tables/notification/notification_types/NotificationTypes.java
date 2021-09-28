@@ -1,13 +1,11 @@
-package serverapi.tables.user_tables.Notification.Notification_types;
+package serverapi.tables.user_tables.notification.notification_types;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.tables.user_tables.Notification.Notifications.Notifications;
-import serverapi.tables.user_tables.report.report_example_titles.ReportExampleTitles;
-import serverapi.tables.user_tables.report.reports.Reports;
+import serverapi.tables.user_tables.notification.notifications.Notifications;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -36,7 +34,6 @@ public class NotificationTypes {
     @JsonBackReference
     @OneToMany(mappedBy = "notification_type", cascade = CascadeType.ALL)
     private Collection<Notifications> notifications;
-
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String notification_name;

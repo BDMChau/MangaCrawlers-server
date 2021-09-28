@@ -1,21 +1,16 @@
-package serverapi.tables.user_tables.Notification.Notifications;
+package serverapi.tables.user_tables.notification.notifications;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.tables.manga_tables.manga.Manga;
-import serverapi.tables.user_tables.report.report_example_titles.ReportExampleTitles;
-import serverapi.tables.user_tables.report.report_images.ReportImages;
-import serverapi.tables.user_tables.report.report_types.ReportTypes;
+import serverapi.tables.user_tables.notification.notification_types.NotificationTypes;
 import serverapi.tables.user_tables.user.User;
 
 import javax.persistence.*;
 import java.util.Calendar;
-import java.util.Collection;
 
 @Entity
 @Getter
@@ -37,11 +32,10 @@ public class Notifications {
     )
     private Long notification_id;
 
-
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="notification_type_id")
-    private ReportTypes notification_type;
+    @JoinColumn(name ="user_id")
+    private User user;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
