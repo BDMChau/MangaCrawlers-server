@@ -1,4 +1,4 @@
-package serverapi.tables.user_tables.notificate.notifications;
+package serverapi.tables.user_tables.Notification.Notifications;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -8,10 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import serverapi.tables.manga_tables.manga.Manga;
-import serverapi.tables.user_tables.notificate.notification_example_titles.NotificationExampleTitles;
-import serverapi.tables.user_tables.notificate.notification_images.NotificationImages;
-import serverapi.tables.user_tables.notificate.notification_replies.NotificationReplies;
-import serverapi.tables.user_tables.notificate.notification_types.NotificationTypes;
+import serverapi.tables.user_tables.report.report_example_titles.ReportExampleTitles;
+import serverapi.tables.user_tables.report.report_images.ReportImages;
+import serverapi.tables.user_tables.report.report_types.ReportTypes;
 import serverapi.tables.user_tables.user.User;
 
 import javax.persistence.*;
@@ -41,29 +40,13 @@ public class Notifications {
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="user_id")
-    private User user;
-
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="manga_id")
-    private Manga manga;
-
+    @JoinColumn(name ="notification_type_id")
+    private ReportTypes notification_type;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="notification_type_id")
     private NotificationTypes notification_type;
-
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="notification_exam_title_id")
-    private NotificationExampleTitles notification_example_title;
-
-    @JsonBackReference
-    @OneToMany(mappedBy = "notifications", cascade = CascadeType.ALL)
-    private Collection<NotificationImages> notification_image;
-
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;

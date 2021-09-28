@@ -1,17 +1,12 @@
 package serverapi.tables.manga_tables.chapter;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.api.Response;
-import serverapi.helpers.OffsetBasedPageRequest;
-import serverapi.query.dtos.features.CommentExportDTO;
 import serverapi.query.dtos.tables.ChapterDTO;
 import serverapi.query.dtos.tables.ChapterImgDTO;
-import serverapi.query.dtos.features.CommentExportDTO;
-import serverapi.query.dtos.tables.MangaCommentDTOs;
 import serverapi.query.repository.manga.ChapterRepos;
 import serverapi.query.repository.manga.ImgChapterRepos;
 import serverapi.query.repository.user.MangaCommentsRepos;
@@ -100,35 +95,35 @@ public class ChapterService {
 //        );
 //        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 //    }
-
-    public ResponseEntity getCommentsChapter(Long chapterId, int amount, int from) {
-
-
-        //check chapterId is empty
-        Optional<Chapter> chapterOptional =chapterRepos.findById (chapterId);
-        if(chapterOptional.isEmpty ()){
-            Map<String, Object> msg = Map.of("msg", "Chapter not found!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
-        }
-
-        //get list comments in 1 chapter
-        Pageable pageable = new OffsetBasedPageRequest (from, amount);
-        System.out.println ("pageable "+pageable.getPageNumber ());
-        String level = "";
-        List<MangaCommentDTOs> commentExportDTOS = mangaCommentsRepos.getCommentsChapter (chapterId, level, pageable);
-
-        if (commentExportDTOS.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "No comments found!");
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-        }
-
-
-        Map<String, Object> msg = Map.of(
-                "msg", "Get chapter comment successfully!",
-                "comments", commentExportDTOS
-
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
+//
+//    public ResponseEntity getCommentsChapter(Long chapterId, int amount, int from) {
+//
+//
+//        //check chapterId is empty
+//        Optional<Chapter> chapterOptional =chapterRepos.findById (chapterId);
+//        if(chapterOptional.isEmpty ()){
+//            Map<String, Object> msg = Map.of("msg", "Chapter not found!");
+//            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+//        }
+//
+//        //get list comments in 1 chapter
+//        Pageable pageable = new OffsetBasedPageRequest (from, amount);
+//        System.out.println ("pageable "+pageable.getPageNumber ());
+//        String level = "";
+//        List<MangaCommentDTOs> commentExportDTOS = mangaCommentsRepos.getCommentsChapter (chapterId, level, pageable);
+//
+//        if (commentExportDTOS.isEmpty()) {
+//            Map<String, Object> msg = Map.of("msg", "No comments found!");
+//            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+//        }
+//
+//
+//        Map<String, Object> msg = Map.of(
+//                "msg", "Get chapter comment successfully!",
+//                "comments", commentExportDTOS
+//
+//        );
+//        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+//    }
 
 }

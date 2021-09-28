@@ -1,4 +1,4 @@
-package serverapi.tables.manga_tables.manga_comments;
+package serverapi.tables.manga_tables.manga_comment.manga_comments;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -6,11 +6,12 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import serverapi.tables.manga_tables.manga_comment.manga_comment_likes.CommentLikes;
+import serverapi.tables.manga_tables.manga_comment.manga_comment_tags.CommentTags;
 import serverapi.tables.manga_tables.chapter.Chapter;
 import serverapi.tables.manga_tables.manga.Manga;
-import serverapi.tables.manga_tables.manga_comment_images.CommentImages;
-import serverapi.tables.manga_tables.manga_comment_relations.CommentRelations;
-import serverapi.tables.manga_tables.rating_manga.RatingManga;
+import serverapi.tables.manga_tables.manga_comment.manga_comment_images.CommentImages;
+import serverapi.tables.manga_tables.manga_comment.manga_comment_relations.CommentRelations;
 import serverapi.tables.user_tables.user.User;
 
 import javax.persistence.*;
@@ -36,10 +37,6 @@ public class MangaComments {
     )
     private Long manga_comment_id;
 
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "to_user_id")
-    private User to_user;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
@@ -56,7 +53,7 @@ public class MangaComments {
     @JoinColumn(name = "chapter_id")
     private Chapter chapter;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "boolean default false", nullable = false)
     private Boolean is_deprecated;
 
     @JsonBackReference
@@ -71,9 +68,21 @@ public class MangaComments {
     @OneToMany(mappedBy = "manga_comment", cascade = CascadeType.ALL)
     private Collection<CommentImages> comment_image;
 
+    @JsonBackReference
+    @OneToMany(mappedBy = "manga_comment", cascade = CascadeType.ALL)
+    private Collection<CommentLikes> comment_like;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "manga_comment", cascade = CascadeType.ALL)
+    private Collection<CommentTags> comment_tag;
+
     @Column(columnDefinition = "timestamp with time zone", nullable = false)
     private Calendar manga_comment_time;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String manga_comment_content;
+
+    @Column(columnDefinition = "integer default 0" , nullable = false)
+    private int count_like;
+
 }
