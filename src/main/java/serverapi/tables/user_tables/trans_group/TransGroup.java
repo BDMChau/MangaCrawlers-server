@@ -53,7 +53,7 @@ public class TransGroup {
         @Column(columnDefinition = "varchar(50)", nullable = false)
         private String transgroup_email;
 
-        @Column(columnDefinition = "boolean default false", nullable = false)
+        @Column(columnDefinition = "boolean default false", nullable = true)
         private Boolean is_deprecated;
 
         @Column(

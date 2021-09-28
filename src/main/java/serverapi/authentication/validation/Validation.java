@@ -20,8 +20,7 @@ public class Validation implements Validator {
         ReadJSONFileAndGetValue readJSONFileAndGetValue = new ReadJSONFileAndGetValue("src/main/java/serverapi/Security/RegexString.json", objKey);
         readJSONFileAndGetValue.read();
 
-        String value = readJSONFileAndGetValue.getValue();
-        return value;
+        return readJSONFileAndGetValue.getValue();
     }
 
 

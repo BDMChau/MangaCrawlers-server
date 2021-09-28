@@ -12,6 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SocketMessage {
-    private List usersIdentification;
+    private List list_to;
     private String message;
 }

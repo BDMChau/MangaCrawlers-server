@@ -2,19 +2,19 @@ package serverapi.socket.socketio;
 
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
+import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import serverapi.helpers.ReadJSONFileAndGetValue;
 import serverapi.socket.MySocketService;
 import serverapi.socket.message.EventsName;
 import serverapi.socket.message.SocketMessage;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -33,7 +33,6 @@ public class SocketIOService implements ISocketIOService {
 
     @Autowired
     private SocketIOServer socketIOServer;
-
 
     @PostConstruct
     private void autoStartup() {
@@ -67,13 +66,25 @@ public class SocketIOService implements ISocketIOService {
 
 
         socketIOServer.addEventListener(EVENTs_NAME.getSPECIFIC_USERS(), Map.class, (client, data, ackSender) -> {
-            List usersIdentification = (List) data.get("users_identification"); // an user_identification can be String user_email or Integer user_id
             String message = String.valueOf(data.get("message"));
+            Long userId = Long.parseLong(String.valueOf(data.get("userId")));
+            List list_to = (List) data.get("listTo"); // can be String user_email or Integer user_id
+            Map obj = (Map) data.get("obj");
+
+
+            Object image = getImageDefault("notify_img_default");
+            if(!data.get("image").equals("")){
+                byte[] fileBytes = Base64.getEncoder().encode(String.valueOf(data.get("image")).getBytes());
+                System.err.println(fileBytes);
+                image = fileBytes;
+            }
+            System.err.println("imageeeeeeeeeee: " + image);
+
 
             SocketIOClient senderClient = client;
             Collection<SocketIOClient> clients = socketIOServer.getAllClients();
 
-            socketMessage.setUsersIdentification(usersIdentification);
+            socketMessage.setList_to(list_to);
             socketMessage.setMessage(message);
             pushMessageToUsersExceptSender(socketMessage, clients, senderClient);
         });
@@ -94,8 +105,8 @@ public class SocketIOService implements ISocketIOService {
 
         socketIOServer.addDisconnectListener(client -> {
             client.disconnect();
-            socketMessage.getUsersIdentification().forEach(identification -> {
-                clientMap.remove(identification);
+            socketMessage.getList_to().forEach(toUser -> {
+                clientMap.remove(toUser);
             });
         });
 
@@ -126,6 +137,14 @@ public class SocketIOService implements ISocketIOService {
 
 
     ///////////////// stuffs //////////////////
+    private String getImageDefault(String objKey) {
+        ReadJSONFileAndGetValue readJSONFileAndGetValue = new ReadJSONFileAndGetValue("src/main/java/serverapi/utils/img_notify.json", objKey);
+        readJSONFileAndGetValue.read();
+
+        return readJSONFileAndGetValue.getValue();
+    }
+
+
     public void stop() {
         if (socketIOServer != null) {
             socketIOServer.stop();

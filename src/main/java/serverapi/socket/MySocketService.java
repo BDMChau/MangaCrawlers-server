@@ -50,19 +50,19 @@ public class MySocketService {
 
 
     public void pushMessageToUsersExceptSender() {
-        List identificationList = socketMessage.getUsersIdentification();
+        List listToUser = socketMessage.getList_to();
         Object message = socketMessage.getMessage();
 
-        identificationList.forEach(identification -> {
-            String type = identification.getClass().getName();
+        listToUser.forEach(userVal -> {
+            String type = userVal.getClass().getName();
 
             if (type.equals("java.lang.String")) {
-                String userEmail = String.valueOf(identification);
+                String userEmail = String.valueOf(userVal);
                 Optional<User> userOptional = userRepos.findByEmail(userEmail);
 
                 sendToUsersExceptSender(userOptional, message);
             } else if (type.equals("java.lang.Integer")) {
-                Long userId = Long.parseLong(String.valueOf(identification));
+                Long userId = Long.parseLong(String.valueOf(userVal));
                 Optional<User> userOptional = userRepos.findById(userId);
 
                 sendToUsersExceptSender(userOptional, message);

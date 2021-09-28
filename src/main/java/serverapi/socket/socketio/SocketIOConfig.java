@@ -32,6 +32,7 @@ public class SocketIOConfig {
         config.setUpgradeTimeout(upgradeTimeout);
         config.setPingTimeout(pingTimeout);
         config.setPingInterval(pingInterval);
+        config.setMaxFramePayloadLength(1999999);
 
         System.out.println("Socket server initialized!");
         return new SocketIOServer(config);
