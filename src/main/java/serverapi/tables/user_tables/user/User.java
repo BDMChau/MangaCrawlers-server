@@ -6,13 +6,14 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.tables.manga_comment.manga_comment_likes.CommentLikes;
-import serverapi.tables.manga_comment.manga_comment_tags.CommentTags;
-import serverapi.tables.manga_comment.manga_comments.MangaComments;
+import serverapi.tables.manga_tables.manga_comment.manga_comment_likes.CommentLikes;
+import serverapi.tables.manga_tables.manga_comment.manga_comment_tags.CommentTags;
+import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
+import serverapi.tables.user_tables.Notification.Notifications.Notifications;
 import serverapi.tables.user_tables.following_manga.FollowingManga;
 import serverapi.tables.manga_tables.rating_manga.RatingManga;
-import serverapi.tables.user_tables.notificate.notification_replies.NotificationReplies;
-import serverapi.tables.user_tables.notificate.notifications.Notifications;
+import serverapi.tables.user_tables.report.report_replies.ReportReplies;
+import serverapi.tables.user_tables.report.reports.Reports;
 import serverapi.tables.user_tables.reading_history.ReadingHistory;
 import serverapi.tables.user_tables.trans_group.TransGroup;
 import serverapi.tables.user_tables.user_relations.userRelations;
@@ -20,7 +21,6 @@ import serverapi.tables.user_tables.user_relations.userRelations;
 import javax.persistence.*;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.List;
 
 @Entity
 @Getter
@@ -67,11 +67,11 @@ public class User {
 
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Collection<Notifications> notification;
+    private Collection<Reports> report;
 
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Collection<NotificationReplies> notification_reply;
+    private Collection<ReportReplies> report_reply;
 
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -80,6 +80,10 @@ public class User {
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<CommentTags> commentTags;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Collection<Notifications> notifications;
 
 
     @JsonManagedReference

@@ -1,11 +1,11 @@
-package serverapi.tables.manga_comment.manga_comment_images;
+package serverapi.tables.manga_tables.manga_comment.manga_comment_images;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.tables.manga_comment.manga_comments.MangaComments;
+import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
 
 import javax.persistence.*;
 

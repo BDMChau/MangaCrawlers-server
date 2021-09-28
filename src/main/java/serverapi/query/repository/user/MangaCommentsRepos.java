@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
-import serverapi.tables.manga_comment.manga_comments.MangaComments;
+import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
 import serverapi.tables.user_tables.user.User;
 
 import javax.transaction.Transactional;

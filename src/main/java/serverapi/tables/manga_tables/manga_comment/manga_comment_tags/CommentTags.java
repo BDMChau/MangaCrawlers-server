@@ -1,12 +1,11 @@
-package serverapi.tables.manga_comment.manga_comment_tags;
+package serverapi.tables.manga_tables.manga_comment.manga_comment_tags;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import serverapi.tables.manga_comment.manga_comments.MangaComments;
+import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
 import serverapi.tables.user_tables.user.User;
 
 import javax.persistence.*;

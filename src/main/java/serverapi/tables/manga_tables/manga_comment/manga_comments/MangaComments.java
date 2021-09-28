@@ -1,4 +1,4 @@
-package serverapi.tables.manga_comment.manga_comments;
+package serverapi.tables.manga_tables.manga_comment.manga_comments;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -6,21 +6,17 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.tables.manga_comment.manga_comment_likes.CommentLikes;
-import serverapi.tables.manga_comment.manga_comment_tags.CommentTags;
+import serverapi.tables.manga_tables.manga_comment.manga_comment_likes.CommentLikes;
+import serverapi.tables.manga_tables.manga_comment.manga_comment_tags.CommentTags;
 import serverapi.tables.manga_tables.chapter.Chapter;
 import serverapi.tables.manga_tables.manga.Manga;
-import serverapi.tables.manga_comment.manga_comment_images.CommentImages;
-import serverapi.tables.manga_comment.manga_comment_relations.CommentRelations;
+import serverapi.tables.manga_tables.manga_comment.manga_comment_images.CommentImages;
+import serverapi.tables.manga_tables.manga_comment.manga_comment_relations.CommentRelations;
 import serverapi.tables.user_tables.user.User;
 
 import javax.persistence.*;
-import javax.sql.rowset.serial.SerialArray;
-import java.io.Serial;
-import java.lang.reflect.Array;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.List;
 
 @Entity
 @Getter
