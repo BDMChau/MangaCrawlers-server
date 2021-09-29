@@ -1,8 +1,14 @@
 package serverapi.configuration.cache;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+
+import java.util.Calendar;
 
 
 @Configuration
@@ -10,6 +16,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableAsync
 public class CacheSchedule {
 
+    @Autowired
+    CacheService cacheService;
 
 //    @Async
 //    @CacheEvict(allEntries = true, value = {"weeklyMangas"})
@@ -23,7 +31,7 @@ public class CacheSchedule {
 //
 //    @Async
 //    @CacheEvict(allEntries = true, value = {"topMangas"})
-//    @Scheduled(fixedRate = 86400000)
+//    @Scheduled(fixedRate = 8640000)
 //    public void evictCacheTopMangas() {
 //        Calendar calendar = Calendar.getInstance();
 //        System.err.println("Evict Cache topMangas every 24 hours: " + calendar.getTime());
@@ -32,11 +40,21 @@ public class CacheSchedule {
 //
 //    @Async
 //    @CacheEvict(allEntries = true, value = {"dailyMangas"})
-//    @Scheduled(fixedRate = 86400000)
+//    @Scheduled(fixedRate = 8640000)
 //    public void evictCacheDailyMangas() {
 //        Calendar calendar = Calendar.getInstance();
 //        System.err.println("Evict Cache dailyMangas every 24 hours: " + calendar.getTime());
 //    }
 
+    @Async
+    @CacheEvict(allEntries = true, value = {"dailyMangas"})
+    @Scheduled(fixedRate = 8640000)
+    public void evictCacheDailyMangas() {
+        Calendar calendar = Calendar.getInstance();
+
+        cacheService.evictAllCaches();
+
+        System.err.println("Evict all cache every 24 hours: " + calendar.getTime());
+    }
 
 }

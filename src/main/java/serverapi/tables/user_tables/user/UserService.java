@@ -53,6 +53,8 @@ public class UserService {
     private final ImgChapterRepos imgChapterRepos;
     private final CommentRelationRepos commentRelationRepos;
     private final CommentImageRepos commentImageRepos;
+
+
     @Autowired
     CacheService cacheService;
 
@@ -712,10 +714,13 @@ public class UserService {
     /////////////// Translation Group parts //////////////
     public ResponseEntity uploadChapterImgs(
             Long userId,
+            String strTransGrId,
             Long mangaId,
             String chapterName,
             @RequestParam(required = false) MultipartFile[] files
     ) throws IOException, ParseException {
+        cacheService.evictSingleCacheValue("transGroupInfo", userId.toString() + strTransGrId);
+
         Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
         if (mangaOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "Manga not found!");

@@ -61,7 +61,8 @@ public class UserController {
 
 
     // update reading history of user by chapters in a manga
-    @CacheEvict(allEntries = true, value = {"historymangas"})
+//    @CacheEvict(allEntries = true, value = {"historymangas"})
+    @CacheEvict(value = {"historymangas"}, key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @PutMapping("/updatereadinghistory")
     public ResponseEntity updateReadingHistory(@RequestBody UserPOJO userPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -84,7 +85,8 @@ public class UserController {
 
 
     ///Add manga to list user's follows
-    @CacheEvict(allEntries = true, value = {"followingmangas"})
+//    @CacheEvict(allEntries = true, value = {"followingmangas"})
+    @CacheEvict(value = {"followingmangas"}, key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @PostMapping("/addfollowingmanga")
     public ResponseEntity addFollowingMangas(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -96,7 +98,8 @@ public class UserController {
 
 
     ///Delete manga following from user's follows( Unfollow)
-    @CacheEvict(allEntries = true, value = {"followingmangas"})
+//    @CacheEvict(allEntries = true, value = {"followswingmangas"})
+    @CacheEvict(value = {"followingmangas"}, key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @DeleteMapping("/deletefollowingmanga")
     public ResponseEntity deleteFollowingMangas(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -241,7 +244,9 @@ public class UserController {
     }
 
     ////////////////////////// Translation Group parts /////////////////////////////
-    @CacheEvict(allEntries = true, value = {"allmangas", "transGroupInfo", "mangaInfoUploadPage"})
+//    @CacheEvict(allEntries = true, value = {"allmangas", "transGroupInfo", "mangaInfoUploadPage"})
+//    @CacheEvict(allEntries = true, value = {"allmangas", "transGroupInfo", "mangaInfoUploadPage"})
+    @CacheEvict(value = {"mangaInfoUploadPage"}, key = "{#request.getAttribute(\"user\").get(\"user_id\"), #transGroupPOJO.getManga_id()}")
     @PostMapping("/uploadchapterimgs")
     public ResponseEntity uploadChapterImgs(
             ServletRequest request,
@@ -249,8 +254,10 @@ public class UserController {
             @RequestParam(required = false) Integer manga_id,
             @RequestParam(required = false) String chapter_name
     ) throws IOException, ParseException {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(strUserId);
+
+        String strTransGrId = String.valueOf(getUserAttribute(request).get("user_transgroup_id"));
 
         for (MultipartFile file : files) {
             System.err.println(file.getOriginalFilename());
@@ -258,8 +265,8 @@ public class UserController {
 
         Long mangaId = Long.parseLong(String.valueOf(manga_id));
         String chapterName = chapter_name;
-        System.err.println("chapterName: " + chapterName);
-        return userService.uploadChapterImgs(userId, mangaId, chapterName, files);
+
+        return userService.uploadChapterImgs(userId, strTransGrId, mangaId, chapterName, files);
     }
 
 
@@ -335,7 +342,8 @@ public class UserController {
         Long userId = Long.parseLong(StrUserId);
 
         Long transGroupId = Long.parseLong(transGroupPOJO.getTransgroup_id());
-        System.err.println("acascacacacs" + transGroupId);
+        System.err.println("transgr_id to delete" + transGroupId);
+
         return userService.deletetransGroup(userId, transGroupId);
     }
 
