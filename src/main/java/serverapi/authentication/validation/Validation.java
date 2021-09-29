@@ -17,7 +17,7 @@ public class Validation implements Validator {
 
 
     private String getRegexStr(String objKey) {
-        ReadJSONFileAndGetValue readJSONFileAndGetValue = new ReadJSONFileAndGetValue("src/main/java/serverapi/Security/RegexString.json", objKey);
+        ReadJSONFileAndGetValue readJSONFileAndGetValue = new ReadJSONFileAndGetValue("src/main/java/serverapi/Security/regexString.json", objKey);
         readJSONFileAndGetValue.read();
 
         return readJSONFileAndGetValue.getValue();
