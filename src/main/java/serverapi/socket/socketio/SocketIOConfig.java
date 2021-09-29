@@ -15,6 +15,7 @@ public class SocketIOConfig {
     private int upgradeTimeout = 1000000;
     private int pingTimeout = 6000000;
     private int pingInterval = 250000;
+    private int maxFramePayloadLength = 1000000;
 
 
     @Bean
@@ -32,9 +33,9 @@ public class SocketIOConfig {
         config.setUpgradeTimeout(upgradeTimeout);
         config.setPingTimeout(pingTimeout);
         config.setPingInterval(pingInterval);
-        config.setMaxFramePayloadLength(1999999);
+        config.setMaxFramePayloadLength(maxFramePayloadLength);
 
-        System.out.println("Socket server initialized!");
+        System.out.println("Socket server initialized at port: " + port);
         return new SocketIOServer(config);
     }
 
