@@ -35,6 +35,8 @@ import static java.util.stream.Collectors.toCollection;
 
 @Service
 public class MangaService {
+    private Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+
     private final MangaRepos mangaRepository;
     private final ChapterRepos chapterRepository;
     private final UpdateViewRepos updateViewRepos;
@@ -184,7 +186,6 @@ public class MangaService {
         listViewsMangas.forEach(item -> {
             Long mangaId = item.getManga_id();
             Long totalViews = item.getViews();
-            Calendar created_at = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
             Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
 
@@ -200,7 +201,7 @@ public class MangaService {
 
             UpdateView view = new UpdateView();
             view.setTotalviews(totalViews);
-            view.setCreated_at(created_at);
+            view.setCreated_at(currentTime);
             view.setManga(manga);
 
             updateViewRepos.save(view);

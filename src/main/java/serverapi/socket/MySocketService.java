@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import serverapi.query.repository.user.UserRepos;
 import serverapi.socket.message.EventsName;
 import serverapi.socket.message.SocketMessage;
+import serverapi.tables.user_tables.notification.NotificationService;
 import serverapi.tables.user_tables.user.User;
 
 import java.util.Collection;
@@ -27,11 +28,13 @@ public class MySocketService {
     private SocketIOClient senderClient;
     private Collection<SocketIOClient> allClients;
 
-
     private UserRepos userRepos;
 
+    private NotificationService notificationService;
+
     @Autowired
-    public MySocketService(UserRepos userRepos, SocketIOServer socketIOServer) {
+    public MySocketService(UserRepos userRepos, NotificationService notificationService) {
+        this.notificationService = notificationService;
         this.userRepos = userRepos;
     }
 
@@ -50,8 +53,7 @@ public class MySocketService {
 
 
     public void pushMessageToUsersExceptSender() {
-        List listToUser = socketMessage.getList_to();
-        Object message = socketMessage.getMessage();
+        List listToUser = socketMessage.getListTo();
 
         listToUser.forEach(userVal -> {
             String type = userVal.getClass().getName();
@@ -60,12 +62,14 @@ public class MySocketService {
                 String userEmail = String.valueOf(userVal);
                 Optional<User> userOptional = userRepos.findByEmail(userEmail);
 
-                sendToUsersExceptSender(userOptional, message);
+                notificationService.saveNew(userEmail, socketMessage, userOptional);
+
+                sendToUsersExceptSender(userOptional);
             } else if (type.equals("java.lang.Integer")) {
                 Long userId = Long.parseLong(String.valueOf(userVal));
                 Optional<User> userOptional = userRepos.findById(userId);
 
-                sendToUsersExceptSender(userOptional, message);
+                sendToUsersExceptSender(userOptional);
             }
         });
     }
@@ -79,7 +83,7 @@ public class MySocketService {
 
 
     ////////////////////////////////////////////////////////
-    private void sendToUsersExceptSender(Optional<User> userOptional, Object message) {
+    private void sendToUsersExceptSender(Optional<User> userOptional) {
         if (userOptional.isEmpty()) {
             senderClient.sendEvent(EVENTs_NAME.getSEND_FAILED(), "failed");
 
@@ -89,7 +93,7 @@ public class MySocketService {
             for (SocketIOClient client : allClients) {
                 if (!client.getSessionId().equals(senderClient.getSessionId())) {
                     if (client.getSessionId().equals(sessionId)) {
-                        client.sendEvent(EVENTs_NAME.getFROM_SERVER_TO_SPECIFIC_USERS(), message);
+                        client.sendEvent(EVENTs_NAME.getFROM_SERVER_TO_SPECIFIC_USERS(), socketMessage.getMessage());
                     }
                 }
             }

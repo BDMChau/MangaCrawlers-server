@@ -66,27 +66,29 @@ public class SocketIOService implements ISocketIOService {
 
 
         socketIOServer.addEventListener(EVENTs_NAME.getSPECIFIC_USERS(), Map.class, (client, data, ackSender) -> {
-            String message = String.valueOf(data.get("message"));
-            Long userId = Long.parseLong(String.valueOf(data.get("userId")));
-            List list_to = (List) data.get("listTo"); // can be String user_email or Integer user_id
-            Map obj = (Map) data.get("obj");
+            try {
+                Integer type = (Integer) data.get("type");
+                String message = String.valueOf(data.get("message"));
+                Long userId = Long.parseLong(String.valueOf(data.get("user_id")));
+                List listTo = (List) data.get("list_to"); // can be String user_email or Integer user_id
+                Map objData = (Map) data.get("obj_data");
 
+                if (objData.get("image").equals("")) {
+                    objData.replace("image", getImageDefault("notify_img_default"));
+                }
 
-            Object image = getImageDefault("notify_img_default");
-            if(!data.get("image").equals("")){
-                byte[] fileBytes = Base64.getEncoder().encode(String.valueOf(data.get("image")).getBytes());
-                System.err.println(fileBytes);
-                image = fileBytes;
+                SocketIOClient senderClient = client;
+                Collection<SocketIOClient> clients = socketIOServer.getAllClients();
+
+                socketMessage.setType(type);
+                socketMessage.setUserId(userId);
+                socketMessage.setListTo(listTo);
+                socketMessage.setMessage(message);
+                socketMessage.setObjData(objData);
+                pushMessageToUsersExceptSender(socketMessage, clients, senderClient);
+            } catch (Exception ex) {
+                System.err.println("socket err: " + ex);
             }
-            System.err.println("imageeeeeeeeeee: " + image);
-
-
-            SocketIOClient senderClient = client;
-            Collection<SocketIOClient> clients = socketIOServer.getAllClients();
-
-            socketMessage.setList_to(list_to);
-            socketMessage.setMessage(message);
-            pushMessageToUsersExceptSender(socketMessage, clients, senderClient);
         });
 
 
@@ -101,11 +103,9 @@ public class SocketIOService implements ISocketIOService {
         });
 
 
-
-
         socketIOServer.addDisconnectListener(client -> {
             client.disconnect();
-            socketMessage.getList_to().forEach(toUser -> {
+            socketMessage.getListTo().forEach(toUser -> {
                 clientMap.remove(toUser);
             });
         });
@@ -113,7 +113,6 @@ public class SocketIOService implements ISocketIOService {
 
         socketIOServer.start();
     }
-
 
 
     ////////////////////////////////// prepare before call method in MySocketService class /////////////////////////////////////
@@ -133,7 +132,6 @@ public class SocketIOService implements ISocketIOService {
 
         mySocketService.pushMessageToAllUsersExceptSender();
     }
-
 
 
     ///////////////// stuffs //////////////////
@@ -167,7 +165,6 @@ public class SocketIOService implements ISocketIOService {
     }
 
 }
-
 
 
 //        new Thread(() -> {

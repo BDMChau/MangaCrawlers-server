@@ -1,6 +1,7 @@
 package serverapi.tables.user_tables.notification.notifications;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
@@ -35,18 +36,26 @@ public class Notifications {
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="user_id")
-    private User user;
+    private User to_user;
+
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name ="from_user_id")
+    private User from_user;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="notification_type_id")
     private NotificationTypes notification_type;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(nullable = false)
-    private Boolean is_hidden;
+    @Column(columnDefinition = "varchar(200)")
+    private String image_url;
+
+    @Column(columnDefinition = "boolean default false",nullable = false)
+    private Boolean is_viewed;
 
     @Column(
             nullable = false,

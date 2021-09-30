@@ -39,6 +39,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
+    private Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+
     private final MangaRepos mangaRepository;
     private final FollowingRepos followingRepos;
     private final UserRepos userRepos;
@@ -108,7 +110,6 @@ public class UserService {
     public ResponseEntity updateReadingHistory(Long userId, Long mangaId, Long chapterId) {
 
         List<UserReadingHistoryDTO> readingHistoryDTO = readingHistoryRepos.GetHistoriesByUserId(userId);
-        Calendar updatetime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
 
         readingHistoryDTO.forEach(item -> {
@@ -129,7 +130,7 @@ public class UserService {
                 Manga manga = mangaOptional.get();
 
                 readingHistory.setChapter(chapter);
-                readingHistory.setReading_history_time(updatetime);
+                readingHistory.setReading_history_time(currentTime);
 
                 readingHistoryRepos.save(readingHistory);
 
@@ -159,7 +160,7 @@ public class UserService {
         readingHistory.setUser(user);
         readingHistory.setManga(manga);
         readingHistory.setChapter(chapter);
-        readingHistory.setReading_history_time(updatetime);
+        readingHistory.setReading_history_time(currentTime);
 
         readingHistoryRepos.save(readingHistory);
 
@@ -289,7 +290,6 @@ public class UserService {
 //        /**
 //         * Check variable
 //         */
-//        Calendar timeUpdated = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 //        Optional<Chapter> chapterOptional = chapterRepos.findById(chapterID);
 //        Optional<Manga> mangaOptional = mangaRepository.findById(mangaID);
 //        Optional<User> userOptional = userRepos.findById(userID);
@@ -731,7 +731,7 @@ public class UserService {
 
         Chapter chapter = new Chapter();
         chapter.setChapter_name(chapterName);
-        chapter.setCreated_at(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+        chapter.setCreated_at(currentTime);
         chapter.setManga(manga);
         chapterRepos.saveAndFlush(chapter);
 
@@ -761,7 +761,6 @@ public class UserService {
 
             ImageChapter imageChapter = new ImageChapter();
             imageChapter.setImgchapter_url(securedUrl);
-//            imageChapter.setcreated_at(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
             imageChapter.setImgchapter_public_id_cloudinary(publicId);
             imageChapter.setChapter(chapter);
             imgChapterRepos.saveAndFlush(imageChapter);
@@ -793,9 +792,10 @@ public class UserService {
         }
 
         TransGroup transGroup = new TransGroup();
+        transGroup.setIs_deprecated(false);
         transGroup.setTransgroup_name(groupName);
         transGroup.setTransgroup_email(user.getUser_email());
-        transGroup.setCreated_at(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+        transGroup.setCreated_at(currentTime);
         if (groupDesc.isEmpty()) {
             transGroup.setTransgroup_desc("");
         } else {
@@ -959,7 +959,6 @@ public class UserService {
         }
         TransGroup transGroup = transGroupOptional.get();
 
-
         Optional<User> userOptional = userRepos.findById(userId);
         if (userOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "User not found!");
@@ -970,9 +969,8 @@ public class UserService {
 
         Boolean isleader = isLeader(user, transGroup);
         if (!isleader) {
-            Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
-            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
-                    HttpStatus.FORBIDDEN);
+            Map<String, Object> err = Map.of("err", "You are not allowed in this action!");
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(), HttpStatus.FORBIDDEN);
         }
 
         /// delete
@@ -990,9 +988,10 @@ public class UserService {
             mangaRepository.save(manga);
         });
 
+        transGroup.setIs_deprecated(true);
         transGroupRepos.save(transGroup);
 
-        Map<String, Object> msg = Map.of("msg", "Delete transgroup successfully!");
+        Map<String, Object> msg = Map.of("msg", "Delete trans team successfully!");
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
@@ -1048,7 +1047,7 @@ public class UserService {
         manga.setDescription(fieldsCreateMangaDTO.getDescription());
         manga.setAuthor(author);
         manga.setTransgroup(transGroup);
-        manga.setCreated_at(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+        manga.setCreated_at(currentTime);
         mangaRepository.saveAndFlush(manga);
         System.err.println("03");
 

@@ -35,7 +35,7 @@ public class NotificationTypes {
     @OneToMany(mappedBy = "notification_type", cascade = CascadeType.ALL)
     private Collection<Notifications> notifications;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String notification_name;
+    @Column(nullable = false)
+    private Integer type;
 
 }

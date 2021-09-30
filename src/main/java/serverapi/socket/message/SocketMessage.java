@@ -6,12 +6,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class SocketMessage {
-    private List list_to;
+    private Integer type;
+    private Long userId;
+    private List listTo;
+    private Map objData;
     private String message;
 }

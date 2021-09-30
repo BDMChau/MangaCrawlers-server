@@ -83,9 +83,12 @@ public class User {
     private Collection<CommentTags> commentTags;
 
     @JsonBackReference
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Collection<Notifications> notifications;
+    @OneToMany(mappedBy = "to_user", cascade = CascadeType.ALL)
+    private Collection<Notifications> to_notifications;
 
+    @JsonBackReference
+    @OneToMany(mappedBy = "from_user", cascade = CascadeType.ALL)
+    private Collection<Notifications> from_notifications;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
