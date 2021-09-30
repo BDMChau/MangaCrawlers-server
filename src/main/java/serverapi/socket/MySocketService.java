@@ -12,10 +12,7 @@ import serverapi.socket.message.SocketMessage;
 import serverapi.tables.user_tables.notification.NotificationService;
 import serverapi.tables.user_tables.user.User;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 
 @Setter
@@ -62,9 +59,10 @@ public class MySocketService {
                 String userEmail = String.valueOf(userVal);
                 Optional<User> userOptional = userRepos.findByEmail(userEmail);
 
-                notificationService.saveNew(userEmail, socketMessage, userOptional);
-
-                sendToUsersExceptSender(userOptional);
+                Map dataTosend = notificationService.saveNew(userEmail, socketMessage, userOptional);
+                if (!dataTosend.isEmpty()) {
+                    sendToUsersExceptSender(userOptional);
+                }
             } else if (type.equals("java.lang.Integer")) {
                 Long userId = Long.parseLong(String.valueOf(userVal));
                 Optional<User> userOptional = userRepos.findById(userId);

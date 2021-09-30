@@ -774,6 +774,13 @@ public class UserService {
     }
 
 
+
+    public ResponseEntity acceptToJoin(){
+        return null;
+    }
+
+
+
     public ResponseEntity signUpTransGroup(Long userId, String groupName, String groupDesc) {
         Optional<User> userOptional = userRepos.findById(userId);
         if (userOptional.isEmpty()) {
