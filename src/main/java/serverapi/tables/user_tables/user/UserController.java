@@ -270,9 +270,11 @@ public class UserController {
 
     @PostMapping("/accept_to_join")
     public ResponseEntity acceptToJoin(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) throws NoSuchAlgorithmException {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+        Long transGroupId = Long.parseLong(transGroupPOJO.getTransgroup_id());
 
-
-        return userService.acceptToJoin();
+        return userService.acceptToJoin(userId, transGroupId);
     }
 
 

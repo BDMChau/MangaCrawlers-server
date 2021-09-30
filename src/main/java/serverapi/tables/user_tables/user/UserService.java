@@ -767,16 +767,24 @@ public class UserService {
         }
 
 
-        Map<String, Object> msg = Map.of(
-                "msg", "Get all mangas successfully!"
-        );
+        Map<String, Object> msg = Map.of("msg", "Get all mangas successfully!");
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
 
+    public ResponseEntity acceptToJoin(Long userId, Long transGroupId){
+        User user = userRepos.findById(userId).get();
+        TransGroup transGroup = transGroupRepos.findById(transGroupId).get();
 
-    public ResponseEntity acceptToJoin(){
-        return null;
+        user.setTransgroup(transGroup);
+
+        userRepos.saveAndFlush(user);
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Joine this group OK!",
+                "transgroup_id", transGroup.getTransgroup_id()
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
 
@@ -785,8 +793,7 @@ public class UserService {
         Optional<User> userOptional = userRepos.findById(userId);
         if (userOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "User is not exist!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
         User user = userOptional.get();
 
