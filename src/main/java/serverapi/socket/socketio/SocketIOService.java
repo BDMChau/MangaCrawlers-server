@@ -69,11 +69,12 @@ public class SocketIOService implements ISocketIOService {
             try {
                 Integer type = (Integer) data.get("type");
                 String message = String.valueOf(data.get("message"));
+                String imageUrl = String.valueOf(data.get("image"));
                 Long userId = Long.parseLong(String.valueOf(data.get("user_id")));
                 List listTo = (List) data.get("list_to"); // can be String user_email or Integer user_id
                 Map objData = (Map) data.get("obj_data");
 
-                if (objData.get("image").equals("")) {
+                if (imageUrl.equals("")) {
                     objData.replace("image", getImageDefault("notify_img_default"));
                 }
 
@@ -84,6 +85,7 @@ public class SocketIOService implements ISocketIOService {
                 socketMessage.setUserId(userId);
                 socketMessage.setListTo(listTo);
                 socketMessage.setMessage(message);
+                socketMessage.setImage_url(imageUrl);
                 socketMessage.setObjData(objData);
                 pushMessageToUsersExceptSender(socketMessage, clients, senderClient);
             } catch (Exception ex) {

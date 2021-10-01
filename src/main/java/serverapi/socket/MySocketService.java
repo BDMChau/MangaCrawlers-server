@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import serverapi.query.dtos.tables.NotificationDTO;
 import serverapi.query.repository.user.UserRepos;
 import serverapi.socket.message.EventsName;
 import serverapi.socket.message.SocketMessage;
@@ -55,9 +56,9 @@ public class MySocketService {
         listToUser.forEach(userVal -> {
             String type = userVal.getClass().getName();
 
-            Map infoSenderAndReceiver = notificationService.saveNew(String type, Object userVal, socketMessage);
-            if (!infoSenderAndReceiver.isEmpty()) {
-                sendToUsersExceptSender(infoSenderAndReceiver);
+            NotificationDTO dataToSend = notificationService.saveNew(type, userVal, socketMessage);
+            if (dataToSend != null) {
+                sendToUsersExceptSender(dataToSend);
             }
 
         });
@@ -72,21 +73,19 @@ public class MySocketService {
 
 
     ////////////////////////////////////////////////////////
-    private void sendToUsersExceptSender(Map infoSenderAndReceiver) {
-        Map<String, String> objTarget = socketMessage.getObjData();
-        Map sender = (Map) infoSenderAndReceiver.get("sender");
-        Map receive = (Map) infoSenderAndReceiver.get("receive");
+    private void sendToUsersExceptSender(NotificationDTO dataToSend) {
+        String receiverName = dataToSend.getReceiver_name();
 
-        if (receive.isEmpty()) {
+        if (receiverName.isEmpty()) {
             senderClient.sendEvent(EVENTs_NAME.getSEND_FAILED(), "failed");
 
         } else {
-            UUID receiver_sessionId = (UUID) receive.get("socket_session_id");
+            UUID receiver_sessionId = dataToSend.getReceiver_socket_id();
 
             for (SocketIOClient client : allClients) {
                 if (!client.getSessionId().equals(senderClient.getSessionId())) {
                     if (client.getSessionId().equals(receiver_sessionId)) {
-                        client.sendEvent(EVENTs_NAME.getFROM_SERVER_TO_SPECIFIC_USERS(), socketMessage.getMessage());
+                        client.sendEvent(EVENTs_NAME.getFROM_SERVER_TO_SPECIFIC_USERS(), dataToSend);
                     }
                 }
             }

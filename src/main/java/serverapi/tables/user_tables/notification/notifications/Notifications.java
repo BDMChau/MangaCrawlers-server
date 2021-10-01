@@ -35,17 +35,17 @@ public class Notifications {
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="user_id")
+    @JoinColumn(name = "user_id")
     private User to_user;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="from_user_id")
+    @JoinColumn(name = "from_user_id")
     private User from_user;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="notification_type_id")
+    @JoinColumn(name = "notification_type_id")
     private NotificationTypes notification_type;
 
     @Column(columnDefinition = "TEXT")
@@ -54,8 +54,17 @@ public class Notifications {
     @Column(columnDefinition = "varchar(200)")
     private String image_url;
 
-    @Column(columnDefinition = "boolean default false",nullable = false)
+    @Column
+    private Long target_id;
+
+    @Column(columnDefinition = "varchar(40)")
+    private String target_title;
+
+    @Column(columnDefinition = "boolean default false", nullable = false)
     private Boolean is_viewed;
+
+    @Column(columnDefinition = "boolean default false")
+    private Boolean is_interacted;
 
     @Column(
             nullable = false,
@@ -63,7 +72,6 @@ public class Notifications {
             columnDefinition = "timestamp with time zone"
     )
     private Calendar created_at;
-
 
 
 }

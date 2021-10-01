@@ -18,4 +18,5 @@ public class SocketMessage {
     private List listTo;
     private Map objData;
     private String message;
+    private String image_url;
 }

@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.api.Response;
 import serverapi.helpers.OffsetBasedPageRequest;
+import serverapi.query.dtos.tables.NotificationDTO;
+import serverapi.query.dtos.tables.UserDTO;
 import serverapi.query.repository.user.NotificationRepos;
 import serverapi.query.repository.user.NotificationTypesRepos;
 import serverapi.query.repository.user.UserRepos;
@@ -19,6 +21,7 @@ import serverapi.tables.user_tables.notification.notifications.Notifications;
 import serverapi.tables.user_tables.user.User;
 
 import javax.transaction.Transactional;
+import java.lang.reflect.Field;
 import java.util.*;
 
 @Service
@@ -53,10 +56,8 @@ public class NotificationService {
 
     @Transactional
     public ResponseEntity getListNotifications(Long userId, Integer fromPos) {
-        System.err.println(fromPos);
         Pageable pageable = new OffsetBasedPageRequest(fromPos, 5);
-        List<Notifications> notificationsList = notificationRepos.getListByUserId(userId, pageable);
-
+        List<NotificationDTO> notificationsList = notificationRepos.getListByUserId(userId, pageable);
 
         Map<String, Object> msg = Map.of(
                 "msg", "get list notifications OK",
@@ -69,24 +70,24 @@ public class NotificationService {
     /////////////////////// for socket ///////////////////////
 
     /**
-     * @param receiveID:     can be String userEmail or Long userId
+     * @param receiverID:    can be String userEmail or Long userId
      * @param socketMessage: data to save to database
      */
-    public Map saveNew(String receiveIDType, Object receiveID, SocketMessage socketMessage) {
+    public NotificationDTO saveNew(String receiverIDType, Object receiverID, SocketMessage socketMessage) {
         Optional<User> userOptional = Optional.empty();
-        if (receiveIDType.equals("java.lang.String")) {
-            String userEmail = String.valueOf(receiveID);
+        if (receiverIDType.equals("java.lang.String")) {
+            String userEmail = String.valueOf(receiverID);
             userOptional = userRepos.findByEmail(userEmail);
 
-        } else if (receiveIDType.equals("java.lang.Integer")) {
-            Long userId = Long.parseLong(String.valueOf(receiveID));
+        } else if (receiverIDType.equals("java.lang.Integer")) {
+            Long userId = Long.parseLong(String.valueOf(receiverID));
             userOptional = userRepos.findById(userId);
         }
 
         if (userOptional.isEmpty()) {
-            return Collections.emptyMap();
+            return null;
         }
-        User user = userOptional.get();
+        User receiver = userOptional.get();
         User sender = userRepos.findById(socketMessage.getUserId()).get();
 
         NotificationTypes notificationTypes = new NotificationTypes();
@@ -96,19 +97,44 @@ public class NotificationService {
 
         notifications.setNotification_type(notificationTypes);
         notifications.setContent(socketMessage.getMessage());
-        notifications.setImage_url(String.valueOf(socketMessage.getObjData().get("image")));
+        notifications.setImage_url(socketMessage.getImage_url());
         notifications.setFrom_user(sender);
-        notifications.setTo_user(user);
+        notifications.setTo_user(receiver);
         notifications.setIs_viewed(false);
         notifications.setCreated_at(currentTime);
+
+        if (socketMessage.getObjData().get("target_id").equals("") || !socketMessage.getObjData().get("target_title").equals("")) {
+            Long targetId = Long.parseLong(String.valueOf(socketMessage.getObjData().get("target_id")));
+            String targetTitle = String.valueOf(socketMessage.getObjData().get("target_title"));
+
+            notifications.setTarget_id(targetId);
+            notifications.setTarget_title(targetTitle);
+        }
 
         notificationTypesRepos.saveAndFlush(notificationTypes);
         notificationRepos.saveAndFlush(notifications);
 
-        return Map.of(
-                "receive", user,
-                "sender", sender
-        );
+
+        NotificationDTO dataToSend = new NotificationDTO();
+        dataToSend.setNotification_id(notifications.getNotification_id());
+        dataToSend.setImage_url(notifications.getImage_url());
+        dataToSend.setCreated_at(notifications.getCreated_at());
+        dataToSend.setTarget_id(notifications.getTarget_id());
+        dataToSend.setTarget_title(notifications.getTarget_title());
+        dataToSend.setIs_viewed(notifications.getIs_viewed());
+        dataToSend.setIs_interacted(notifications.getIs_interacted());
+
+        dataToSend.setNotification_type_id(notificationTypes.getNotification_type_id());
+        dataToSend.setNotification_type(notificationTypes.getType());
+
+        dataToSend.setSender_id(sender.getUser_id());
+        dataToSend.setSender_name(sender.getUser_name());
+
+        dataToSend.setReceiver_id(receiver.getUser_id());
+        dataToSend.setReceiver_name(receiver.getUser_name());
+        dataToSend.setReceiver_socket_id(receiver.getSocket_session_id());
+
+        return dataToSend;
     }
 
 }
