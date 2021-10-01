@@ -36,6 +36,6 @@ public class NotificationTypes {
     private Collection<Notifications> notifications;
 
     @Column(columnDefinition = "TEXT", nullable = false)
-    private String notification_name;
+    private String type_name;
 
 }

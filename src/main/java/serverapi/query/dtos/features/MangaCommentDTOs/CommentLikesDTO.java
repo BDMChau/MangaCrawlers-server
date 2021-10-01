@@ -13,8 +13,11 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CommentLikesDTO {
 
-    public String user_id;
-    public String user_name;
-    public String user_avatar;
+    private Long manga_comment_id;
+    private Long manga_comment_like_id;
+
+    private Long user_id;
+    private String user_name;
+    private String user_avatar;
 
 }

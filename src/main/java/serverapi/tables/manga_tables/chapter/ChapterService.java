@@ -9,7 +9,7 @@ import serverapi.query.dtos.tables.ChapterDTO;
 import serverapi.query.dtos.tables.ChapterImgDTO;
 import serverapi.query.repository.manga.ChapterRepos;
 import serverapi.query.repository.manga.ImgChapterRepos;
-import serverapi.query.repository.user.MangaCommentsRepos;
+import serverapi.query.repository.manga.comment.MangaCommentsRepos;
 
 import java.util.List;
 import java.util.Map;

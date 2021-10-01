@@ -1,4 +1,4 @@
-package serverapi.query.repository.manga;
+package serverapi.query.repository.manga.comment;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
