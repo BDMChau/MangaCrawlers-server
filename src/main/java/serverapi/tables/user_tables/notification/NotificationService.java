@@ -29,19 +29,18 @@ public class NotificationService {
     private final NotificationTypesRepos notificationTypesRepos;
 
     @Autowired
-    public NotificationService(UserRepos userRepos, NotificationRepos notificationRepos, NotificationTypesRepos notificationTypesRepos){
+    public NotificationService(UserRepos userRepos, NotificationRepos notificationRepos, NotificationTypesRepos notificationTypesRepos) {
         this.userRepos = userRepos;
         this.notificationRepos = notificationRepos;
         this.notificationTypesRepos = notificationTypesRepos;
     }
 
 
-
     @Transactional
-    public ResponseEntity updateToViewed(Long userId){
+    public ResponseEntity updateToViewed(Long userId) {
         List<Notifications> notificationsList = notificationRepos.getAllByUserId(userId);
 
-        notificationsList.forEach(notification ->{
+        notificationsList.forEach(notification -> {
             notification.setIs_viewed(true);
             notificationRepos.saveAndFlush(notification);
         });
@@ -53,7 +52,7 @@ public class NotificationService {
 
 
     @Transactional
-    public ResponseEntity getListNotifications(Long userId, Integer fromPos){
+    public ResponseEntity getListNotifications(Long userId, Integer fromPos) {
         System.err.println(fromPos);
         Pageable pageable = new OffsetBasedPageRequest(fromPos, 5);
         List<Notifications> notificationsList = notificationRepos.getListByUserId(userId, pageable);
@@ -67,17 +66,24 @@ public class NotificationService {
     }
 
 
-
-
     /////////////////////// for socket ///////////////////////
 
     /**
-     *
-     * @param uID: can be String userEmail or Long userId
+     * @param receiveID:     can be String userEmail or Long userId
      * @param socketMessage: data to save to database
      */
-    public Map saveNew(Object uID, SocketMessage socketMessage, Optional<User> userOptional){
-        if(userOptional.isEmpty()){
+    public Map saveNew(String receiveIDType, Object receiveID, SocketMessage socketMessage) {
+        Optional<User> userOptional = Optional.empty();
+        if (receiveIDType.equals("java.lang.String")) {
+            String userEmail = String.valueOf(receiveID);
+            userOptional = userRepos.findByEmail(userEmail);
+
+        } else if (receiveIDType.equals("java.lang.Integer")) {
+            Long userId = Long.parseLong(String.valueOf(receiveID));
+            userOptional = userRepos.findById(userId);
+        }
+
+        if (userOptional.isEmpty()) {
             return Collections.emptyMap();
         }
         User user = userOptional.get();
@@ -99,7 +105,10 @@ public class NotificationService {
         notificationTypesRepos.saveAndFlush(notificationTypes);
         notificationRepos.saveAndFlush(notifications);
 
-        return Map.<String, Object>of("err", "Group is existed!");
+        return Map.of(
+                "receive", user,
+                "sender", sender
+        );
     }
 
 }

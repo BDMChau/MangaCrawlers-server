@@ -55,20 +55,11 @@ public class MySocketService {
         listToUser.forEach(userVal -> {
             String type = userVal.getClass().getName();
 
-            if (type.equals("java.lang.String")) {
-                String userEmail = String.valueOf(userVal);
-                Optional<User> userOptional = userRepos.findByEmail(userEmail);
-
-                Map dataTosend = notificationService.saveNew(userEmail, socketMessage, userOptional);
-                if (!dataTosend.isEmpty()) {
-                    sendToUsersExceptSender(userOptional);
-                }
-            } else if (type.equals("java.lang.Integer")) {
-                Long userId = Long.parseLong(String.valueOf(userVal));
-                Optional<User> userOptional = userRepos.findById(userId);
-
-                sendToUsersExceptSender(userOptional);
+            Map infoSenderAndReceiver = notificationService.saveNew(String type, Object userVal, socketMessage);
+            if (!infoSenderAndReceiver.isEmpty()) {
+                sendToUsersExceptSender(infoSenderAndReceiver);
             }
+
         });
     }
 
@@ -81,16 +72,20 @@ public class MySocketService {
 
 
     ////////////////////////////////////////////////////////
-    private void sendToUsersExceptSender(Optional<User> userOptional) {
-        if (userOptional.isEmpty()) {
+    private void sendToUsersExceptSender(Map infoSenderAndReceiver) {
+        Map<String, String> objTarget = socketMessage.getObjData();
+        Map sender = (Map) infoSenderAndReceiver.get("sender");
+        Map receive = (Map) infoSenderAndReceiver.get("receive");
+
+        if (receive.isEmpty()) {
             senderClient.sendEvent(EVENTs_NAME.getSEND_FAILED(), "failed");
 
         } else {
-            UUID sessionId = userOptional.get().getSocket_session_id();
+            UUID receiver_sessionId = (UUID) receive.get("socket_session_id");
 
             for (SocketIOClient client : allClients) {
                 if (!client.getSessionId().equals(senderClient.getSessionId())) {
-                    if (client.getSessionId().equals(sessionId)) {
+                    if (client.getSessionId().equals(receiver_sessionId)) {
                         client.sendEvent(EVENTs_NAME.getFROM_SERVER_TO_SPECIFIC_USERS(), socketMessage.getMessage());
                     }
                 }
