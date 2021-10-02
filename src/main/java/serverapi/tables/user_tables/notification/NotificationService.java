@@ -55,6 +55,18 @@ public class NotificationService {
 
 
     @Transactional
+    public ResponseEntity updateToInteracted(Long notificationId) {
+        Notifications notification = notificationRepos.findById(notificationId).get();
+
+        notification.setIs_interacted(true);
+        notificationRepos.saveAndFlush(notification);
+
+        Map<String, Object> msg = Map.of("msg", "updated interacted notification");
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
+    @Transactional
     public ResponseEntity getListNotifications(Long userId, Integer fromPos) {
         Pageable pageable = new OffsetBasedPageRequest(fromPos, 5);
         List<NotificationDTO> notificationsList = notificationRepos.getListByUserId(userId, pageable);

@@ -54,4 +54,10 @@ public class NotificationController {
         return notificationService.updateToViewed(userId);
     }
 
+    @PostMapping("/update_interacted")
+    public ResponseEntity updateToInteracted(@RequestBody Map data) {
+        Long notificationId = Long.parseLong(String.valueOf(data.get("notification_id")));
+
+        return notificationService.updateToInteracted(notificationId);
+    }
 }
