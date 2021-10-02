@@ -36,7 +36,7 @@ public class NotificationController {
 
 
     /////////////////////////////////////////////
-    @GetMapping("/get_list_notification")
+    @PostMapping("/get_list_notification")
     public ResponseEntity getListNotifications(ServletRequest request, @RequestBody Map data) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);

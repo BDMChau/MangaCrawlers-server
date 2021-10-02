@@ -15,6 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class NotificationDTO {
     Long notification_id;
+    String notification_content;
     String image_url;
     Calendar created_at;
     Long target_id;
@@ -33,8 +34,9 @@ public class NotificationDTO {
     UUID receiver_socket_id;
 
 
-    public NotificationDTO(Long notification_id, String image_url, Calendar created_at, Long target_id, String target_title, Boolean is_viewed, Boolean is_interacted, Long notification_type_id, Integer notification_type, Long sender_id, String sender_name, Long receiver_id, String receiver_name) {
+    public NotificationDTO(Long notification_id, String notification_content, String image_url, Calendar created_at, Long target_id, String target_title, Boolean is_viewed, Boolean is_interacted, Long notification_type_id, Integer notification_type, Long sender_id, String sender_name, Long receiver_id, String receiver_name) {
         this.notification_id = notification_id;
+        this.notification_content = notification_content;
         this.image_url = image_url;
         this.created_at = created_at;
         this.target_id = target_id;

@@ -61,7 +61,8 @@ public class NotificationService {
 
         Map<String, Object> msg = Map.of(
                 "msg", "get list notifications OK",
-                "notifications_list", notificationsList
+                "notifications_list", notificationsList,
+                "fromRow", fromPos + 5
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
@@ -117,6 +118,7 @@ public class NotificationService {
 
         NotificationDTO dataToSend = new NotificationDTO();
         dataToSend.setNotification_id(notifications.getNotification_id());
+        dataToSend.setNotification_content(notifications.getContent());
         dataToSend.setImage_url(notifications.getImage_url());
         dataToSend.setCreated_at(notifications.getCreated_at());
         dataToSend.setTarget_id(notifications.getTarget_id());
