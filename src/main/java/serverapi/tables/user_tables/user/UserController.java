@@ -268,13 +268,13 @@ public class UserController {
         return userService.uploadChapterImgs(userId, strTransGrId, mangaId, chapterName, files);
     }
 
-    @PostMapping("/accept_to_join")
-    public ResponseEntity acceptToJoin(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) throws NoSuchAlgorithmException {
+    @PostMapping("/accept_to_join_team")
+    public ResponseEntity acceptToJoinTeam(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) throws NoSuchAlgorithmException {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
         Long transGroupId = Long.parseLong(transGroupPOJO.getTransgroup_id());
 
-        return userService.acceptToJoin(userId, transGroupId);
+        return userService.acceptToJoinTeam(userId, transGroupId);
     }
 
 

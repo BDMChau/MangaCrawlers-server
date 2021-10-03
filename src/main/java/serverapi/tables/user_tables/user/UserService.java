@@ -772,16 +772,24 @@ public class UserService {
     }
 
 
-    public ResponseEntity acceptToJoin(Long userId, Long transGroupId){
+    @Transactional
+    public ResponseEntity acceptToJoinTeam(Long userId, Long transGroupId){
         User user = userRepos.findById(userId).get();
         TransGroup transGroup = transGroupRepos.findById(transGroupId).get();
 
-        user.setTransgroup(transGroup);
+        TransGroup isJoinedBefore = user.getTransgroup();
+        Hibernate.initialize(isJoinedBefore);
+        if(isJoinedBefore != null){
+            System.err.println("Existed a team: " + isJoinedBefore.getTransgroup_id());
+            Map<String, Object> err = Map.of("err", "You were in a team!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+        }
 
+        user.setTransgroup(transGroup);
         userRepos.saveAndFlush(user);
 
         Map<String, Object> msg = Map.of(
-                "msg", "Joine this group OK!",
+                "msg", "Joine this team OK!",
                 "transgroup_id", transGroup.getTransgroup_id()
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
