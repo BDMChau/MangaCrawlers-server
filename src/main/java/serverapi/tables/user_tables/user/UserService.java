@@ -31,6 +31,7 @@ import serverapi.tables.user_tables.trans_group.TransGroup;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.lang.reflect.Member;
 import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -967,6 +968,51 @@ public class UserService {
         Map<String, Object> msg = Map.of(
                 "msg", "Delete manga successfully!",
                 "manga_id", mangaId
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
+    @Transactional
+    public  ResponseEntity removeMember(Long userId, Long memberId){
+        User user = userRepos.findById(userId).get();
+        TransGroup transGroup = user.getTransgroup();
+        Hibernate.initialize(transGroup);
+
+        if(!user.getUser_email().equals(transGroup.getTransgroup_email())){
+            Map<String, Object> err = Map.of(
+                    "err", "You are not allow to do this action!",
+                    "err_code", 1
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+        }
+
+        User member = userRepos.findById(memberId).get();
+        TransGroup memberTransGr = member.getTransgroup();
+        Hibernate.initialize(memberTransGr);
+
+        if(!transGroup.getTransgroup_id().equals(memberTransGr.getTransgroup_id())){
+            Map<String, Object> err = Map.of("err", "Cannot remove member!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+
+        if(member.getUser_email().equals(transGroup.getTransgroup_email())){
+            Map<String, Object> err = Map.of(
+                    "err", "You cannot remove a leader!",
+                    "err_code", 2
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+        }
+
+        member.setTransgroup(null);
+        userRepos.saveAndFlush(member);
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Removed member!",
+                "member_id", memberId,
+                "member_name", member.getUser_name(),
+                "transGroup_id", transGroup.getTransgroup_id()
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }

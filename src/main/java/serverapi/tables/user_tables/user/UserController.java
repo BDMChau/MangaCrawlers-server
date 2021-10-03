@@ -314,23 +314,8 @@ public class UserController {
     }
 
 
-    @Cacheable(value = "mangaInfoUploadPage", key = "{#request.getAttribute(\"user\").get(\"user_id\"), #transGroupPOJO.getManga_id()}")
-    @PostMapping("/getmangainfo")
-    public ResponseEntity getMangaInfoUploadPage(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) {
-        if (getUserAttribute(request).get("user_transgroup_id") == null) {
-            Map<String, String> error = Map.of("err", "Login again before visit this page, thank you!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(),
-                    HttpStatus.ACCEPTED);
-        }
-        Long transGroupId = Long.parseLong(getUserAttribute(request).get("user_transgroup_id").toString());
-
-        Long mangaId = Long.parseLong(transGroupPOJO.getManga_id().toString());
-
-        return userService.getMangaInfoUploadPage(transGroupId, mangaId);
-    }
-
-
-    @CacheEvict(allEntries = true, value = {"transGroupInfo"})
+//    @CacheEvict(allEntries = true, value = {"transGroupInfo"})
+    @CacheEvict(value = {"transGroupInfo"}, key = "{#request.getAttribute(\"user\").get(\"user_id\"), #request.getAttribute(\"user\").get(\"user_transgroup_id\")}")
     @DeleteMapping("/deletemanga")
     public ResponseEntity deleteManga(@RequestBody TransGroupPOJO transGroupPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -343,7 +328,7 @@ public class UserController {
         return userService.deleteManga(userID, mangaId, transGroupId);
     }
 
-
+    @CacheEvict(value = {"transGroupInfo"}, key = "{#request.getAttribute(\"user\").get(\"user_id\"), #request.getAttribute(\"user\").get(\"user_transgroup_id\")}")
     @DeleteMapping("/deletetransgroup")
     public ResponseEntity deleteTransGroup(@RequestBody TransGroupPOJO transGroupPOJO, ServletRequest request) {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
@@ -354,6 +339,19 @@ public class UserController {
 
         return userService.deletetransGroup(userId, transGroupId);
     }
+
+
+    @CacheEvict(value = {"transGroupInfo"}, key = "{#request.getAttribute(\"user\").get(\"user_id\"), #request.getAttribute(\"user\").get(\"user_transgroup_id\")}")
+    @DeleteMapping("/remove_member")
+    public ResponseEntity removeMember(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+        Long memberId = Long.parseLong(transGroupPOJO.getMember_id());
+
+        return userService.removeMember(userId, memberId);
+    }
+
 
 //    @GetMapping("/checkroletransgroup")
 //    public ResponseEntity checkRoleTransGroup(ServletRequest request) {
@@ -374,6 +372,22 @@ public class UserController {
 //
 //        return userService.checkRoleTransGroup (userId, transGroupId);
 //    }
+
+
+    @Cacheable(value = "mangaInfoUploadPage", key = "{#request.getAttribute(\"user\").get(\"user_id\"), #transGroupPOJO.getManga_id()}")
+    @PostMapping("/getmangainfo")
+    public ResponseEntity getMangaInfoUploadPage(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) {
+        if (getUserAttribute(request).get("user_transgroup_id") == null) {
+            Map<String, String> error = Map.of("err", "Login again before visit this page, thank you!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(),
+                    HttpStatus.ACCEPTED);
+        }
+        Long transGroupId = Long.parseLong(getUserAttribute(request).get("user_transgroup_id").toString());
+
+        Long mangaId = Long.parseLong(transGroupPOJO.getManga_id().toString());
+
+        return userService.getMangaInfoUploadPage(transGroupId, mangaId);
+    }
 
 
     @PostMapping("/addnewprojectmangafields")
