@@ -38,7 +38,6 @@ public class Mailer {
                 "us know via mangacrawlers123@gmail.com" + "<br/> Thank You!";
 
         mail.setText(htmlMsg, true);
-        
         javaMailSender.send(mimeMessage);
     }
 
