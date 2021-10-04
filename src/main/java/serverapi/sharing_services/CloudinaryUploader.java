@@ -23,7 +23,6 @@ public class CloudinaryUploader {
 
     public static synchronized CloudinaryUploader getInstance(){
         if(cloudinaryUploader == null){
-            System.err.println("null ne???????");
             cloudinaryUploader = new CloudinaryUploader();
         }
 
