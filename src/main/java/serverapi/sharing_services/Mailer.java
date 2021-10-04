@@ -26,6 +26,7 @@ public class Mailer {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mail = new MimeMessageHelper(mimeMessage, "utf-8");
 
+        
         mail.setTo(userEmail);
         mail.setFrom(System.getenv("EMAIL_USERNAME"));
         mail.setSubject("Reset password");
