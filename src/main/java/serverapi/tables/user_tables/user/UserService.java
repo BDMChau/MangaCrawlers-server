@@ -61,6 +61,7 @@ public class UserService {
     @Autowired
     CacheService cacheService;
 
+    CloudinaryUploader cloudinaryUploader = CloudinaryUploader.getInstance();
 
     @Autowired
     public UserService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos,
@@ -625,7 +626,6 @@ public class UserService {
         }
         User user = userOptional.get();
 
-        CloudinaryUploader cloudinaryUploader = new CloudinaryUploader();
 
         // delete previous avatar on cloudinary
         String publicIdAvatar = user.getAvatar_public_id_cloudinary();
@@ -665,7 +665,7 @@ public class UserService {
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(),
                     HttpStatus.ACCEPTED);
         } else {
-            Map responseFromCloudinary = new CloudinaryUploader().deleteImg(publicIdAvatar);
+            Map responseFromCloudinary = cloudinaryUploader.deleteImg(publicIdAvatar);
         }
 
 
@@ -739,7 +739,7 @@ public class UserService {
 
         String folderName = manga.getManga_name() + "/" + manga.getManga_name() + "_" + chapterName;
         for (MultipartFile file : files) {
-            Map responseFromCloudinary = new CloudinaryUploader().uploadImg(file.getBytes(),
+            Map responseFromCloudinary = cloudinaryUploader.uploadImg(file.getBytes(),
                     file.getOriginalFilename(), "/transgroup_upload/" + folderName, true);
             if (responseFromCloudinary.get("name") == "Error") {
                 Map<String, Object> err = Map.of(
@@ -1152,7 +1152,6 @@ public class UserService {
         Manga manga = mangaOptional.get();
 
 
-        CloudinaryUploader cloudinaryUploader = new CloudinaryUploader();
         Map cloudinaryResponse = cloudinaryUploader.uploadImg(
                 file.getBytes(),
                 manga.getManga_name(),
