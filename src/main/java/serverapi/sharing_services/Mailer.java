@@ -14,6 +14,7 @@ import javax.mail.internet.MimeMessage;
 @Service
 @EnableAsync
 public class Mailer {
+
     
     @Autowired
     private JavaMailSender javaMailSender;
