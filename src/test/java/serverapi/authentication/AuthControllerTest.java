@@ -88,6 +88,7 @@ public class AuthControllerTest {
                 "user_email", "bdmchau105@gmail.com",
                 "user_password", "MinhTriet1234"
         );
+        
         String inputJson = new HelpersTest().mapToJson(dataObj);
 
 
