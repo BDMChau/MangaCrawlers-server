@@ -13,6 +13,7 @@ import java.util.List;
 @Repository
 public interface CommentTagsRepos extends JpaRepository<CommentTags, Long> {
 
+    // Using DTO
     @Query("SELECT new serverapi.query.dtos.features.MangaCommentDTOs.CommentTagsDTO(" +
             "ct.manga_comment_tag_id," +
             "cm.manga_comment_id, " +
@@ -24,4 +25,7 @@ public interface CommentTagsRepos extends JpaRepository<CommentTags, Long> {
             "WHERE cm.manga_comment_id =?1 ")
             List<CommentTagsDTO> getListTags(Long manga_comment_id);
 
+    // Using table
+    @Query("SELECT ct FROM CommentTags ct WHERE ct.manga_comment.manga_comment_id =?1")
+            List<CommentTags> getListCommentTags(Long manga_comment_id);
 }

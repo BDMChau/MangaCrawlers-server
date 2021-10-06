@@ -161,7 +161,11 @@ public class UserController {
 
         String strUserID = getUserAttribute(request).get("user_id").toString();
         String content = commentPOJO.getManga_comment_content();
+
         MultipartFile imageUrl = commentPOJO.getImage_url();
+
+        List<String> to_usersString = commentPOJO.getTo_user_id();
+        List<Long> to_users = new ArrayList<>();
 
         /**
          * Format variables necessary include: mangaID, UserID, chapterID, parentID, toUserID
@@ -170,12 +174,10 @@ public class UserController {
         mangaID = Long.parseLong(commentPOJO.getManga_id());
 
         //toUserID
-        List<String> to_usersString = commentPOJO.getTo_user_id();
-        List<Long> to_users = new ArrayList<>();
-        System.err.println("line 176");
         if (!to_usersString.isEmpty()) {
+
             to_usersString.forEach(item ->{
-                System.err.println("line 179");
+
                 Long to_user = Long.parseLong(item);
                 to_users.add(to_user);
             });
@@ -183,45 +185,64 @@ public class UserController {
 
         //ChapterID
         if (!commentPOJO.getChapter_id().equals("")) {
+
             chapterID = Long.parseLong(commentPOJO.getChapter_id());
         }
 
         //parentID
         if(!commentPOJO.getParent_id().equals("")){
+
             parentID = Long.parseLong(commentPOJO.getParent_id());
         }
         return userService.addCommentManga(to_users, userID, mangaID, chapterID, content, imageUrl, parentID);
     }
-//
-//
-//    @PostMapping("/updatecomment")
-//    public ResponseEntity updateComment(@Valid CommentPOJO commentPOJO, ServletRequest request) throws IOException {
-//
-//        /**
-//         * Declare variables
-//         */
-//        String content = commentPOJO.getManga_comment_content();
-//        String strUserID = getUserAttribute(request).get("user_id").toString();
-//        MultipartFile imageUrl = commentPOJO.getImage_url();
-//
-//        Long toUserID = 0L;
-//
-//        /**
-//         * Format variable necessary
-//         */
-//        System.err.println("line 205");
-//        Long userID = Long.parseLong(strUserID);
-//        System.err.println("line 207");
-//        Long formatCommentID = Long.parseLong(commentPOJO.getManga_comment_id());
-//
-//
-//        if(!commentPOJO.getTo_user_id().equals("")){
-//            toUserID = Long.parseLong(commentPOJO.getTo_user_id());
-//        }
-//
-//        System.err.println("line 215");
-//        return userService.updateComment(userID, toUserID, formatCommentID, content, imageUrl);
-//    }
+
+
+    @PostMapping("/updatecomment")
+    public ResponseEntity updateComment(@Valid CommentPOJO commentPOJO, ServletRequest request) throws IOException {
+
+        /**
+         * Initialize variable
+         */
+        Long userID = 0L;
+        Long commentID = 0L;
+
+
+        String content = commentPOJO.getManga_comment_content();
+        String strUserID = getUserAttribute(request).get("user_id").toString();
+
+        MultipartFile imageUrl = commentPOJO.getImage_url();
+
+        List<String> to_usersString = commentPOJO.getTo_user_id();
+        List<Long> toUsers = new ArrayList<>();
+
+        /**
+         * Assign variable
+         */
+        if(!strUserID.isEmpty()){
+
+            userID = Long.parseLong(strUserID);
+        }
+
+        if(!commentPOJO.getManga_comment_id().equals("")){
+
+            commentID = Long.parseLong(commentPOJO.getManga_comment_id());
+        }
+
+        //toUserID
+        if (!to_usersString.isEmpty()) {
+
+            to_usersString.forEach(item ->{
+
+                Long to_user = Long.parseLong(item);
+                toUsers.add(to_user);
+            });
+        }
+
+
+        System.err.println("line 215");
+        return userService.updateComment(userID, toUsers, commentID, content, imageUrl);
+    }
 //
 //    @PostMapping("/deletecomment")
 //    public ResponseEntity deleteComment(@RequestBody CommentPOJO commentPOJO, ServletRequest request) {

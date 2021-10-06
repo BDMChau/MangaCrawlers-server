@@ -6,9 +6,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import serverapi.query.dtos.features.MangaCommentDTOs.CommentTreesDTO;
 import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
+import serverapi.tables.manga_tables.manga.Manga;
 import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
@@ -53,5 +55,6 @@ public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
             "AND cr.level =?2 " +
             "ORDER BY cm.manga_comment_time DESC ")
     List<CommentTreesDTO> getCommentsChild(Long manga_comment_id, String level, Pageable pageable);
+
 
 }

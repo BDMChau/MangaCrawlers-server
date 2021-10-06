@@ -732,6 +732,7 @@ public class MangaService {
             });
         });
         comments = cmtsLv0;
+
         Map<String, Object> msg = Map.of(
                 "msg", "Get manga's comments successfully!",
                 "manga_info", mangaOptional,
