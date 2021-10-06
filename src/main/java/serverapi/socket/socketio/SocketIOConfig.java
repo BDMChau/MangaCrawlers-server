@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SocketIOConfig {
-    private String host = "localhost";
+    private String host = System.getenv("HOST_PRODUCTION02");
     private Integer port = 4445;
     private int bossCount = 1;
     private int workCount = 100;
