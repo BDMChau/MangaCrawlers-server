@@ -17,7 +17,6 @@ public class ServerApiApplication {
             {
 //                System.out.println(ex);
             } else{
-                
                 ex.printStackTrace();
             }
 
