@@ -15,10 +15,10 @@ public class ServerApiApplication {
         } catch (Exception ex) {
             if(ex.getClass().getName().contains("SilentExitException"))
             {
-//                System.out.println(ex);
-            } else{
 
                 
+//                System.out.println(ex);
+            } else{
                 ex.printStackTrace();
             }
 
