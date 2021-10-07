@@ -616,7 +616,6 @@ public class MangaService {
         Long finalLastGenId = finalFirstGenreId;
 
 
-        System.out.println("listgensize" + listGenreId.size());
         for (int i = 1; i < listGenreId.size(); i++) {
 
             Long GenreIdAtI = 0L;
@@ -675,7 +674,7 @@ public class MangaService {
      */
     public ResponseEntity getCommentsManga(Long mangaId, int from, int amount) {
 
-        final String level0 = "0";
+        // Initialize variable
         final String level1 = "1";
         final String level2 = "2";
 
@@ -692,13 +691,14 @@ public class MangaService {
         }
 
         // get manga comments in each level
-        List<MangaCommentDTOs> cmtsLv0 = mangaCommentsRepos.getCommentsLevel0(mangaId, pageable);
+        List<MangaCommentDTOs> cmtsLv0 = mangaCommentsRepos.getMangaCommentsLevel0(mangaId, pageable);
         if (cmtsLv0.isEmpty()) {
+
             Map<String, Object> msg = Map.of("msg", "No comments found!");
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
         }
 
-
+        // Get comment
         //set tags for each comment
         List<MangaCommentDTOs> comments;
         cmtsLv0.forEach(lv0 ->{
@@ -743,15 +743,68 @@ public class MangaService {
 
     }
 
+    public ResponseEntity getChildComments(Long commentID, int from, int amount) {
+
+        // Initialize variable
+        final String level1 = "1";
+        final String level2 = "2";
+
+        final Pageable pageable = new OffsetBasedPageRequest(from, amount);
+
+        // Check commentID
+        Optional<MangaCommentDTOs> mangaCommentOptional = mangaCommentsRepos.findByCommentID(commentID);
+        if (mangaCommentOptional.isEmpty()) {
+
+            Map<String, Object> err = Map.of("err", "Comment not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        MangaCommentDTOs mangaComment = mangaCommentOptional.get();
+
+        // Get comment
+        //set tags for comment
+        mangaComment = setListTags(mangaComment);
+
+            //get child comments
+            List<CommentTreesDTO> cmtsLv1 = mangaCommentsRepos.getCommentsChild(mangaComment.getManga_comment_id(), level1,pageable);
+            List<CommentTreesDTO> cmtsLv2 = mangaCommentsRepos.getCommentsChild(mangaComment.getManga_comment_id(), level2, pageable);
+
+            MangaCommentDTOs finalMangaComment = mangaComment;
+            cmtsLv1.forEach(lv01 ->{
+
+                CommentTreesDTO finalLv01 = lv01;
+                cmtsLv2.forEach(lv02 ->{
+
+                    lv02 = setListTags(lv02);
+
+                    if(finalMangaComment.getManga_comment_id() == lv02.getParent_id()){
+
+                        finalLv01.getComments_level_02().add(lv02);
+                    }
+                });
+
+                lv01 = setListTags(lv01);
+
+                if(finalMangaComment.getManga_comment_id() == lv01.getParent_id()){
+
+                    finalMangaComment.getComments_level_01().add(lv01);
+                }
+            });
 
 
+        Map<String, Object> msg = Map.of(
+                "msg", "Get child's comments successfully!",
+                "don't use these param","manga_comment_relation_id, parent_id, child_id, level, manga_comment_tag_id",
+                "comments", mangaComment
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
-
+    }
 
 
     ///////////// sub functions /////////////////
 
-    private MangaCommentDTOs setListTags(MangaCommentDTOs mangaCommentDTOs){
+    public MangaCommentDTOs setListTags(MangaCommentDTOs mangaCommentDTOs){
 
         List<CommentTagsDTO> tags = commentTagsRepos.getListTags(mangaCommentDTOs.getManga_comment_id());
 
@@ -761,7 +814,7 @@ public class MangaService {
 
         return mangaCommentDTOs;
     }
-    private CommentTreesDTO setListTags(CommentTreesDTO commentTreesDTO){
+    public CommentTreesDTO setListTags(CommentTreesDTO commentTreesDTO){
 
         List<CommentTagsDTO> tags = commentTagsRepos.getListTags(commentTreesDTO.getManga_comment_id());
 
@@ -772,31 +825,4 @@ public class MangaService {
         return commentTreesDTO;
     }
 
-    /**
-    /* Fill data into DTO
-     * @param  level01 this is ghi tiếp đi
-     * @param  level02 this is ghi tiếp đi
-     */
-//    private void getCommentTreeDTO(CommentTreesDTO commentTreesDTO, MangaCommentDTOs level01, MangaCommentDTOs level02) {
-//
-//        commentTreesDTO.setUser_id(level02.getUser_id());
-//        commentTreesDTO.setUser_name(level02.getUser_name());
-//        commentTreesDTO.setUser_avatar(level02.getUser_avatar());
-//
-//        commentTreesDTO.setManga_id(level02.getManga_id());
-//
-//        commentTreesDTO.setChapter_id(level02.getChapter_id());
-//        commentTreesDTO.setChapter_name(level02.getChapter_name());
-//        commentTreesDTO.setCreated_at(level02.getCreated_at());
-//
-//        commentTreesDTO.setManga_comment_id(level02.getManga_comment_id());
-//        commentTreesDTO.setManga_comment_time(level02.getManga_comment_time());
-//        commentTreesDTO.setManga_comment_content(level02.getManga_comment_content());
-//
-//        commentTreesDTO.setParent_id(level02.getParent_id());
-//
-//        commentTreesDTO.setManga_comment_image_id(level02.getManga_comment_image_id());
-//        commentTreesDTO.setImage_url(level02.getImage_url());
-//
-//    }
 }

@@ -243,22 +243,22 @@ public class UserController {
         System.err.println("line 215");
         return userService.updateComment(userID, toUsers, commentID, content, imageUrl);
     }
-//
-//    @PostMapping("/deletecomment")
-//    public ResponseEntity deleteComment(@RequestBody CommentPOJO commentPOJO, ServletRequest request) {
-//
-//        /**
-//         * Declare variables
-//         */
-//        String strUserID = getUserAttribute(request).get("user_id").toString();
-//        /**
-//         * Format variable necessary
-//         */
-//        Long userID = Long.parseLong(strUserID);
-//        Long formatCommentID = Long.parseLong(commentPOJO.getManga_comment_id());
-//
-//        return userService.deleteComment(userID, formatCommentID);
-//    }
+
+    @PostMapping("/deletecomment")
+    public ResponseEntity deleteComment(@RequestBody CommentPOJO commentPOJO, ServletRequest request) {
+
+        /**
+         * Declare variables
+         */
+        String strUserID = getUserAttribute(request).get("user_id").toString();
+        /**
+         * Format variable necessary
+         */
+        Long userID = Long.parseLong(strUserID);
+        Long formatCommentID = Long.parseLong(commentPOJO.getManga_comment_id());
+
+        return userService.deleteComment(userID, formatCommentID);
+    }
 
     @PostMapping("/searchusers")
     public ResponseEntity searchUsers(@RequestBody Map data) {
