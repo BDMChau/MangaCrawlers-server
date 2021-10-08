@@ -6,6 +6,7 @@ target/
 
 ####
 local.env
+product.env
 manga_spring_execute_commands_on_ec2.sh
 deploy.sh
 
