@@ -49,24 +49,19 @@ public class ChapterController {
         return chapterService.findImgByChapter(chapterId, mangaId);
     }
 
+    @PostMapping("/getcommentschapter")
+    public ResponseEntity getCommentsChapter(@RequestBody CommentPOJO commentPOJO) {
 
-//    @Transactional
-//    @PostMapping("/getcommentschapter")
-//    public ResponseEntity getCommentsChapter(@RequestBody CommentPOJO commentPOJO) {
-//
-//        Long chapterId = Long.parseLong(commentPOJO.getChapter_id ());
-//        System.out.println ("chapterId"+chapterId);
-//
-//
-//        int from = commentPOJO.getFrom ();
-//        System.out.println ("from_"+from);
-//
-//        int amount = commentPOJO.getAmount();
-//        System.out.println("amount_" + amount);
-//
-//
-//        return chapterService.getCommentsChapter(chapterId, amount, from);
-//    }
+        Long chapter_id = Long.parseLong(commentPOJO.getChapter_id());
+
+        int from = commentPOJO.getFrom();
+        System.out.println("from_" + from);
+
+        int amount = commentPOJO.getAmount();
+        System.out.println("amount_" + amount);
+
+        return chapterService.getCommentsChapter(chapter_id, from, amount);
+    }
 
 
 }

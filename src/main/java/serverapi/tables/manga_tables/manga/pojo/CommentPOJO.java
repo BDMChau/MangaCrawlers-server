@@ -5,12 +5,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @NoArgsConstructor
 @Getter
 @Setter
 public class CommentPOJO {
 
-    private String to_user_id;
+    private List<String> to_user_id = new ArrayList<>();
     private String manga_id;
     private String chapter_id;
     private String manga_comment_id;

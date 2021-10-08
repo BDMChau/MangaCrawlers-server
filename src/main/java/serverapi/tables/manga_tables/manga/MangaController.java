@@ -118,19 +118,33 @@ public class MangaController {
     }
 
 
-//    @PostMapping("/getcommentsmanga")
-//    public ResponseEntity getCommentsManga(@RequestBody CommentPOJO commentPOJO) {
-//
-//        Long mangaId = Long.parseLong(commentPOJO.getManga_id());
-//
-//        int from = commentPOJO.getFrom();
-//        System.out.println("from_" + from);
-//
-//        int amount = commentPOJO.getAmount();
-//        System.out.println("amount_" + amount);
-//
-//        return mangaService.getCommentsManga(mangaId, from, amount);
-//    }
+    @PostMapping("/getcommentsmanga")
+    public ResponseEntity getCommentsManga(@RequestBody CommentPOJO commentPOJO) {
+
+        Long mangaId = Long.parseLong(commentPOJO.getManga_id());
+
+        int from = commentPOJO.getFrom();
+        System.out.println("from_" + from);
+
+        int amount = commentPOJO.getAmount();
+        System.out.println("amount_" + amount);
+
+        return mangaService.getCommentsManga(mangaId, from, amount);
+    }
+
+    @PostMapping("/getchildcomments")
+    public ResponseEntity getChildComments(@RequestBody CommentPOJO commentPOJO) {
+
+        Long commentID = Long.parseLong(commentPOJO.getManga_comment_id());
+
+        int from = commentPOJO.getFrom();
+        System.out.println("from_" + from);
+
+        int amount = commentPOJO.getAmount();
+        System.out.println("amount_" + amount);
+
+        return mangaService.getChildComments(commentID, from, amount);
+    }
 
 
 }

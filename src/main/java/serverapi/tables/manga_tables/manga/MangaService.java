@@ -11,6 +11,7 @@ import serverapi.api.Response;
 import serverapi.helpers.AdvancedSearchGenreId;
 import serverapi.helpers.OffsetBasedPageRequest;
 import serverapi.query.dtos.features.*;
+import serverapi.query.dtos.features.MangaCommentDTOs.CommentTagsDTO;
 import serverapi.query.dtos.features.MangaCommentDTOs.CommentTreesDTO;
 import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
 import serverapi.query.dtos.tables.*;
@@ -18,7 +19,9 @@ import serverapi.query.repository.manga.ChapterRepos;
 import serverapi.query.repository.manga.GenreRepos;
 import serverapi.query.repository.manga.MangaRepos;
 import serverapi.query.repository.manga.UpdateViewRepos;
-import serverapi.query.repository.user.MangaCommentsRepos;
+import serverapi.query.repository.manga.comment.CommentLikesRepos;
+import serverapi.query.repository.manga.comment.CommentTagsRepos;
+import serverapi.query.repository.manga.comment.MangaCommentsRepos;
 import serverapi.query.specification.Specificationn;
 import serverapi.tables.manga_tables.chapter.Chapter;
 import serverapi.tables.manga_tables.genre.Genre;
@@ -42,15 +45,20 @@ public class MangaService {
     private final UpdateViewRepos updateViewRepos;
     private final GenreRepos genreRepository;
     private final MangaCommentsRepos mangaCommentsRepos;
+    private final CommentTagsRepos commentTagsRepos;
+    private final CommentLikesRepos commentLikesRepos;
 
     @Autowired
     public MangaService(MangaRepos mangaRepository, ChapterRepos chapterRepository, UpdateViewRepos updateViewRepos,
-                        GenreRepos genreRepository, MangaCommentsRepos mangaCommentsRepos) {
+                        GenreRepos genreRepository, MangaCommentsRepos mangaCommentsRepos,
+                        CommentTagsRepos commentTagsRepos, CommentLikesRepos commentLikesRepos) {
         this.mangaRepository = mangaRepository;
         this.chapterRepository = chapterRepository;
         this.updateViewRepos = updateViewRepos;
         this.genreRepository = genreRepository;
         this.mangaCommentsRepos = mangaCommentsRepos;
+        this.commentTagsRepos = commentTagsRepos;
+        this.commentLikesRepos = commentLikesRepos;
     }
 
     /**
@@ -609,7 +617,6 @@ public class MangaService {
         Long finalLastGenId = finalFirstGenreId;
 
 
-        System.out.println("listgensize" + listGenreId.size());
         for (int i = 1; i < listGenreId.size(); i++) {
 
             Long GenreIdAtI = 0L;
@@ -666,151 +673,157 @@ public class MangaService {
      * @param amount
      * @return manga's comments
      */
-//    public ResponseEntity getCommentsManga(Long mangaId, int from, int amount) {
-//
-//        final String level0 = "0";
-//        final String level1 = "1";
-//        final String level2 = "2";
-//
-//        final Pageable pageable = new OffsetBasedPageRequest(from, amount);
-//
-//        // Check this manga is null or not
-//        Optional<AuthorMangaDTO> mangaOptional = mangaRepository.getMangaInfoByMangaID(mangaId);
-//        if (mangaOptional.isEmpty()) {
-//
-//            Map<String, Object> err = Map.of("err", "Manga not found!");
-//            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-//                    HttpStatus.BAD_REQUEST);
-//        }
-//
-//        // get manga comments in each level
-//        List<MangaCommentDTOs> cmtsLv0 = mangaCommentsRepos.getCommentsManga(mangaId, level0, pageable);
-//        if (cmtsLv0.isEmpty()) {
-//            Map<String, Object> msg = Map.of("msg", "No comments found!");
-//            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-//        }
-//
-//        AtomicBoolean isLv1 = new AtomicBoolean(false);
-//        List<MangaCommentDTOs> cmtsLv1 = mangaCommentsRepos.getCommentsMangaLevels(mangaId, level1);
-//        if (!cmtsLv1.isEmpty()) {
-//            isLv1.set(true);
-//        }
-//
-//        AtomicBoolean isLv2 = new AtomicBoolean(false);
-//        List<MangaCommentDTOs> cmtsLv2 = mangaCommentsRepos.getCommentsMangaLevels(mangaId, level2);
-//        if (!cmtsLv2.isEmpty()) {
-//            isLv2.set(true);
-//        }
-//        // format cmts to response
-//        List<MangaCommentDTOs> mangaComments = new ArrayList<>();
-//
-//        for (MangaCommentDTOs lv0 : cmtsLv0) {
-//            MangaCommentDTOs cmtLevel0 = new MangaCommentDTOs();
-//
-//            cmtLevel0.setTo_user_id(lv0.getUser_id());
-//            cmtLevel0.setTo_user_name(lv0.getUser_name());
-//            cmtLevel0.setTo_user_avatar(lv0.getUser_avatar());
-//
-//            cmtLevel0.setUser_id(lv0.getUser_id());
-//            cmtLevel0.setUser_name(lv0.getUser_name());
-//            cmtLevel0.setUser_avatar(lv0.getUser_avatar());
-//
-//            cmtLevel0.setManga_id(lv0.getManga_id());
-//
-//            cmtLevel0.setChapter_id(lv0.getChapter_id());
-//            cmtLevel0.setChapter_name(lv0.getChapter_name());
-//            cmtLevel0.setCreated_at(lv0.getCreated_at());
-//
-//            cmtLevel0.setManga_comment_id(lv0.getManga_comment_id());
-//            cmtLevel0.setManga_comment_time(lv0.getManga_comment_time());
-//            cmtLevel0.setManga_comment_content(lv0.getManga_comment_content());
-//
-//            cmtLevel0.setParent_id(lv0.getParent_id());
-//
-//            cmtLevel0.setManga_comment_image_id(lv0.getManga_comment_image_id());
-//            cmtLevel0.setImage_url(lv0.getImage_url());
-//
-//            mangaComments.add(cmtLevel0);
-//
-//            if(isLv1.get()){
-//                cmtsLv1.forEach(lv1 ->{
-//                     if(lv0.getManga_comment_id() == lv1.getParent_id()){
-//
-//                         CommentTreesDTO cmtLevel1 = new CommentTreesDTO();
-//                         getCommentTreeDTO(cmtLevel1, lv0, lv1);
-//
-//                         if(!mangaComments.isEmpty()){
-//
-//                             int index = mangaComments.indexOf(cmtLevel0);
-//                             mangaComments.get(index).getComments_level_01().add(cmtLevel1);
-//
-//                             if(isLv2.get()){
-//                                 cmtsLv2.forEach(lv2 ->{
-//                                     if(lv0.getManga_comment_id() == lv2.getParent_id()){
-//
-//                                         CommentTreesDTO cmtLevel2 = new CommentTreesDTO();
-//                                         getCommentTreeDTO(cmtLevel2, lv1, lv2);
-//
-//                                         int indexAtLv2 = mangaComments.get(index).getComments_level_01().indexOf(cmtLevel1);
-//                                         mangaComments.get(index).getComments_level_01().get(indexAtLv2).getComments_level02().add(cmtLevel2);
-//                                     }
-//                                 });
-//                             }
-//                         }
-//                     }
-//                });
-//            }
-//        }
-//
-//        if (mangaComments.isEmpty()) {
-//            Map<String, Object> msg = Map.of(
-//                    "msg", "No comments found!"
-//            );
-//            return new ResponseEntity<>(new Response(202, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-//        }
-//
-//        Map<String, Object> msg = Map.of(
-//                "msg", "Get manga's comments successfully!",
-//                "manga_info", mangaOptional,
-//                "comments", mangaComments
-//        );
-//        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-//
-//    }
+    public ResponseEntity getCommentsManga(Long mangaId, int from, int amount) {
+
+        // Initialize variable
+        final String level1 = "1";
+        final String level2 = "2";
+
+        final Pageable pageable = new OffsetBasedPageRequest(from, amount);
+        final Pageable childPageable = new OffsetBasedPageRequest(0, 5);
+
+        // Check this manga is null or not
+        Optional<AuthorMangaDTO> mangaOptional = mangaRepository.getMangaInfoByMangaID(mangaId);
+        if (mangaOptional.isEmpty()) {
+
+            Map<String, Object> err = Map.of("err", "Manga not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        // get manga comments in each level
+        List<MangaCommentDTOs> cmtsLv0 = mangaCommentsRepos.getMangaCommentsLevel0(mangaId, pageable);
+        if (cmtsLv0.isEmpty()) {
+
+            Map<String, Object> msg = Map.of("msg", "No comments found!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+        }
+
+        // Get comment
+        //set tags for each comment
+        List<MangaCommentDTOs> comments;
+        cmtsLv0.forEach(lv0 ->{
+
+            lv0 = setListTags(lv0);
+
+            //get child comments
+            List<CommentTreesDTO> cmtsLv1 = mangaCommentsRepos.getCommentsChild(lv0.getManga_comment_id(), level1,childPageable);
+            List<CommentTreesDTO> cmtsLv2 = mangaCommentsRepos.getCommentsChild(lv0.getManga_comment_id(), level2, childPageable);
+
+            MangaCommentDTOs finalLv0 = lv0;
+            cmtsLv1.forEach(lv01 ->{
+
+                CommentTreesDTO finalLv01 = lv01;
+                cmtsLv2.forEach(lv02 ->{
+
+                    lv02 = setListTags(lv02);
+
+                    if(finalLv0.getManga_comment_id() == lv02.getParent_id()){
+
+                        finalLv01.getComments_level_02().add(lv02);
+                    }
+                });
+
+                lv01 = setListTags(lv01);
+
+                if(finalLv0.getManga_comment_id() == lv01.getParent_id()){
+
+                    finalLv0.getComments_level_01().add(lv01);
+                }
+            });
+        });
+        comments = cmtsLv0;
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get manga's comments successfully!",
+                "manga_info", mangaOptional,
+                "don't use these param","manga_comment_relation_id, parent_id, child_id, level, manga_comment_tag_id",
+                "comments", comments
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+
+    }
+
+    public ResponseEntity getChildComments(Long commentID, int from, int amount) {
+
+        // Initialize variable
+        final String level1 = "1";
+        final String level2 = "2";
+
+        final Pageable pageable = new OffsetBasedPageRequest(from, amount);
+
+        // Check commentID
+        Optional<MangaCommentDTOs> mangaCommentOptional = mangaCommentsRepos.findByCommentID(commentID);
+        if (mangaCommentOptional.isEmpty()) {
+
+            Map<String, Object> err = Map.of("err", "Comment not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        MangaCommentDTOs mangaComment = mangaCommentOptional.get();
+
+        // Get comment
+        //set tags for comment
+        mangaComment = setListTags(mangaComment);
+
+            //get child comments
+            List<CommentTreesDTO> cmtsLv1 = mangaCommentsRepos.getCommentsChild(mangaComment.getManga_comment_id(), level1,pageable);
+            List<CommentTreesDTO> cmtsLv2 = mangaCommentsRepos.getCommentsChild(mangaComment.getManga_comment_id(), level2, pageable);
+
+            MangaCommentDTOs finalMangaComment = mangaComment;
+            cmtsLv1.forEach(lv01 ->{
+
+                CommentTreesDTO finalLv01 = lv01;
+                cmtsLv2.forEach(lv02 ->{
+
+                    lv02 = setListTags(lv02);
+
+                    if(finalMangaComment.getManga_comment_id() == lv02.getParent_id()){
+
+                        finalLv01.getComments_level_02().add(lv02);
+                    }
+                });
+
+                lv01 = setListTags(lv01);
+
+                if(finalMangaComment.getManga_comment_id() == lv01.getParent_id()){
+
+                    finalMangaComment.getComments_level_01().add(lv01);
+                }
+            });
 
 
+        Map<String, Object> msg = Map.of(
+                "msg", "Get child's comments successfully!",
+                "don't use these param","manga_comment_relation_id, parent_id, child_id, level, manga_comment_tag_id",
+                "comments", mangaComment
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+
+    }
 
 
+    ///////////// sub functions /////////////////
 
+    public MangaCommentDTOs setListTags(MangaCommentDTOs mangaCommentDTOs){
 
+        List<CommentTagsDTO> tags = commentTagsRepos.getListTags(mangaCommentDTOs.getManga_comment_id());
 
-    /////////////// sub functions /////////////////
+        if(!tags.isEmpty()){
+            mangaCommentDTOs.setTo_users(tags);
+        }
 
-    /**
-    /* Fill data into DTO
-     * @param  level01 this is ghi tiếp đi
-     * @param  level02 this is ghi tiếp đi
-     */
-//    private void getCommentTreeDTO(CommentTreesDTO commentTreesDTO, MangaCommentDTOs level01, MangaCommentDTOs level02) {
-//
-//        commentTreesDTO.setUser_id(level02.getUser_id());
-//        commentTreesDTO.setUser_name(level02.getUser_name());
-//        commentTreesDTO.setUser_avatar(level02.getUser_avatar());
-//
-//        commentTreesDTO.setManga_id(level02.getManga_id());
-//
-//        commentTreesDTO.setChapter_id(level02.getChapter_id());
-//        commentTreesDTO.setChapter_name(level02.getChapter_name());
-//        commentTreesDTO.setCreated_at(level02.getCreated_at());
-//
-//        commentTreesDTO.setManga_comment_id(level02.getManga_comment_id());
-//        commentTreesDTO.setManga_comment_time(level02.getManga_comment_time());
-//        commentTreesDTO.setManga_comment_content(level02.getManga_comment_content());
-//
-//        commentTreesDTO.setParent_id(level02.getParent_id());
-//
-//        commentTreesDTO.setManga_comment_image_id(level02.getManga_comment_image_id());
-//        commentTreesDTO.setImage_url(level02.getImage_url());
-//
-//    }
+        return mangaCommentDTOs;
+    }
+    public CommentTreesDTO setListTags(CommentTreesDTO commentTreesDTO){
+
+        List<CommentTagsDTO> tags = commentTagsRepos.getListTags(commentTreesDTO.getManga_comment_id());
+
+        if(!tags.isEmpty()){
+            commentTreesDTO.setTo_users(tags);
+        }
+
+        return commentTreesDTO;
+    }
+
 }
