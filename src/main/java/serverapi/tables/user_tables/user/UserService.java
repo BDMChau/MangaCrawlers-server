@@ -398,7 +398,6 @@ public class UserService {
         System.err.println(imageUrl != null);
         if (!imageUrl.isEmpty()) {
 
-            CloudinaryUploader cloudinaryUploader = new CloudinaryUploader();
             Map cloudinaryResponse = cloudinaryUploader.uploadImg(
                     imageUrl.getBytes(),
                     manga.getManga_name(),
@@ -624,7 +623,6 @@ public class UserService {
 
         if (!imageUrl.isEmpty()) {
             if (!imageUrl.equals(currentImageUrl)) {
-                CloudinaryUploader cloudinaryUploader = new CloudinaryUploader();
                 Map cloudinaryResponse = cloudinaryUploader.uploadImg(
                         imageUrl.getBytes(),
                         manga.getManga_name(),
