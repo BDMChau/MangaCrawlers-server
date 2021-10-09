@@ -706,11 +706,10 @@ public class UserService {
 
         // Check if user is not the owner
         MangaComments mangaComments = mangaCommentsOptional.get();
-        if(!mangaComments.getUser().equals(user)){
-
-            Map<String, Object> msg = Map.of("msg", "Don't have permission!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
-        }
+//        if(!mangaComments.getUser().equals(user)){
+//            Map<String, Object> msg = Map.of("msg", "Don't have permission!");
+//            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+//        }
 
         // Set deprecate this comment
         mangaComments.setIs_deprecated(true);
@@ -721,46 +720,28 @@ public class UserService {
 
         // Get cmtsToRemove
         List<MangaCommentDTOs> cmtsToRes = comments;
-
         for (int i = 0; i < comments.size(); i++) {
-
             if (isDeleted.equals(false)) {
-
                 Long cmt00Id = comments.get(i).getManga_comment_id();
-            
                 if (cmt00Id.equals(commentID)) {
-
                     cmtsToRes.remove(i);
+                    isDeleted = true;
                     break;
-
                 } else {
                     for (int j = 0; j < comments.get(i).getComments_level_01().size(); j++) {
-
                         if (isDeleted.equals(false)) {
-
                             Long cmt01Id = comments.get(i).getComments_level_01().get(j).getManga_comment_id();
-
-
                             if (cmt01Id.equals(commentID)) {
-
-
                                 cmtsToRes.get(i).getComments_level_01().remove(j);
                                 isDeleted = true;
                                 break;
-
                             } else {
-
                                 List<CommentTreesDTO> cmtsLv02 = comments.get(i).getComments_level_01().get(j).getComments_level_02();
-
                                 for (int k = 0; k < cmtsLv02.size(); k++) {
-
                                     Long cmt02Id = comments.get(i).getComments_level_01().get(j).getComments_level_02().get(k).getManga_comment_id();
-
                                     if (cmt02Id.equals(commentID)) {
-
                                         cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().remove(k);
                                         isDeleted = true;
-
                                         break;
                                     }
                                 }
@@ -928,11 +909,11 @@ public class UserService {
 
     public ResponseEntity searchUsers(String valToSearch, int key) {
         Specificationn.SearchingUsers searchingUsers = null;
-        if(key == 1){
+        if (key == 1) {
             // search by email
             Specificationn specificationn = new Specificationn(new SearchCriteriaDTO("user_email", ":", valToSearch));
             searchingUsers = specificationn.new SearchingUsers();
-        } else if(key == 2){
+        } else if (key == 2) {
             // search by name
             Specificationn specificationn = new Specificationn(new SearchCriteriaDTO("user_name", ":", valToSearch));
             searchingUsers = specificationn.new SearchingUsers();
