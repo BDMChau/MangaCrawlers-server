@@ -30,7 +30,6 @@ import serverapi.tables.manga_tables.chapter.Chapter;
 import serverapi.tables.manga_tables.genre.Genre;
 import serverapi.tables.manga_tables.image_chapter.ImageChapter;
 import serverapi.tables.manga_tables.manga.Manga;
-import serverapi.tables.manga_tables.manga.MangaService;
 import serverapi.tables.manga_tables.manga_comment.manga_comment_images.CommentImages;
 import serverapi.tables.manga_tables.manga_comment.manga_comment_relations.CommentRelations;
 import serverapi.tables.manga_tables.manga_comment.manga_comment_tags.CommentTags;
@@ -43,7 +42,6 @@ import serverapi.tables.user_tables.trans_group.TransGroup;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.lang.reflect.Member;
 import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -704,42 +702,67 @@ public class UserService {
             Map<String, Object> msg = Map.of("msg", "Empty user or comment!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
+        User user = userOptional.get();
 
-
+        // Check if user is not the owner
         MangaComments mangaComments = mangaCommentsOptional.get();
-//        if(!mangaComments.getUser().getUser_id().equals(userID)){
-//            Map<String, Object> msg = Map.of("msg", "Don't have permission!");
-//            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
-//        }
+        if(!mangaComments.getUser().equals(user)){
 
+            Map<String, Object> msg = Map.of("msg", "Don't have permission!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
 
+        // Set deprecate this comment
         mangaComments.setIs_deprecated(true);
         mangaCommentsRepos.saveAndFlush(mangaComments);
 
+        // Set flag
         Boolean isDeleted = false;
+
+        // Get cmtsToRemove
         List<MangaCommentDTOs> cmtsToRes = comments;
-        if (isDeleted.equals(false)) {
-            for (int i = 0; i < comments.size(); i++) {
+
+        for (int i = 0; i < comments.size(); i++) {
+
+            if (isDeleted.equals(false)) {
+
                 Long cmt00Id = comments.get(i).getManga_comment_id();
+            
                 if (cmt00Id.equals(commentID)) {
-                    cmtsToRes.remove(comments.get(i));
-                    isDeleted = true;
+
+                    cmtsToRes.remove(i);
                     break;
+
                 } else {
                     for (int j = 0; j < comments.get(i).getComments_level_01().size(); j++) {
-                        Long cmt01Id = comments.get(i).getComments_level_01().get(j).getManga_comment_id();
-                        if (cmt01Id.equals(commentID)) {
-                            cmtsToRes.remove(comments.get(i).getComments_level_01().get(j));
-                            isDeleted = true;
-                            break;
-                        } else {
-                            List<CommentTreesDTO> cmtsLv02 = comments.get(i).getComments_level_01().get(j).getComments_level_02();
-                            for (int k = 0; k < cmtsLv02.size(); k++) {
-                                Long cmt02Id = comments.get(i).getComments_level_01().get(j).getComments_level_02().get(k).getManga_comment_id();
-                                if (cmt02Id.equals(commentID)) {
-                                    cmtsToRes.remove(comments.get(i).getComments_level_01().get(j).getComments_level_02().get(k));
-                                    isDeleted = true;
-                                    break;
+
+                        if (isDeleted.equals(false)) {
+
+                            Long cmt01Id = comments.get(i).getComments_level_01().get(j).getManga_comment_id();
+
+
+                            if (cmt01Id.equals(commentID)) {
+
+
+                                cmtsToRes.get(i).getComments_level_01().remove(j);
+                                isDeleted = true;
+                                break;
+
+                            } else {
+
+                                List<CommentTreesDTO> cmtsLv02 = comments.get(i).getComments_level_01().get(j).getComments_level_02();
+
+                                for (int k = 0; k < cmtsLv02.size(); k++) {
+
+                                    Long cmt02Id = comments.get(i).getComments_level_01().get(j).getComments_level_02().get(k).getManga_comment_id();
+
+                                    if (cmt02Id.equals(commentID)) {
+
+                                        cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().remove(k);
+                                        isDeleted = true;
+
+                                        break;
+                                    }
                                 }
                             }
                         }
