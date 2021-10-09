@@ -303,7 +303,7 @@ public class UserService {
     /////////////////////////////////////// comment /////////////////////////////////
 
     public ResponseEntity addCommentManga(List<Long> toUsersID, Long userID, Long mangaID, Long chapterID,
-                                          String content, MultipartFile imageUrl,
+                                          String content, MultipartFile image,
                                           Long parentID) throws IOException {
 
         /**
@@ -398,11 +398,11 @@ public class UserService {
          */
 
         String image_url = null;
-        System.err.println(imageUrl != null);
-        if (!imageUrl.isEmpty()) {
+        System.err.println(image != null);
+        if (!image.isEmpty()) {
 
             Map cloudinaryResponse = cloudinaryUploader.uploadImg(
-                    imageUrl.getBytes(),
+                    image.getBytes(),
                     manga.getManga_name(),
                     "user_comment_images",
                     false

@@ -166,7 +166,7 @@ public class UserController {
         String strUserID = getUserAttribute(request).get("user_id").toString();
         String content = commentPOJO.getManga_comment_content();
 
-        MultipartFile imageUrl = commentPOJO.getImage_url();
+        MultipartFile image = commentPOJO.getImage();
 
         List<String> to_usersString = commentPOJO.getTo_user_id();
         List<Long> to_users = new ArrayList<>();
@@ -198,7 +198,7 @@ public class UserController {
 
             parentID = Long.parseLong(commentPOJO.getParent_id());
         }
-        return userService.addCommentManga(to_users, userID, mangaID, chapterID, content, imageUrl, parentID);
+        return userService.addCommentManga(to_users, userID, mangaID, chapterID, content, image, parentID);
     }
 
 
@@ -215,7 +215,7 @@ public class UserController {
         String content = commentPOJO.getManga_comment_content();
         String strUserID = getUserAttribute(request).get("user_id").toString();
 
-        MultipartFile imageUrl = commentPOJO.getImage_url();
+        MultipartFile imageUrl = commentPOJO.getImage();
 
         List<String> to_usersString = commentPOJO.getTo_user_id();
         List<Long> toUsers = new ArrayList<>();
