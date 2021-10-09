@@ -268,8 +268,9 @@ public class UserController {
     @PostMapping("/searchusers")
     public ResponseEntity searchUsers(@RequestBody Map data) {
         String valToSearch = (String) data.get("value");
+        int key = (int) data.get("key"); // search with: 1 is email, 2 is name
 
-        return userService.searchUsers(valToSearch);
+        return userService.searchUsers(valToSearch, key);
     }
 
     ////////////////////////// Translation Group parts /////////////////////////////

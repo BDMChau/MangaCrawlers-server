@@ -903,10 +903,17 @@ public class UserService {
     }
 
 
-    public ResponseEntity searchUsers(String valToSearch) {
-        // search by email
-        Specificationn specificationn = new Specificationn(new SearchCriteriaDTO("user_email", ":", valToSearch));
-        Specificationn.SearchingUsers searchingUsers = specificationn.new SearchingUsers();
+    public ResponseEntity searchUsers(String valToSearch, int key) {
+        Specificationn.SearchingUsers searchingUsers = null;
+        if(key == 1){
+            // search by email
+            Specificationn specificationn = new Specificationn(new SearchCriteriaDTO("user_email", ":", valToSearch));
+            searchingUsers = specificationn.new SearchingUsers();
+        } else if(key == 2){
+            // search by name
+            Specificationn specificationn = new Specificationn(new SearchCriteriaDTO("user_name", ":", valToSearch));
+            searchingUsers = specificationn.new SearchingUsers();
+        }
 
         List<User> searchingResults = userRepos.findAll(searchingUsers);
 
