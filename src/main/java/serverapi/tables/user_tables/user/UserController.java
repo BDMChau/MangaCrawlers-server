@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import serverapi.api.Response;
+import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
 import serverapi.query.dtos.tables.FieldsCreateMangaDTO;
 import serverapi.tables.manga_tables.manga.pojo.CommentPOJO;
 import serverapi.tables.manga_tables.manga.pojo.MangaPOJO;
@@ -259,8 +260,9 @@ public class UserController {
          */
         Long userID = Long.parseLong(strUserID);
         Long formatCommentID = Long.parseLong(commentPOJO.getManga_comment_id());
+        List<MangaCommentDTOs> comments = commentPOJO.getComments();
 
-        return userService.deleteComment(userID, formatCommentID);
+        return userService.deleteComment(userID, formatCommentID, comments);
     }
 
     @PostMapping("/searchusers")

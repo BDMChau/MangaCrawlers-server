@@ -13,6 +13,7 @@ import serverapi.configuration.cache.CacheService;
 import serverapi.helpers.RoundNumber;
 import serverapi.helpers.UserAvatarCollection;
 import serverapi.query.dtos.features.MangaCommentDTOs.CommentTagsDTO;
+import serverapi.query.dtos.features.MangaCommentDTOs.CommentTreesDTO;
 import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
 import serverapi.query.dtos.features.SearchCriteriaDTO;
 import serverapi.query.dtos.tables.FieldsCreateMangaDTO;
@@ -29,6 +30,7 @@ import serverapi.tables.manga_tables.chapter.Chapter;
 import serverapi.tables.manga_tables.genre.Genre;
 import serverapi.tables.manga_tables.image_chapter.ImageChapter;
 import serverapi.tables.manga_tables.manga.Manga;
+import serverapi.tables.manga_tables.manga.MangaService;
 import serverapi.tables.manga_tables.manga_comment.manga_comment_images.CommentImages;
 import serverapi.tables.manga_tables.manga_comment.manga_comment_relations.CommentRelations;
 import serverapi.tables.manga_tables.manga_comment.manga_comment_tags.CommentTags;
@@ -68,6 +70,7 @@ public class UserService {
     private final CommentImageRepos commentImageRepos;
     private final CommentTagsRepos commentTagsRepos;
     private final CommentLikesRepos commentLikesRepos;
+
     @Autowired
     CacheService cacheService;
 
@@ -419,7 +422,7 @@ public class UserService {
          * Add manga_comment_relations
          */
 
-        if(parentID == 0L) {
+        if (parentID == 0L) {
 
             parentID = mangaComments.getManga_comment_id();
         }
@@ -432,21 +435,21 @@ public class UserService {
          */
         String level = "0";
 
-        if(mangaComments.getManga_comment_id().equals(parent.getManga_comment_id())){
+        if (mangaComments.getManga_comment_id().equals(parent.getManga_comment_id())) {
 
             level = "0";
-        }else{
+        } else {
 
-            if(toUser.getUser_id().equals(parent.getUser().getUser_id())){
+            if (toUser.getUser_id().equals(parent.getUser().getUser_id())) {
 
                 level = "1";
-            }else{
+            } else {
 
-                level ="2";
+                level = "2";
             }
         }
 
-        System.err.println("level "+level);
+        System.err.println("level " + level);
         CommentRelations commentRelations = new CommentRelations();
 
         commentRelations.setChild_id(mangaComments);
@@ -467,7 +470,7 @@ public class UserService {
 
         exportComment.setManga_id(manga.getManga_id());
 
-        if(chapter != null){
+        if (chapter != null) {
 
             exportComment.setChapter_id(chapter.getChapter_id());
             exportComment.setChapter_name(chapter.getChapter_name());
@@ -484,10 +487,10 @@ public class UserService {
 
         Map<String, Object> msg = Map.of(
                 "msg", "Add comment successfully!",
-                "comment_information",exportComment
+                "comment_information", exportComment
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
-   }
+    }
 
     public ResponseEntity updateComment(Long userID, List<Long> toUsersID, Long commentID, String commentContent, MultipartFile imageUrl) throws IOException {
 
@@ -589,7 +592,7 @@ public class UserService {
                     }
                 }
                 // Add new tag if currentTags.size < inputTags.size
-                if(length > 0){
+                if (length > 0) {
 
                     // Add new tags
                     int offSet = 0;
@@ -616,8 +619,8 @@ public class UserService {
         // Check imagesUrl and set if it not as same as sub_imagesUrl
         Optional<Manga> mangaOptional = mangaRepository.findById(mangaComments.getManga().getManga_id());
         Manga manga = null;
-        String exportUrl ="";
-        if(!mangaOptional.isEmpty()){
+        String exportUrl = "";
+        if (!mangaOptional.isEmpty()) {
             manga = mangaOptional.get();
         }
 
@@ -689,8 +692,8 @@ public class UserService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
-    public ResponseEntity deleteComment(Long userID, Long commentID) {
-
+    public ResponseEntity deleteComment(Long userID, Long commentID, List<MangaCommentDTOs> comments) {
+        System.err.println(comments);
         /**
          * Declare variable
          */
@@ -698,20 +701,57 @@ public class UserService {
         Optional<MangaComments> mangaCommentsOptional = mangaCommentsRepos.findById(commentID);
 
         if (userOptional.isEmpty() || mangaCommentsOptional.isEmpty()) {
-
             Map<String, Object> msg = Map.of("msg", "Empty user or comment!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
 
+
         MangaComments mangaComments = mangaCommentsOptional.get();
-        /**
-         * Delete comment
-         */
+//        if(!mangaComments.getUser().getUser_id().equals(userID)){
+//            Map<String, Object> msg = Map.of("msg", "Don't have permission!");
+//            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+//        }
+
+
         mangaComments.setIs_deprecated(true);
-        mangaCommentsRepos.delete(mangaComments);
+        mangaCommentsRepos.saveAndFlush(mangaComments);
+
+        Boolean isDeleted = false;
+        List<MangaCommentDTOs> cmtsToRes = comments;
+        if (isDeleted.equals(false)) {
+            for (int i = 0; i < comments.size(); i++) {
+                Long cmt00Id = comments.get(i).getManga_comment_id();
+                if (cmt00Id.equals(commentID)) {
+                    cmtsToRes.remove(comments.get(i));
+                    isDeleted = true;
+                    break;
+                } else {
+                    for (int j = 0; j < comments.get(i).getComments_level_01().size(); j++) {
+                        Long cmt01Id = comments.get(i).getComments_level_01().get(j).getManga_comment_id();
+                        if (cmt01Id.equals(commentID)) {
+                            cmtsToRes.remove(comments.get(i).getComments_level_01().get(j));
+                            isDeleted = true;
+                            break;
+                        } else {
+                            List<CommentTreesDTO> cmtsLv02 = comments.get(i).getComments_level_01().get(j).getComments_level_02();
+                            for (int k = 0; k < cmtsLv02.size(); k++) {
+                                Long cmt02Id = comments.get(i).getComments_level_01().get(j).getComments_level_02().get(k).getManga_comment_id();
+                                if (cmt02Id.equals(commentID)) {
+                                    cmtsToRes.remove(comments.get(i).getComments_level_01().get(j).getComments_level_02().get(k));
+                                    isDeleted = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
 
         Map<String, Object> msg = Map.of(
-                "msg", "Delete comment successfully!"
+                "msg", "Delete comment successfully!",
+                "comments", cmtsToRes
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
@@ -863,7 +903,7 @@ public class UserService {
     }
 
 
-    public ResponseEntity searchUsers(String valToSearch){
+    public ResponseEntity searchUsers(String valToSearch) {
         // search by email
         Specificationn specificationn = new Specificationn(new SearchCriteriaDTO("user_email", ":", valToSearch));
         Specificationn.SearchingUsers searchingUsers = specificationn.new SearchingUsers();
@@ -948,13 +988,13 @@ public class UserService {
 
 
     @Transactional
-    public ResponseEntity acceptToJoinTeam(Long userId, Long transGroupId){
+    public ResponseEntity acceptToJoinTeam(Long userId, Long transGroupId) {
         User user = userRepos.findById(userId).get();
         TransGroup transGroup = transGroupRepos.findById(transGroupId).get();
 
         TransGroup isJoinedBefore = user.getTransgroup();
         Hibernate.initialize(isJoinedBefore);
-        if(isJoinedBefore != null){
+        if (isJoinedBefore != null) {
             System.err.println("Existed a team: " + isJoinedBefore.getTransgroup_id());
             Map<String, Object> err = Map.of("err", "You were in a team!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
@@ -969,7 +1009,6 @@ public class UserService {
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
-
 
 
     public ResponseEntity signUpTransGroup(Long userId, String groupName, String groupDesc) {
@@ -1148,12 +1187,12 @@ public class UserService {
 
 
     @Transactional
-    public  ResponseEntity removeMember(Long userId, Long memberId){
+    public ResponseEntity removeMember(Long userId, Long memberId) {
         User user = userRepos.findById(userId).get();
         TransGroup transGroup = user.getTransgroup();
         Hibernate.initialize(transGroup);
 
-        if(!user.getUser_email().equals(transGroup.getTransgroup_email())){
+        if (!user.getUser_email().equals(transGroup.getTransgroup_email())) {
             Map<String, Object> err = Map.of(
                     "err", "You are not allow to do this action!",
                     "err_code", 1
@@ -1165,12 +1204,12 @@ public class UserService {
         TransGroup memberTransGr = member.getTransgroup();
         Hibernate.initialize(memberTransGr);
 
-        if(!transGroup.getTransgroup_id().equals(memberTransGr.getTransgroup_id())){
+        if (!transGroup.getTransgroup_id().equals(memberTransGr.getTransgroup_id())) {
             Map<String, Object> err = Map.of("err", "Cannot remove member!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
 
-        if(member.getUser_email().equals(transGroup.getTransgroup_email())){
+        if (member.getUser_email().equals(transGroup.getTransgroup_email())) {
             Map<String, Object> err = Map.of(
                     "err", "You cannot remove a leader!",
                     "err_code", 2
