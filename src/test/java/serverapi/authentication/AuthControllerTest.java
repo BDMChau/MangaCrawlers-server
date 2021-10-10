@@ -77,6 +77,7 @@ public class AuthControllerTest {
     public void testSignUp() throws Exception {
         String uri = "/api/auth/signup";
 
+        
         Map<String, String> dataObj = Map.of(
                 "user_name", "Minh Chou",
                 "user_email", "bdmchau105@gmail.com",
