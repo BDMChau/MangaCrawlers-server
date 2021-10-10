@@ -152,7 +152,6 @@ public class UserController {
     }
 
 
-
     @PostMapping("/addcommentmanga")
     public ResponseEntity addCommentManga(@Valid CommentPOJO commentPOJO, ServletRequest request) throws IOException {
 
@@ -180,7 +179,7 @@ public class UserController {
         //toUserID
         if (!to_usersString.isEmpty()) {
 
-            to_usersString.forEach(item ->{
+            to_usersString.forEach(item -> {
 
                 Long to_user = Long.parseLong(item);
                 to_users.add(to_user);
@@ -194,7 +193,7 @@ public class UserController {
         }
 
         //parentID
-        if(!commentPOJO.getParent_id().equals("")){
+        if (!commentPOJO.getParent_id().equals("")) {
 
             parentID = Long.parseLong(commentPOJO.getParent_id());
         }
@@ -223,12 +222,12 @@ public class UserController {
         /**
          * Assign variable
          */
-        if(!strUserID.isEmpty()){
+        if (!strUserID.isEmpty()) {
 
             userID = Long.parseLong(strUserID);
         }
 
-        if(!commentPOJO.getManga_comment_id().equals("")){
+        if (!commentPOJO.getManga_comment_id().equals("")) {
 
             commentID = Long.parseLong(commentPOJO.getManga_comment_id());
         }
@@ -236,7 +235,7 @@ public class UserController {
         //toUserID
         if (!to_usersString.isEmpty()) {
 
-            to_usersString.forEach(item ->{
+            to_usersString.forEach(item -> {
 
                 Long to_user = Long.parseLong(item);
                 toUsers.add(to_user);
@@ -345,7 +344,7 @@ public class UserController {
     }
 
 
-//    @CacheEvict(allEntries = true, value = {"transGroupInfo"})
+    //    @CacheEvict(allEntries = true, value = {"transGroupInfo"})
     @CacheEvict(value = {"transGroupInfo"}, key = "{#request.getAttribute(\"user\").get(\"user_id\"), #request.getAttribute(\"user\").get(\"user_transgroup_id\")}")
     @DeleteMapping("/deletemanga")
     public ResponseEntity deleteManga(@RequestBody TransGroupPOJO transGroupPOJO, ServletRequest request) {
