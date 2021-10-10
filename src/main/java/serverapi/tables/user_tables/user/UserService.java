@@ -683,7 +683,6 @@ public class UserService {
                     HttpStatus.BAD_REQUEST);
         }
         TransGroup transGroup = transGroupOptional.get();
-
         
 
         //////
