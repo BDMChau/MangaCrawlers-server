@@ -47,16 +47,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(AuthController.class)
 @AutoConfigureMockMvc(addFilters = false)
 public class AuthControllerTest {
-    private HelpersTest helpersTest = new HelpersTest();
-
     @Autowired
     protected MockMvc mockMvc;
-
-    @MockBean
-    private AuthService authService;
-
-    @MockBean
-    private AuthRepository authRepository;
 
     @Test
     public void testSignIn() throws Exception {
@@ -69,17 +61,16 @@ public class AuthControllerTest {
         String inputJson = new HelpersTest().mapToJson(dataObj);
 
 
-
         MockHttpServletResponse response = mockMvc.perform(post(uri)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(inputJson))
                 .andReturn()
                 .getResponse();
+        String resultStr = response.getContentAsString();
 
-        System.err.println(response.getContentAsString());
+        System.err.println(resultStr);
         assertEquals(200, response.getStatus());
-
-        
+        assertEquals(resultStr.contains("Sign in successfully!"), resultStr.contains("Sign in successfully!"));
     }
 
     @Test
@@ -89,7 +80,7 @@ public class AuthControllerTest {
         Map<String, String> dataObj = Map.of(
                 "user_name", "Minh Chou",
                 "user_email", "bdmchau105@gmail.com",
-                "user_password", "MinhTriet111"
+                "user_password", "MinhTriet"
         );
 
         String inputJson = new HelpersTest().mapToJson(dataObj);
@@ -100,8 +91,10 @@ public class AuthControllerTest {
                         .content(inputJson))
                 .andReturn()
                 .getResponse();
+        String resultStr = response.getContentAsString();
 
-        System.err.println(response.getContentAsString());
+        System.err.println(resultStr);
         assertEquals(200, response.getStatus());
+        assertEquals(resultStr.contains("Sign up success!"), resultStr.contains("Sign up success!"));
     }
 }

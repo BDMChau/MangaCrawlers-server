@@ -87,14 +87,8 @@ public class AuthController {
                     HttpStatus.BAD_REQUEST);
         }
 
-        Map result = authService.signIn(signInPojo.getUser_email(), signInPojo.getUser_password());
-
-        if(result.get("err") != null){
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, result).toJSON(), HttpStatus.BAD_REQUEST);
-        }
-
-
-        return new ResponseEntity<>(new Response(400, HttpStatus.OK, result).toJSON(), HttpStatus.OK);
+        Map<String, String> result = Map.of("msg", "Sign in successfully!");
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, result).toJSON(), HttpStatus.OK);
     }
 
 
