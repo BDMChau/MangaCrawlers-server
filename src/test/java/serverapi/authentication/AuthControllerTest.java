@@ -69,7 +69,7 @@ public class AuthControllerTest {
         String inputJson = new HelpersTest().mapToJson(dataObj);
 
 
-        
+
         MockHttpServletResponse response = mockMvc.perform(post(uri)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(inputJson))
@@ -78,6 +78,8 @@ public class AuthControllerTest {
 
         System.err.println(response.getContentAsString());
         assertEquals(200, response.getStatus());
+
+        
     }
 
     @Test
