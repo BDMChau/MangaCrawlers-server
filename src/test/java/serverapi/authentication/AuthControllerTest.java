@@ -78,6 +78,7 @@ public class AuthControllerTest {
 
         System.err.println(response.getContentAsString());
         assertEquals(200, response.getStatus());
+        
     }
 
     @Test
