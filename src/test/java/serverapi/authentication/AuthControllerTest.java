@@ -79,6 +79,7 @@ public class AuthControllerTest {
 
         Map<String, String> dataObj = Map.of(
                 "user_name", "Minh Chou",
+                
                 "user_email", "bdmchau105@gmail.com",
                 "user_password", "MinhTriet"
         );
