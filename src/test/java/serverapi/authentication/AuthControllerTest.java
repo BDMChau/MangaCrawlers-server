@@ -34,9 +34,12 @@ import serverapi.security.HashSHA512;
 import serverapi.tables.user_tables.user.User;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -64,7 +67,7 @@ public class AuthControllerTest {
 
         Map<String, String> dataObj = Map.of(
                 "user_email", "bdmchau105@gmail.com",
-                "user_password", "Min"
+                "user_password", "MinhTriet11223"
         );
         String inputJson = new HelpersTest().mapToJson(dataObj);
 
@@ -75,9 +78,38 @@ public class AuthControllerTest {
                 .andReturn()
                 .getResponse();
         String resultStr = response.getContentAsString();
-
         System.err.println(resultStr);
-        assertEquals(200, response.getStatus());
-        assertEquals(resultStr.contains("Sign in successfully!"), resultStr.contains("Sign in successfully!"));
+
+        Object[] expectedList = {200, resultStr.contains("Sign in successfully!")};
+        Object[] resultList = {response.getStatus(), resultStr.contains("Sign in successfully!")};
+
+        assertArrayEquals(expectedList, resultList);
+    }
+
+
+    @Test
+    public void testSignUp() throws Exception {
+        String uri = "/api/auth/signup";
+
+        Map<String, String> dataObj = Map.of(
+                "user_name", "MinhChau",
+                "user_email", "bdmchau105@gmail.com",
+                "user_password", "MinhMinh"
+        );
+        String inputJson = new HelpersTest().mapToJson(dataObj);
+
+
+        MockHttpServletResponse response = mockMvc.perform(post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(inputJson))
+                .andReturn()
+                .getResponse();
+        String resultStr = response.getContentAsString();
+        System.err.println(resultStr);
+
+        Object[] expectedList = {200, resultStr.contains("Sign up successfully!")};
+        Object[] resultList = {response.getStatus(), resultStr.contains("Sign up successfully!")};
+
+        assertArrayEquals(expectedList, resultList);
     }
 }

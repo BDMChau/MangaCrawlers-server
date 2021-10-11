@@ -72,7 +72,8 @@ public class AuthController {
                     HttpStatus.BAD_REQUEST);
         }
 
-        return authService.signUp(signUpPojo);
+        Map<String, String> result = Map.of("msg", "Sign up successfully!");
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, result).toJSON(), HttpStatus.OK);
     }
 
 
