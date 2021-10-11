@@ -139,6 +139,7 @@ public class AuthControllerTest {
     }
 
 
+
     @Test
     public void testSignUp02() throws Exception {
         String uri = "/api/auth/signup";
