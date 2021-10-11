@@ -53,15 +53,14 @@ public class AuthControllerTest {
     @Test
     public void testSignIn() throws Exception {
         String uri = "/api/auth/signin";
-
-
+        
         Map<String, String> dataObj = Map.of(
                 "user_email", "bdmchau105@gmail.com",
                 "user_password", "MinhTriet"
         );
         String inputJson = new HelpersTest().mapToJson(dataObj);
 
-        
+
         MockHttpServletResponse response = mockMvc.perform(post(uri)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(inputJson))
