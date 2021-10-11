@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 public class CommentPOJO {
 
-    private List<String> to_user_id = new ArrayList<>();
+    private List<String> to_users_id = new ArrayList<>();
     private String manga_id;
     private String chapter_id;
     private String manga_comment_id;
