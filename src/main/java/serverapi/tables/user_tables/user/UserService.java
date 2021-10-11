@@ -301,7 +301,7 @@ public class UserService {
     /////////////////////////////////////// comment /////////////////////////////////
 
     public ResponseEntity addCommentManga(List<Long> toUsersID, Long userID, Long mangaID, Long chapterID,
-                                          String content, MultipartFile image,
+                                          String content, MultipartFile image, String stickerUrl,
                                           Long parentID) throws IOException {
         /**
          * Check variable
@@ -413,6 +413,17 @@ public class UserService {
             commentImages.setManga_comment(mangaComments);
             commentImageRepos.saveAndFlush(commentImages);
             image_url = securedUrl;
+        }else{
+            if(stickerUrl != null && !stickerUrl.isEmpty()){
+
+                CommentImages commentImages = new CommentImages();
+
+                commentImages.setImage_url(stickerUrl);
+                commentImages.setManga_comment(mangaComments);
+                commentImageRepos.saveAndFlush(commentImages);
+                image_url = stickerUrl;
+
+            }
         }
 
         /**

@@ -164,6 +164,7 @@ public class UserController {
 
         String strUserID = getUserAttribute(request).get("user_id").toString();
         String content = commentPOJO.getManga_comment_content();
+        String stickerUrl = commentPOJO.getSticker_url();
 
         MultipartFile image = commentPOJO.getImage();
         if(image.getOriginalFilename().equals(fileNameDefault)){
@@ -200,7 +201,7 @@ public class UserController {
 
             parentID = Long.parseLong(commentPOJO.getParent_id());
         }
-        return userService.addCommentManga(to_users, userID, mangaID, chapterID, content, image, parentID);
+        return userService.addCommentManga(to_users, userID, mangaID, chapterID, content, image, stickerUrl, parentID);
     }
 
 

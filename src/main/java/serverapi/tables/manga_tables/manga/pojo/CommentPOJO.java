@@ -22,6 +22,7 @@ public class CommentPOJO {
     private String manga_comment_id;
     private String manga_comment_content;
     private MultipartFile image;
+    private String sticker_url;
     private String level;
     private String parent_id;
 
