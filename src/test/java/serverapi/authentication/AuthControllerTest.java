@@ -62,7 +62,7 @@ public class AuthControllerTest {
     private AuthRepository authRepository;
 
     @Test
-    public void testSignIn() throws Exception {
+    public void testSignIn01() throws Exception {
         String uri = "/api/auth/signin";
 
         Map<String, String> dataObj = Map.of(
@@ -86,15 +86,67 @@ public class AuthControllerTest {
         assertArrayEquals(expectedList, resultList);
     }
 
+    @Test
+    public void testSignIn02() throws Exception {
+        String uri = "/api/auth/signin";
+
+        Map<String, String> dataObj = Map.of(
+                "user_email", "bdmchau105",
+                "user_password", "MinhTriet11223"
+        );
+        String inputJson = new HelpersTest().mapToJson(dataObj);
+
+
+        MockHttpServletResponse response = mockMvc.perform(post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(inputJson))
+                .andReturn()
+                .getResponse();
+        String resultStr = response.getContentAsString();
+        System.err.println(resultStr);
+
+        Object[] expectedList = {200, resultStr.contains("Sign in successfully!")};
+        Object[] resultList = {response.getStatus(), resultStr.contains("Sign in successfully!")};
+
+        assertArrayEquals(expectedList, resultList);
+    }
+
 
     @Test
-    public void testSignUp() throws Exception {
+    public void testSignUp01() throws Exception {
         String uri = "/api/auth/signup";
 
         Map<String, String> dataObj = Map.of(
                 "user_name", "MinhChau",
                 "user_email", "bdmchau105@gmail.com",
                 "user_password", "MinhMinh"
+        );
+        String inputJson = new HelpersTest().mapToJson(dataObj);
+
+
+        MockHttpServletResponse response = mockMvc.perform(post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(inputJson))
+                .andReturn()
+                .getResponse();
+        String resultStr = response.getContentAsString();
+        System.err.println(resultStr);
+
+        Object[] expectedList = {200, resultStr.contains("Sign up successfully!")};
+        Object[] resultList = {response.getStatus(), resultStr.contains("Sign up successfully!")};
+
+        assertArrayEquals(expectedList, resultList);
+    }
+
+
+    @Test
+    public void testSignUp02() throws Exception {
+        String uri = "/api/auth/signup";
+
+        Map<String, String> dataObj = Map.of(
+                "user_name", "",
+                "user_email", "bdmchau105@gmail.com",
+                "user_password", "MinhMinh123"
         );
         String inputJson = new HelpersTest().mapToJson(dataObj);
 
