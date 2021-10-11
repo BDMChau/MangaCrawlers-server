@@ -167,7 +167,7 @@ public class UserController {
 
         MultipartFile image = commentPOJO.getImage();
 
-        List<String> to_usersString = commentPOJO.getTo_user_id();
+        List<String> to_usersString = commentPOJO.getTo_users_id();
         List<Long> to_users = new ArrayList<>();
 
         /**
@@ -216,7 +216,7 @@ public class UserController {
 
         MultipartFile imageUrl = commentPOJO.getImage();
 
-        List<String> to_usersString = commentPOJO.getTo_user_id();
+        List<String> to_usersString = commentPOJO.getTo_users_id();
         List<Long> toUsers = new ArrayList<>();
 
         /**
