@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
 import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
 
+import javax.mail.Multipart;
 import java.util.ArrayList;
 import java.util.List;
 

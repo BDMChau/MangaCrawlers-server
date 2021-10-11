@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 @RequestMapping("/api/user")
 @CacheConfig(cacheNames = {"user"})
 public class UserController {
-
+    private static String fileNameDefault = "/static/media/8031DF085D7DBABC0F4B3651081CE70ED84622AE9305200F2FC1D789C95CF06F.9960248d.svg";
     private final UserService userService;
 
     @Autowired
@@ -166,6 +166,9 @@ public class UserController {
         String content = commentPOJO.getManga_comment_content();
 
         MultipartFile image = commentPOJO.getImage();
+        if(image.getOriginalFilename().equals(fileNameDefault)){
+            image = null;
+        }
 
         List<String> to_usersString = commentPOJO.getTo_users_id();
         List<Long> to_users = new ArrayList<>();
@@ -214,7 +217,10 @@ public class UserController {
         String content = commentPOJO.getManga_comment_content();
         String strUserID = getUserAttribute(request).get("user_id").toString();
 
-        MultipartFile imageUrl = commentPOJO.getImage();
+        MultipartFile image = commentPOJO.getImage();
+        if(image.getOriginalFilename().equals(fileNameDefault)){
+            image = null;
+        }
 
         List<String> to_usersString = commentPOJO.getTo_users_id();
         List<Long> toUsers = new ArrayList<>();
@@ -244,7 +250,7 @@ public class UserController {
 
 
         System.err.println("line 215");
-        return userService.updateComment(userID, toUsers, commentID, content, imageUrl);
+        return userService.updateComment(userID, toUsers, commentID, content, image);
     }
 
     @PostMapping("/deletecomment")

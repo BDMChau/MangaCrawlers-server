@@ -303,7 +303,6 @@ public class UserService {
     public ResponseEntity addCommentManga(List<Long> toUsersID, Long userID, Long mangaID, Long chapterID,
                                           String content, MultipartFile image,
                                           Long parentID) throws IOException {
-
         /**
          * Check variable
          */
@@ -490,7 +489,7 @@ public class UserService {
         return new ResponseEntity<>(new Response(200, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
     }
 
-    public ResponseEntity updateComment(Long userID, List<Long> toUsersID, Long commentID, String commentContent, MultipartFile imageUrl) throws IOException {
+    public ResponseEntity updateComment(Long userID, List<Long> toUsersID, Long commentID, String commentContent, MultipartFile image) throws IOException {
 
         /**
          * Initialize variable
@@ -521,7 +520,7 @@ public class UserService {
          * if commentContent && imagesUrl = ""
          * update comment will become delete comment by set isDeprecated = true;
          */
-        if (commentContent.equals("") && imageUrl.isEmpty()) {
+        if (commentContent.equals("") && image.isEmpty()) {
 
             mangaComments.setIs_deprecated(true);
             mangaCommentsRepos.save(mangaComments);
@@ -622,10 +621,9 @@ public class UserService {
             manga = mangaOptional.get();
         }
 
-        if (!imageUrl.isEmpty()) {
-            if (!imageUrl.equals(currentImageUrl)) {
+        if (!image.isEmpty()) {
                 Map cloudinaryResponse = cloudinaryUploader.uploadImg(
-                        imageUrl.getBytes(),
+                        image.getBytes(),
                         manga.getManga_name(),
                         "user_comment_images",
                         false
@@ -645,12 +643,12 @@ public class UserService {
 
                 } else {
 
-                    CommentImages image = new CommentImages();
+                    CommentImages imagee = new CommentImages();
 
-                    image.setImage_url(securedUrl);
-                    commentImageRepos.saveAndFlush(image);
+                    imagee.setImage_url(securedUrl);
+                    commentImageRepos.saveAndFlush(imagee);
                 }
-            }
+
         }
 
         mangaComments.setManga_comment_content(commentContent);
