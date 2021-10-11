@@ -57,7 +57,7 @@ public class AuthControllerTest {
 
         Map<String, String> dataObj = Map.of(
                 "user_email", "bdmchau105@gmail.com",
-                "user_password", "MinhTriet1234"
+                "user_password", "MinhTriet"
         );
         String inputJson = new HelpersTest().mapToJson(dataObj);
 
