@@ -397,7 +397,7 @@ public class UserService {
 
         String image_url = null;
         System.err.println(image != null);
-        if (!image.isEmpty()) {
+        if (image!= null && !image.isEmpty()) {
 
             Map cloudinaryResponse = cloudinaryUploader.uploadImg(
                     image.getBytes(),
