@@ -162,6 +162,8 @@ public class UserController {
         Long chapterID = 0L;
         Long parentID = 0L;
 
+        List<MangaCommentDTOs> comments = commentPOJO.getComments();
+
         String strUserID = getUserAttribute(request).get("user_id").toString();
         String content = commentPOJO.getManga_comment_content();
         String stickerUrl = commentPOJO.getSticker_url();
@@ -201,7 +203,7 @@ public class UserController {
 
             parentID = Long.parseLong(commentPOJO.getParent_id());
         }
-        return userService.addCommentManga(to_users, userID, mangaID, chapterID, content, image, stickerUrl, parentID);
+        return userService.addCommentManga(to_users, userID, mangaID, chapterID, content, image, stickerUrl, parentID, comments);
     }
 
 

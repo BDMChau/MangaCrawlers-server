@@ -302,7 +302,7 @@ public class UserService {
 
     public ResponseEntity addCommentManga(List<Long> toUsersID, Long userID, Long mangaID, Long chapterID,
                                           String content, MultipartFile image, String stickerUrl,
-                                          Long parentID) throws IOException {
+                                          Long parentID, List<MangaCommentDTOs> comments) throws IOException {
         /**
          * Check variable
          */
@@ -492,6 +492,73 @@ public class UserService {
         exportComment.setParent_id(parent.getManga_comment_id());
 
         exportComment.setImage_url(image_url);
+
+
+        // check Comment to respone a list comment if deeper level
+        if (!comments.isEmpty()) {
+            if (exportComment.getLevel() != "0") {
+
+                // for set comment into list if it levels deeper
+                CommentTreesDTO responseComment = new CommentTreesDTO();
+
+                responseComment.setTo_users(commentTags);
+
+                responseComment.setUser_id(user.getUser_id());
+                responseComment.setUser_name(user.getUser_name());
+                responseComment.setUser_avatar(user.getUser_avatar());
+
+                responseComment.setManga_id(manga.getManga_id());
+
+                if (chapter != null) {
+
+                    responseComment.setChapter_id(chapter.getChapter_id());
+                    responseComment.setChapter_name(chapter.getChapter_name());
+                    responseComment.setCreated_at(chapter.getCreated_at());
+                }
+
+                responseComment.setManga_comment_id(mangaComments.getManga_comment_id());
+                responseComment.setManga_comment_time(mangaComments.getManga_comment_time());
+                responseComment.setManga_comment_content(mangaComments.getManga_comment_content());
+
+                responseComment.setParent_id(parent.getManga_comment_id());
+
+                responseComment.setImage_url(image_url);
+
+
+                boolean isCreated = false;
+                List<MangaCommentDTOs> cmtsToRes = comments;
+                for (int i = 0; i < comments.size(); i++) {
+                    List<CommentTreesDTO> cmtsLv01 = comments.get(i).getComments_level_01();
+                    for (int j = 0; j < cmtsLv01.size(); j++) {
+                        if (isCreated == true) {
+                            Long cmt01Id = comments.get(i).getComments_level_01().get(j).getParent_id();
+                            if (cmt01Id.equals(exportComment.getParent_id())) {
+                                cmtsToRes.get(i).getComments_level_01().add(responseComment);
+                                break;
+                            } else {
+                                List<CommentTreesDTO> cmtsLv02 = comments.get(i).getComments_level_01().get(j).getComments_level_02();
+                                for (int k = 0; k < cmtsLv02.size(); k++) {
+                                    Long cmt02Id = comments.get(i).getComments_level_01().get(j).getComments_level_02().get(k).getParent_id();
+                                    if (cmt02Id.equals(responseComment)) {
+                                        cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().remove(k);
+                                        isCreated = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Map<String, Object> msg = Map.of(
+                        "msg", "Add comment successfully!",
+                        "comments", cmtsToRes
+                );
+                return new ResponseEntity<>(new Response(200, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
+            }
+
+        }
+
 
         Map<String, Object> msg = Map.of(
                 "msg", "Add comment successfully!",
