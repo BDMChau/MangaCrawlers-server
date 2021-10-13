@@ -2,12 +2,8 @@ package serverapi.tables.user_tables.notification;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import serverapi.tables.user_tables.notification.NotificationService;
-import serverapi.tables.user_tables.user.UserService;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;

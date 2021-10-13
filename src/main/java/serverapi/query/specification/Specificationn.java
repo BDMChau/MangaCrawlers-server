@@ -13,7 +13,7 @@ import javax.persistence.criteria.Root;
 import java.util.Locale;
 
 public class Specificationn {
-    private SearchCriteriaDTO searchCriteriaDTO;
+    private final SearchCriteriaDTO searchCriteriaDTO;
 
     @Autowired
     public Specificationn(SearchCriteriaDTO searchCriteriaDTO) {

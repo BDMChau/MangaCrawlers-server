@@ -38,7 +38,7 @@ import static java.util.stream.Collectors.toCollection;
 
 @Service
 public class MangaService {
-    private Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+    private final Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
     private final MangaRepos mangaRepository;
     private final ChapterRepos chapterRepository;
