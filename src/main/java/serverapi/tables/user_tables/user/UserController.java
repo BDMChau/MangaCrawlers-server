@@ -206,6 +206,29 @@ public class UserController {
         return userService.addCommentManga(to_users, userID, mangaID, chapterID, content, image, stickerUrl, parentID, comments);
     }
 
+    @PostMapping("/filter_add_comment")
+    public ResponseEntity fillterAddComment(@Valid CommentPOJO commentPOJO, ServletRequest request)  {
+
+        /**
+         * Initialize variable
+         */
+        Long commentID = 0L;
+
+        List<MangaCommentDTOs> comments = commentPOJO.getComments();
+
+
+        /**
+         * Assign variable
+         */
+
+        if (!commentPOJO.getManga_comment_id().equals("")) {
+
+            commentID = Long.parseLong(commentPOJO.getManga_comment_id());
+        }
+
+        System.err.println("line 215");
+//        return userService.filterComment(commentID, comments);
+    }
 
     @PostMapping("/updatecomment")
     public ResponseEntity updateComment(@Valid CommentPOJO commentPOJO, ServletRequest request) throws IOException {
@@ -255,6 +278,7 @@ public class UserController {
         System.err.println("line 215");
         return userService.updateComment(userID, toUsers, commentID, content, image);
     }
+
 
     @PostMapping("/deletecomment")
     public ResponseEntity deleteComment(@RequestBody CommentPOJO commentPOJO, ServletRequest request) {
