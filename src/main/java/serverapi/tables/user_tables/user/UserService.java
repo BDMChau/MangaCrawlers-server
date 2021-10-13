@@ -568,7 +568,7 @@ public class UserService {
     }
 
 
-    public ResponseEntity updateComment(Long userID, List<Long> toUsersID, Long commentID, String commentContent, MultipartFile image) throws IOException {
+    public ResponseEntity updateComment(Long userID, List<Long> toUsersID, Long commentID, String commentContent, MultipartFile image, List<MangaCommentDTOs> comments) throws IOException {
 
         /**
          * Initialize variable
@@ -733,6 +733,10 @@ public class UserService {
         mangaComments.setManga_comment_content(commentContent);
         mangaCommentsRepos.saveAndFlush(mangaComments);
 
+        if(!comments.isEmpty()){
+            Optional<MangaCommentDTOs> commentDTO = mangaCommentsRepos.findByCommentID(mangaComments.getManga_comment_id());
+        }
+
         // Response
         MangaCommentDTOs exportComment = new MangaCommentDTOs();
 
@@ -741,6 +745,7 @@ public class UserService {
         exportComment.setUser_id(user.getUser_id());
         exportComment.setUser_name(user.getUser_name());
         exportComment.setUser_avatar(user.getUser_avatar());
+
 
         exportComment.setManga_id(manga.getManga_id());
 
@@ -759,10 +764,19 @@ public class UserService {
         exportComment.setManga_comment_content(mangaComments.getManga_comment_content());
 
         exportComment.setImage_url(exportUrl);
+        if(!comments.isEmpty()){
+            comments = filterComment(mangaComments.getManga_comment_id(), comments, "isDeleted");
+
+            Map<String, Object> msg = Map.of(
+                    "msg", "Delete comment successfully!",
+                    "comments", comments
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
 
         Map<String, Object> msg = Map.of(
                 "msg", "Update comment successfully!",
-                "comment_information", exportComment
+                "comment_info", exportComment
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
@@ -782,30 +796,65 @@ public class UserService {
         User user = userOptional.get();
 
         // Check if user is not the owner
-        MangaComments mangaComments = mangaCommentsOptional.get();
+        MangaComments mangaComment = mangaCommentsOptional.get();
 //        if(!mangaComments.getUser().equals(user)){
 //            Map<String, Object> msg = Map.of("msg", "Don't have permission!");
 //            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
 //        }
 
         // Set deprecate this comment
-        mangaComments.setIs_deprecated(true);
-        mangaCommentsRepos.saveAndFlush(mangaComments);
+        mangaComment.setIs_deprecated(true);
+        mangaCommentsRepos.saveAndFlush(mangaComment);
 
+        if(!comments.isEmpty()){
+            comments = filterComment(mangaComment.getManga_comment_id(), comments, "isDeleted");
 
-
+            Map<String, Object> msg = Map.of(
+                    "msg", "Delete comment successfully!",
+                    "comments", comments
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
 
         Map<String, Object> msg = Map.of(
                 "msg", "Delete comment successfully!",
-                "comments", cmtsToRes
+                "comment_info", mangaComment
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
-    public List<MangaCommentDTOs> filterComment(List<MangaCommentDTOs> comments, String role, MangaCommentDTOs cmtLevel0, CommentTreesDTO cmtLevelDeeper) {
+    public List<MangaCommentDTOs> filterComment(Long inputCommentID, List<MangaCommentDTOs> comments, String role) {
 
         // Declare variable
         List<MangaCommentDTOs> cmtsToRes = comments;
+        Optional<MangaCommentDTOs> inputCommentOptional = mangaCommentsRepos.findByCommentID(inputCommentID);
+        if(inputCommentOptional.isEmpty()){
+            return null;
+        }
+        MangaCommentDTOs cmtLevel0 = inputCommentOptional.get();
+        CommentTreesDTO cmtLevelDeeper = null;
+        if(cmtLevel0.getLevel().equals("0")){
+
+        }else{
+
+            cmtLevelDeeper.setTo_users(cmtLevel0.getTo_users());
+
+            cmtLevelDeeper.setUser_id(cmtLevel0.getUser_id());
+            cmtLevelDeeper.setUser_name(cmtLevel0.getUser_name());
+            cmtLevelDeeper.setUser_avatar(cmtLevel0.getUser_avatar());
+
+
+            cmtLevelDeeper.setManga_id(cmtLevel0.getManga_id());
+
+                cmtLevelDeeper.setChapter_id(cmtLevel0.getChapter_id());
+                cmtLevelDeeper.setChapter_name(cmtLevel0.getChapter_name());
+                cmtLevelDeeper.setCreated_at(cmtLevel0.getCreated_at());
+            cmtLevelDeeper.setManga_comment_id(cmtLevel0.getManga_comment_id());
+            cmtLevelDeeper.setManga_comment_time(cmtLevel0.getManga_comment_time());
+            cmtLevelDeeper.setManga_comment_content(cmtLevel0.getManga_comment_content());
+
+            cmtLevelDeeper.setImage_url(cmtLevel0.getImage_url());
+        }
 
         // Flag
         Boolean flag = false;
@@ -828,6 +877,11 @@ public class UserService {
                 } else {
                     // commentID
                     Long commentID = cmtLevel0.getManga_comment_id();
+
+                    // check for delete comment function
+                    if(inputCommentID != null){
+                        commentID = inputCommentID;
+                    }
                     for (int i = 0; i < comments.size(); i++) {
                         if (comments.get(i).getManga_comment_id().equals(commentID)) {
                             if (role.equals(isUpdated)) {
@@ -848,6 +902,10 @@ public class UserService {
             // Get cmtLevelDeeper
             Long commentID = cmtLevelDeeper.getManga_comment_id();
 
+            // check for delete comment function
+            if(inputCommentID != null){
+                commentID = inputCommentID;
+            }
             // Get parent_id if role is added
             Long parentCommentID = cmtLevelDeeper.getParent_id();
 

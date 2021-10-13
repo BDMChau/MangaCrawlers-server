@@ -24,10 +24,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 
@@ -213,21 +210,31 @@ public class UserController {
          * Initialize variable
          */
         Long commentID = 0L;
-
         List<MangaCommentDTOs> comments = commentPOJO.getComments();
+        String role = commentPOJO.getRole();
 
+        if(commentPOJO.getManga_comment_id() == null || comments.isEmpty() || role.isEmpty()){
+            Map<String, Object> msg = Map.of(
+                    "msg", "Cannot filter!"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }else{
+            commentID = Long.parseLong(commentPOJO.getManga_comment_id());
+        }
+
+
+        List<MangaCommentDTOs> exportComment = userService.filterComment(commentID, comments, role);
 
         /**
          * Assign variable
          */
 
-        if (!commentPOJO.getManga_comment_id().equals("")) {
 
-            commentID = Long.parseLong(commentPOJO.getManga_comment_id());
-        }
-
-        System.err.println("line 215");
-//        return userService.filterComment(commentID, comments);
+        Map<String, Object> msg = Map.of(
+                "msg", "Filter successfully!",
+                "comment_info", exportComment
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
     @PostMapping("/updatecomment")
@@ -238,6 +245,7 @@ public class UserController {
          */
         Long userID = 0L;
         Long commentID = 0L;
+        List<MangaCommentDTOs> comments = commentPOJO.getComments();
 
 
         String content = commentPOJO.getManga_comment_content();
@@ -276,7 +284,7 @@ public class UserController {
 
 
         System.err.println("line 215");
-        return userService.updateComment(userID, toUsers, commentID, content, image);
+        return userService.updateComment(userID, toUsers, commentID, content, image, comments);
     }
 
 
