@@ -36,7 +36,7 @@ public class SocketIOConfig {
         config.setPingInterval(pingInterval);
         config.setMaxFramePayloadLength(maxFramePayloadLength);
 
-        System.out.println("Socket server initialized at port: " + port);
+        System.out.println("Socket server is initialized at port: " + port);
         return new SocketIOServer(config);
     }
 
