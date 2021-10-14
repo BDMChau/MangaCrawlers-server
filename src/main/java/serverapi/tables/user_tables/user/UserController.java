@@ -200,7 +200,7 @@ public class UserController {
 
             parentID = Long.parseLong(commentPOJO.getParent_id());
         }
-        return userService.addCommentManga(to_users, userID, mangaID, chapterID, content, image, stickerUrl, parentID, comments);
+        return userService.addCommentManga(to_users, userID, mangaID, chapterID, content, image, stickerUrl, parentID);
     }
 
     @PostMapping("/filter_add_comment")
