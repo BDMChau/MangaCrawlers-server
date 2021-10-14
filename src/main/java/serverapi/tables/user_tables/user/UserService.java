@@ -712,8 +712,7 @@ public class UserService {
         mangaCommentsRepos.saveAndFlush(mangaComment);
 
         if(!comments.isEmpty()){
-            List<MangaCommentDTOs> responseListComments = new ArrayList<>();
-            responseListComments = filterComment(mangaComment.getManga_comment_id(), comments, "isDeleted");
+            List<MangaCommentDTOs>  responseListComments = filterComment(mangaComment.getManga_comment_id(), comments, "isDeleted");
 
             if(!responseListComments.isEmpty()){
                 Map<String, Object> msg = Map.of(
@@ -1386,7 +1385,7 @@ public class UserService {
         List<MangaCommentDTOs> cmtsToRes = comments;
         Optional<MangaCommentDTOs> inputCommentOptional = mangaCommentsRepos.findByCommentID(inputCommentID);
         if(inputCommentOptional.isEmpty()){
-            return null;
+            return new ArrayList<>();
         }
         MangaCommentDTOs cmtLevel0 = inputCommentOptional.get();
         CommentTreesDTO cmtLevelDeeper = null;
