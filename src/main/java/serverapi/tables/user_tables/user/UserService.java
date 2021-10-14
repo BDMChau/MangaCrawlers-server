@@ -691,10 +691,6 @@ public class UserService {
     }
 
     public ResponseEntity deleteComment(Long userID, Long commentID, List<MangaCommentDTOs> comments) {
-        System.err.println(comments);
-        /**
-         * Declare variable
-         */
         Optional<User> userOptional = userRepos.findById(userID);
         Optional<MangaComments> mangaCommentsOptional = mangaCommentsRepos.findById(commentID);
 
