@@ -712,13 +712,16 @@ public class UserService {
         mangaCommentsRepos.saveAndFlush(mangaComment);
 
         if(!comments.isEmpty()){
-            comments = filterComment(mangaComment.getManga_comment_id(), comments, "isDeleted");
+            List<MangaCommentDTOs> responseListComments = new ArrayList<>();
+            responseListComments = filterComment(mangaComment.getManga_comment_id(), comments, "isDeleted");
 
-            Map<String, Object> msg = Map.of(
-                    "msg", "Delete comment successfully!",
-                    "comments", comments
-            );
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+            if(!responseListComments.isEmpty()){
+                Map<String, Object> msg = Map.of(
+                        "msg", "Delete comment successfully!",
+                        "comments", comments
+                );
+                return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+            }
         }
 
         Map<String, Object> msg = Map.of(
@@ -1499,54 +1502,42 @@ public class UserService {
 
                                 if (comments.get(i).getManga_comment_id().equals(parentCommentID) && cmtLevelDeeper.getLevel().equals("2")) {
 
-                                    // Get index at the end of list
                                     int index = comments.get(i).getComments_level_01().get(j).getComments_level_02().size() - 1;
                                     cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().add(index, cmtLevelDeeper);
 
-                                    // Set flag + break 2nd loop
                                     flag = true;
                                     break;
                                 }
                                 // role is deleted or updated
                             } else {
                                 if (cmt01Id.equals(commentID)) {
-
-                                    // Role is updated
                                     if (role.equals(isUpdated)) {
                                         cmtsToRes.get(i).getComments_level_01().set(j, cmtLevelDeeper);
 
-                                        // Set flag + break 2nd loop
                                         flag = true;
                                         break;
                                     }
-                                    // Role is deleted
                                     if (role.equals(isDeleted)) {
                                         cmtsToRes.get(i).getComments_level_01().remove(j);
 
-                                        // Set flag + break 2nd loop
                                         flag = true;
                                         break;
                                     }
                                     ////////// 3rd loop, for update, delete
-                                    // Check flag
                                     if(flag.equals(false)){
-                                        // Get level 2 size
                                         int level2Size = comments.get(i).getComments_level_01().get(j).getComments_level_02().size();
                                         for (int k = 0; k < level2Size; k++) {
-                                            // Get comment level 2 ID
                                             Long cmt02Id = comments.get(i).getComments_level_01().get(j).getComments_level_02().get(k).getManga_comment_id();
                                             if (cmt02Id.equals(commentID)) {
-                                                // role is update
                                                 if(role.equals(isUpdated)){
                                                     cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().set(k, cmtLevelDeeper);
 
-                                                    // Set flag and break 3rd loop
                                                     flag = true;
                                                     break;
                                                 }
                                                 if(role.equals(isDeleted)){
                                                     cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().remove(k);
-                                                    // Set flag and break 3rd loop
+
                                                     flag = true;
                                                     break;
                                                 }
