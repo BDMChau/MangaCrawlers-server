@@ -159,8 +159,6 @@ public class UserController {
         Long chapterID = 0L;
         Long parentID = 0L;
 
-        List<MangaCommentDTOs> comments = commentPOJO.getComments();
-
         String strUserID = getUserAttribute(request).get("user_id").toString();
         String content = commentPOJO.getManga_comment_content();
         String stickerUrl = commentPOJO.getSticker_url();
