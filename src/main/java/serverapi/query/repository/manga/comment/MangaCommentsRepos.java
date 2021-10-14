@@ -76,7 +76,7 @@ public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
 
 
     @Query(""" 
-            SELECT new serverapi.query.dtos.features.MangaCommentDTOs.CommentTreesDTO( 
+            SELECT new serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs( 
                 us.user_id, us.user_name, us.user_avatar, 
                 ma.manga_id, 
                 ch.chapter_id,
@@ -86,6 +86,7 @@ public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
                 
             FROM CommentRelations cr 
             JOIN MangaComments cm ON cm.manga_comment_id = cr.child_id.manga_comment_id 
+            AND cm.manga_comment_id = cr.parent_id.manga_comment_id
             LEFT JOIN cm.user us 
             LEFT JOIN cm.manga ma 
             LEFT JOIN cm.chapter ch

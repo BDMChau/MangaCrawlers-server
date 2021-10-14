@@ -130,6 +130,8 @@ public class MangaController {
     @PostMapping("/getchildcomments")
     public ResponseEntity getChildComments(@RequestBody CommentPOJO commentPOJO) {
         Long commentID = Long.parseLong(commentPOJO.getManga_comment_id());
+        System.err.println("comment id "+commentID);
+        System.err.println("type"+(commentID == 1L));
         int from = commentPOJO.getFrom();
         int amount = commentPOJO.getAmount();
 

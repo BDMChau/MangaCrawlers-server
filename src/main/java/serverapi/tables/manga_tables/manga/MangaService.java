@@ -743,13 +743,16 @@ public class MangaService {
         String level2 = "2";
         Pageable pageable = new OffsetBasedPageRequest(from, amount);
 
+        System.err.println("line746");
         // Check commentID
         Optional<MangaCommentDTOs> mangaCommentOptional = mangaCommentsRepos.findByCommentID(commentID);
+        System.err.println("line748 "+mangaCommentOptional.isEmpty());
         if (mangaCommentOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "Comment not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
         MangaCommentDTOs mangaComment = mangaCommentOptional.get();
+        System.err.println("mangaComment "+mangaComment);
 
         // Get comment
         //set tags for comment
