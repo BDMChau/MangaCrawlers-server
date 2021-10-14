@@ -63,6 +63,7 @@ public class MangaService {
 
     /**
      * Use for update view chapter when User visit this chapter
+     *
      * @param mangaId
      * @param chapterId
      * @param mangaPOJO
@@ -101,6 +102,7 @@ public class MangaService {
 
     /**
      * Finding manga by genre_id
+     *
      * @param genreId
      * @return The result of finding
      */
@@ -119,6 +121,7 @@ public class MangaService {
 
     /**
      * Use for get the latest chapter in each manga
+     *
      * @return List of the latest chapter
      */
     public ResponseEntity getLatest() {
@@ -139,6 +142,7 @@ public class MangaService {
 
     /**
      * Use for get top 5 manga that have the most views
+     *
      * @return list of top 5 manga
      */
     public ResponseEntity getTop() {
@@ -155,6 +159,7 @@ public class MangaService {
 
     /**
      * Use for get manga information by using manga_id
+     *
      * @param mangaId
      * @return manga information include: manga's author, manga's genres, manga's chapters
      */
@@ -181,6 +186,7 @@ public class MangaService {
 
     /**
      * Update all view manga and set into update_view table
+     *
      * @return list manga after updated view
      */
     public ResponseEntity getTotalView() {
@@ -224,6 +230,7 @@ public class MangaService {
 
     /**
      * Get weekly manga base on the difference between the current week and the previous week
+     *
      * @return list of weekly manga
      */
     public ResponseEntity getWeeklyMangas() {
@@ -256,8 +263,7 @@ public class MangaService {
 
                         WeeklyMangaDTO weeklyMangaDTO = new WeeklyMangaDTO();
 
-                        Long views =
-                                listCurrentWeekly.get(i).getTotalviews() - listPreviousWeekly.get(j).getTotalviews();
+                        Long views = listCurrentWeekly.get(i).getTotalviews() - listPreviousWeekly.get(j).getTotalviews();
 
 
                         weeklyMangaDTO.setManga_id(listCurrentWeekly.get(i).getManga_id());
@@ -324,8 +330,7 @@ public class MangaService {
 
         List<AuthorMangaDTO> listWeeklyRanking = new ArrayList<>();
 
-        List<WeeklyMangaDTO> top10Mangas =
-                listWeeklyMangasRankingAfterRemoveDuplicates.stream().limit(10).collect(Collectors.toList());
+        List<WeeklyMangaDTO> top10Mangas = listWeeklyMangasRankingAfterRemoveDuplicates.stream().limit(10).collect(Collectors.toList());
 
         List<AuthorMangaDTO> mangas = mangaRepository.getAllMangas();
 
@@ -359,6 +364,7 @@ public class MangaService {
 
     /**
      * Get daily manga base on the difference between the current day and the previous day
+     *
      * @return list of daily manga
      */
     public ResponseEntity getDailyMangas() {
@@ -392,11 +398,8 @@ public class MangaService {
 
             for (int i = 0; i < listCurrentDaily.size(); i++) {
                 for (int j = 0; j < listPreviousDaily.size(); j++) {
-
                     if (listCurrentDaily.get(i).getManga_id().equals(listPreviousDaily.get(j).getManga_id())) {
-
                         DailyMangaDTO dailyMangaDTO = new DailyMangaDTO();
-
                         Long views = listCurrentDaily.get(i).getTotalviews() - listPreviousDaily.get(j).getTotalviews();
                         System.err.println("Compare " + views);
                         dailyMangaDTO.setManga_id(listCurrentDaily.get(i).getManga_id());
@@ -412,7 +415,6 @@ public class MangaService {
             }
             int z = 0;
             while (z < temp) {
-
                 DailyMangaDTO dailyMangaDTO = new DailyMangaDTO();
                 dailyMangaDTO.setManga_id(listCurrentDaily.get(previousDailySize + z).getManga_id());
                 dailyMangaDTO.setViews(listCurrentDaily.get(previousDailySize + z).getTotalviews());
@@ -426,16 +428,12 @@ public class MangaService {
             int previousDailySize = listPreviousDaily.size();
 
             for (int i = 0; i < previousDailySize; i++) {
-
                 for (int j = 0; j < listCurrentDaily.size(); j++) {
-
                     if (listPreviousDaily.get(i).getManga_id().equals(listCurrentDaily.get(j).getManga_id())) {
-
                         DailyMangaDTO dailyMangaDTO = new DailyMangaDTO();
                         System.out.println("listPreviousDaily.get(i).getManga_id()");
 
-                        Long views =
-                                listCurrentDaily.get(j).getTotalviews() - listPreviousDaily.get(i).getTotalviews();
+                        Long views = listCurrentDaily.get(j).getTotalviews() - listPreviousDaily.get(i).getTotalviews();
                         System.err.println("Compare " + views);
 
                         dailyMangaDTO.setManga_id(listCurrentDaily.get(j).getManga_id());
@@ -499,6 +497,7 @@ public class MangaService {
 
     /**
      * Get the suggestion list manga by shuffle the manga list
+     *
      * @return suggestion list
      */
     public ResponseEntity getSuggestionList() {
@@ -530,6 +529,7 @@ public class MangaService {
 
     /**
      * Searching manga by using manga_name
+     *
      * @param mangaName
      * @return search result
      */
@@ -556,6 +556,7 @@ public class MangaService {
 
     /**
      * Searching manga by using multiple genres
+     *
      * @param listGenreId
      * @return search result
      */
@@ -668,6 +669,7 @@ public class MangaService {
 
     /**
      * Get manga's comments by using manga_id, pageable
+     *
      * @param mangaId
      * @param from
      * @param amount
@@ -680,21 +682,18 @@ public class MangaService {
         final String level2 = "2";
 
         final Pageable pageable = new OffsetBasedPageRequest(from, amount);
-        final Pageable childPageable = new OffsetBasedPageRequest(0, 5);
+        final Pageable childPageable = new OffsetBasedPageRequest(0, 2); // first time
 
         // Check this manga is null or not
         Optional<AuthorMangaDTO> mangaOptional = mangaRepository.getMangaInfoByMangaID(mangaId);
         if (mangaOptional.isEmpty()) {
-
             Map<String, Object> err = Map.of("err", "Manga not found!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
 
         // get manga comments in each level
         List<MangaCommentDTOs> cmtsLv0 = mangaCommentsRepos.getMangaCommentsLevel0(mangaId, pageable);
         if (cmtsLv0.isEmpty()) {
-
             Map<String, Object> msg = Map.of("msg", "No comments found!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
         }
@@ -702,32 +701,26 @@ public class MangaService {
         // Get comment
         //set tags for each comment
         List<MangaCommentDTOs> comments;
-        cmtsLv0.forEach(lv0 ->{
-
+        cmtsLv0.forEach(lv0 -> {
             lv0 = setListTags(lv0);
 
             //get child comments
-            List<CommentTreesDTO> cmtsLv1 = mangaCommentsRepos.getCommentsChild(lv0.getManga_comment_id(), level1,childPageable);
+            List<CommentTreesDTO> cmtsLv1 = mangaCommentsRepos.getCommentsChild(lv0.getManga_comment_id(), level1, childPageable);
             List<CommentTreesDTO> cmtsLv2 = mangaCommentsRepos.getCommentsChild(lv0.getManga_comment_id(), level2, childPageable);
 
             MangaCommentDTOs finalLv0 = lv0;
-            cmtsLv1.forEach(lv01 ->{
-
+            cmtsLv1.forEach(lv01 -> {
                 CommentTreesDTO finalLv01 = lv01;
-                cmtsLv2.forEach(lv02 ->{
 
+                cmtsLv2.forEach(lv02 -> {
                     lv02 = setListTags(lv02);
-
-                    if(finalLv0.getManga_comment_id() == lv02.getParent_id()){
-
+                    if (finalLv0.getManga_comment_id() == lv02.getParent_id()) {
                         finalLv01.getComments_level_02().add(lv02);
                     }
                 });
 
                 lv01 = setListTags(lv01);
-
-                if(finalLv0.getManga_comment_id() == lv01.getParent_id()){
-
+                if (finalLv0.getManga_comment_id() == lv01.getParent_id()) {
                     finalLv0.getComments_level_01().add(lv01);
                 }
             });
@@ -737,7 +730,7 @@ public class MangaService {
         Map<String, Object> msg = Map.of(
                 "msg", "Get manga's comments successfully!",
                 "manga_info", mangaOptional,
-                "don't use these param","manga_comment_relation_id, parent_id, child_id, level, manga_comment_tag_id",
+                "don't use these param", "manga_comment_relation_id, parent_id, child_id, level, manga_comment_tag_id",
                 "comments", comments
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
@@ -745,81 +738,65 @@ public class MangaService {
     }
 
     public ResponseEntity getChildComments(Long commentID, int from, int amount) {
-
         // Initialize variable
-        final String level1 = "1";
-        final String level2 = "2";
-
-        final Pageable pageable = new OffsetBasedPageRequest(from, amount);
+        String level1 = "1";
+        String level2 = "2";
+        Pageable pageable = new OffsetBasedPageRequest(from, amount);
 
         // Check commentID
         Optional<MangaCommentDTOs> mangaCommentOptional = mangaCommentsRepos.findByCommentID(commentID);
         if (mangaCommentOptional.isEmpty()) {
-
             Map<String, Object> err = Map.of("err", "Comment not found!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
         MangaCommentDTOs mangaComment = mangaCommentOptional.get();
 
         // Get comment
         //set tags for comment
         mangaComment = setListTags(mangaComment);
+        //get child comments
+        List<CommentTreesDTO> cmtsLv1 = mangaCommentsRepos.getCommentsChild(mangaComment.getManga_comment_id(), level1, pageable);
+        List<CommentTreesDTO> cmtsLv2 = mangaCommentsRepos.getCommentsChild(mangaComment.getManga_comment_id(), level2, pageable);
 
-            //get child comments
-            List<CommentTreesDTO> cmtsLv1 = mangaCommentsRepos.getCommentsChild(mangaComment.getManga_comment_id(), level1,pageable);
-            List<CommentTreesDTO> cmtsLv2 = mangaCommentsRepos.getCommentsChild(mangaComment.getManga_comment_id(), level2, pageable);
-
-            MangaCommentDTOs finalMangaComment = mangaComment;
-            cmtsLv1.forEach(lv01 ->{
-
-                CommentTreesDTO finalLv01 = lv01;
-                cmtsLv2.forEach(lv02 ->{
-
-                    lv02 = setListTags(lv02);
-
-                    if(finalMangaComment.getManga_comment_id() == lv02.getParent_id()){
-
-                        finalLv01.getComments_level_02().add(lv02);
-                    }
-                });
-
-                lv01 = setListTags(lv01);
-
-                if(finalMangaComment.getManga_comment_id() == lv01.getParent_id()){
-
-                    finalMangaComment.getComments_level_01().add(lv01);
+        MangaCommentDTOs finalMangaComment = mangaComment;
+        cmtsLv1.forEach(lv01 -> {
+            CommentTreesDTO finalLv01 = lv01;
+            cmtsLv2.forEach(lv02 -> {
+                lv02 = setListTags(lv02);
+                if (finalMangaComment.getManga_comment_id() == lv02.getParent_id()) {
+                    finalLv01.getComments_level_02().add(lv02);
                 }
             });
+
+            lv01 = setListTags(lv01);
+            if (finalMangaComment.getManga_comment_id() == lv01.getParent_id()) {
+                finalMangaComment.getComments_level_01().add(lv01);
+            }
+        });
 
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get child's comments successfully!",
-                "don't use these param","manga_comment_relation_id, parent_id, child_id, level, manga_comment_tag_id",
+                "msg02", "Don't use these: manga_comment_relation_id, parent_id, child_id, level, manga_comment_tag_id",
                 "comments", mangaComment
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-
     }
 
 
-    ///////////// sub functions /////////////////
-
-    public MangaCommentDTOs setListTags(MangaCommentDTOs mangaCommentDTOs){
-
+    /////////////////////////////////////// HELPERS ///////////////////////////////////////////
+    public MangaCommentDTOs setListTags(MangaCommentDTOs mangaCommentDTOs) {
         List<CommentTagsDTO> tags = commentTagsRepos.getListTags(mangaCommentDTOs.getManga_comment_id());
-
-        if(!tags.isEmpty()){
+        if (!tags.isEmpty()) {
             mangaCommentDTOs.setTo_users(tags);
         }
 
         return mangaCommentDTOs;
     }
-    public CommentTreesDTO setListTags(CommentTreesDTO commentTreesDTO){
 
+    public CommentTreesDTO setListTags(CommentTreesDTO commentTreesDTO) {
         List<CommentTagsDTO> tags = commentTagsRepos.getListTags(commentTreesDTO.getManga_comment_id());
-
-        if(!tags.isEmpty()){
+        if (!tags.isEmpty()) {
             commentTreesDTO.setTo_users(tags);
         }
 

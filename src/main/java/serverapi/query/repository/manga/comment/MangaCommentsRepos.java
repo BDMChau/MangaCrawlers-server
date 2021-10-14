@@ -30,12 +30,12 @@ public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
                 cm.manga_comment_id, cm.manga_comment_time, cm.manga_comment_content, 
                 cr.manga_comment_relation_id, cr.parent_id.manga_comment_id, cr.child_id.manga_comment_id, cr.level, 
                 ci.manga_comment_image_id, ci.image_url ) 
-            
+                        
             FROM CommentRelations cr INNER JOIN MangaComments cm ON cm.manga_comment_id = cr.child_id.manga_comment_id 
-            left join cm.user us 
-            left join cm.manga ma 
-            left join cm.comment_image ci 
-            
+            LEFT JOIN cm.user us 
+            LEFT JOIN cm.manga ma 
+            LEFT JOIN cm.comment_image ci 
+                        
             WHERE cm.is_deprecated = false 
                 AND cm.manga.manga_id = ?1 
                 AND cm.chapter.chapter_id is null 
@@ -61,12 +61,12 @@ public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
                 ci.manga_comment_image_id, ci.image_url ) 
                 
             FROM CommentRelations cr 
-            INNER JOIN MangaComments cm ON cm.manga_comment_id = cr.child_id.manga_comment_id 
-            left join cm.user us 
-            left join cm.manga ma 
-            left join cm.chapter ch
-            left join cm.comment_image ci 
-            
+            JOIN MangaComments cm ON cm.manga_comment_id = cr.child_id.manga_comment_id 
+            LEFT JOIN cm.user us 
+            LEFT JOIN cm.manga ma 
+            LEFT JOIN cm.chapter ch
+            LEFT JOIN cm.comment_image ci 
+                        
             WHERE cm.is_deprecated = false 
                 AND cr.parent_id.manga_comment_id =?1 
                 AND cr.level =?2 
@@ -85,14 +85,13 @@ public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
                 ci.manga_comment_image_id, ci.image_url ) 
                 
             FROM CommentRelations cr 
-            INNER JOIN MangaComments cm ON cm.manga_comment_id = cr.child_id.manga_comment_id 
-            left join cm.user us 
-            left join cm.manga ma 
-            left join cm.chapter ch
-            left join cm.comment_image ci 
-            
-            WHERE cm.is_deprecated = false 
-                AND cr.parent_id.manga_comment_id =?1 
+            JOIN MangaComments cm ON cm.manga_comment_id = cr.child_id.manga_comment_id 
+            LEFT JOIN cm.user us 
+            LEFT JOIN cm.manga ma 
+            LEFT JOIN cm.chapter ch
+            LEFT JOIN cm.comment_image ci 
+                        
+            WHERE cm.is_deprecated = false AND cr.parent_id.manga_comment_id =?1 
             ORDER BY cm.manga_comment_id DESC 
             """)
     Optional<MangaCommentDTOs> findByCommentID(Long manga_comment_id);
@@ -100,6 +99,7 @@ public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
 
     /**
      * For chapter's comment level 0
+     *
      * @param chapter_id
      * @param pageable
      * @return
@@ -113,11 +113,11 @@ public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
                 ci.manga_comment_image_id, ci.image_url ) 
                 
             FROM CommentRelations cr           
-            INNER JOIN MangaComments cm ON cm.manga_comment_id = cr.child_id.manga_comment_id 
-            left join cm.user us 
-            left join cm.chapter ch
-            left join cm.comment_image ci 
-            
+            JOIN MangaComments cm ON cm.manga_comment_id = cr.child_id.manga_comment_id 
+            LEFT JOIN cm.user us 
+            LEFT JOIN cm.chapter ch
+            LEFT JOIN cm.comment_image ci 
+                        
             WHERE cm.is_deprecated = false 
                 AND cm.chapter.chapter_id = ?1
                 AND cr.level = '0'

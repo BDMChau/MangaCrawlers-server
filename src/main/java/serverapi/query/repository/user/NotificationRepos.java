@@ -20,9 +20,9 @@ public interface NotificationRepos extends JpaRepository<Notifications, Long> {
     @Query("""
              SELECT new serverapi.query.dtos.tables.NotificationDTO(
                  no.notification_id, no.content, no.image_url, no.created_at, no.target_id, no.target_title, no.is_viewed,no.is_interacted,
-                 noType.notification_type_id, noType.type, sender.user_id, sender.user_name, receiver.user_id, receiver.user_name
+                 type.notification_type_id, type.type, sender.user_id, sender.user_name, receiver.user_id, receiver.user_name
               ) 
-            FROM Notifications no JOIN NotificationTypes noType ON no.notification_type = noType.notification_type_id 
+            FROM Notifications no JOIN NotificationTypes type ON no.notification_type = type.notification_type_id 
               JOIN User receiver ON no.to_user.user_id = receiver.user_id 
               JOIN User sender ON no.from_user.user_id = sender.user_id 
               WHERE receiver.user_id = ?1 ORDER BY no.created_at DESC
