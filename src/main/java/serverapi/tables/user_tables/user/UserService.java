@@ -1384,7 +1384,7 @@ public class UserService {
             return new ArrayList<>();
         }
         MangaCommentDTOs cmtLevel0 = inputCommentOptional.get();
-        CommentTreesDTO cmtLevelDeeper = null;
+        CommentTreesDTO cmtLevelDeeper = new CommentTreesDTO();
         if(cmtLevel0.getLevel().equals("0")){
         }else{
             cmtLevelDeeper.setTo_users(cmtLevel0.getTo_users());
