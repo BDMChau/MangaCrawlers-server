@@ -237,14 +237,9 @@ public class UserController {
 
     @PostMapping("/updatecomment")
     public ResponseEntity updateComment(@Valid CommentPOJO commentPOJO, ServletRequest request) throws IOException {
-
-        /**
-         * Initialize variable
-         */
         Long userID = 0L;
         Long commentID = 0L;
         List<MangaCommentDTOs> comments = commentPOJO.getComments();
-
 
         String content = commentPOJO.getManga_comment_content();
         String strUserID = getUserAttribute(request).get("user_id").toString();
