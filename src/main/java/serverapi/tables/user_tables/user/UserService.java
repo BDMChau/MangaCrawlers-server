@@ -694,8 +694,8 @@ public class UserService {
         Optional<User> userOptional = userRepos.findById(userID);
         Optional<MangaComments> mangaCommentsOptional = mangaCommentsRepos.findById(commentID);
 
-        if (userOptional.isEmpty() || mangaCommentsOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "Empty user or comment!");
+        if (userOptional.isEmpty() || mangaCommentsOptional.isEmpty() || comments.isEmpty()) {
+            Map<String, Object> msg = Map.of("msg", "Empty user or comment or comments!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
         User user = userOptional.get();
@@ -711,21 +711,17 @@ public class UserService {
         mangaComment.setIs_deprecated(true);
         mangaCommentsRepos.saveAndFlush(mangaComment);
 
-        if(!comments.isEmpty()){
-            List<MangaCommentDTOs>  responseListComments = filterComment(mangaComment.getManga_comment_id(), comments, "isDeleted");
+        List<MangaCommentDTOs> responseListComments = filterComment(mangaComment.getManga_comment_id(), comments, "isDeleted");
 
-            if(!responseListComments.isEmpty()){
-                Map<String, Object> msg = Map.of(
-                        "msg", "Delete comment successfully!",
-                        "comments", comments
-                );
-                return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-            }
+        if (responseListComments.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Get comments list failed!"
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
         }
-
         Map<String, Object> msg = Map.of(
                 "msg", "Delete comment successfully!",
-                "comment_info", mangaComment
+                "comments", responseListComments
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }

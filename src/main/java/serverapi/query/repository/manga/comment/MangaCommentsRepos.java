@@ -91,7 +91,7 @@ public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
             LEFT JOIN cm.chapter ch
             LEFT JOIN cm.comment_image ci 
                         
-            WHERE cm.is_deprecated = false AND cr.child_id.manga_comment_id =?1 
+            WHERE cr.child_id.manga_comment_id =?1 
             ORDER BY cm.manga_comment_id DESC 
             """)
     Optional<MangaCommentDTOs> findByCommentID(Long manga_comment_id);
