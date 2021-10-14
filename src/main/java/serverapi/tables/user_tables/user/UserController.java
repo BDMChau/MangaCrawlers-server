@@ -159,8 +159,6 @@ public class UserController {
         Long chapterID = 0L;
         Long parentID = 0L;
 
-        List<MangaCommentDTOs> comments = commentPOJO.getComments();
-
         String strUserID = getUserAttribute(request).get("user_id").toString();
         String content = commentPOJO.getManga_comment_content();
         String stickerUrl = commentPOJO.getSticker_url();
@@ -200,11 +198,11 @@ public class UserController {
 
             parentID = Long.parseLong(commentPOJO.getParent_id());
         }
-        return userService.addCommentManga(to_users, userID, mangaID, chapterID, content, image, stickerUrl, parentID, comments);
+        return userService.addCommentManga(to_users, userID, mangaID, chapterID, content, image, stickerUrl, parentID);
     }
 
     @PostMapping("/filter_add_comment")
-    public ResponseEntity fillterAddComment(@Valid CommentPOJO commentPOJO, ServletRequest request)  {
+    public ResponseEntity filterAddComment(@Valid CommentPOJO commentPOJO)  {
 
         /**
          * Initialize variable
@@ -222,14 +220,14 @@ public class UserController {
             commentID = Long.parseLong(commentPOJO.getManga_comment_id());
         }
 
-
         List<MangaCommentDTOs> exportComment = userService.filterComment(commentID, comments, role);
-
-        /**
-         * Assign variable
-         */
-
-
+        if(exportComment.isEmpty()){
+            Map<String, Object> msg = Map.of(
+                    "msg", "Cannot filter!",
+                    "comment_info", exportComment
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
         Map<String, Object> msg = Map.of(
                 "msg", "Filter successfully!",
                 "comment_info", exportComment
