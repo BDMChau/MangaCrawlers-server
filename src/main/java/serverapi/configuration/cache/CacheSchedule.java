@@ -15,6 +15,7 @@ import java.util.Calendar;
 @EnableScheduling
 @EnableAsync
 public class CacheSchedule {
+    Calendar calendar = Calendar.getInstance();
 
     @Autowired
     CacheService cacheService;
@@ -50,8 +51,6 @@ public class CacheSchedule {
     @CacheEvict(allEntries = true, value = {"dailyMangas"})
     @Scheduled(fixedRate = 8640000)
     public void evictCacheDailyMangas() {
-        Calendar calendar = Calendar.getInstance();
-
         cacheService.evictAllCaches();
 
         System.err.println("Evict all cache every 24 hours: " + calendar.getTime());

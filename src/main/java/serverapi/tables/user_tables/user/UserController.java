@@ -164,7 +164,7 @@ public class UserController {
         String stickerUrl = commentPOJO.getSticker_url();
 
         MultipartFile image = commentPOJO.getImage();
-        if(image.getOriginalFilename().equals(fileNameDefault)){
+        if (image.getOriginalFilename().equals(fileNameDefault)) {
             image = null;
         }
 
@@ -202,22 +202,22 @@ public class UserController {
     }
 
     @PostMapping("/filter_add_comment")
-    public ResponseEntity filterAddComment(@Valid CommentPOJO commentPOJO)  {
+    public ResponseEntity filterAddComment(@Valid CommentPOJO commentPOJO) {
         Long commentID = 0L;
         List<MangaCommentDTOs> comments = commentPOJO.getComments();
         String role = commentPOJO.getRole();
 
-        if(commentPOJO.getManga_comment_id() == null || comments.isEmpty() || role.isEmpty()){
+        if (commentPOJO.getManga_comment_id() == null || comments.isEmpty() || role.isEmpty()) {
             Map<String, Object> msg = Map.of(
                     "msg", "Cannot filter!"
             );
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
-        }else{
+        } else {
             commentID = Long.parseLong(commentPOJO.getManga_comment_id());
         }
 
         List<MangaCommentDTOs> exportComment = userService.filterComment(commentID, comments, role);
-        if(exportComment.isEmpty()){
+        if (exportComment.isEmpty()) {
             Map<String, Object> msg = Map.of(
                     "msg", "Cannot filter!",
                     "comment_info", exportComment
@@ -241,7 +241,7 @@ public class UserController {
         String strUserID = getUserAttribute(request).get("user_id").toString();
 
         MultipartFile image = commentPOJO.getImage();
-        if(image.getOriginalFilename().equals(fileNameDefault)){
+        if (image.getOriginalFilename().equals(fileNameDefault)) {
             image = null;
         }
 
@@ -293,7 +293,6 @@ public class UserController {
 
         return userService.deleteComment(userID, formatCommentID, comments);
     }
-
 
 
     @PostMapping("/searchusers")
