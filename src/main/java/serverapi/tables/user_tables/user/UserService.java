@@ -715,7 +715,7 @@ public class UserService {
 
         if (responseListComments.isEmpty()) {
             Map<String, Object> msg = Map.of(
-                    "msg", "Get comments list failed!"
+                    "err", "Get comments list failed!"
             );
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
         }
@@ -1385,8 +1385,8 @@ public class UserService {
         }
         MangaCommentDTOs cmtLevel0 = inputCommentOptional.get();
         CommentTreesDTO cmtLevelDeeper = new CommentTreesDTO();
-        if(cmtLevel0.getLevel().equals("0")){
-        }else{
+
+        if (!cmtLevel0.getLevel().equals("0")) {
             cmtLevelDeeper.setTo_users(cmtLevel0.getTo_users());
             cmtLevelDeeper.setUser_id(cmtLevel0.getUser_id());
             cmtLevelDeeper.setUser_name(cmtLevel0.getUser_name());
@@ -1400,6 +1400,8 @@ public class UserService {
             cmtLevelDeeper.setManga_comment_content(cmtLevel0.getManga_comment_content());
 
             cmtLevelDeeper.setImage_url(cmtLevel0.getImage_url());
+
+            cmtLevel0 = null;
         }
         Boolean flag = false;
         if (!comments.isEmpty()) {
