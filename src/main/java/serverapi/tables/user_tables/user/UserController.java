@@ -203,10 +203,6 @@ public class UserController {
 
     @PostMapping("/filter_add_comment")
     public ResponseEntity filterAddComment(@Valid CommentPOJO commentPOJO)  {
-
-        /**
-         * Initialize variable
-         */
         Long commentID = 0L;
         List<MangaCommentDTOs> comments = commentPOJO.getComments();
         String role = commentPOJO.getRole();
