@@ -1384,7 +1384,7 @@ public class UserService {
             return new ArrayList<>();
         }
         MangaCommentDTOs cmtLevel0 = inputCommentOptional.get();
-        CommentTreesDTO cmtLevelDeeper = null;
+        CommentTreesDTO cmtLevelDeeper = new CommentTreesDTO();
         if(cmtLevel0.getLevel().equals("0")){
         }else{
             cmtLevelDeeper.setTo_users(cmtLevel0.getTo_users());
@@ -1414,7 +1414,7 @@ public class UserService {
                     cmtsToRes.add(index, cmtLevel0);
                 } else {
                     Long commentID = cmtLevel0.getManga_comment_id();
-                    if(inputCommentID != null){
+                    if (inputCommentID != null) {
                         commentID = inputCommentID;
                     }
                     for (int i = 0; i < comments.size(); i++) {
@@ -1430,65 +1430,63 @@ public class UserService {
                     }
                 }
                 return cmtsToRes;
-            }
-            System.err.println("this is level deeper");
-            Long commentID = cmtLevelDeeper.getManga_comment_id();
-            if(inputCommentID != null){
-                commentID = inputCommentID;
-            }
-            Long parentCommentID = cmtLevelDeeper.getParent_id();
-            // Loop
-            int level0Size = comments.size();
-            if (flag.equals(false)) {
-                for (int i = 0; i < level0Size; i++) {
-                    if (role.equals(isAdded)) {
-                        if (comments.get(i).getManga_comment_id().equals(parentCommentID) && cmtLevelDeeper.getLevel().equals("1")) {
-                            int index = comments.get(i).getComments_level_01().size() - 1;
-                            cmtsToRes.get(i).getComments_level_01().add(index, cmtLevelDeeper);
-                            break;
+            }else {
+                System.err.println("this is level deeper");
+                Long commentID = cmtLevelDeeper.getManga_comment_id();
+                Long parentCommentID = cmtLevelDeeper.getParent_id();
+                // Loop
+                int level0Size = comments.size();
+                if (flag.equals(false)) {
+                    for (int i = 0; i < level0Size; i++) {
+                        if (role.equals(isAdded)) {
+                            if (comments.get(i).getManga_comment_id().equals(parentCommentID) && cmtLevelDeeper.getLevel().equals("1")) {
+                                int index = comments.get(i).getComments_level_01().size() - 1;
+                                cmtsToRes.get(i).getComments_level_01().add(index, cmtLevelDeeper);
+                                break;
+                            }
                         }
-                    }
-                    int level1Size = comments.get(i).getComments_level_01().size();
-                    if (flag.equals(false)) {
-                        ///////////// 2nd loop, for adding, update, delete
-                        for (int j = 0; j < level1Size; j++) {
-                            Long cmt01Id = comments.get(i).getComments_level_01().get(j).getManga_comment_id();
-                            if (role.equals(isAdded)) {
-                                if (comments.get(i).getManga_comment_id().equals(parentCommentID) && cmtLevelDeeper.getLevel().equals("2")) {
-                                    int index = comments.get(i).getComments_level_01().get(j).getComments_level_02().size() - 1;
-                                    cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().add(index, cmtLevelDeeper);
-                                    flag = true;
-                                    break;
-                                }
-                            } else {
-                                if (cmt01Id.equals(commentID)) {
-                                    if (role.equals(isUpdated)) {
-                                        cmtsToRes.get(i).getComments_level_01().set(j, cmtLevelDeeper);
-
+                        int level1Size = comments.get(i).getComments_level_01().size();
+                        if (flag.equals(false)) {
+                            ///////////// 2nd loop, for adding, update, delete
+                            for (int j = 0; j < level1Size; j++) {
+                                Long cmt01Id = comments.get(i).getComments_level_01().get(j).getManga_comment_id();
+                                if (role.equals(isAdded)) {
+                                    if (comments.get(i).getManga_comment_id().equals(parentCommentID) && cmtLevelDeeper.getLevel().equals("2")) {
+                                        int index = comments.get(i).getComments_level_01().get(j).getComments_level_02().size() - 1;
+                                        cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().add(index, cmtLevelDeeper);
                                         flag = true;
                                         break;
                                     }
-                                    if (role.equals(isDeleted)) {
-                                        cmtsToRes.get(i).getComments_level_01().remove(j);
+                                } else {
+                                    if (cmt01Id.equals(commentID)) {
+                                        if (role.equals(isUpdated)) {
+                                            cmtsToRes.get(i).getComments_level_01().set(j, cmtLevelDeeper);
 
-                                        flag = true;
-                                        break;
-                                    }
-                                    ////////// 3rd loop, for update, delete
-                                    if(flag.equals(false)){
-                                        int level2Size = comments.get(i).getComments_level_01().get(j).getComments_level_02().size();
-                                        for (int k = 0; k < level2Size; k++) {
-                                            Long cmt02Id = comments.get(i).getComments_level_01().get(j).getComments_level_02().get(k).getManga_comment_id();
-                                            if (cmt02Id.equals(commentID)) {
-                                                if(role.equals(isUpdated)){
-                                                    cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().set(k, cmtLevelDeeper);
-                                                    flag = true;
-                                                    break;
-                                                }
-                                                if(role.equals(isDeleted)){
-                                                    cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().remove(k);
-                                                    flag = true;
-                                                    break;
+                                            flag = true;
+                                            break;
+                                        }
+                                        if (role.equals(isDeleted)) {
+                                            cmtsToRes.get(i).getComments_level_01().remove(j);
+
+                                            flag = true;
+                                            break;
+                                        }
+                                        ////////// 3rd loop, for update, delete
+                                        if (flag.equals(false)) {
+                                            int level2Size = comments.get(i).getComments_level_01().get(j).getComments_level_02().size();
+                                            for (int k = 0; k < level2Size; k++) {
+                                                Long cmt02Id = comments.get(i).getComments_level_01().get(j).getComments_level_02().get(k).getManga_comment_id();
+                                                if (cmt02Id.equals(commentID)) {
+                                                    if (role.equals(isUpdated)) {
+                                                        cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().set(k, cmtLevelDeeper);
+                                                        flag = true;
+                                                        break;
+                                                    }
+                                                    if (role.equals(isDeleted)) {
+                                                        cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().remove(k);
+                                                        flag = true;
+                                                        break;
+                                                    }
                                                 }
                                             }
                                         }
