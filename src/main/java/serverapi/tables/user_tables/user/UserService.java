@@ -461,6 +461,9 @@ public class UserService {
             exportComment.setChapter_name(chapter.getChapter_name());
             exportComment.setCreated_at(chapter.getCreated_at());
         }
+        if(!level.equals("0")){
+            exportComment.setLevel(level);
+        }
 
         exportComment.setManga_comment_id(mangaComments.getManga_comment_id());
         exportComment.setManga_comment_time(mangaComments.getManga_comment_time());
