@@ -24,7 +24,10 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 
@@ -220,13 +223,13 @@ public class UserController {
         if (exportComment.isEmpty()) {
             Map<String, Object> msg = Map.of(
                     "err", "Cannot filter!",
-                    "comment_info", exportComment
+                    "comments", exportComment
             );
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
         Map<String, Object> msg = Map.of(
                 "msg", "Filter successfully!",
-                "comment_info", exportComment
+                "comments", exportComment
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
@@ -235,7 +238,6 @@ public class UserController {
     public ResponseEntity updateComment(@Valid CommentPOJO commentPOJO, ServletRequest request) throws IOException {
         Long userID = 0L;
         Long commentID = 0L;
-        List<MangaCommentDTOs> comments = commentPOJO.getComments();
 
         String content = commentPOJO.getManga_comment_content();
         String strUserID = getUserAttribute(request).get("user_id").toString();
@@ -273,7 +275,7 @@ public class UserController {
 
 
         System.err.println("line 215");
-        return userService.updateComment(userID, toUsers, commentID, content, image, comments);
+        return userService.updateComment(userID, toUsers, commentID, content, image);
     }
 
 

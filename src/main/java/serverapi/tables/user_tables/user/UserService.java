@@ -481,7 +481,7 @@ public class UserService {
 
 
     public ResponseEntity updateComment(Long userID, List<Long> toUsersID, Long commentID,
-                                        String commentContent, MultipartFile image, List<MangaCommentDTOs> comments) throws IOException {
+                                        String commentContent, MultipartFile image) throws IOException {
 
         /**
          * Initialize variable
@@ -646,9 +646,6 @@ public class UserService {
         mangaComments.setManga_comment_content(commentContent);
         mangaCommentsRepos.saveAndFlush(mangaComments);
 
-        if (!comments.isEmpty()) {
-            Optional<MangaCommentDTOs> commentDTO = mangaCommentsRepos.findByCommentID(mangaComments.getManga_comment_id());
-        }
         Optional<MangaCommentDTOs> getLevelOptional = mangaCommentsRepos.findByCommentID(commentID);
         String level = getLevelOptional.get().getLevel();
 
@@ -680,15 +677,6 @@ public class UserService {
         exportComment.setLevel(level);
 
         exportComment.setImage_url(exportUrl);
-        if(!comments.isEmpty()){
-            comments = filterComments(mangaComments.getManga_comment_id(), comments, 2);
-
-            Map<String, Object> msg = Map.of(
-                    "msg", "Update comment successfully!",
-                    "comments", comments
-            );
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-        }
 
         Map<String, Object> msg = Map.of(
                 "msg", "Update comment successfully!",
