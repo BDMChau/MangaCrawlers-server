@@ -105,8 +105,11 @@ public class User {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String user_password;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String user_avatar;
+
+    @Column(columnDefinition = "TEXT")
+    private String user_desc;
 
     @Column(columnDefinition = "TEXT", nullable = true)
     private String avatar_public_id_cloudinary;
