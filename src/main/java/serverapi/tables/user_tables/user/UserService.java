@@ -681,7 +681,7 @@ public class UserService {
 
         exportComment.setImage_url(exportUrl);
         if(!comments.isEmpty()){
-            comments = filterComment(mangaComments.getManga_comment_id(), comments, 2);
+            comments = filterComments(mangaComments.getManga_comment_id(), comments, 2);
 
             Map<String, Object> msg = Map.of(
                     "msg", "Update comment successfully!",
@@ -718,7 +718,7 @@ public class UserService {
         mangaComment.setIs_deprecated(true);
         mangaCommentsRepos.saveAndFlush(mangaComment);
 
-        List<MangaCommentDTOs> responseListComments = filterComment(mangaComment.getManga_comment_id(), comments, 1);
+        List<MangaCommentDTOs> responseListComments = filterComments(mangaComment.getManga_comment_id(), comments, 1);
 
         if (responseListComments.isEmpty()) {
             Map<String, Object> msg = Map.of(
@@ -1382,7 +1382,7 @@ public class UserService {
     }
 
 
-    protected List<MangaCommentDTOs> filterComment(Long inputCommentID, List<MangaCommentDTOs> comments, int key) {
+    protected List<MangaCommentDTOs> filterComments(Long inputCommentID, List<MangaCommentDTOs> comments, int key) {
 
         // Declare variable
         List<MangaCommentDTOs> cmtsToRes = comments;

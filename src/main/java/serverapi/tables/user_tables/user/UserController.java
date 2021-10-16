@@ -201,8 +201,8 @@ public class UserController {
         return userService.addCommentManga(to_users, userID, mangaID, chapterID, content, image, stickerUrl, parentID);
     }
 
-    @PostMapping("/filter_add_comment")
-    public ResponseEntity filterAddComment(@Valid CommentPOJO commentPOJO) {
+    @PostMapping("/filter_comments")
+    public ResponseEntity filterComments(@Valid CommentPOJO commentPOJO) {
         Long commentID = 0L;
         List<MangaCommentDTOs> comments = commentPOJO.getComments();
         int key = commentPOJO.getKey();
@@ -216,7 +216,7 @@ public class UserController {
             commentID = Long.parseLong(commentPOJO.getManga_comment_id());
         }
 
-        List<MangaCommentDTOs> exportComment = userService.filterComment(commentID, comments, key);
+        List<MangaCommentDTOs> exportComment = userService.filterComments(commentID, comments, key);
         if (exportComment.isEmpty()) {
             Map<String, Object> msg = Map.of(
                     "err", "Cannot filter!",
