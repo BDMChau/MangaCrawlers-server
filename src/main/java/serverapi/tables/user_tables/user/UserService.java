@@ -21,11 +21,7 @@ import serverapi.query.dtos.tables.FollowingDTO;
 import serverapi.query.dtos.tables.MangaChapterDTO;
 import serverapi.query.dtos.tables.UserReadingHistoryDTO;
 import serverapi.query.repository.manga.*;
-import serverapi.query.repository.manga.comment.CommentImageRepos;
-import serverapi.query.repository.manga.comment.CommentLikesRepos;
-import serverapi.query.repository.manga.comment.CommentRelationRepos;
-import serverapi.query.repository.manga.comment.CommentTagsRepos;
-import serverapi.query.repository.manga.comment.MangaCommentsRepos;
+import serverapi.query.repository.manga.comment.*;
 import serverapi.query.repository.user.*;
 import serverapi.query.specification.Specificationn;
 import serverapi.sharing_services.CloudinaryUploader;
@@ -320,14 +316,14 @@ public class UserService {
         }
 
         if (mangaOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "Manga not found!");
+            Map<String, Object> msg = Map.of("err", "Manga not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
         Manga manga = mangaOptional.get();
 
 
         if (userOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "User not found!");
+            Map<String, Object> msg = Map.of("err", "User not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
         User user = userOptional.get();
@@ -465,6 +461,7 @@ public class UserService {
         exportComment.setManga_comment_id(mangaComments.getManga_comment_id());
         exportComment.setManga_comment_time(mangaComments.getManga_comment_time());
         exportComment.setManga_comment_content(mangaComments.getManga_comment_content());
+        exportComment.setLevel(level);
 
         exportComment.setParent_id(parent.getManga_comment_id());
 
@@ -646,9 +643,11 @@ public class UserService {
         mangaComments.setManga_comment_content(commentContent);
         mangaCommentsRepos.saveAndFlush(mangaComments);
 
-        if(!comments.isEmpty()){
+        if (!comments.isEmpty()) {
             Optional<MangaCommentDTOs> commentDTO = mangaCommentsRepos.findByCommentID(mangaComments.getManga_comment_id());
         }
+        Optional<MangaCommentDTOs> getLevelOptional = mangaCommentsRepos.findByCommentID(commentID);
+        String level = getLevelOptional.get().getLevel();
 
         // Response
         MangaCommentDTOs exportComment = new MangaCommentDTOs();
@@ -675,10 +674,11 @@ public class UserService {
         exportComment.setManga_comment_id(mangaComments.getManga_comment_id());
         exportComment.setManga_comment_time(mangaComments.getManga_comment_time());
         exportComment.setManga_comment_content(mangaComments.getManga_comment_content());
+        exportComment.setLevel(level);
 
         exportComment.setImage_url(exportUrl);
         if(!comments.isEmpty()){
-            comments = filterComment(mangaComments.getManga_comment_id(), comments, "isUpdated");
+            comments = filterComment(mangaComments.getManga_comment_id(), comments, 2);
 
             Map<String, Object> msg = Map.of(
                     "msg", "Update comment successfully!",
@@ -715,7 +715,7 @@ public class UserService {
         mangaComment.setIs_deprecated(true);
         mangaCommentsRepos.saveAndFlush(mangaComment);
 
-        List<MangaCommentDTOs> responseListComments = filterComment(mangaComment.getManga_comment_id(), comments, "isDeleted");
+        List<MangaCommentDTOs> responseListComments = filterComment(mangaComment.getManga_comment_id(), comments, 1);
 
         if (responseListComments.isEmpty()) {
             Map<String, Object> msg = Map.of(
@@ -1379,12 +1379,12 @@ public class UserService {
     }
 
 
-    protected List<MangaCommentDTOs> filterComment(Long inputCommentID, List<MangaCommentDTOs> comments, String role) {
+    protected List<MangaCommentDTOs> filterComment(Long inputCommentID, List<MangaCommentDTOs> comments, int key) {
 
         // Declare variable
         List<MangaCommentDTOs> cmtsToRes = comments;
         Optional<MangaCommentDTOs> inputCommentOptional = mangaCommentsRepos.findByCommentID(inputCommentID);
-        if(inputCommentOptional.isEmpty()){
+        if (inputCommentOptional.isEmpty()) {
             return new ArrayList<>();
         }
         MangaCommentDTOs cmtLevel0 = inputCommentOptional.get();
@@ -1402,20 +1402,20 @@ public class UserService {
             cmtLevelDeeper.setManga_comment_id(cmtLevel0.getManga_comment_id());
             cmtLevelDeeper.setManga_comment_time(cmtLevel0.getManga_comment_time());
             cmtLevelDeeper.setManga_comment_content(cmtLevel0.getManga_comment_content());
-
+            cmtLevelDeeper.setLevel(cmtLevel0.getLevel());
             cmtLevelDeeper.setImage_url(cmtLevel0.getImage_url());
 
             cmtLevel0 = null;
         }
         Boolean flag = false;
         if (!comments.isEmpty()) {
-            String isDeleted = "isDeleted";
-            String isUpdated = "isUpdated";
-            String isAdded = "isAdded";
+            int isDeleted = 1;
+            int isUpdated = 2;
+            int isAdded = 3;
 
             if (cmtLevel0 != null) {
                 System.err.println("this is level 0");
-                if (role.equals(isAdded)) {
+                if (key == isAdded) {
                     int index = comments.size() - 1;
                     cmtsToRes.add(index, cmtLevel0);
                 } else {
@@ -1425,10 +1425,10 @@ public class UserService {
                     }
                     for (int i = 0; i < comments.size(); i++) {
                         if (comments.get(i).getManga_comment_id().equals(commentID)) {
-                            if (role.equals(isUpdated)) {
+                            if (key == isUpdated) {
                                 cmtsToRes.set(i, cmtLevel0);
                                 break;
-                            } else if (role.equals(isDeleted)) {
+                            } else if (key == isDeleted) {
                                 cmtsToRes.remove(i);
                                 break;
                             }
@@ -1444,7 +1444,7 @@ public class UserService {
                 int level0Size = comments.size();
                 if (flag.equals(false)) {
                     for (int i = 0; i < level0Size; i++) {
-                        if (role.equals(isAdded)) {
+                        if (key == isAdded) {
                             if (comments.get(i).getManga_comment_id().equals(parentCommentID) && cmtLevelDeeper.getLevel().equals("1")) {
                                 int index = comments.get(i).getComments_level_01().size() - 1;
                                 cmtsToRes.get(i).getComments_level_01().add(index, cmtLevelDeeper);
@@ -1456,7 +1456,7 @@ public class UserService {
                             ///////////// 2nd loop, for adding, update, delete
                             for (int j = 0; j < level1Size; j++) {
                                 Long cmt01Id = comments.get(i).getComments_level_01().get(j).getManga_comment_id();
-                                if (role.equals(isAdded)) {
+                                if (key == isAdded) {
                                     if (comments.get(i).getManga_comment_id().equals(parentCommentID) && cmtLevelDeeper.getLevel().equals("2")) {
                                         int index = comments.get(i).getComments_level_01().get(j).getComments_level_02().size() - 1;
                                         cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().add(index, cmtLevelDeeper);
@@ -1465,13 +1465,13 @@ public class UserService {
                                     }
                                 } else {
                                     if (cmt01Id.equals(commentID)) {
-                                        if (role.equals(isUpdated)) {
+                                        if (key == isUpdated) {
                                             cmtsToRes.get(i).getComments_level_01().set(j, cmtLevelDeeper);
 
                                             flag = true;
                                             break;
                                         }
-                                        if (role.equals(isDeleted)) {
+                                        if (key == isDeleted) {
                                             cmtsToRes.get(i).getComments_level_01().remove(j);
 
                                             flag = true;
@@ -1483,12 +1483,12 @@ public class UserService {
                                             for (int k = 0; k < level2Size; k++) {
                                                 Long cmt02Id = comments.get(i).getComments_level_01().get(j).getComments_level_02().get(k).getManga_comment_id();
                                                 if (cmt02Id.equals(commentID)) {
-                                                    if (role.equals(isUpdated)) {
+                                                    if (key == isUpdated) {
                                                         cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().set(k, cmtLevelDeeper);
                                                         flag = true;
                                                         break;
                                                     }
-                                                    if (role.equals(isDeleted)) {
+                                                    if (key == isDeleted) {
                                                         cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().remove(k);
                                                         flag = true;
                                                         break;
@@ -1503,6 +1503,9 @@ public class UserService {
                     }
                 }
             }
+        }
+        if (cmtsToRes.isEmpty()) {
+            return new ArrayList<>();
         }
         return cmtsToRes;
     }

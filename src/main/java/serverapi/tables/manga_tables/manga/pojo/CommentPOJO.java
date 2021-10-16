@@ -25,7 +25,7 @@ public class CommentPOJO {
     private String sticker_url;
     private String level;
     private String parent_id;
-    private String role;
+    private int key;
 
     private List<MangaCommentDTOs> comments;
     private int from;
