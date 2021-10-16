@@ -14,10 +14,10 @@ import java.util.regex.Pattern;
 @NoArgsConstructor
 @Component
 public class Validation implements Validator {
-    private String pathRegexJsonFile = "src/main/java/serverapi/security/RegexString.json";
+
 
     private String getRegexStr(String objKey) {
-        ReadJSONFileAndGetValue readJSONFileAndGetValue = new ReadJSONFileAndGetValue(pathRegexJsonFile, objKey);
+        ReadJSONFileAndGetValue readJSONFileAndGetValue = new ReadJSONFileAndGetValue("src/main/java/serverapi/security/regexString.json", objKey);
         readJSONFileAndGetValue.read();
 
         return readJSONFileAndGetValue.getValue();
