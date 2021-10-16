@@ -202,7 +202,7 @@ public class UserController {
     }
 
     @PostMapping("/filter_comments")
-    public ResponseEntity filterComments(@Valid CommentPOJO commentPOJO) {
+    public ResponseEntity filterComments(@RequestBody CommentPOJO commentPOJO) {
         Long commentID = 0L;
         List<MangaCommentDTOs> comments = commentPOJO.getComments();
         int key = commentPOJO.getKey();
@@ -215,8 +215,13 @@ public class UserController {
         } else {
             commentID = Long.parseLong(commentPOJO.getManga_comment_id());
         }
-
-        List<MangaCommentDTOs> exportComment = userService.filterComments(commentID, comments, key);
+        List<MangaCommentDTOs> exportComment = new ArrayList<>();
+        try{
+            exportComment = userService.filterComments(commentID, comments, key);
+        }catch(Exception ex){
+            System.err.println(ex.getMessage());
+            ex.printStackTrace();
+        }
         if (exportComment.isEmpty()) {
             Map<String, Object> msg = Map.of(
                     "err", "Cannot filter!",
@@ -226,10 +231,12 @@ public class UserController {
         }
         Map<String, Object> msg = Map.of(
                 "msg", "Filter successfully!",
-                "comment_info", exportComment
+                "comments", exportComment
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
+
+
 
     @PostMapping("/updatecomment")
     public ResponseEntity updateComment(@Valid CommentPOJO commentPOJO, ServletRequest request) throws IOException {

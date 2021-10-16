@@ -1405,6 +1405,7 @@ public class UserService {
             cmtLevelDeeper.setManga_comment_id(cmtLevel0.getManga_comment_id());
             cmtLevelDeeper.setManga_comment_time(cmtLevel0.getManga_comment_time());
             cmtLevelDeeper.setManga_comment_content(cmtLevel0.getManga_comment_content());
+            cmtLevelDeeper.setParent_id(cmtLevel0.getParent_id());
             cmtLevelDeeper.setLevel(cmtLevel0.getLevel());
             cmtLevelDeeper.setImage_url(cmtLevel0.getImage_url());
 
@@ -1448,11 +1449,11 @@ public class UserService {
                 if (flag.equals(false)) {
                     for (int i = 0; i < level0Size; i++) {
                         if (key == isAdded) {
-                            if (comments.get(i).getManga_comment_id().equals(parentCommentID) && cmtLevelDeeper.getLevel().equals("1")) {
-                                int index = comments.get(i).getComments_level_01().size() - 1;
-                                cmtsToRes.get(i).getComments_level_01().add(index, cmtLevelDeeper);
-                                break;
-                            }
+                                if (comments.get(i).getManga_comment_id().equals(parentCommentID) && cmtLevelDeeper.getLevel().equals("1")) {
+                                    int index = comments.get(i).getComments_level_01().size() - 1;
+                                    cmtsToRes.get(i).getComments_level_01().add(index, cmtLevelDeeper);
+                                    break;
+                                }
                         }
                         int level1Size = comments.get(i).getComments_level_01().size();
                         if (flag.equals(false)) {
