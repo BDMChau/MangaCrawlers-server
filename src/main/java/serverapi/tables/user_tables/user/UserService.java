@@ -3,6 +3,7 @@ package serverapi.tables.user_tables.user;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import serverapi.api.Response;
 import serverapi.configuration.cache.CacheService;
+import serverapi.helpers.OffsetBasedPageRequest;
 import serverapi.helpers.RoundNumber;
 import serverapi.helpers.UserAvatarCollection;
 import serverapi.query.dtos.features.MangaCommentDTOs.CommentTagsDTO;
@@ -657,7 +659,7 @@ public class UserService {
         exportComment.setUser_id(user.getUser_id());
         exportComment.setUser_name(user.getUser_name());
         exportComment.setUser_avatar(user.getUser_avatar());
-
+        exportComment.setComments_level_01(getLevelOptional.get().getComments_level_01());
 
         exportComment.setManga_id(manga.getManga_id());
 
@@ -1378,10 +1380,37 @@ public class UserService {
         if (inputCommentOptional.isEmpty()) {
             return new ArrayList<>();
         }
+        Pageable pageable = new OffsetBasedPageRequest(0,10);
+
+        /// chỗ này
         MangaCommentDTOs cmtLevel0 = inputCommentOptional.get();
+        List<CommentTreesDTO> level1 = mangaCommentsRepos.getCommentsChild(inputCommentID, "1", pageable);
+
+        if(!level1.isEmpty()){
+            level1.forEach(item ->{
+                List<CommentTreesDTO> level2 = mangaCommentsRepos.getCommentsChild(inputCommentID, "2", pageable);
+                if(!level2.isEmpty()){
+                    level2.forEach(lv2 ->{
+                        item.setComments_level_02(level2);
+                    });
+                }
+            });
+            cmtLevel0.setComments_level_01(level1);
+
+        }
+
         CommentTreesDTO cmtLevelDeeper = new CommentTreesDTO();
 
         if (!cmtLevel0.getLevel().equals("0")) {
+
+            if(cmtLevel0.getLevel().equals("1")){
+
+                List<CommentTreesDTO> level2 = mangaCommentsRepos.getCommentsChild(inputCommentID, "2", pageable);
+                if(!level2.isEmpty()){
+                    cmtLevelDeeper.setComments_level_02(level2);
+                }
+            }
+
             cmtLevelDeeper.setTo_users(cmtLevel0.getTo_users());
             cmtLevelDeeper.setUser_id(cmtLevel0.getUser_id());
             cmtLevelDeeper.setUser_name(cmtLevel0.getUser_name());
@@ -1438,7 +1467,10 @@ public class UserService {
                     for (int i = 0; i < level0Size; i++) {
                         if (key == isAdded) {
                                 if (comments.get(i).getManga_comment_id().equals(parentCommentID) && cmtLevelDeeper.getLevel().equals("1")) {
-                                    int index = comments.get(i).getComments_level_01().size() - 1;
+                                    int index = comments.get(i).getComments_level_01().size();
+                                    if(index > 1){
+                                        index -=1 ;
+                                    }
                                     cmtsToRes.get(i).getComments_level_01().add(index, cmtLevelDeeper);
                                     break;
                                 }
@@ -1450,7 +1482,10 @@ public class UserService {
                                 Long cmt01Id = comments.get(i).getComments_level_01().get(j).getManga_comment_id();
                                 if (key == isAdded) {
                                     if (comments.get(i).getManga_comment_id().equals(parentCommentID) && cmtLevelDeeper.getLevel().equals("2")) {
-                                        int index = comments.get(i).getComments_level_01().get(j).getComments_level_02().size() - 1;
+                                        int index = comments.get(i).getComments_level_01().get(j).getComments_level_02().size();
+                                        if(index > 1){
+                                            index -=1 ;
+                                        }
                                         cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().add(index, cmtLevelDeeper);
                                         flag = true;
                                         break;
