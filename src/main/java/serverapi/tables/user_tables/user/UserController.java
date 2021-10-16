@@ -205,21 +205,21 @@ public class UserController {
     public ResponseEntity filterAddComment(@Valid CommentPOJO commentPOJO) {
         Long commentID = 0L;
         List<MangaCommentDTOs> comments = commentPOJO.getComments();
-        String role = commentPOJO.getRole();
+        int key = commentPOJO.getKey();
 
-        if (commentPOJO.getManga_comment_id() == null || comments.isEmpty() || role.isEmpty()) {
+        if (commentPOJO.getManga_comment_id() == null || comments.isEmpty()) {
             Map<String, Object> msg = Map.of(
-                    "msg", "Cannot filter!"
+                    "err", "Cannot filter!"
             );
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         } else {
             commentID = Long.parseLong(commentPOJO.getManga_comment_id());
         }
 
-        List<MangaCommentDTOs> exportComment = userService.filterComment(commentID, comments, role);
+        List<MangaCommentDTOs> exportComment = userService.filterComment(commentID, comments, key);
         if (exportComment.isEmpty()) {
             Map<String, Object> msg = Map.of(
-                    "msg", "Cannot filter!",
+                    "err", "Cannot filter!",
                     "comment_info", exportComment
             );
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);

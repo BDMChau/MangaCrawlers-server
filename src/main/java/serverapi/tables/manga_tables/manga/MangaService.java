@@ -10,10 +10,13 @@ import org.springframework.stereotype.Service;
 import serverapi.api.Response;
 import serverapi.helpers.AdvancedSearchGenreId;
 import serverapi.helpers.OffsetBasedPageRequest;
-import serverapi.query.dtos.features.*;
+import serverapi.query.dtos.features.DailyMangaDTO;
 import serverapi.query.dtos.features.MangaCommentDTOs.CommentTagsDTO;
 import serverapi.query.dtos.features.MangaCommentDTOs.CommentTreesDTO;
 import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
+import serverapi.query.dtos.features.SearchCriteriaDTO;
+import serverapi.query.dtos.features.UpdateViewDTO;
+import serverapi.query.dtos.features.WeeklyMangaDTO;
 import serverapi.query.dtos.tables.*;
 import serverapi.query.repository.manga.ChapterRepos;
 import serverapi.query.repository.manga.GenreRepos;
@@ -737,51 +740,59 @@ public class MangaService {
 
     }
 
-    public ResponseEntity getChildComments(Long commentID, int from, int amount) {
+    public ResponseEntity getChildComments(Long commentID, List<MangaCommentDTOs> comments, int from, int amount, int level) {
         // Initialize variable
-        String level1 = "1";
-        String level2 = "2";
+        boolean isEnd = false;
+        int fromFromServer = from + amount;
         Pageable pageable = new OffsetBasedPageRequest(from, amount);
-
-        System.err.println("line746");
-        // Check commentID
+        Pageable childPageable = new OffsetBasedPageRequest(0, 2);
         Optional<MangaCommentDTOs> mangaCommentOptional = mangaCommentsRepos.findByCommentID(commentID);
-        System.err.println("line748 "+mangaCommentOptional.isEmpty());
-        if (mangaCommentOptional.isEmpty()) {
+
+        if (mangaCommentOptional.isEmpty() || comments.isEmpty()) {
             Map<String, Object> err = Map.of("err", "Comment not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
-        MangaCommentDTOs mangaComment = mangaCommentOptional.get();
-        System.err.println("mangaComment "+mangaComment);
+        List<CommentTreesDTO> childCmts;
+        if (level == 0) {
+            System.err.println("this is level 1");
+            childCmts = mangaCommentsRepos.getCommentsChild(commentID, "1", pageable);
+            if (!childCmts.isEmpty()) {
+                childCmts.forEach(item -> {
+                    List<CommentTreesDTO> cmtsLv2 = mangaCommentsRepos.getCommentsChild(item.getManga_comment_id(), "2", childPageable);
+                    if (!cmtsLv2.isEmpty()) {
+                        CommentTreesDTO finalItem = item;
+                        cmtsLv2.forEach(commentLv2 -> {
+                            commentLv2 = setListTags(commentLv2);
+                            finalItem.getComments_level_02().add(commentLv2);
+                        });
 
-        // Get comment
-        //set tags for comment
-        mangaComment = setListTags(mangaComment);
-        //get child comments
-        List<CommentTreesDTO> cmtsLv1 = mangaCommentsRepos.getCommentsChild(mangaComment.getManga_comment_id(), level1, pageable);
-        List<CommentTreesDTO> cmtsLv2 = mangaCommentsRepos.getCommentsChild(mangaComment.getManga_comment_id(), level2, pageable);
-
-        MangaCommentDTOs finalMangaComment = mangaComment;
-        cmtsLv1.forEach(lv01 -> {
-            CommentTreesDTO finalLv01 = lv01;
-            cmtsLv2.forEach(lv02 -> {
-                lv02 = setListTags(lv02);
-                if (finalMangaComment.getManga_comment_id() == lv02.getParent_id()) {
-                    finalLv01.getComments_level_02().add(lv02);
-                }
-            });
-
-            lv01 = setListTags(lv01);
-            if (finalMangaComment.getManga_comment_id() == lv01.getParent_id()) {
-                finalMangaComment.getComments_level_01().add(lv01);
+                    }
+                    item = setListTags(item);
+                });
             }
-        });
+        } else {
+            System.err.println("this is level 2");
+            childCmts = mangaCommentsRepos.getCommentsChild(commentID, "1", childPageable);
+            if(!childCmts.isEmpty()){
+                childCmts.forEach(item -> {
+                    item = setListTags(item);
+                });
+            }
+        }
+        if(childCmts.isEmpty() || childCmts.size() < amount){
+            isEnd = true;
+        }
+
+        comments = filterChildComment(commentID, comments, childCmts, level);
+
 
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get child's comments successfully!",
                 "msg02", "Don't use these: manga_comment_relation_id, parent_id, child_id, level, manga_comment_tag_id",
-                "comments", mangaComment
+                "comments", comments,
+                "from", fromFromServer,
+                "is_end", isEnd
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
@@ -806,4 +817,50 @@ public class MangaService {
         return commentTreesDTO;
     }
 
+    protected List<MangaCommentDTOs> filterChildComment(Long inputCommentID, List<MangaCommentDTOs> comments, List<CommentTreesDTO> childComments, int inputLevel) {
+
+        // Declare variable
+        Boolean flag = false;
+        if (!comments.isEmpty()) {
+            System.err.println("this is level deeper");
+            // Loop
+            int level0Size = comments.size();
+            for (int i = 0; i < level0Size; i++) {
+                int level1Size = comments.get(i).getComments_level_01().size();
+                Long parentID = comments.get(i).getParent_id();
+                if (parentID.equals(inputCommentID)) {
+                    if (inputLevel == 1) {
+                        int finalI = i;
+                        childComments.forEach(cComment -> {
+                            comments.get(finalI).getComments_level_01().add(cComment);
+                        });
+
+                        break;
+                    } else {
+                        for (int j = 0; j < level1Size; j++) {
+                            if (flag.equals(true)) {
+                                break;
+                            }
+
+                            int level2Size = comments.get(i).getComments_level_01().get(j).getComments_level_02().size();
+                            for (int k = 0; k < level2Size; k++) {
+                                int finalI1 = i;
+                                int finalJ = j;
+                                childComments.forEach(cComment -> {
+                                    comments.get(finalI1).getComments_level_01().get(finalJ).getComments_level_02().add(cComment);
+                                });
+
+                                flag = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (comments.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return comments;
+    }
 }
