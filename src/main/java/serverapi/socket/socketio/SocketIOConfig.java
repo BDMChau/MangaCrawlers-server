@@ -5,18 +5,18 @@ import com.corundumstudio.socketio.SocketIOServer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@Configuration("socket")
 public class SocketIOConfig {
 //    private String host = System.getenv("HOST_PRODUCTION02");
-    private String host = "localhost";
-    private Integer port = 4445;
-    private int bossCount = 1;
-    private int workCount = 100;
-    private boolean allowCustomRequests = true;
-    private int upgradeTimeout = 1000000;
-    private int pingTimeout = 6000000;
-    private int pingInterval = 250000;
-    private int maxFramePayloadLength = 1000000;
+    private final String host = "localhost";
+    private final Integer port = 4445;
+    private final int bossCount = 1;
+    private final int workCount = 100;
+    private final boolean allowCustomRequests = true;
+    private final int upgradeTimeout = 1000000;
+    private final int pingTimeout = 6000000;
+    private final int pingInterval = 250000;
+    private final int maxFramePayloadLength = 1000000;
 
 
     @Bean
