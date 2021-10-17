@@ -108,9 +108,11 @@ public class SocketIOService implements ISocketIOService {
 
         socketIOServer.addDisconnectListener(client -> {
             client.disconnect();
-            socketMessage.getListTo().forEach(toUser -> {
-                clientMap.remove(toUser);
-            });
+            if (socketMessage.getMessage() != null) {
+                socketMessage.getListTo().forEach(toUser -> {
+                    clientMap.remove(toUser);
+                });
+            }
         });
 
 

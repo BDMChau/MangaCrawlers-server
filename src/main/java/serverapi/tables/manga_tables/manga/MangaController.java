@@ -1,6 +1,8 @@
 package serverapi.tables.manga_tables.manga;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
@@ -57,7 +59,7 @@ public class MangaController {
         return mangaService.findMangaFromGenre(genreId);
     }
 
-
+    @ReadOperation
     @Cacheable(value = "mangaPage", key = "#manga_id")
     @GetMapping("/getmangapage")
     public ResponseEntity getMangaPage(@RequestParam(required = false) String manga_id) {

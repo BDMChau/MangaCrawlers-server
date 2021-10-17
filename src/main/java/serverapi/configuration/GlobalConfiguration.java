@@ -3,15 +3,19 @@ package serverapi.configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.filter.CommonsRequestLoggingFilter;
 import serverapi.authentication.RegistrationOauth;
 
 import java.util.Arrays;
@@ -27,7 +31,7 @@ public class GlobalConfiguration {
     private RegistrationOauth registrationOauth;
 
     @Autowired
-    public GlobalConfiguration(RegistrationOauth registrationOauth){
+    public GlobalConfiguration(RegistrationOauth registrationOauth) {
         this.registrationOauth = registrationOauth;
     }
 
@@ -47,7 +51,6 @@ public class GlobalConfiguration {
         return jsonConverter;
     }
 
-
     ////////////////////// OAuth
     @Bean
     public ClientRegistrationRepository clientRegistrationRepository() {
@@ -66,6 +69,18 @@ public class GlobalConfiguration {
                 clientRegistrationRepository());
     }
 
+    @Bean
+    public CommonsRequestLoggingFilter logFilter() {
+        CommonsRequestLoggingFilter filter = new CommonsRequestLoggingFilter();
+        filter.setBeforeMessagePrefix("BEFORE REQUEST: ");
+        filter.setIncludeQueryString(true);
+        filter.setIncludePayload(true);
+        filter.setMaxPayloadLength(9999999);
+        filter.setIncludeHeaders(false);
+        filter.setAfterMessagePrefix("AFTER REQUEST: ");
+        return filter;
+    }
+
 
     //////////// auto call http every 25 minutes to wake up app on heroku
 //    @Scheduled(fixedRate = 1500000)
@@ -76,7 +91,6 @@ public class GlobalConfiguration {
 //        con.connect();
 //        con.getResponseCode();
 //    }
-
 
 
 }
