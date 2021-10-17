@@ -11,6 +11,7 @@ import serverapi.tables.manga_tables.manga_comment.manga_comment_tags.CommentTag
 import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
 import serverapi.tables.user_tables.following_manga.FollowingManga;
 import serverapi.tables.manga_tables.rating_manga.RatingManga;
+import serverapi.tables.user_tables.friend_request_status.FriendRequestStatus;
 import serverapi.tables.user_tables.notification.notifications.Notifications;
 import serverapi.tables.user_tables.report.report_replies.ReportReplies;
 import serverapi.tables.user_tables.report.reports.Reports;
@@ -89,6 +90,14 @@ public class User {
     @JsonBackReference
     @OneToMany(mappedBy = "from_user", cascade = CascadeType.ALL)
     private Collection<Notifications> from_notifications;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Collection<FriendRequestStatus> friendRequestStatuses;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "to_user", cascade = CascadeType.ALL)
+    private Collection<FriendRequestStatus> to_friendRequestStatuses;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
