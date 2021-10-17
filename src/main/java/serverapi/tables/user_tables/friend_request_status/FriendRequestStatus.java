@@ -33,7 +33,7 @@ public class FriendRequestStatus {
     @JoinColumn(name = "user_id", insertable = true, updatable = true)
     private User user;
 
-    @Column(columnDefinition = "boolean default true", nullable = true)
+    @Column(columnDefinition = "boolean default false", nullable = true)
     private Boolean status;
 
     @JsonManagedReference
