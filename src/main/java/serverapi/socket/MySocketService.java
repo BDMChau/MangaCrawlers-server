@@ -45,20 +45,22 @@ public class MySocketService {
             user.setSocket_session_id(sessionId);
 
             userRepos.saveAndFlush(user);
-            System.err.println("Updated socket session_id of user_id: " + userId);
+            System.err.println("Updated socket sessionId of user_id: " + userId);
         }
     }
 
 
     public void pushMessageToUsersExceptSender() {
-        if(socketMessage.getListTo().isEmpty()) return;
-
         List listToUser = socketMessage.getListTo();
+
         listToUser.forEach(userVal -> {
             String type = userVal.getClass().getName();
 
             NotificationDTO dataToSend = notificationService.saveNew(type, userVal, socketMessage);
-            if (dataToSend != null) sendToUsersExceptSender(dataToSend);
+            if (dataToSend != null) {
+                sendToUsersExceptSender(dataToSend);
+            }
+
         });
     }
 
@@ -70,7 +72,7 @@ public class MySocketService {
     }
 
 
-    ///////////////////////////////////// send /////////////////////////////////////
+    ////////////////////////////////////////////////////////
     private void sendToUsersExceptSender(NotificationDTO dataToSend) {
         String receiverName = dataToSend.getReceiver_name();
 

@@ -18,7 +18,10 @@ import serverapi.query.dtos.features.MangaCommentDTOs.CommentTagsDTO;
 import serverapi.query.dtos.features.MangaCommentDTOs.CommentTreesDTO;
 import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
 import serverapi.query.dtos.features.SearchCriteriaDTO;
-import serverapi.query.dtos.tables.*;
+import serverapi.query.dtos.tables.FieldsCreateMangaDTO;
+import serverapi.query.dtos.tables.FollowingDTO;
+import serverapi.query.dtos.tables.MangaChapterDTO;
+import serverapi.query.dtos.tables.UserReadingHistoryDTO;
 import serverapi.query.repository.manga.*;
 import serverapi.query.repository.manga.comment.*;
 import serverapi.query.repository.user.*;
@@ -1343,26 +1346,11 @@ public class UserService {
                 "msg", "Remove avatar successfully!",
                 "avatar_url", user.getUser_avatar()
         );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                HttpStatus.OK);
     }
 
 
-    ////////////////////////////////////// unauthenticated parts //////////////////////////////////////
-        public ResponseEntity getUserInfo(Long userId){
-            Optional<UserDTO> userOptional = userRepos.findByUserId(userId);
-            if(userOptional.isEmpty()){
-                Map<String, Object> err = Map.of("err", "User does not exist!");
-                return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
-            }
-            UserDTO userDTO = userOptional.get();
-
-
-            Map<String, Object> msg = Map.of(
-                    "msg", "get user info OK!",
-                    "user", userDTO
-            );
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-        }
 
 
 
@@ -1392,36 +1380,36 @@ public class UserService {
         if (inputCommentOptional.isEmpty()) {
             return new ArrayList<>();
         }
-        Pageable pageable = new OffsetBasedPageRequest(0,10);
+        Pageable pageable = new OffsetBasedPageRequest(0, 10);
 
         /// chỗ này
         MangaCommentDTOs cmtLevel0 = inputCommentOptional.get();
-        List<CommentTreesDTO> level1 = mangaCommentsRepos.getCommentsChild(inputCommentID, "1", pageable);
-
-        if(!level1.isEmpty()){
-            level1.forEach(item ->{
-                List<CommentTreesDTO> level2 = mangaCommentsRepos.getCommentsChild(inputCommentID, "2", pageable);
-                if(!level2.isEmpty()){
-                    level2.forEach(lv2 ->{
-                        item.setComments_level_02(level2);
-                    });
-                }
-            });
-            cmtLevel0.setComments_level_01(level1);
-
-        }
+//        List<CommentTreesDTO> level1 = mangaCommentsRepos.getCommentsChild(inputCommentID, "1", pageable);
+//
+//        if(!level1.isEmpty()){
+//            level1.forEach(item ->{
+//                List<CommentTreesDTO> level2 = mangaCommentsRepos.getCommentsChild(inputCommentID, "2", pageable);
+//                if(!level2.isEmpty()){
+//                    level2.forEach(lv2 ->{
+//                        item.setComments_level_02(level2);
+//                    });
+//                }
+//            });
+//            cmtLevel0.setComments_level_01(level1);
+//
+//        }
 
         CommentTreesDTO cmtLevelDeeper = new CommentTreesDTO();
 
         if (!cmtLevel0.getLevel().equals("0")) {
 
-            if(cmtLevel0.getLevel().equals("1")){
-
-                List<CommentTreesDTO> level2 = mangaCommentsRepos.getCommentsChild(inputCommentID, "2", pageable);
-                if(!level2.isEmpty()){
-                    cmtLevelDeeper.setComments_level_02(level2);
-                }
-            }
+//            if(cmtLevel0.getLevel().equals("1")){
+//
+//                List<CommentTreesDTO> level2 = mangaCommentsRepos.getCommentsChild(inputCommentID, "2", pageable);
+//                if(!level2.isEmpty()){
+//                    cmtLevelDeeper.setComments_level_02(level2);
+//                }
+//            }
 
             cmtLevelDeeper.setTo_users(cmtLevel0.getTo_users());
             cmtLevelDeeper.setUser_id(cmtLevel0.getUser_id());
@@ -1459,6 +1447,7 @@ public class UserService {
                     for (int i = 0; i < comments.size(); i++) {
                         if (comments.get(i).getManga_comment_id().equals(commentID)) {
                             if (key == isUpdated) {
+                                cmtLevel0.setComments_level_01(comments.get(i).getComments_level_01());
                                 cmtsToRes.set(i, cmtLevel0);
                                 break;
                             } else if (key == isDeleted) {
@@ -1505,6 +1494,7 @@ public class UserService {
                                 } else {
                                     if (cmt01Id.equals(commentID)) {
                                         if (key == isUpdated) {
+                                            cmtLevelDeeper.setComments_level_02(comments.get(i).getComments_level_01().get(j).getComments_level_02());
                                             cmtsToRes.get(i).getComments_level_01().set(j, cmtLevelDeeper);
 
                                             flag = true;
@@ -1516,6 +1506,7 @@ public class UserService {
                                             flag = true;
                                             break;
                                         }
+                                    }
                                         ////////// 3rd loop, for update, delete
                                         if (flag.equals(false)) {
                                             int level2Size = comments.get(i).getComments_level_01().get(j).getComments_level_02().size();
@@ -1523,6 +1514,8 @@ public class UserService {
                                                 Long cmt02Id = comments.get(i).getComments_level_01().get(j).getComments_level_02().get(k).getManga_comment_id();
                                                 if (cmt02Id.equals(commentID)) {
                                                     if (key == isUpdated) {
+                                                        System.err.println("line 1516");
+                                                        System.err.println("cmt content " + cmtLevelDeeper.getManga_comment_content());
                                                         cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().set(k, cmtLevelDeeper);
                                                         flag = true;
                                                         break;
@@ -1539,7 +1532,7 @@ public class UserService {
                                 }
                             }
                         }
-                    }
+
                 }
             }
         }
