@@ -70,12 +70,12 @@ public class SocketIOService implements ISocketIOService {
             try {
                 Integer type = (Integer) data.get("type");
                 String message = String.valueOf(data.get("message"));
-                String imageUrl = String.valueOf(data.get("image"));
+                String imageUrl = String.valueOf(data.get("image_url"));
                 Long userId = Long.parseLong(String.valueOf(data.get("user_id")));
                 List listTo = (List) data.get("list_to"); // can be String user_email or Integer user_id
                 Map objData = (Map) data.get("obj_data");
 
-                if (imageUrl.equals("")) {
+                if (imageUrl == null || imageUrl.equals("")) {
                     objData.replace("image", getImageDefault("notify_img_default"));
                 }
 

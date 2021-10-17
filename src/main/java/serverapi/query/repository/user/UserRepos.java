@@ -10,6 +10,7 @@ import serverapi.query.dtos.features.ReportDTOs.ReportUserFollowMangaDTO;
 import serverapi.query.dtos.features.ReportDTOs.UserRDTO;
 import serverapi.query.dtos.tables.ChapterDTO;
 import serverapi.query.dtos.tables.MangaDTO;
+import serverapi.query.dtos.tables.UserDTO;
 import serverapi.query.dtos.tables.UserTransGroupDTO;
 import serverapi.query.specification.Specificationn;
 import serverapi.tables.manga_tables.manga.Manga;
@@ -34,18 +35,10 @@ public interface UserRepos extends JpaRepository<User, Long>, JpaSpecificationEx
     List<ReportUserFollowMangaDTO> findAllFollwingManga(Pageable pageable);
 
 
-//    @Query("SELECT new serverapi.Query.DTO.UserTransgroupDTO(u.user_id, u.user_name, u.user_email, user_avatar," +
-//            " tg.transgroup_id)" +
-//            " FROM TransGroup tg JOIN tg.users u" +
-//            " WHERE tg.transgroup_id =?1")
-//    List<UserTransgroupDTO> getUsersTransgroup(Long transgroup_id);
-
     @Query("SELECT new serverapi.query.dtos.tables.UserTransGroupDTO(u.user_id, u.user_name, u.user_email, u.user_avatar, tg.transgroup_id)" +
             "FROM TransGroup tg INNER JOIN tg.users u WHERE tg.transgroup_id =?1 ORDER BY u.user_id DESC")
     List<UserTransGroupDTO> getUsersTransGroup(Long transgroup_id);
 
-//    @Query("SELECT new serverapi.Query.DTO.UserDTO(u.user_id, u.user_name, u.user_email, u.user_avatar")
-//    Optional<UserDTO> getUser(Long UserDTO);
 
     @Query("SELECT new serverapi.query.dtos.features.ReportDTOs.ReportTopMangaDTO(a.author_id,a.author_name, m.manga_id, m.manga_name, m.thumbnail, m.stars, m.views, m.date_publications, m.created_at)" +
             "FROM Manga m JOIN m.author a ORDER BY m.views DESC ")
@@ -55,11 +48,20 @@ public interface UserRepos extends JpaRepository<User, Long>, JpaSpecificationEx
     @Query("SELECT new serverapi.query.dtos.features.ReportDTOs.UserRDTO(u.user_id, u.created_at) FROM User u")
     List<UserRDTO> getAllUser();
 
+
     @Query("SELECT u FROM User u JOIN u.transgroup WHERE u.user_id = ?1")
     Optional<TransGroup> getTransGroupById(Long userId);
 
 
     @Query("SELECT u FROM User u WHERE u.user_email = ?1")
     Optional<User> findByEmail(String email);
+
+
+    @Query("""
+            SELECT new serverapi.query.dtos.tables.UserDTO(u.user_id, u.user_name, u.user_email, u.user_avatar, u.user_desc) 
+            FROM User u LEFT JOIN TransGroup transgr ON u.transgroup.transgroup_id = transgr.transgroup_id
+            WHERE u.user_id = ?1
+            """)
+    Optional<UserDTO> findByUserId(Long userId);
 }
 
