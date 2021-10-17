@@ -83,7 +83,7 @@ public class NotificationService {
     /////////////////////// for socket ///////////////////////
 
     /**
-     * @param receiverID:    can be String userEmail or Long userId
+     * @param receiverID: can be String userEmail or Long userId
      * @param socketMessage: data to save to database
      */
     public NotificationDTO saveNew(String receiverIDType, Object receiverID, SocketMessage socketMessage) {
@@ -97,9 +97,7 @@ public class NotificationService {
             userOptional = userRepos.findById(userId);
         }
 
-        if (userOptional.isEmpty()) {
-            return null;
-        }
+        if (userOptional.isEmpty()) return null;
         User receiver = userOptional.get();
         User sender = userRepos.findById(socketMessage.getUserId()).get();
 
@@ -116,7 +114,7 @@ public class NotificationService {
         notifications.setIs_viewed(false);
         notifications.setCreated_at(currentTime);
 
-        if (socketMessage.getObjData().get("target_id").equals("") || !socketMessage.getObjData().get("target_title").equals("")) {
+        if (!socketMessage.getObjData().get("target_id").equals("") || !socketMessage.getObjData().get("target_title").equals("")) {
             Long targetId = Long.parseLong(String.valueOf(socketMessage.getObjData().get("target_id")));
             String targetTitle = String.valueOf(socketMessage.getObjData().get("target_title"));
 

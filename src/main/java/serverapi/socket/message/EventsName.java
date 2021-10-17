@@ -1,8 +1,10 @@
 package serverapi.socket.message;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class EventsName {
     String UPDATE_SOCKETID = "updateSocketId";
 

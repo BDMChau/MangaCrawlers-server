@@ -18,10 +18,7 @@ import serverapi.query.dtos.features.MangaCommentDTOs.CommentTagsDTO;
 import serverapi.query.dtos.features.MangaCommentDTOs.CommentTreesDTO;
 import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
 import serverapi.query.dtos.features.SearchCriteriaDTO;
-import serverapi.query.dtos.tables.FieldsCreateMangaDTO;
-import serverapi.query.dtos.tables.FollowingDTO;
-import serverapi.query.dtos.tables.MangaChapterDTO;
-import serverapi.query.dtos.tables.UserReadingHistoryDTO;
+import serverapi.query.dtos.tables.*;
 import serverapi.query.repository.manga.*;
 import serverapi.query.repository.manga.comment.*;
 import serverapi.query.repository.user.*;
@@ -1346,11 +1343,26 @@ public class UserService {
                 "msg", "Remove avatar successfully!",
                 "avatar_url", user.getUser_avatar()
         );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
-                HttpStatus.OK);
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
 
+    ////////////////////////////////////// unauthenticated parts //////////////////////////////////////
+        public ResponseEntity getUserInfo(Long userId){
+            Optional<UserDTO> userOptional = userRepos.findByUserId(userId);
+            if(userOptional.isEmpty()){
+                Map<String, Object> err = Map.of("err", "User does not exist!");
+                return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+            }
+            UserDTO userDTO = userOptional.get();
+
+
+            Map<String, Object> msg = Map.of(
+                    "msg", "get user info OK!",
+                    "user", userDTO
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
 
 
 
