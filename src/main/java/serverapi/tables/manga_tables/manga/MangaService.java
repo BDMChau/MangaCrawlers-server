@@ -757,22 +757,20 @@ public class MangaService {
             System.err.println("this is level 1");
             childCmts = mangaCommentsRepos.getCommentsChild(commentID, "1", pageable);
             if (!childCmts.isEmpty()) {
+                List<CommentTreesDTO> cmtsLv2 = mangaCommentsRepos.getCommentsChild(commentID, "2", childPageable);
                 childCmts.forEach(item -> {
-                    List<CommentTreesDTO> cmtsLv2 = mangaCommentsRepos.getCommentsChild(item.getManga_comment_id(), "2", childPageable);
                     if (!cmtsLv2.isEmpty()) {
-                        CommentTreesDTO finalItem = item;
                         cmtsLv2.forEach(commentLv2 -> {
                             commentLv2 = setListTags(commentLv2);
-                            finalItem.getComments_level_02().add(commentLv2);
                         });
-
+                        item.setComments_level_02(cmtsLv2);
                     }
                     item = setListTags(item);
                 });
             }
         } else {
             System.err.println("this is level 2");
-            childCmts = mangaCommentsRepos.getCommentsChild(commentID, "1", childPageable);
+            childCmts = mangaCommentsRepos.getCommentsChild(commentID, "2", pageable);
             if(!childCmts.isEmpty()){
                 childCmts.forEach(item -> {
                     item = setListTags(item);
