@@ -1361,7 +1361,7 @@ public class UserService {
                 "msg", "get friends request OK!",
                 "requests", requests
         );
-        return new ResponseEntity<>(new Response(200, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
 

@@ -152,10 +152,13 @@ public class UserController {
     }
 
 
+    @Cacheable(value = "get_friend_requests", key = "{#request.getAttribute(\"user\").get(\"user_id\")}")
     @GetMapping("/get_friend_requests")
-    public ResponseEntity getFriendRequests(@RequestParam(required = false) String user_id) throws IOException {
+    public ResponseEntity getFriendRequests(ServletRequest request) throws IOException {
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
 
-        return userService.getFriendRequests(Long.parseLong(user_id));
+        return userService.getFriendRequests(userId);
     }
 
 

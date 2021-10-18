@@ -30,4 +30,5 @@ public class UserControllerUnAuth {
 
         return userService.getUserInfo(userId);
     }
+
 }
