@@ -1,4 +1,4 @@
 package serverapi.query.repository.user;
 
-public class FriendRequestRepos {
+public interface FriendRequestRepos {
 }
