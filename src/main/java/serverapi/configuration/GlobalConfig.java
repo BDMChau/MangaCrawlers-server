@@ -1,8 +1,11 @@
 package serverapi.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -15,6 +18,8 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
+import org.zalando.logbook.*;
+import org.zalando.logbook.json.JsonHttpLogFormatter;
 import serverapi.authentication.RegistrationOauth;
 
 import java.util.Arrays;
@@ -23,25 +28,25 @@ import java.util.stream.Collectors;
 
 @Configuration
 @EnableScheduling
-public class GlobalConfiguration {
+public class GlobalConfig {
     private static List<String> clients = Arrays.asList("google");
 
 
     private RegistrationOauth registrationOauth;
 
     @Autowired
-    public GlobalConfiguration(RegistrationOauth registrationOauth) {
+    protected GlobalConfig(RegistrationOauth registrationOauth) {
         this.registrationOauth = registrationOauth;
     }
 
     @Bean
-    public void greeting() {
+    protected void greeting() {
         System.out.println("Welcome to my manga application!");
         System.out.println("Server is running at port 4000");
     }
 
     @Bean
-    public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
+    protected MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
         MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
         ObjectMapper objectMapper = jsonConverter.getObjectMapper();
         objectMapper.registerModule(new Hibernate5Module());
@@ -52,7 +57,7 @@ public class GlobalConfiguration {
 
     ////////////////////// OAuth
     @Bean
-    public ClientRegistrationRepository clientRegistrationRepository() {
+    protected ClientRegistrationRepository clientRegistrationRepository() {
         List<ClientRegistration> registrations = clients.stream()
                 .map(client -> registrationOauth.getRegistration(client))
                 .filter(registration -> registration != null)
@@ -62,24 +67,17 @@ public class GlobalConfiguration {
     }
 
     @Bean
-    public OAuth2AuthorizedClientService authorizedClientService() {
-
+    protected OAuth2AuthorizedClientService authorizedClientService() {
         return new InMemoryOAuth2AuthorizedClientService(
                 clientRegistrationRepository());
     }
 
-    @Bean
-    public CommonsRequestLoggingFilter logFilter() {
-        CommonsRequestLoggingFilter filter = new CommonsRequestLoggingFilter();
-        filter.setBeforeMessagePrefix("BEFORE REQUEST: ");
-        filter.setIncludeQueryString(true);
-        filter.setIncludePayload(true);
-        filter.setMaxPayloadLength(9999999);
-        filter.setIncludeHeaders(false);
-        filter.setAfterMessagePrefix("AFTER REQUEST: ");
-        return filter;
-    }
 
+    @Bean
+    public HttpLogFormatter httpFormatter() {
+        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        return new JsonHttpLogFormatter(mapper);
+    }
 
     //////////// auto call http every 25 minutes to wake up app on heroku
 //    @Scheduled(fixedRate = 1500000)
