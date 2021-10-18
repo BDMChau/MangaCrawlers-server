@@ -18,10 +18,7 @@ import serverapi.query.dtos.features.MangaCommentDTOs.CommentTagsDTO;
 import serverapi.query.dtos.features.MangaCommentDTOs.CommentTreesDTO;
 import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
 import serverapi.query.dtos.features.SearchCriteriaDTO;
-import serverapi.query.dtos.tables.FieldsCreateMangaDTO;
-import serverapi.query.dtos.tables.FollowingDTO;
-import serverapi.query.dtos.tables.MangaChapterDTO;
-import serverapi.query.dtos.tables.UserReadingHistoryDTO;
+import serverapi.query.dtos.tables.*;
 import serverapi.query.repository.manga.*;
 import serverapi.query.repository.manga.comment.*;
 import serverapi.query.repository.user.*;
@@ -71,6 +68,7 @@ public class UserService {
     private final CommentImageRepos commentImageRepos;
     private final CommentTagsRepos commentTagsRepos;
     private final CommentLikesRepos commentLikesRepos;
+    private final NotificationRepos notificationRepos;
 
     @Autowired
     CacheService cacheService;
@@ -82,7 +80,7 @@ public class UserService {
                        MangaCommentsRepos mangaCommentsRepos, RatingMangaRepos ratingMangaRepos,
                        TransGroupRepos transGroupRepos, GenreRepos genreRepos, MangaGenreRepos mangaGenreRepos,
                        AuthorRepos authorRepos, ImgChapterRepos imgChapterRepos, CommentRelationRepos commentRelationRepos,
-                       CommentImageRepos commentImageRepos, CommentTagsRepos commentTagsRepos, CommentLikesRepos commentLikesRepos) {
+                       CommentImageRepos commentImageRepos, CommentTagsRepos commentTagsRepos, CommentLikesRepos commentLikesRepos, NotificationRepos notificationRepos) {
         this.mangaRepository = mangaRepository;
         this.followingRepos = followingRepos;
         this.userRepos = userRepos;
@@ -99,6 +97,7 @@ public class UserService {
         this.commentImageRepos = commentImageRepos;
         this.commentTagsRepos = commentTagsRepos;
         this.commentLikesRepos = commentLikesRepos;
+        this.notificationRepos = notificationRepos;
     }
 
 
@@ -300,6 +299,7 @@ public class UserService {
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
     }
+
 
     /////////////////////////////////////// COMMENT /////////////////////////////////
     public ResponseEntity addCommentManga(List<Long> toUsersID, Long userID, Long mangaID, Long chapterID,
@@ -1352,6 +1352,34 @@ public class UserService {
 
 
 
+    ////////////////////////////////////// unauthenticated parts //////////////////////////////////////
+    public ResponseEntity getFriendRequests(Long userId){
+        List<NotificationDTO> requests = notificationRepos.getListByUserIdAndType(userId,2);
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "get friends request OK!",
+                "requests", requests
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+    }
+
+
+    public ResponseEntity getUserInfo(Long userId){
+        Optional<UserDTO> userOptional = userRepos.findByUserId(userId);
+        if(userOptional.isEmpty()){
+            Map<String, Object> err = Map.of("err", "User does not exist!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+        }
+        UserDTO userDTO = userOptional.get();
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "get user info OK!",
+                "user", userDTO
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
 
 
     /////////////////////////////////////// HELPERS /////////////////////////////////

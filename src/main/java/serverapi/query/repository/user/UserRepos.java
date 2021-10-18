@@ -10,6 +10,7 @@ import serverapi.query.dtos.features.ReportDTOs.ReportUserFollowMangaDTO;
 import serverapi.query.dtos.features.ReportDTOs.UserRDTO;
 import serverapi.query.dtos.tables.ChapterDTO;
 import serverapi.query.dtos.tables.MangaDTO;
+import serverapi.query.dtos.tables.UserDTO;
 import serverapi.query.dtos.tables.UserTransGroupDTO;
 import serverapi.query.specification.Specificationn;
 import serverapi.tables.manga_tables.manga.Manga;
@@ -61,5 +62,12 @@ public interface UserRepos extends JpaRepository<User, Long>, JpaSpecificationEx
 
     @Query("SELECT u FROM User u WHERE u.user_email = ?1")
     Optional<User> findByEmail(String email);
+
+    @Query("""
+            SELECT new serverapi.query.dtos.tables.UserDTO(u.user_id, u.user_name, u.user_email, u.user_avatar, u.user_desc) 
+            FROM User u LEFT JOIN TransGroup transgr ON u.transgroup.transgroup_id = transgr.transgroup_id
+            WHERE u.user_id = ?1
+            """)
+    Optional<UserDTO> findByUserId(Long userId);
 }
 

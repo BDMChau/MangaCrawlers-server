@@ -152,6 +152,14 @@ public class UserController {
     }
 
 
+    @GetMapping("/get_friend_requests")
+    public ResponseEntity getFriendRequests(@RequestParam(required = false) String user_id) throws IOException {
+
+        return userService.getFriendRequests(Long.parseLong(user_id));
+    }
+
+
+
     @PostMapping("/addcommentmanga")
     public ResponseEntity addCommentManga(@Valid CommentPOJO commentPOJO, ServletRequest request) throws IOException {
 
