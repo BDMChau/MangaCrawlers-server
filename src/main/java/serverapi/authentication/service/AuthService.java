@@ -135,8 +135,7 @@ public class AuthService implements IAuthService {
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
         }
         User user = optionalUser.get();
-
-
+ 
         // this user just created account with google oauth, so the password will be null
         if (user.getUser_password().equals("")) {
             Map<String, String> error = Map.of("err", "This user does not have password!");
