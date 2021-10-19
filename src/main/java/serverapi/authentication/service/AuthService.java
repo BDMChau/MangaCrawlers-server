@@ -151,11 +151,11 @@ public class AuthService implements IAuthService {
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
         }
 
-        Boolean isVerified = user.getUser_isVerified();
-        if (Boolean.FALSE.equals(isVerified)) {
-            Map<String, String> error = Map.of("err", "Check email to verify the account!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
-        }
+//        Boolean isVerified = user.getUser_isVerified();
+//        if (Boolean.FALSE.equals(isVerified)) {
+//            Map<String, String> error = Map.of("err", "Check email to verify the account!");
+//            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(), HttpStatus.ACCEPTED);
+//        }
 
         Map userData = getCustomFieldsUser(user);
 
