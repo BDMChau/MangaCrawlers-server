@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import serverapi.tables.user_tables.user.User;
+import serverapi.tables.user_tables.user_relations.UserRelations;
 
 import javax.persistence.*;
 import java.util.Calendar;
@@ -44,4 +45,7 @@ public class FriendRequestStatus {
 
     @Column(columnDefinition = "timestamp with time zone", nullable = true)
     private Calendar time_accepted;
+
+    @OneToOne(mappedBy = "friendRequest")
+    private UserRelations userRelations;
 }

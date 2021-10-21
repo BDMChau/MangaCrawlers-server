@@ -17,7 +17,8 @@ import serverapi.tables.user_tables.report.report_replies.ReportReplies;
 import serverapi.tables.user_tables.report.reports.Reports;
 import serverapi.tables.user_tables.reading_history.ReadingHistory;
 import serverapi.tables.user_tables.trans_group.TransGroup;
-import serverapi.tables.user_tables.user_relations.userRelations;
+import serverapi.tables.user_tables.user_relations.UserRelations;
+
 
 import javax.persistence.*;
 import java.util.Calendar;
@@ -61,11 +62,11 @@ public class User {
 
     @JsonBackReference
     @OneToMany(mappedBy = "parent_id", cascade = CascadeType.ALL)
-    private Collection<userRelations> parentUserRelations;
+    private Collection<UserRelations> parentUserRelations;
 
     @JsonBackReference
     @OneToMany(mappedBy = "child_id", cascade = CascadeType.ALL)
-    private Collection<userRelations> childUserRelations;
+    private Collection<UserRelations> childUserRelations;
 
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
