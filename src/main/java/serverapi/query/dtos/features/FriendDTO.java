@@ -48,4 +48,10 @@ public class FriendDTO {
     }
 
 
+    public FriendDTO(Long user_relations_id, Long user_id, Long to_user_id, Long friend_request_id) {
+        this.user_relations_id = user_relations_id;
+        this.user_id = user_id;
+        this.to_user_id = to_user_id;
+        this.friend_request_id = friend_request_id;
+    }
 }

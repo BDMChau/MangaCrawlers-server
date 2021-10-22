@@ -8,22 +8,27 @@ import serverapi.api.Response;
 import serverapi.helpers.OffsetBasedPageRequest;
 import serverapi.query.dtos.features.FriendDTO;
 import serverapi.query.repository.user.FriendRequestRepos;
+import serverapi.query.repository.user.UserRelationsRepos;
 import serverapi.query.repository.user.UserRepos;
 import serverapi.tables.user_tables.user.User;
+import serverapi.tables.user_tables.user_relations.UserRelations;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class FriendService {
     private final UserRepos userRepos;
     private final FriendRequestRepos friendRequestRepos;
+    private final UserRelationsRepos userRelationsRepos;
 
-    public FriendService(UserRepos userRepos, FriendRequestRepos friendRequestRepos) {
+    public FriendService(UserRepos userRepos, FriendRequestRepos friendRequestRepos, UserRelationsRepos userRelationsRepos) {
         this.userRepos = userRepos;
         this.friendRequestRepos = friendRequestRepos;
+        this.userRelationsRepos = userRelationsRepos;
     }
 
     public ResponseEntity getListFriends(Long userID, int from, int amount) {
@@ -55,6 +60,73 @@ public class FriendService {
         exportUser.setUser_email(user.getUser_email());
         exportUser.setStatus(true);
 
+        List<FriendDTO> exportListFriends = filterListFriends(getListFriends, userID);
+        if (exportListFriends.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Empty list friends!"
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(),
+                    HttpStatus.ACCEPTED);
+        }
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get list Friend successfully!",
+                "don't_use_these_param", "status, list_friends",
+                "user_info", exportUser,
+                "list_friends", exportListFriends
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                HttpStatus.OK);
+    }
+
+
+    public ResponseEntity unFriend(Long userID, Long toUserID, List<FriendDTO> listFriends) {
+
+        Optional<User> toUserOptional = userRepos.findById(toUserID);
+        User toUser = toUserOptional.get();
+        FriendDTO exportUser = new FriendDTO();
+        exportUser.setUser_id(toUser.getUser_id());
+        exportUser.setUser_name(toUser.getUser_name());
+        exportUser.setUser_avatar(toUser.getUser_avatar());
+        exportUser.setUser_email(toUser.getUser_email());
+        exportUser.setStatus(true);
+
+        Optional<FriendDTO> targetUser = friendRequestRepos.findFriendByUserId(userID, toUserID);
+        if (targetUser.isEmpty() || listFriends.isEmpty() || targetUser.get().getUser_relations_id() != null) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Cannot unfriend!"
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(),
+                    HttpStatus.ACCEPTED);
+        }
+        Optional<UserRelations> userRelations = userRelationsRepos.findById(targetUser.get().getUser_relations_id());
+        UserRelations targetRelation = userRelations.get();
+        targetRelation.setFriendRequest(null);
+        userRelationsRepos.saveAndFlush(targetRelation);
+
+        List<FriendDTO> exportListFriends = filterListFriends(listFriends, userID);
+        if (!listFriends.isEmpty()) {
+            AtomicBoolean flag = new AtomicBoolean(false);
+            exportListFriends.forEach(friend -> {
+                if (flag.get() == false) {
+                    if (friend.getUser_id().equals(toUserID)) {
+                        exportListFriends.remove(friend);
+                        flag.set(true);
+                    }
+                }
+            });
+        }
+        Map<String, Object> msg = Map.of(
+                "msg", "Un Friend successfully!",
+                "target_user", exportUser,
+                "list_friends_after_delete", exportListFriends
+                );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                HttpStatus.OK);
+    }
+
+    /////////////////////////////Helper///////////////////////////////
+    private List<FriendDTO> filterListFriends(List<FriendDTO> getListFriends, Long userID) {
         List<FriendDTO> exportListFriends = new ArrayList<>();
         getListFriends.forEach(friend -> {
             if (friend.isStatus()) {
@@ -90,22 +162,10 @@ public class FriendService {
             }
         });
         if (exportListFriends.isEmpty()) {
-            Map<String, Object> msg = Map.of(
-                    "msg", "Empty list friends!"
-            );
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(),
-                    HttpStatus.ACCEPTED);
+            return new ArrayList<>();
         }
-
-        Map<String, Object> msg = Map.of(
-                "msg", "Get list Friend successfully!",
-                "don't_use_these_param","status, list_friends",
-                "user_info", exportUser,
-                "list_friends", exportListFriends
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
-                HttpStatus.OK);
+        return exportListFriends;
     }
-
-
 }
+
+
