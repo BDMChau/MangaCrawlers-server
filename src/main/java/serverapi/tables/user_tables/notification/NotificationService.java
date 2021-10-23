@@ -69,7 +69,7 @@ public class NotificationService {
     @Transactional
     public ResponseEntity getListNotifications(Long userId, Integer fromPos) {
         Pageable pageable = new OffsetBasedPageRequest(fromPos, 5);
-        List<NotificationDTO> notificationsList = notificationRepos.getListByUserId(userId, pageable);
+        List<NotificationDTO> notificationsList = notificationRepos.getAllByUserId(userId, pageable);
 
         Map<String, Object> msg = Map.of(
                 "msg", "get list notifications OK",

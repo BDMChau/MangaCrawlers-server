@@ -1354,7 +1354,7 @@ public class UserService {
 
     ////////////////////////////////////// unauthenticated parts //////////////////////////////////////
     public ResponseEntity getFriendRequests(Long userId){
-        List<NotificationDTO> requests = notificationRepos.getListByUserIdAndType(userId,2);
+        List<NotificationDTO> requests = notificationRepos.getListByUserIdAndTypeAndNotInteract(userId,2);
 
 
         Map<String, Object> msg = Map.of(
