@@ -43,7 +43,7 @@ public class FriendController {
         return friendService.getListFriends(userID, from, amount);
     }
 
-    @PostMapping("/un_friend")
+    @PostMapping("/unfriend")
     public ResponseEntity unFriend(ServletRequest request, @RequestBody String to_user_id, List<FriendDTO> listFriends) {
         String sUserId = getUserAttribute(request).get("user_id").toString();
         if(sUserId.isEmpty() || to_user_id.isEmpty()){
