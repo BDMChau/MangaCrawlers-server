@@ -1351,8 +1351,6 @@ public class UserService {
     }
 
 
-
-    ////////////////////////////////////// unauthenticated parts //////////////////////////////////////
     public ResponseEntity getFriendRequests(Long userId){
         List<NotificationDTO> requests = notificationRepos.getListByUserIdAndTypeAndNotInteract(userId,2);
 
@@ -1365,6 +1363,7 @@ public class UserService {
     }
 
 
+    ////////////////////////////////////// unauthenticated parts //////////////////////////////////////
     public ResponseEntity getUserInfo(Long userId){
         Optional<UserDTO> userOptional = userRepos.findByUserId(userId);
         if(userOptional.isEmpty()){

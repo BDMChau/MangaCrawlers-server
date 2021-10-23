@@ -40,7 +40,7 @@ public class NotificationService {
 
 
     @Transactional
-    public ResponseEntity updateToViewed(Long userId) {
+    protected ResponseEntity updateToViewed(Long userId) {
         List<Notifications> notificationsList = notificationRepos.getAllByUserId(userId);
 
         notificationsList.forEach(notification -> {
@@ -54,11 +54,11 @@ public class NotificationService {
     }
 
 
-    @Transactional
-    public ResponseEntity updateToInteracted(Long notificationId) {
+    protected ResponseEntity updateToInteracted(Long notificationId) {
         Notifications notification = notificationRepos.findById(notificationId).get();
 
         notification.setIs_interacted(true);
+        notification.setIs_viewed(true);
         notificationRepos.saveAndFlush(notification);
 
         Map<String, Object> msg = Map.of("msg", "updated interacted notification");
@@ -66,8 +66,7 @@ public class NotificationService {
     }
 
 
-    @Transactional
-    public ResponseEntity getListNotifications(Long userId, Integer fromPos) {
+    protected ResponseEntity getListNotifications(Long userId, Integer fromPos) {
         Pageable pageable = new OffsetBasedPageRequest(fromPos, 5);
         List<NotificationDTO> notificationsList = notificationRepos.getAllByUserId(userId, pageable);
 
@@ -80,7 +79,18 @@ public class NotificationService {
     }
 
 
-    /////////////////////// for socket ///////////////////////
+    ////////////////////////////////////////////// usable //////////////////////////////////////////////
+    public void updateInteractedById(Long notificationId) {
+        Notifications notification = notificationRepos.findById(notificationId).get();
+
+        notification.setIs_interacted(true);
+        notification.setIs_viewed(true);
+        notificationRepos.saveAndFlush(notification);
+    }
+
+
+
+    ////////////////////////////////////////////// for socket //////////////////////////////////////////////
 
     /**
      * @param receiverID:    can be String userEmail or Long userId
@@ -103,6 +113,9 @@ public class NotificationService {
         User receiver = userOptional.get();
         User sender = userRepos.findById(socketMessage.getUserId()).get();
 
+        String imgUrl = socketMessage.getImage_url();
+        if(socketMessage.getImage_url().equals("null")) imgUrl = null;
+
         NotificationTypes notificationTypes = new NotificationTypes();
         Notifications notifications = new Notifications();
 
@@ -110,7 +123,7 @@ public class NotificationService {
 
         notifications.setNotification_type(notificationTypes);
         notifications.setContent(socketMessage.getMessage());
-        notifications.setImage_url(socketMessage.getImage_url());
+        notifications.setImage_url(imgUrl);
         notifications.setFrom_user(sender);
         notifications.setTo_user(receiver);
         notifications.setIs_viewed(false);
