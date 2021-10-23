@@ -388,7 +388,7 @@ public class UserService {
 
         String image_url = null;
         System.err.println(image != null);
-        if (image!= null) {
+        if (image != null) {
             Map cloudinaryResponse = cloudinaryUploader.uploadImg(
                     image.getBytes(),
                     manga.getManga_name(),
@@ -403,8 +403,8 @@ public class UserService {
             commentImages.setManga_comment(mangaComments);
             commentImageRepos.saveAndFlush(commentImages);
             image_url = securedUrl;
-        }else{
-            if(stickerUrl != null && !stickerUrl.isEmpty()){
+        } else {
+            if (stickerUrl != null && !stickerUrl.isEmpty()) {
 
                 CommentImages commentImages = new CommentImages();
                 commentImages.setImage_url(stickerUrl);
@@ -428,9 +428,9 @@ public class UserService {
 
         // check level
         String level = "0";
-        if (mangaComments.getManga_comment_id().equals(parent.getManga_comment_id()))  level = "0";
+        if (mangaComments.getManga_comment_id().equals(parent.getManga_comment_id())) level = "0";
         else {
-            if (toUser.getUser_id().equals(parent.getUser().getUser_id()))  level = "1";
+            if (toUser.getUser_id().equals(parent.getUser().getUser_id())) level = "1";
             else level = "2";
         }
 
@@ -459,7 +459,7 @@ public class UserService {
             exportComment.setChapter_name(chapter.getChapter_name());
             exportComment.setCreated_at(chapter.getCreated_at());
         }
-        if(!level.equals("0")){
+        if (!level.equals("0")) {
             exportComment.setLevel(level);
         }
 
@@ -471,7 +471,6 @@ public class UserService {
         exportComment.setParent_id(parent.getManga_comment_id());
 
         exportComment.setImage_url(image_url);
-
 
 
         Map<String, Object> msg = Map.of(
@@ -1276,7 +1275,6 @@ public class UserService {
     }
 
 
-
     /////////////////////////////////////// PROFILE /////////////////////////////////
     public ResponseEntity updateAvatar(String fileName, byte[] fileBytes, Long userId) throws IOException,
             ParseException {
@@ -1485,7 +1483,7 @@ public class UserService {
                     }
                 }
                 return cmtsToRes;
-            }else {
+            } else {
                 System.err.println("this is level deeper");
                 Long commentID = cmtLevelDeeper.getManga_comment_id();
                 Long parentCommentID = cmtLevelDeeper.getParent_id();
@@ -1494,14 +1492,14 @@ public class UserService {
                 if (flag.equals(false)) {
                     for (int i = 0; i < level0Size; i++) {
                         if (key == isAdded) {
-                                if (comments.get(i).getManga_comment_id().equals(parentCommentID) && cmtLevelDeeper.getLevel().equals("1")) {
-                                    int index = comments.get(i).getComments_level_01().size();
-                                    if(index > 1){
-                                        index -=1 ;
-                                    }
-                                    cmtsToRes.get(i).getComments_level_01().add(index, cmtLevelDeeper);
-                                    break;
+                            if (comments.get(i).getManga_comment_id().equals(parentCommentID) && cmtLevelDeeper.getLevel().equals("1")) {
+                                int index = comments.get(i).getComments_level_01().size();
+                                if (index > 1) {
+                                    index -= 1;
                                 }
+                                cmtsToRes.get(i).getComments_level_01().add(index, cmtLevelDeeper);
+                                break;
+                            }
                         }
                         int level1Size = comments.get(i).getComments_level_01().size();
                         if (flag.equals(false)) {
@@ -1511,8 +1509,8 @@ public class UserService {
                                 if (key == isAdded) {
                                     if (comments.get(i).getManga_comment_id().equals(parentCommentID) && cmtLevelDeeper.getLevel().equals("2")) {
                                         int index = comments.get(i).getComments_level_01().get(j).getComments_level_02().size();
-                                        if(index > 1){
-                                            index -=1 ;
+                                        if (index > 1) {
+                                            index -= 1;
                                         }
                                         cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().add(index, cmtLevelDeeper);
                                         flag = true;
@@ -1534,24 +1532,23 @@ public class UserService {
                                             break;
                                         }
                                     }
-                                        ////////// 3rd loop, for update, delete
-                                        if (flag.equals(false)) {
-                                            int level2Size = comments.get(i).getComments_level_01().get(j).getComments_level_02().size();
-                                            for (int k = 0; k < level2Size; k++) {
-                                                Long cmt02Id = comments.get(i).getComments_level_01().get(j).getComments_level_02().get(k).getManga_comment_id();
-                                                if (cmt02Id.equals(commentID)) {
-                                                    if (key == isUpdated) {
-                                                        System.err.println("line 1516");
-                                                        System.err.println("cmt content " + cmtLevelDeeper.getManga_comment_content());
-                                                        cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().set(k, cmtLevelDeeper);
-                                                        flag = true;
-                                                        break;
-                                                    }
-                                                    if (key == isDeleted) {
-                                                        cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().remove(k);
-                                                        flag = true;
-                                                        break;
-                                                    }
+                                    ////////// 3rd loop, for update, delete
+                                    if (flag.equals(false)) {
+                                        int level2Size = comments.get(i).getComments_level_01().get(j).getComments_level_02().size();
+                                        for (int k = 0; k < level2Size; k++) {
+                                            Long cmt02Id = comments.get(i).getComments_level_01().get(j).getComments_level_02().get(k).getManga_comment_id();
+                                            if (cmt02Id.equals(commentID)) {
+                                                if (key == isUpdated) {
+                                                    System.err.println("line 1516");
+                                                    System.err.println("cmt content " + cmtLevelDeeper.getManga_comment_content());
+                                                    cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().set(k, cmtLevelDeeper);
+                                                    flag = true;
+                                                    break;
+                                                }
+                                                if (key == isDeleted) {
+                                                    cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().remove(k);
+                                                    flag = true;
+                                                    break;
                                                 }
                                             }
                                         }
@@ -1559,6 +1556,7 @@ public class UserService {
                                 }
                             }
                         }
+                    }
 
                 }
             }

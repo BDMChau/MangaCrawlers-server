@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import serverapi.tables.user_tables.friend_request_status.FriendRequestStatus;
 import serverapi.tables.user_tables.user.User;
 
 import javax.persistence.*;
@@ -15,7 +16,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "user_relations")
-public class userRelations {
+public class UserRelations {
     @Id
     @SequenceGenerator(
             name = "user_relations_sequence",
@@ -37,5 +38,10 @@ public class userRelations {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "child_user_id")
     private User child_id;
+
+    @JsonManagedReference
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name ="friend_request_id")
+    private FriendRequestStatus friendRequest;
 
 }

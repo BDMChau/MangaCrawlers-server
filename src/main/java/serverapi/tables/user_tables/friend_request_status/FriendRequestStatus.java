@@ -6,8 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import serverapi.tables.user_tables.user.User;
+import serverapi.tables.user_tables.user_relations.UserRelations;
 
 import javax.persistence.*;
+import java.util.Calendar;
 
 @Entity
 @Getter
@@ -40,4 +42,10 @@ public class FriendRequestStatus {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "to_user_id", insertable = true, updatable = true)
     private User to_user;
+
+    @Column(columnDefinition = "timestamp with time zone", nullable = true)
+    private Calendar time_accepted;
+
+    @OneToOne(mappedBy = "friendRequest")
+    private UserRelations userRelations;
 }
