@@ -37,18 +37,16 @@ public class FriendService {
         List<FriendDTO> getListFriends = friendRequestRepos.getListByUserId(userID, pageable);
         Optional<User> userOptional = userRepos.findById(userID);
         if (userOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of(
-                    "err", "User not found!"
-            );
+            Map<String, Object> msg = Map.of("err", "User not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(),
                     HttpStatus.BAD_REQUEST);
         }
         if (getListFriends.isEmpty()) {
             Map<String, Object> msg = Map.of(
-                    "err", "Empty list friend!"
+                    "err", "Empty list friend!",
+                    "list_friends", new ArrayList<>()
             );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
         }
         ////////////////////////////////////////////////
         User user = userOptional.get();
@@ -62,9 +60,7 @@ public class FriendService {
 
         List<FriendDTO> exportListFriends = filterListFriends(getListFriends, userID);
         if (exportListFriends.isEmpty()) {
-            Map<String, Object> msg = Map.of(
-                    "msg", "Empty list friends!"
-            );
+            Map<String, Object> msg = Map.of("msg", "Empty list friends!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(),
                     HttpStatus.ACCEPTED);
         }
@@ -72,6 +68,7 @@ public class FriendService {
         Map<String, Object> msg = Map.of(
                 "msg", "Get list Friend successfully!",
                 "don't_use_these_param", "status, list_friends",
+                "from", from + amount,
                 "user_info", exportUser,
                 "list_friends", exportListFriends
         );

@@ -35,7 +35,7 @@ public class FriendController {
     }
 
     @Cacheable(value = "listfriends", key = "#request.getAttribute(\"user\").get(\"user_id\")")
-    @PostMapping("/get_list_friends")
+    @GetMapping("/get_list_friends")
     public ResponseEntity getListFriends(@RequestParam int from, int amount, ServletRequest request) {
         Long userID = 0L;
         String sUserId = getUserAttribute(request).get("user_id").toString();
