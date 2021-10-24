@@ -149,7 +149,7 @@ public class MangaService {
      * @return list of top 5 manga
      */
     public ResponseEntity getTop() {
-        List<Manga> topFiveMangas = mangaRepository.getTop(5);
+        List<Manga> topFiveMangas = mangaRepository.getTop(9);
 
         if (topFiveMangas.isEmpty()) {
             Map<String, Object> err = Map.of("msg", "Nothing of top mangas!");
