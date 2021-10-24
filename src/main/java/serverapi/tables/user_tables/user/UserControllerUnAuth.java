@@ -23,7 +23,6 @@ public class UserControllerUnAuth {
 
 
     ///////////////////////////////// Users parts //////////////////////////////
-    @Cacheable(value = "userinfo", key = "#data.get(\"user_id\")")
     @PostMapping("/get_userinfo")
     public ResponseEntity GetReadingHistory(@RequestBody Map data) {
         Long userId = Long.parseLong(String.valueOf(data.get("user_id")));

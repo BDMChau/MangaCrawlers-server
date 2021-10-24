@@ -64,7 +64,7 @@ public interface UserRepos extends JpaRepository<User, Long>, JpaSpecificationEx
     Optional<User> findByEmail(String email);
 
     @Query("""
-            SELECT new serverapi.query.dtos.tables.UserDTO(u.user_id, u.user_name, u.user_email, u.user_avatar, u.user_desc) 
+            SELECT new serverapi.query.dtos.tables.UserDTO(u.user_id, u.user_name, u.user_email, u.user_avatar, u.user_desc, transgr.transgroup_id, transgr.transgroup_name) 
             FROM User u LEFT JOIN TransGroup transgr ON u.transgroup.transgroup_id = transgr.transgroup_id
             WHERE u.user_id = ?1
             """)

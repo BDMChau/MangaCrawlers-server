@@ -95,22 +95,9 @@ public class NotificationService {
      * @param receiverID:    can be String userEmail or Long userId
      * @param socketMessage: data to save to database
      */
-    public NotificationDTO saveNew(String receiverIDType, Object receiverID, SocketMessage socketMessage) {
+    public NotificationDTO saveNew(User receiver, SocketMessage socketMessage) {
         Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
-        Optional<User> userOptional = Optional.empty();
-        if (receiverIDType.equals("java.lang.String")) {
-            String userEmail = String.valueOf(receiverID);
-            userOptional = userRepos.findByEmail(userEmail);
-
-        } else if (receiverIDType.equals("java.lang.Integer")) {
-            Long userId = Long.parseLong(String.valueOf(receiverID));
-            userOptional = userRepos.findById(userId);
-        }
-
-        if (userOptional.isEmpty())  return null;
-
-        User receiver = userOptional.get();
         User sender = userRepos.findById(socketMessage.getUserId()).get();
 
         String imgUrl = socketMessage.getImage_url();

@@ -10,6 +10,8 @@ import serverapi.query.dtos.tables.NotificationDTO;
 import serverapi.query.repository.user.UserRepos;
 import serverapi.socket.message.EventsName;
 import serverapi.socket.message.SocketMessage;
+import serverapi.tables.user_tables.friend_request_status.FriendRequestStatus;
+import serverapi.tables.user_tables.friend_request_status.FriendRequestStatusService;
 import serverapi.tables.user_tables.notification.NotificationService;
 import serverapi.tables.user_tables.user.User;
 
@@ -29,11 +31,13 @@ public class MySocketService {
     private UserRepos userRepos;
 
     private NotificationService notificationService;
+    private FriendRequestStatusService friendRequestStatusService;
 
     @Autowired
-    public MySocketService(UserRepos userRepos, NotificationService notificationService) {
+    public MySocketService(UserRepos userRepos, NotificationService notificationService, FriendRequestStatusService friendRequestStatusService) {
         this.notificationService = notificationService;
         this.userRepos = userRepos;
+        this.friendRequestStatusService = friendRequestStatusService;
     }
 
 
@@ -53,13 +57,17 @@ public class MySocketService {
     public void pushMessageToUsersExceptSender() {
         List listToUser = socketMessage.getListTo();
 
-        listToUser.forEach(userVal -> {
-            String type = userVal.getClass().getName();
+        listToUser.forEach(toUserVal -> {
+            String identify_type = toUserVal.getClass().getName();
+            int notification_type = socketMessage.getType();
 
-            NotificationDTO dataToSend = notificationService.saveNew(type, userVal, socketMessage);
-            if (dataToSend != null) {
-                sendToUsersExceptSender(dataToSend);
-            }
+            User receiver = getReciever(identify_type, toUserVal);
+            if(receiver == null) return;
+
+            handleNotificationType(notification_type, receiver);
+
+            NotificationDTO dataToSend = notificationService.saveNew(receiver, socketMessage);
+            if (dataToSend != null)  sendToUsersExceptSender(dataToSend);
 
         });
     }
@@ -72,7 +80,33 @@ public class MySocketService {
     }
 
 
-    ////////////////////////////////////////////////////////
+    /////////////////////////////// services ///////////////////////////////
+    private void handleNotificationType(int notificationType, User receiver) {
+        if (notificationType == 2) {
+            Long senderId = socketMessage.getUserId();
+            User sender = userRepos.findById(senderId).get();
+
+            friendRequestStatusService.saveNew(sender, receiver);
+        }
+    }
+
+    private User getReciever(String identify_type, Object toUserVal){
+        Optional<User> userOptional = Optional.empty();
+        if (identify_type.equals("java.lang.String")) {
+            String userEmail = String.valueOf(toUserVal);
+            userOptional = userRepos.findByEmail(userEmail);
+
+        } else if (identify_type.equals("java.lang.Integer")) {
+            Long userId = Long.parseLong(String.valueOf(toUserVal));
+            userOptional = userRepos.findById(userId);
+        }
+
+        if(userOptional.isEmpty()) return null;
+
+        return userOptional.get();
+    }
+
+    ////////////////////////// sender //////////////////////////////
     private void sendToUsersExceptSender(NotificationDTO dataToSend) {
         String receiverName = dataToSend.getReceiver_name();
 
