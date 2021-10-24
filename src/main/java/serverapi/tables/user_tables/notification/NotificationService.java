@@ -108,9 +108,8 @@ public class NotificationService {
             userOptional = userRepos.findById(userId);
         }
 
-        if (userOptional.isEmpty()) {
-            return null;
-        }
+        if (userOptional.isEmpty())  return null;
+
         User receiver = userOptional.get();
         User sender = userRepos.findById(socketMessage.getUserId()).get();
 
@@ -128,11 +127,16 @@ public class NotificationService {
         notifications.setFrom_user(sender);
         notifications.setTo_user(receiver);
         notifications.setIs_viewed(false);
+        notifications.setIs_interacted(false);
         notifications.setCreated_at(currentTime);
+
 
         if (socketMessage.getObjData().get("target_id").equals("") || !socketMessage.getObjData().get("target_title").equals("")) {
             Long targetId = Long.parseLong(String.valueOf(socketMessage.getObjData().get("target_id")));
             String targetTitle = String.valueOf(socketMessage.getObjData().get("target_title"));
+
+            Optional<Notifications> isExisted = notificationRepos.findByTargetIdAndNotInteract(targetId);
+            if(!isExisted.isEmpty()) return null;
 
             notifications.setTarget_id(targetId);
             notifications.setTarget_title(targetTitle);
