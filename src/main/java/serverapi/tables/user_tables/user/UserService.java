@@ -120,7 +120,7 @@ public class UserService {
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get reading history mangas successfully!",
-                "mangas", readingHistoryDTO
+                "mangas", readingHistoryDTO.size() > 0 ? readingHistoryDTO : new ArrayList<>()
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
@@ -194,8 +194,11 @@ public class UserService {
         List<FollowingDTO> followingDTOList = followingRepos.findByUserId(UserId);
 
         if (followingDTOList.isEmpty()) {
-
-            Map<String, Object> msg = Map.of("msg", "No manga follow found!");
+            Map<String, Object> msg = Map.of(
+                    "msg", "No manga follow found!",
+                    "mangas", new ArrayList<>()
+            );
+            
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
         }
         Map<String, Object> msg = Map.of(
