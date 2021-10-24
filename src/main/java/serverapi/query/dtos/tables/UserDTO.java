@@ -14,6 +14,8 @@ public class UserDTO {
     private String user_avatar;
     private String user_desc;
 
+    private int status;
+
     private Long transgroup_id;
     private String transgroup_name;
 

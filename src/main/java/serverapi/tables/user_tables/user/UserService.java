@@ -1377,6 +1377,8 @@ public class UserService {
         }
         UserDTO userDTO = userOptional.get();
 
+        // status service
+        userDTO.setStatus(1);
 
         Map<String, Object> msg = Map.of(
                 "msg", "get user info OK!",
