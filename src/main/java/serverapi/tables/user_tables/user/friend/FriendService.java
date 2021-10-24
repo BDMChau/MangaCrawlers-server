@@ -10,6 +10,7 @@ import serverapi.query.dtos.features.FriendDTO;
 import serverapi.query.repository.user.FriendRequestRepos;
 import serverapi.query.repository.user.UserRelationsRepos;
 import serverapi.query.repository.user.UserRepos;
+import serverapi.tables.user_tables.friend_request_status.FriendRequestStatus;
 import serverapi.tables.user_tables.user.User;
 import serverapi.tables.user_tables.user_relations.UserRelations;
 
@@ -117,7 +118,7 @@ public class FriendService {
                 "msg", "Un Friend successfully!",
                 "target_user", exportUser,
                 "list_friends_after_delete", exportListFriends
-                );
+        );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
                 HttpStatus.OK);
     }
@@ -162,6 +163,25 @@ public class FriendService {
             return new ArrayList<>();
         }
         return exportListFriends;
+    }
+
+    // 1: add friend; 2: pending ; 3: friend
+    protected Integer checkStatus(Long senderID, Long receiverID, Long statusID) {
+        Optional<FriendDTO> friendRelationsOptional = friendRequestRepos.findFriendByUserId(senderID, receiverID);
+        int iStatus = 0;
+        if (friendRelationsOptional.isEmpty()) {
+            Optional<FriendRequestStatus> statusOptional = friendRequestRepos.findById(statusID);
+            if (statusOptional.isEmpty()) {
+                iStatus = 0;
+            } else {
+                if (statusOptional.get().getStatus().equals(true) && statusOptional.get().getTime_accepted() == null) {
+                    iStatus = 1;
+                } else {
+                    iStatus = 2;
+                }
+            }
+        }
+        return iStatus;
     }
 }
 

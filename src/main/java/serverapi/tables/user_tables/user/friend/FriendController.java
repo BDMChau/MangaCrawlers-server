@@ -62,4 +62,41 @@ public class FriendController {
 
         return friendService.unFriend(userID,toUserID, listFriends);
     }
+
+    @PostMapping("/check_status")
+    public ResponseEntity checkStatus(ServletRequest request, @RequestBody String to_user_id, String status_id) {
+        String sUserId = getUserAttribute(request).get("user_id").toString();
+        if(sUserId.isEmpty() || to_user_id.isEmpty() || status_id.isEmpty() || status_id.equals("")){
+            Map<String, Object> msg = Map.of(
+                    "msg", "Missing credential!"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        Long senderID = Long.parseLong(sUserId);
+        Long receiverID = Long.parseLong(to_user_id);
+        Long statusID = Long.parseLong(status_id);
+
+        int checkStatus = friendService.checkStatus(senderID, receiverID, statusID);
+        String exportCheck = switch (checkStatus) {
+            case 0 -> "Add friend";
+            case 1 -> "Pending";
+            case 2 -> "Friend";
+            default -> "";
+        };
+        if(exportCheck.equals("")){
+            Map<String, Object> msg = Map.of(
+                    "err", "Error when check status!",
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Check status successfully!",
+                "status",exportCheck
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
+                HttpStatus.OK);
+    }
 }
