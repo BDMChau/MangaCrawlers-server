@@ -26,7 +26,6 @@ import java.util.*;
 
 @Service
 public class NotificationService {
-    private Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
     private final UserRepos userRepos;
     private final NotificationRepos notificationRepos;
     private final NotificationTypesRepos notificationTypesRepos;
@@ -97,6 +96,8 @@ public class NotificationService {
      * @param socketMessage: data to save to database
      */
     public NotificationDTO saveNew(String receiverIDType, Object receiverID, SocketMessage socketMessage) {
+        Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+
         Optional<User> userOptional = Optional.empty();
         if (receiverIDType.equals("java.lang.String")) {
             String userEmail = String.valueOf(receiverID);

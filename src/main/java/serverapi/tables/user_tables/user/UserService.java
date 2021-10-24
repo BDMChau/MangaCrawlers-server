@@ -49,7 +49,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-    private final Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
     private final CloudinaryUploader cloudinaryUploader = CloudinaryUploader.getInstance();
 
     private final MangaRepos mangaRepository;
@@ -126,6 +125,7 @@ public class UserService {
     }
 
     public ResponseEntity updateReadingHistory(Long userId, Long mangaId, Long chapterId) {
+        Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
         List<UserReadingHistoryDTO> readingHistoryDTO = readingHistoryRepos.GetHistoriesByUserId(userId);
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
@@ -306,7 +306,7 @@ public class UserService {
                                           String content, MultipartFile image, String stickerUrl,
                                           Long parentID) throws IOException {
         // Check variable
-        Calendar timeUpdated = currentTime;
+        Calendar timeUpdated = Calendar.getInstance(TimeZone.getTimeZone("UTC"));;
         Optional<Chapter> chapterOptional = chapterRepos.findById(chapterID);
         Optional<Manga> mangaOptional = mangaRepository.findById(mangaID);
         Optional<User> userOptional = userRepos.findById(userID);
@@ -837,6 +837,8 @@ public class UserService {
     ) throws IOException {
         cacheService.evictSingleCacheValue("transGroupInfo", userId.toString() + strTransGrId);
 
+        Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+
         Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
         if (mangaOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "Manga not found!");
@@ -904,6 +906,8 @@ public class UserService {
 
 
     public ResponseEntity signUpTransGroup(Long userId, String groupName, String groupDesc) {
+        Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+
         Optional<User> userOptional = userRepos.findById(userId);
         if (userOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "User is not exist!");
@@ -1217,7 +1221,7 @@ public class UserService {
         manga.setDescription(fieldsCreateMangaDTO.getDescription());
         manga.setAuthor(author);
         manga.setTransgroup(transGroup);
-        manga.setCreated_at(currentTime);
+        manga.setCreated_at(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
         mangaRepository.saveAndFlush(manga);
         System.err.println("03");
 

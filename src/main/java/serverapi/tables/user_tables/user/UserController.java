@@ -348,6 +348,7 @@ public class UserController {
         return userService.uploadChapterImgs(userId, strTransGrId, mangaId, chapterName, files);
     }
 
+    @CacheEvict(allEntries = true, value = {"transGroupInfo"})
     @PostMapping("/accept_to_join_team")
     public ResponseEntity acceptToJoinTeam(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) throws NoSuchAlgorithmException {
         String StrUserId = getUserAttribute(request).get("user_id").toString();
