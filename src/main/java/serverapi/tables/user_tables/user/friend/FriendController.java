@@ -2,6 +2,8 @@ package serverapi.tables.user_tables.user.friend;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +34,7 @@ public class FriendController {
         return user;
     }
 
+    @Cacheable(value = "listfriends", key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @PostMapping("/get_list_friends")
     public ResponseEntity getListFriends(@RequestParam int from, int amount, ServletRequest request) {
         Long userID = 0L;
@@ -43,6 +46,7 @@ public class FriendController {
         return friendService.getListFriends(userID, from, amount);
     }
 
+    @CacheEvict(value = {"listfriends"}, key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @PostMapping("/unfriend")
     public ResponseEntity unFriend(ServletRequest request, @RequestBody String to_user_id, List<FriendDTO> listFriends) {
         String sUserId = getUserAttribute(request).get("user_id").toString();
