@@ -40,7 +40,7 @@ public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
                 AND cm.manga.manga_id = ?1 
                 AND cm.chapter.chapter_id is null 
                 AND cr.level = '0'
-            ORDER BY cm.manga_comment_id DESC  
+            ORDER BY cm.manga_comment_id   
             """)
     List<MangaCommentDTOs> getMangaCommentsLevel0(Long manga_id, Pageable pageable);
 
@@ -70,7 +70,7 @@ public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
             WHERE cm.is_deprecated = false 
                 AND cr.parent_id.manga_comment_id =?1 
                 AND cr.level =?2 
-            ORDER BY cm.manga_comment_id DESC 
+            ORDER BY cm.manga_comment_id 
             """)
     List<CommentTreesDTO> getCommentsChild(Long manga_comment_id, String level, Pageable pageable);
 
