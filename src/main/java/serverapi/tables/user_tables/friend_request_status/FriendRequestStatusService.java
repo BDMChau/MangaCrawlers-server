@@ -14,7 +14,7 @@ import java.util.TimeZone;
 public class FriendRequestStatusService {
 
 
-    private FriendRequestRepos friendRequestRepos;
+    private final FriendRequestRepos friendRequestRepos;
 
     @Autowired
     public FriendRequestStatusService(FriendRequestRepos friendRequestRepos) {

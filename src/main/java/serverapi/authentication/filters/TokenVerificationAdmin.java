@@ -16,7 +16,7 @@ import java.util.Map;
 @Component
 public class TokenVerificationAdmin implements Filter {
 
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException {

@@ -18,7 +18,7 @@ public class HashSHA512 {
                 Hashing.sha512().hashBytes(originalString.toString().getBytes(StandardCharsets.UTF_8));
         final HashCode saltHashed = HashCode.fromBytes(salt);
 
-        return stringHashed.toString() + saltHashed.toString();
+        return stringHashed.toString() + saltHashed;
     }
 
 
@@ -35,6 +35,6 @@ public class HashSHA512 {
         final HashCode originalStringHashed = Hashing.sha512().hashBytes(originalString.getBytes(StandardCharsets.UTF_8));
 
 
-        return (originalStringHashed.toString() + originalSalt.toString()).equals(stringHashed);
+        return (originalStringHashed.toString() + originalSalt).equals(stringHashed);
     }
 }

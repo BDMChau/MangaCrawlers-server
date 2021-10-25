@@ -828,9 +828,10 @@ public class MangaService {
                 int level1Size = comments.get(i).getComments_level_01().size();
                 Long parentID = comments.get(i).getParent_id();
                 if (parentID.equals(inputCommentID)) {
-                    if (inputLevel == 1) {
+                    if (inputLevel == 0) {
                         int finalI = i;
                         childComments.forEach(cComment -> {
+                            System.err.println(comments.get(finalI).getComments_level_01().size());
                             comments.get(finalI).getComments_level_01().add(cComment);
                         });
 
@@ -846,6 +847,7 @@ public class MangaService {
                                 int finalI1 = i;
                                 int finalJ = j;
                                 childComments.forEach(cComment -> {
+                                    System.err.println("lv1: "+comments.get(finalI1).getComments_level_01().get(finalJ).getComments_level_02().size());
                                     comments.get(finalI1).getComments_level_01().get(finalJ).getComments_level_02().add(cComment);
                                 });
 

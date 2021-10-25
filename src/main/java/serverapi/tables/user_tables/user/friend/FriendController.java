@@ -86,7 +86,7 @@ public class FriendController {
         };
         if(exportCheck.equals("")){
             Map<String, Object> msg = Map.of(
-                    "err", "Error when check status!",
+                    "err", "Error when check status!"
             );
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(),
                     HttpStatus.BAD_REQUEST);
