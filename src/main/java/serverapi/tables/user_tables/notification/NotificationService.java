@@ -88,11 +88,10 @@ public class NotificationService {
     }
 
 
-
     ////////////////////////////////////////////// for socket //////////////////////////////////////////////
 
     /**
-     * @param receiverID:    can be String userEmail or Long userId
+     * @param receiver:      user receiver
      * @param socketMessage: data to save to database
      */
     public NotificationDTO saveNew(User receiver, SocketMessage socketMessage) {
@@ -101,7 +100,7 @@ public class NotificationService {
         User sender = userRepos.findById(socketMessage.getUserId()).get();
 
         String imgUrl = socketMessage.getImage_url();
-        if(socketMessage.getImage_url().equals("null")) imgUrl = null;
+        if (socketMessage.getImage_url().equals("null")) imgUrl = null;
 
         NotificationTypes notificationTypes = new NotificationTypes();
         Notifications notifications = new Notifications();
@@ -121,9 +120,18 @@ public class NotificationService {
         if (socketMessage.getObjData().get("target_id").equals("") || !socketMessage.getObjData().get("target_title").equals("")) {
             Long targetId = Long.parseLong(String.valueOf(socketMessage.getObjData().get("target_id")));
             String targetTitle = String.valueOf(socketMessage.getObjData().get("target_title"));
+            Long toUserId = receiver.getUser_id();
 
-            Optional<Notifications> isExisted = notificationRepos.findByTargetIdAndNotInteract(targetId);
-            if(!isExisted.isEmpty()) return null;
+
+            if (targetTitle.equals("user")) {
+                List<Notifications> isExisted = notificationRepos.findByTargetTitleUserAndNotInteract(targetId);
+                if (!isExisted.isEmpty()) return null;
+            } else {
+                List<Notifications> isExisted = notificationRepos.findByToUserIdAndNotInteract(toUserId);
+                System.err.println(isExisted);
+
+                if (!isExisted.isEmpty()) return null;
+            }
 
             notifications.setTarget_id(targetId);
             notifications.setTarget_title(targetTitle);

@@ -17,8 +17,11 @@ public interface NotificationRepos extends JpaRepository<Notifications, Long> {
     @Query("SELECT no FROM Notifications no JOIN User u ON no.to_user.user_id = u.user_id WHERE u.user_id = ?1")
     List<Notifications> getAllByUserId(Long user_id);
 
-    @Query("SELECT no FROM Notifications no WHERE no.target_id = ?1 AND no.is_interacted = false ")
-    Optional<Notifications> findByTargetIdAndNotInteract(Long targetId);
+    @Query("SELECT no FROM Notifications no WHERE no.target_id = ?1 AND no.is_interacted = false")
+    List<Notifications> findByTargetTitleUserAndNotInteract(Long targetId);
+
+    @Query("SELECT no FROM Notifications no WHERE no.to_user.user_id = ?1 AND no.is_interacted = false")
+    List<Notifications> findByToUserIdAndNotInteract(Long targetId);
 
 
     @Query("""

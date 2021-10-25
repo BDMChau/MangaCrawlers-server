@@ -75,7 +75,7 @@ public class SocketIOService implements ISocketIOService {
                 List listTo = (List) data.get("list_to"); // can be String user_email or Integer user_id
                 Map objData = (Map) data.get("obj_data");
 
-                if (imageUrl.equals("")) {
+                if (imageUrl.equals("null")) {
                     objData.replace("image", getImageDefault("notify_img_default"));
                 }
 
