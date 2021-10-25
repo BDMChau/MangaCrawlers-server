@@ -76,8 +76,6 @@ public class ChapterService {
                     "chapterInfo", chapterInfo,
                     "listChapter", listChapter,
                     "listImg", listImgs
-
-
             );
             return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
