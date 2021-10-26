@@ -168,6 +168,7 @@ public class FriendService {
     // 1: add friend; 2: pending ; 3: friend
     protected Integer checkStatus(Long senderID, Long receiverID, Long statusID) {
         Optional<FriendDTO> friendRelationsOptional = friendRequestRepos.findFriendByUserId(senderID, receiverID);
+
         int iStatus = 0;
         if (friendRelationsOptional.isEmpty()) {
             Optional<FriendRequestStatus> statusOptional = friendRequestRepos.findById(statusID);

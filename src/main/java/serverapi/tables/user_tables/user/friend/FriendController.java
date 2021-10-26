@@ -39,7 +39,7 @@ public class FriendController {
     public ResponseEntity getListFriends(@RequestParam int from, int amount, ServletRequest request) {
         Long userID = 0L;
         String sUserId = getUserAttribute(request).get("user_id").toString();
-        if(!sUserId.isEmpty()){
+        if (!sUserId.isEmpty()) {
             userID = Long.parseLong(sUserId);
         }
 
@@ -50,7 +50,7 @@ public class FriendController {
     @PostMapping("/unfriend")
     public ResponseEntity unFriend(ServletRequest request, @RequestBody String to_user_id, List<FriendDTO> listFriends) {
         String sUserId = getUserAttribute(request).get("user_id").toString();
-        if(sUserId.isEmpty() || to_user_id.isEmpty()){
+        if (sUserId.isEmpty() || to_user_id.isEmpty()) {
             Map<String, Object> msg = Map.of(
                     "msg", "User or target user is empty!"
             );
@@ -60,13 +60,13 @@ public class FriendController {
         Long userID = Long.parseLong(sUserId);
         Long toUserID = Long.parseLong(to_user_id);
 
-        return friendService.unFriend(userID,toUserID, listFriends);
+        return friendService.unFriend(userID, toUserID, listFriends);
     }
 
     @PostMapping("/check_status")
     public ResponseEntity checkStatus(ServletRequest request, @RequestBody String to_user_id, String status_id) {
         String sUserId = getUserAttribute(request).get("user_id").toString();
-        if(sUserId.isEmpty() || to_user_id.isEmpty() || status_id.isEmpty() || status_id.equals("")){
+        if (sUserId.isEmpty() || to_user_id.isEmpty() || status_id.isEmpty() || status_id.equals("")) {
             Map<String, Object> msg = Map.of(
                     "msg", "Missing credential!"
             );
@@ -84,17 +84,16 @@ public class FriendController {
             case 2 -> "Friend";
             default -> "";
         };
-        if(exportCheck.equals("")){
-            Map<String, Object> msg = Map.of(
-                    "err", "Error when check status!"
-            );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(),
-                    HttpStatus.BAD_REQUEST);
+
+        if (exportCheck.equals("")) {
+            Map<String, Object> msg = Map.of("err", "Error when check status!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
 
         Map<String, Object> msg = Map.of(
                 "msg", "Check status successfully!",
-                "status",exportCheck
+                "status_number", checkStatus,
+                "status", exportCheck
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
                 HttpStatus.OK);
