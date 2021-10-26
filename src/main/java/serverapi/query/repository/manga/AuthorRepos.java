@@ -23,7 +23,7 @@ public interface AuthorRepos extends JpaRepository<Author, Long> {
 
 
     @Async
-    public <S extends Author> S save(S entity);
+    <S extends Author> S save(S entity);
 
 
 

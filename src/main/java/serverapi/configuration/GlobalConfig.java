@@ -29,10 +29,10 @@ import java.util.stream.Collectors;
 @Configuration
 @EnableScheduling
 public class GlobalConfig {
-    private static List<String> clients = Arrays.asList("google");
+    private static final List<String> clients = Arrays.asList("google");
 
 
-    private RegistrationOauth registrationOauth;
+    private final RegistrationOauth registrationOauth;
 
     @Autowired
     protected GlobalConfig(RegistrationOauth registrationOauth) {

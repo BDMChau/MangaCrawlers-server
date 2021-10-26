@@ -14,18 +14,18 @@ import java.security.NoSuchAlgorithmException;
 
 public interface IAuthService {
 
-    public ResponseEntity signUp(SignUpPojo signUpPojo) throws NoSuchAlgorithmException, MessagingException;
+    ResponseEntity signUp(SignUpPojo signUpPojo) throws NoSuchAlgorithmException, MessagingException;
 
-    public ResponseEntity signIn(String userEmail, String userPassword);
+    ResponseEntity signIn(String userEmail, String userPassword);
 
-    public ResponseEntity requestChangePassword(String email) throws MessagingException, NoSuchAlgorithmException;
+    ResponseEntity requestChangePassword(String email) throws MessagingException, NoSuchAlgorithmException;
 
-    public ResponseEntity changePassword(ChangePassPojo changePassPojo) throws NoSuchAlgorithmException;
+    ResponseEntity changePassword(ChangePassPojo changePassPojo) throws NoSuchAlgorithmException;
 
-    public ResponseEntity confirmVerification(String token);
+    ResponseEntity confirmVerification(String token);
 
-    public ResponseEntity oauthGoogleSignInSusscess(String userInfoEndpointUri, OAuth2AuthorizedClient client, HttpServletResponse responseHttpServlel) throws IOException;
+    ResponseEntity oauthGoogleSignInSusscess(String userInfoEndpointUri, OAuth2AuthorizedClient client, HttpServletResponse responseHttpServlel) throws IOException;
 
-    public ResponseEntity getDataOAuthGoogle();
+    ResponseEntity getDataOAuthGoogle();
 
 }

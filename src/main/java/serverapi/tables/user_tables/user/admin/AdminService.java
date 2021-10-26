@@ -59,11 +59,7 @@ public class AdminService {
 
         System.err.println("isAdmin: " + user.getUser_isAdmin());
         Boolean isAdmin = user.getUser_isAdmin();
-        if (Boolean.FALSE.equals(isAdmin)) {
-            return false;
-        }
-
-        return true;
+        return !Boolean.FALSE.equals(isAdmin);
     }
 
 

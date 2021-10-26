@@ -104,11 +104,7 @@ public class UserService {
     private boolean isLeader(User user, TransGroup transGroup) {
         if (!user.getTransgroup().equals(transGroup)) {
             return false;
-        } else if (!user.getUser_email().equals(transGroup.getTransgroup_email())) {
-            return false;
-        }
-
-        return true;
+        } else return user.getUser_email().equals(transGroup.getTransgroup_email());
     }
 
     //////////////////////////////////// User parts ///////////////////////////////////////////
@@ -309,7 +305,7 @@ public class UserService {
                                           String content, MultipartFile image, String stickerUrl,
                                           Long parentID) throws IOException {
         // Check variable
-        Calendar timeUpdated = Calendar.getInstance(TimeZone.getTimeZone("UTC"));;
+        Calendar timeUpdated = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         Optional<Chapter> chapterOptional = chapterRepos.findById(chapterID);
         Optional<Manga> mangaOptional = mangaRepository.findById(mangaID);
         Optional<User> userOptional = userRepos.findById(userID);
@@ -751,7 +747,7 @@ public class UserService {
 
         if (ratingMangaId == null) {
             ratingMangaList.forEach(oneRatingManga -> {
-                total.updateAndGet(v -> (float) (v + oneRatingManga.getValue()));
+                total.updateAndGet(v -> v + oneRatingManga.getValue());
             });
 
             averageResult = (total.get() + newValue) / (ratingMangaList.size() + 1);
@@ -776,7 +772,7 @@ public class UserService {
 
             List<RatingManga> ratingMangaList02 = ratingMangaRepos.findAllByMangaId(mangaId);
             ratingMangaList02.forEach(ratingManga -> {
-                total.updateAndGet(v -> (float) (v + ratingManga.getValue()));
+                total.updateAndGet(v -> v + ratingManga.getValue());
             });
 
 

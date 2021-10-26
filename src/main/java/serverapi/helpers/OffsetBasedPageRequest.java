@@ -12,8 +12,8 @@ import org.springframework.data.domain.Sort;
  **/
 public class OffsetBasedPageRequest implements Pageable {
 
-    private int limit;
-    private int offset;
+    private final int limit;
+    private final int offset;
     private final Sort sort;
 
     /**

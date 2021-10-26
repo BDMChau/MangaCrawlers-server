@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 @RequestMapping("/api/user")
 @CacheConfig(cacheNames = {"user"})
 public class UserController {
-    private static String fileNameDefault = "/static/media/8031DF085D7DBABC0F4B3651081CE70ED84622AE9305200F2FC1D789C95CF06F.9960248d.svg";
+    private static final String fileNameDefault = "/static/media/8031DF085D7DBABC0F4B3651081CE70ED84622AE9305200F2FC1D789C95CF06F.9960248d.svg";
     private final UserService userService;
 
     @Autowired

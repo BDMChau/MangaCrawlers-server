@@ -18,7 +18,7 @@ public class FieldsCreateMangaDTO {
     private Integer views;
 
     public Boolean isFieldsEmpty() {
-        if (mangaName == null
+        return mangaName == null
                 || author == null
                 || description == null
                 || status == null
@@ -27,12 +27,7 @@ public class FieldsCreateMangaDTO {
                 || genres.isEmpty()
                 || publicationYear == 0
                 || description.equals("")
-                || status.equals("")
-        ) {
-            return true;
-        }
-
-        return false;
+                || status.equals("");
     }
 
 }

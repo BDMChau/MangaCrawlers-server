@@ -8,12 +8,12 @@ import java.io.IOException;
 import java.util.Map;
 
 public class CloudinaryUploader {
-    private Map paramsConfig = ObjectUtils.asMap(
+    private final Map paramsConfig = ObjectUtils.asMap(
             "api_key", System.getenv("CLOUDINARY_API_KEY"),
             "api_secret", System.getenv("CLOUDINARY_API_SECRET"),
             "cloud_name", "mangacrawlers"
     );
-    private Cloudinary cloudinary;
+    private final Cloudinary cloudinary;
     private static volatile CloudinaryUploader cloudinaryUploader;
 
 

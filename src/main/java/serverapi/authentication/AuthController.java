@@ -36,7 +36,7 @@ import java.util.TimeZone;
 public class AuthController {
     private final IAuthService authService;
 
-    private static String authorizationRequestBaseUri = "oauth2/authorization";
+    private static final String authorizationRequestBaseUri = "oauth2/authorization";
 
 
     // Note*: @Autowired clientRegistrationRepository before @Autowired authorizedClientService

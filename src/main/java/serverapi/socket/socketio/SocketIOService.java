@@ -21,9 +21,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @Service
 public class SocketIOService implements ISocketIOService {
-    private EventsName EVENTs_NAME = new EventsName();
-    private static Map<Object, SocketIOClient> clientMap = new ConcurrentHashMap<>();
-    private SocketMessage socketMessage = new SocketMessage();
+    private final EventsName EVENTs_NAME = new EventsName();
+    private static final Map<Object, SocketIOClient> clientMap = new ConcurrentHashMap<>();
+    private final SocketMessage socketMessage = new SocketMessage();
 
     private final MySocketService mySocketService;
 

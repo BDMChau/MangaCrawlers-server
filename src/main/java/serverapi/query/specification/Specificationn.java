@@ -29,15 +29,15 @@ public class Specificationn {
             if (searchCriteriaDTO.getOperation().equalsIgnoreCase(">")) {
 
                 return builder.greaterThanOrEqualTo(
-                        root.<String>get(searchCriteriaDTO.getKey()), searchCriteriaDTO.getValue().toString());
+                        root.get(searchCriteriaDTO.getKey()), searchCriteriaDTO.getValue());
             } else if (searchCriteriaDTO.getOperation().equalsIgnoreCase("<")) {
-                return builder.lessThanOrEqualTo(builder.lower(root.<String>get(searchCriteriaDTO.getKey())),
-                        searchCriteriaDTO.getValue().toString());
+                return builder.lessThanOrEqualTo(builder.lower(root.get(searchCriteriaDTO.getKey())),
+                        searchCriteriaDTO.getValue());
             } else if (searchCriteriaDTO.getOperation().equalsIgnoreCase(":")) {
 
                 if (root.get(searchCriteriaDTO.getKey()).getJavaType() == String.class) {// search page
                     return builder.like(
-                            builder.lower(root.<String>get(searchCriteriaDTO.getKey())),
+                            builder.lower(root.get(searchCriteriaDTO.getKey())),
                             "%" + searchCriteriaDTO.getValue().toLowerCase(Locale.ROOT) + "%");
                 } else {
                     return builder.equal(root.get(searchCriteriaDTO.getKey()), searchCriteriaDTO.getValue());
@@ -54,15 +54,15 @@ public class Specificationn {
             if (searchCriteriaDTO.getOperation().equalsIgnoreCase(">")) {
 
                 return builder.greaterThanOrEqualTo(
-                        root.<String>get(searchCriteriaDTO.getKey()), searchCriteriaDTO.getValue().toString());
+                        root.get(searchCriteriaDTO.getKey()), searchCriteriaDTO.getValue());
             } else if (searchCriteriaDTO.getOperation().equalsIgnoreCase("<")) {
-                return builder.lessThanOrEqualTo(builder.lower(root.<String>get(searchCriteriaDTO.getKey())),
-                        searchCriteriaDTO.getValue().toString());
+                return builder.lessThanOrEqualTo(builder.lower(root.get(searchCriteriaDTO.getKey())),
+                        searchCriteriaDTO.getValue());
             } else if (searchCriteriaDTO.getOperation().equalsIgnoreCase(":")) {
 
                 if (root.get(searchCriteriaDTO.getKey()).getJavaType() == String.class) {// search page
                     return builder.like(
-                            builder.lower(root.<String>get(searchCriteriaDTO.getKey())),
+                            builder.lower(root.get(searchCriteriaDTO.getKey())),
                             "%" + searchCriteriaDTO.getValue().toLowerCase(Locale.ROOT) + "%");
                 } else {
                     return builder.equal(root.get(searchCriteriaDTO.getKey()), searchCriteriaDTO.getValue());
