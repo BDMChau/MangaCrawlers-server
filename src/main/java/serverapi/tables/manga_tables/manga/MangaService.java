@@ -797,6 +797,7 @@ public class MangaService {
     }
 
 
+
     /////////////////////////////////////// HELPERS ///////////////////////////////////////////
     public MangaCommentDTOs setListTags(MangaCommentDTOs mangaCommentDTOs) {
         List<CommentTagsDTO> tags = commentTagsRepos.getListTags(mangaCommentDTOs.getManga_comment_id());
