@@ -46,7 +46,12 @@ public class MySocketService {
         Optional<User> userOptional = userRepos.findById(userId);
         if (!userOptional.isEmpty()) {
             User user = userOptional.get();
-            user.setSocket_session_id(sessionId);
+
+            if(String.valueOf(sessionId).equals("00000000-0000-0000-0000-000000000000")){
+                user.setSocket_session_id(null);
+            }else{
+                user.setSocket_session_id(sessionId);
+            }
 
             userRepos.saveAndFlush(user);
             System.err.println("Updated socket sessionId of user_id: " + userId);
@@ -90,7 +95,7 @@ public class MySocketService {
         }
     }
 
-    private User getReciever(String identify_type, Object toUserVal){
+    public User getReciever(String identify_type, Object toUserVal){
         Optional<User> userOptional = Optional.empty();
         if (identify_type.equals("java.lang.String")) {
             String userEmail = String.valueOf(toUserVal);

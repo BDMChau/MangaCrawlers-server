@@ -9,6 +9,7 @@ import serverapi.helpers.ReadJSONFileAndGetValue;
 import serverapi.socket.MySocketService;
 import serverapi.socket.message.EventsName;
 import serverapi.socket.message.SocketMessage;
+import serverapi.tables.user_tables.user.User;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -62,6 +63,11 @@ public class SocketIOService implements ISocketIOService {
             Long userId = Long.parseLong(String.valueOf(data.get("user_id")));
             UUID sessionId = client.getSessionId();
 
+            if (data.get("is_disconnect").equals(true)) {
+                mySocketService.updateSocketId(userId, new UUID(0L, 0L));
+                return;
+            }
+
             mySocketService.updateSocketId(userId, sessionId);
         });
 
@@ -109,8 +115,8 @@ public class SocketIOService implements ISocketIOService {
         socketIOServer.addDisconnectListener(client -> {
             client.disconnect();
             if (socketMessage.getMessage() != null) {
-                socketMessage.getListTo().forEach(toUser -> {
-                    clientMap.remove(toUser);
+                socketMessage.getListTo().forEach(toUserVal -> {
+                    clientMap.remove(toUserVal);
                 });
             }
         });
