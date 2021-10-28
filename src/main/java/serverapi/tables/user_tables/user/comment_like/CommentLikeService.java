@@ -66,9 +66,15 @@ public class CommentLikeService {
     public ResponseEntity addLike(Long userID, Long commentID) {
         Optional<MangaComments> mangaCommentsOptional = mangaCommentsRepos.findById(commentID);
         Optional<User> userOptional = userRepos.findById(userID);
+        Optional<CommentLikes> commentLikesOptional = commentLikesRepos.getCommentLike(commentID, userID);
         if (mangaCommentsOptional.isEmpty() || userOptional.isEmpty()) {
             Map<String, Object> msg = Map.of("err", "Comment or user is not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+
+        if(!commentLikesOptional.isEmpty()){
+            Map<String, Object> msg = Map.of("err", "user already liked!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
         }
 
         MangaComments mangaComments = mangaCommentsOptional.get();
@@ -86,7 +92,7 @@ public class CommentLikeService {
     }
 
     public ResponseEntity unLike(Long userID, Long commentID) {
-        Optional<CommentLikes> commentLikesOptional = commentLikesRepos.getCommentLike(userID, commentID);
+        Optional<CommentLikes> commentLikesOptional = commentLikesRepos.getCommentLike(commentID, userID);
         Optional<MangaComments> mangaCommentsOptional = mangaCommentsRepos.findById(commentID);
         if (commentLikesOptional.isEmpty() || mangaCommentsOptional.isEmpty()) {
             Map<String, Object> msg = Map.of("err", "Like is not found!");
