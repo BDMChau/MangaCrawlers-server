@@ -107,7 +107,7 @@ public class FriendService {
         if (!listFriends.isEmpty()) {
             AtomicBoolean flag = new AtomicBoolean(false);
             exportListFriends.forEach(friend -> {
-                if (flag.get() == false) {
+                if (!flag.get()) {
                     if (friend.getUser_id().equals(toUserID)) {
                         exportListFriends.remove(friend);
                         flag.set(true);
