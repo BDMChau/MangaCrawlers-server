@@ -34,7 +34,7 @@ public interface CommentLikesRepos extends JpaRepository<CommentLikes, Long> {
 //            "WHERE cm.manga_comment_id =?1 ")
 //    List<CommentLikes>getListLikes(Long manga_comment_id);
 
-    @Query("""
+    @Query(value = """
             SELECT cl
             FROM CommentLikes cl
             WHERE cl.manga_comment.manga_comment_id =?1
