@@ -21,4 +21,8 @@ public class CacheService {
     public void evictAllCacheValues(String cacheName) {
         cacheManager.getCache(cacheName).clear();
     }
+
+    public void evictAllCaches() {
+        cacheManager.getCacheNames().parallelStream().forEach(cacheName -> cacheManager.getCache(cacheName).clear());
+    }
 }

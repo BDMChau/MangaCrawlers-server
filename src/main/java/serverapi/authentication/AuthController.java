@@ -36,7 +36,7 @@ import java.util.TimeZone;
 public class AuthController {
     private final IAuthService authService;
 
-    private static String authorizationRequestBaseUri = "oauth2/authorization";
+    private static final String authorizationRequestBaseUri = "oauth2/authorization";
 
 
     // Note*: @Autowired clientRegistrationRepository before @Autowired authorizedClientService
@@ -68,8 +68,8 @@ public class AuthController {
             String errMsg = bindingResult.getAllErrors().get(0).getCode();
 
             Map<String, String> error = Map.of("err", errMsg);
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(),
+                    HttpStatus.ACCEPTED);
         }
 
         return authService.signUp(signUpPojo);
@@ -83,8 +83,8 @@ public class AuthController {
             String errMsg = bindingResult.getAllErrors().get(0).getCode();
 
             Map<String, String> error = Map.of("err", errMsg);
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, error).toJSON(),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(),
+                    HttpStatus.ACCEPTED);
         }
 
 
@@ -159,7 +159,7 @@ public class AuthController {
                         authorizationRequestBaseUri + "/" + registration.getRegistrationId()));
 
 
-        System.err.println("User requested to log in with google oauth");
+        System.out.println("User requested to log in with google oauth");
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get urls oauth google susscessfully",

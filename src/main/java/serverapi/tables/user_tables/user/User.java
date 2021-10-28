@@ -6,18 +6,24 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.tables.manga_tables.manga_comments.MangaComments;
+import serverapi.tables.manga_tables.manga_comment.manga_comment_likes.CommentLikes;
+import serverapi.tables.manga_tables.manga_comment.manga_comment_tags.CommentTags;
+import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
 import serverapi.tables.user_tables.following_manga.FollowingManga;
 import serverapi.tables.manga_tables.rating_manga.RatingManga;
-import serverapi.tables.user_tables.notificate.notification_replies.NotificationReplies;
-import serverapi.tables.user_tables.notificate.notifications.Notifications;
+import serverapi.tables.user_tables.friend_request_status.FriendRequestStatus;
+import serverapi.tables.user_tables.notification.notifications.Notifications;
+import serverapi.tables.user_tables.report.report_replies.ReportReplies;
+import serverapi.tables.user_tables.report.reports.Reports;
 import serverapi.tables.user_tables.reading_history.ReadingHistory;
 import serverapi.tables.user_tables.trans_group.TransGroup;
-import serverapi.tables.user_tables.user_relations.userRelations;
+import serverapi.tables.user_tables.user_relations.UserRelations;
+
 
 import javax.persistence.*;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -43,10 +49,6 @@ public class User {
     private Collection<ReadingHistory> readingHistory;
 
     @JsonBackReference
-    @OneToMany(mappedBy = "to_user", cascade = CascadeType.ALL)
-    private Collection<MangaComments> to_mangaComments;
-
-    @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<MangaComments> mangaComments;
 
@@ -60,20 +62,43 @@ public class User {
 
     @JsonBackReference
     @OneToMany(mappedBy = "parent_id", cascade = CascadeType.ALL)
-    private Collection<userRelations> parentUserRelations;
+    private Collection<UserRelations> parentUserRelations;
 
     @JsonBackReference
     @OneToMany(mappedBy = "child_id", cascade = CascadeType.ALL)
-    private Collection<userRelations> childUserRelations;
+    private Collection<UserRelations> childUserRelations;
 
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Collection<Notifications> notification;
+    private Collection<Reports> report;
 
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Collection<NotificationReplies> notification_reply;
+    private Collection<ReportReplies> report_reply;
 
+    @JsonBackReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Collection<CommentLikes> commentLikes;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Collection<CommentTags> commentTags;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "to_user", cascade = CascadeType.ALL)
+    private Collection<Notifications> to_notifications;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "from_user", cascade = CascadeType.ALL)
+    private Collection<Notifications> from_notifications;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Collection<FriendRequestStatus> friendRequestStatuses;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "to_user", cascade = CascadeType.ALL)
+    private Collection<FriendRequestStatus> to_friendRequestStatuses;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
@@ -90,8 +115,11 @@ public class User {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String user_password;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String user_avatar;
+
+    @Column(columnDefinition = "TEXT")
+    private String user_desc;
 
     @Column(columnDefinition = "TEXT", nullable = true)
     private String avatar_public_id_cloudinary;
@@ -113,6 +141,9 @@ public class User {
 
     @Column(nullable = true)
     private String token_verify_created_at;
+
+    @Column(nullable = true)
+    private UUID socket_session_id;
 
     @Column(
             nullable = false,

@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "spring.cloud.gateway.httpclient.websocket.max-frame-payload-length",
+      "type": "java.lang.String",
+      "description": "Description for spring.cloud.gateway.httpclient.websocket.max-frame-payload-length."
+  }
+] }

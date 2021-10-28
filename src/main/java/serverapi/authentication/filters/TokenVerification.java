@@ -20,7 +20,7 @@ import java.util.Map;
 @Component
 public class TokenVerification implements Filter {
 
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException {

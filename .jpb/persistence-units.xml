@@ -2,9 +2,10 @@
 <project version="4">
   <component name="PersistenceUnitSettings">
     <persistence-units>
-      <persistence-unit name="Default">
+      <persistence-unit name="Default" persistenceXmlPath=".idea/META-INF/persistence.xml">
         <packages>
           <package value="serverapi" />
+          <package value="" />
         </packages>
       </persistence-unit>
     </persistence-units>

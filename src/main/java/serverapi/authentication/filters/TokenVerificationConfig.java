@@ -15,6 +15,7 @@ public class TokenVerificationConfig {
         registrationBean.setFilter(new TokenVerification());
         registrationBean.addUrlPatterns("/api/user/*");
         registrationBean.addUrlPatterns("/api/admin/*");
+        registrationBean.addUrlPatterns("/api/notification/*");
         registrationBean.setOrder(1);
         return registrationBean;
     }

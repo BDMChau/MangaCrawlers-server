@@ -14,7 +14,7 @@ import java.util.Map;
 @Service
 public class AuthorService {
 
-    private AuthorRepos authorRepos;
+    private final AuthorRepos authorRepos;
 
     @Autowired
     public AuthorService(AuthorRepos authorRepos) {

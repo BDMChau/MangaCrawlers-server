@@ -5,6 +5,7 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
 import serverapi.tables.manga_tables.manga.pojo.CommentPOJO;
 import serverapi.tables.manga_tables.manga.pojo.MangaPOJO;
 
@@ -56,7 +57,6 @@ public class MangaController {
         return mangaService.findMangaFromGenre(genreId);
     }
 
-
     @Cacheable(value = "mangaPage", key = "#manga_id")
     @GetMapping("/getmangapage")
     public ResponseEntity getMangaPage(@RequestParam(required = false) String manga_id) {
@@ -101,19 +101,6 @@ public class MangaController {
         return mangaService.searchMangasByName(mangaName);
     }
 
-    @PostMapping("/getcommentsmanga")
-    public ResponseEntity getCommentsManga(@RequestBody CommentPOJO commentPOJO) {
-
-        Long mangaId = Long.parseLong(commentPOJO.getManga_id());
-
-        int from = commentPOJO.getFrom();
-        System.out.println("from_" + from);
-
-        int amount = commentPOJO.getAmount();
-        System.out.println("amount_" + amount);
-
-        return mangaService.getCommentsManga(mangaId, from, amount);
-    }
 
     @PostMapping("/advancedsearch")
     public ResponseEntity searchMangasByGenres(@RequestBody Map data) {
@@ -130,5 +117,28 @@ public class MangaController {
         return mangaService.searchMangasByGenres(listGenId);
     }
 
+
+    @PostMapping("/getcommentsmanga")
+    public ResponseEntity getCommentsManga(@RequestBody CommentPOJO commentPOJO) {
+        Long mangaId = Long.parseLong(commentPOJO.getManga_id());
+        int from = commentPOJO.getFrom();
+        int amount = commentPOJO.getAmount();
+
+        return mangaService.getCommentsManga(mangaId, from, amount);
+    }
+
+    @PostMapping("/getchildcomments")
+    public ResponseEntity getChildComments(@RequestBody CommentPOJO commentPOJO) {
+        Long commentID = Long.parseLong(commentPOJO.getManga_comment_id());
+        List<MangaCommentDTOs> comments = commentPOJO.getComments();
+
+        System.err.println("comment id "+commentID);
+        System.err.println("type"+(commentID == 1L));
+        int from = commentPOJO.getFrom();
+        int amount = commentPOJO.getAmount();
+        int level = Integer.parseInt(commentPOJO.getLevel());
+
+        return mangaService.getChildComments(commentID, comments, from, amount, level);
+    }
 
 }

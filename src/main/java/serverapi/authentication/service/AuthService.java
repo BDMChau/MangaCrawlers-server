@@ -321,15 +321,14 @@ public class AuthService implements IAuthService {
                 this.userData = getCustomFieldsUser(user);
                 TokenService tokenService = new TokenService();
                 this.token = tokenService.genHS256(userData);
-                System.err.println("dfghdfnfghndfnfthgynmfghjmghm,yfkmhjm,hmhjm");
             }
 
         }
 
 
         // redirect to client
-        responseHttpServlel.sendRedirect(System.getenv("ORIGIN_CLIENT"));
-//        responseHttpServlel.sendRedirect("https://mangacrawlers-58f1e.web.app");
+//        responseHttpServlel.sendRedirect(System.getenv("ORIGIN_CLIENT"));
+        responseHttpServlel.sendRedirect(System.getenv("ORIGIN_PRODUCTION01"));
 
         Map<String, Object> msg = Map.of("msg", "Signin with oauth google susscessfully");
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),

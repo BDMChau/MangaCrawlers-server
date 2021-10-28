@@ -7,15 +7,30 @@ import lombok.NoArgsConstructor;
 import java.io.IOException;
 import java.util.Map;
 
-@NoArgsConstructor
 public class CloudinaryUploader {
-
-    private Map paramsConfig = ObjectUtils.asMap(
+    private final Map paramsConfig = ObjectUtils.asMap(
             "api_key", System.getenv("CLOUDINARY_API_KEY"),
             "api_secret", System.getenv("CLOUDINARY_API_SECRET"),
             "cloud_name", "mangacrawlers"
     );
-    private Cloudinary cloudinary = new Cloudinary(paramsConfig);
+    private final Cloudinary cloudinary;
+    private static volatile CloudinaryUploader cloudinaryUploader;
+
+
+    private CloudinaryUploader(){
+        cloudinary = new Cloudinary(paramsConfig);
+    }
+
+    public static synchronized CloudinaryUploader getInstance(){
+        if(cloudinaryUploader == null){
+            cloudinaryUploader = new CloudinaryUploader();
+        }
+
+        return cloudinaryUploader;
+    }
+
+
+
 
     public Map uploadImg(byte[] fileBytes, String fileName, String folder, boolean usePublicIdAsFileName) throws IOException {
         Map params = ObjectUtils.asMap(

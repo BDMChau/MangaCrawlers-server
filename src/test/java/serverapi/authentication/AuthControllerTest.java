@@ -47,7 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(AuthController.class)
 @AutoConfigureMockMvc(addFilters = false)
 public class AuthControllerTest {
-    private HelpersTest helpersTest = new HelpersTest();
+    private final HelpersTest helpersTest = new HelpersTest();
 
     @Autowired
     protected MockMvc mockMvc;
