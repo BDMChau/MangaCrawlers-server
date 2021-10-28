@@ -43,8 +43,8 @@ public class CommentLikeService {
 
         Map<String, Object> msg = Map.of(
                 "msg", "Check like successfully!",
-                "status_number",likeStatus,
-                "status",sLikeStatus
+                "status_number", likeStatus,
+                "status", sLikeStatus
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
@@ -59,42 +59,48 @@ public class CommentLikeService {
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get total like successfully!",
-                "total_like",mangaCommentOptional.get().getCount_like()
+                "total_like", mangaCommentOptional.get().getCount_like()
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
     public ResponseEntity addLike(Long userID, Long commentID) {
-
         Optional<MangaComments> mangaCommentsOptional = mangaCommentsRepos.findById(commentID);
         Optional<User> userOptional = userRepos.findById(userID);
         if (mangaCommentsOptional.isEmpty() || userOptional.isEmpty()) {
             Map<String, Object> msg = Map.of("err", "Comment or user is not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
+
+        MangaComments mangaComments = mangaCommentsOptional.get();
+        mangaComments.setCount_like(mangaComments.getCount_like() + 1);
+
         CommentLikes commentLikes = new CommentLikes();
-        commentLikes.setManga_comment(mangaCommentsOptional.get());
+        commentLikes.setManga_comment(mangaComments);
         commentLikes.setUser(userOptional.get());
+
+        mangaCommentsRepos.saveAndFlush(mangaComments);
         commentLikesRepos.saveAndFlush(commentLikes);
 
-        Map<String, Object> msg = Map.of(
-                "msg", "Like successfully!"
-        );
+        Map<String, Object> msg = Map.of("msg", "Like successfully!");
         return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
     }
 
     public ResponseEntity unLike(Long userID, Long commentID) {
-
-        Optional<CommentLikes> commentLikesOptional = commentLikesRepos.getCommentLike(userID,commentID);
-        if (commentLikesOptional.isEmpty()) {
+        Optional<CommentLikes> commentLikesOptional = commentLikesRepos.getCommentLike(userID, commentID);
+        Optional<MangaComments> mangaCommentsOptional = mangaCommentsRepos.findById(commentID);
+        if (commentLikesOptional.isEmpty() || mangaCommentsOptional.isEmpty()) {
             Map<String, Object> msg = Map.of("err", "Like is not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
+
+        CommentLikes commentLikes = commentLikesOptional.get();
+        MangaComments mangaComments = mangaCommentsOptional.get();
+
         commentLikesRepos.delete(commentLikesOptional.get());
 
-        Map<String, Object> msg = Map.of(
-                "msg", "Unlike successfully!"
-        );
+
+        Map<String, Object> msg = Map.of("msg", "Unlike successfully!");
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 }
