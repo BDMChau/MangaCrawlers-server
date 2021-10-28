@@ -74,8 +74,8 @@ public class CommentLikeController {
         return commentLikeService.addLike(userID, commentID);
     }
 
-    @PostMapping("/unLike")
-    public ResponseEntity unlike(@RequestBody String comment_id, ServletRequest request) {
+    @PostMapping("/unlike")
+    public ResponseEntity unLike(@RequestBody String comment_id, ServletRequest request) {
         Long userID = 0L;
         Long commentID = 0L;
         String sUserId = getUserAttribute(request).get("user_id").toString();
