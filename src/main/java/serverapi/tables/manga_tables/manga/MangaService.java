@@ -774,7 +774,7 @@ public class MangaService {
                 });
             }
         }
-        if(childCmts.isEmpty() || childCmts.size() < amount){
+        if(childCmts.isEmpty() || childCmts.size() <= amount){
             isEnd = true;
         }
 
