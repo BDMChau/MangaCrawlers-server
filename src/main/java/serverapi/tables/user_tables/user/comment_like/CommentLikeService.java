@@ -96,8 +96,9 @@ public class CommentLikeService {
         CommentLikes commentLikes = commentLikesOptional.get();
         MangaComments mangaComments = mangaCommentsOptional.get();
 
-        mangaComments.setCount_like(mangaComments.getCount_like() - 1);
-
+        if(mangaComments.getCount_like() >=1){
+            mangaComments.setCount_like(mangaComments.getCount_like() - 1);
+        }
         commentLikesRepos.delete(commentLikesOptional.get());
 
         mangaCommentsRepos.saveAndFlush(mangaComments);
