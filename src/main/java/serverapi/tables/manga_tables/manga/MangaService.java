@@ -1,5 +1,6 @@
 package serverapi.tables.manga_tables.manga;
 
+import org.hibernate.Hibernate;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,6 +32,7 @@ import serverapi.tables.manga_tables.genre.Genre;
 import serverapi.tables.manga_tables.manga.pojo.MangaPOJO;
 import serverapi.tables.manga_tables.update_view.UpdateView;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -71,34 +73,28 @@ public class MangaService {
      * @param mangaPOJO
      * @return List chapters after update view
      */
+    @Transactional
     public ResponseEntity updateViewsChapter(Long mangaId, Long chapterId, MangaPOJO mangaPOJO) {
-
         Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
-
         if (mangaOptional.isEmpty()) {
             Map<String, Object> msg = Map.of("msg", "No mangas!");
             return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, msg).toJSON(), HttpStatus.NO_CONTENT);
         }
 
         List<Chapter> chapters = mangaOptional.get().getChapters();
-
+        Hibernate.initialize(chapters);
         chapters.forEach(item -> {
             if (item.getChapter_id().equals(chapterId)) {
                 String chapterName = item.getChapter_name();
-                mangaPOJO.setChapter_name(chapterName);
 
                 int views = item.getViews();
                 item.setViews(views + 1);
 
-                chapterRepository.save(item);
+                chapterRepository.saveAndFlush(item);
             }
         });
 
-        Map<String, Object> msg = Map.of(
-                "msg", "Get all mangas successfully!",
-                "data", mangaOptional,
-                "data2", chapters
-        );
+        Map<String, Object> msg = Map.of("msg", "Update view OK!");
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
