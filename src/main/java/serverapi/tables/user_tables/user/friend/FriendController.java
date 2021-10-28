@@ -77,7 +77,7 @@ public class FriendController {
         Long receiverID = Long.parseLong(to_user_id);
         Long statusID = Long.parseLong(status_id);
 
-        int checkStatus = friendService.checkStatus(senderID, receiverID, statusID);
+        int checkStatus = friendService.checkStatus(senderID, receiverID);
         String exportCheck = switch (checkStatus) {
             case 0 -> "Add friend";
             case 1 -> "Pending";

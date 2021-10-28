@@ -50,6 +50,14 @@ public interface FriendRequestRepos extends JpaRepository<FriendRequestStatus, L
              """)
     Optional<FriendDTO> findFriendByUserId(Long user_id, Long to_user_id);
 
+    @Query("""
+            SELECT frs FROM FriendRequestStatus frs
+            WHERE frs.user.user_id =?1
+            AND frs.to_user.user_id =?2
+            AND frs.status = true
+            """)
+    List<FriendRequestStatus> getFriendStatus(Long user_id, Long to_user_id);
+
 //    @Query("""
 //             SELECT DISTINCT new serverapi.query.dtos.features.FriendDTO(
 //              us.child_id.user_id, us.parent_id.user_id,

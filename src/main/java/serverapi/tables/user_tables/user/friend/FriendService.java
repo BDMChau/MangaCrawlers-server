@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class FriendService {
@@ -166,23 +167,21 @@ public class FriendService {
     }
 
     // 1: add friend; 2: pending ; 3: friend
-    protected Integer checkStatus(Long senderID, Long receiverID, Long statusID) {
-        Optional<FriendDTO> friendRelationsOptional = friendRequestRepos.findFriendByUserId(senderID, receiverID);
-
-        int iStatus = 0;
-        if (friendRelationsOptional.isEmpty()) {
-            Optional<FriendRequestStatus> statusOptional = friendRequestRepos.findById(statusID);
-            if (statusOptional.isEmpty()) {
-                iStatus = 0;
-            } else {
-                if (statusOptional.get().getStatus().equals(true) && statusOptional.get().getTime_accepted() == null) {
-                    iStatus = 1;
-                } else {
-                    iStatus = 2;
+    protected Integer checkStatus(Long senderID, Long receiverID) {
+        List<FriendRequestStatus> statusList = friendRequestRepos.getFriendStatus(senderID, receiverID);
+        AtomicInteger iStatus = new AtomicInteger();
+        if (statusList.isEmpty()) {
+           iStatus.set(0);
+        }else{
+            statusList.forEach(item ->{
+                if(item.getTime_accepted() == null){
+                    iStatus.set(1);
+                }else{
+                    iStatus.set(2);
                 }
-            }
+            });
         }
-        return iStatus;
+        return iStatus.get();
     }
 }
 
