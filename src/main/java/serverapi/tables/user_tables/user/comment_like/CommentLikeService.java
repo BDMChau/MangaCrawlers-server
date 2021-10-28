@@ -49,7 +49,7 @@ public class CommentLikeService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
-    public ResponseEntity getTotalLike(Long userID, Long commentID) {
+    public ResponseEntity getTotalLike(Long commentID) {
 
         Optional<MangaComments> mangaCommentOptional = mangaCommentsRepos.findById(commentID);
         if (mangaCommentOptional.isEmpty()) {
@@ -80,7 +80,7 @@ public class CommentLikeService {
         Map<String, Object> msg = Map.of(
                 "msg", "Like successfully!"
         );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
     }
 
     public ResponseEntity unLike(Long userID, Long commentID) {
