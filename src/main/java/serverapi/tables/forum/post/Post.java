@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.tables.forum.post_image.PostImage;
 import serverapi.tables.forum.post_topic.PostTopic;
 import serverapi.tables.user_tables.notification.notification_types.NotificationTypes;
 import serverapi.tables.user_tables.user.User;
@@ -44,10 +43,6 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_topic_id")
     private PostTopic post_topic;
-
-    @JsonBackReference
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private Collection<PostImage> postImages;
 
     @Column(columnDefinition = "TEXT")
     private String title;
