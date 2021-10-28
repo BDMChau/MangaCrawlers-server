@@ -44,20 +44,7 @@ public class CommentLikeController {
         return commentLikeService.checkUserLike(userID, commentID);
     }
 
-    @PostMapping("/get_total_like")
-    public ResponseEntity getTotalLike(@RequestBody String comment_id, ServletRequest request) {
-        Long userID = 0L;
-        Long commentID = 0L;
-        String sUserId = getUserAttribute(request).get("user_id").toString();
-        if (!sUserId.isEmpty()) {
-            userID = Long.parseLong(sUserId);
-        }
-        if (!comment_id.isEmpty()) {
-            commentID = Long.parseLong(comment_id);
-        }
 
-        return commentLikeService.getTotalLike(userID, commentID);
-    }
 
     @PostMapping("/add_like")
     public ResponseEntity addLike(@RequestBody String comment_id, ServletRequest request) {
