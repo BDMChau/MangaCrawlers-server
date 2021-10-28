@@ -86,7 +86,7 @@ public class CommentLikeService {
     }
 
     public ResponseEntity unLike(Long userID, Long commentID) {
-        Optional<CommentLikes> commentLikesOptional = commentLikesRepos.getCommentLike(userID, commentID);
+        Optional<CommentLikes> commentLikesOptional = commentLikesRepos.getCommentLike(commentID, userID);
         Optional<MangaComments> mangaCommentsOptional = mangaCommentsRepos.findById(commentID);
         if (commentLikesOptional.isEmpty() || mangaCommentsOptional.isEmpty()) {
             Map<String, Object> msg = Map.of("err", "Like is not found!");
