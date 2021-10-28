@@ -67,9 +67,9 @@ public class FriendController {
     }
 
     @PostMapping("/check_status")
-    public ResponseEntity checkStatus(ServletRequest request, @RequestBody String to_user_id, String status_id) {
+    public ResponseEntity checkStatus(ServletRequest request, @RequestBody FriendPOJO friendPOJO) {
         String sUserId = getUserAttribute(request).get("user_id").toString();
-        if (sUserId.isEmpty() || to_user_id.isEmpty() || status_id.isEmpty() || status_id.equals("")) {
+        if (sUserId.isEmpty() || friendPOJO.getTo_user_id().isEmpty() || friendPOJO.getStatus_id().isEmpty() || friendPOJO.getStatus_id().equals("")) {
             Map<String, Object> msg = Map.of(
                     "msg", "Missing credential!"
             );
@@ -77,8 +77,8 @@ public class FriendController {
                     HttpStatus.BAD_REQUEST);
         }
         Long senderID = Long.parseLong(sUserId);
-        Long receiverID = Long.parseLong(to_user_id);
-        Long statusID = Long.parseLong(status_id);
+        Long receiverID = Long.parseLong(friendPOJO.getTo_user_id());
+        Long statusID = Long.parseLong(friendPOJO.getStatus_id());
 
         int checkStatus = friendService.checkStatus(senderID, receiverID);
         String exportCheck = switch (checkStatus) {
