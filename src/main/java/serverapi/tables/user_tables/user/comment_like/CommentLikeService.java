@@ -29,12 +29,12 @@ public class CommentLikeService {
     }
 
     public ResponseEntity checkUserLike(Long userID, Long commentID) {
-        int likeStatus = 0;
+        int likeStatus = 1;
         String sLikeStatus = "";
         Optional<CommentLikes> commentLikeOptional = commentLikesRepos.getCommentLike(commentID, userID);
 
         if (commentLikeOptional.isEmpty()) {
-            likeStatus = 1;
+            likeStatus = 0;
         }
         switch (likeStatus) {
             case 0 -> sLikeStatus = "hasn't liked";
