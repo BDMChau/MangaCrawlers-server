@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import serverapi.api.Response;
 import serverapi.query.dtos.features.FriendDTO;
+import serverapi.tables.manga_tables.manga.pojo.FriendPOJO;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -48,9 +49,11 @@ public class FriendController {
 
     @CacheEvict(value = {"listfriends"}, key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @PostMapping("/unfriend")
-    public ResponseEntity unFriend(ServletRequest request, @RequestBody String to_user_id, List<FriendDTO> listFriends) {
+    public ResponseEntity unFriend(ServletRequest request, @RequestBody FriendPOJO friendPOJO) {
         String sUserId = getUserAttribute(request).get("user_id").toString();
-        if (sUserId.isEmpty() || to_user_id.isEmpty()) {
+        Long toUserID = 0l;
+        List<FriendDTO> listFriends = friendPOJO.getListFriends();
+        if (sUserId.isEmpty() || friendPOJO.getTo_user_id().isEmpty()) {
             Map<String, Object> msg = Map.of(
                     "msg", "User or target user is empty!"
             );
@@ -58,7 +61,7 @@ public class FriendController {
                     HttpStatus.BAD_REQUEST);
         }
         Long userID = Long.parseLong(sUserId);
-        Long toUserID = Long.parseLong(to_user_id);
+        toUserID = Long.parseLong(friendPOJO.getTo_user_id());
 
         return friendService.unFriend(userID, toUserID, listFriends);
     }
