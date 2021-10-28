@@ -22,7 +22,8 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
     Optional<Manga> findByName(String manga);
 
     /**
-     *  ----- Use for get list latest chapter in each manga -----
+     * ----- Use for get list latest chapter in each manga -----
+     *
      * @return List latest chapter in each manga
      */
     @Query("SELECT new serverapi.query.dtos.tables.MangaChapterDTO(c.chapter_id, c.chapter_name, c.created_at, m.manga_id," +
@@ -31,7 +32,8 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
     List<MangaChapterDTO> getLatestChapterFromManga();
 
     /**
-     *  ----- Use for get the latest chapter in manga by manga_id
+     * ----- Use for get the latest chapter in manga by manga_id
+     *
      * @param manga_id
      * @return latest chapter in this manga
      */
@@ -41,7 +43,8 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
     Optional<MangaChapterDTO> getLatestChapterFromMangaByMangaId(Long manga_id);
 
     /**
-     *  ----- Use for get list latest chapter in each manga by transgroup
+     * ----- Use for get list latest chapter in each manga by transgroup
+     *
      * @param transgroup_id
      * @return
      */
@@ -51,14 +54,12 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
     List<MangaChapterDTO> getLatestChapterFromMangaByTransgroup(Long transgroup_id);
 
     /**
-     *
      * @param transgroup_id
      * @return
      */
     @Query("SELECT new serverapi.query.dtos.tables.MangaChapterDTO(m.manga_id," +
             " m.manga_name, m.thumbnail, m.stars) FROM Manga m JOIN TransGroup tg ON tg.transgroup_id = m.transgroup WHERE tg.transgroup_id =?1")
     List<MangaChapterDTO> getMangaByTransgroup(Long transgroup_id);
-
 
 
     @Query(value = "SELECT * FROM Manga ORDER BY RANDOM() LIMIT :quantity", nativeQuery = true)
@@ -110,13 +111,11 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
     List<UpdateViewDTO> getWeekly(@Param("from_time") int from_time, @Param("to_time") int to_time);
 
 
-
     @Query("SELECT new serverapi.query.dtos.tables.AuthorMangaDTO( a.author_id, a.author_name," +
             "m.manga_id, m.manga_name, m.status, m.description, m.stars, " +
             "m.views, m.thumbnail, m.date_publications, m.created_at)" +
             " FROM Author a JOIN a.mangas m WHERE m.manga_id = ?1")
     Optional<AuthorMangaDTO> getMangaInfoByMangaID(Long manga_id);
-
 
 
     @Query("SELECT new serverapi.query.dtos.tables.AuthorMangaDTO( a.author_id, a.author_name," +

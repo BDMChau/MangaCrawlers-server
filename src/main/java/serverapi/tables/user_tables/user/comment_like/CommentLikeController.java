@@ -28,7 +28,9 @@ public class CommentLikeController {
     }
 
     @PostMapping("/check_user_like")
-    public ResponseEntity checkUserLike(@RequestBody String comment_id, ServletRequest request) {
+    public ResponseEntity checkUserLike(@RequestBody Map data, ServletRequest request) {
+        String comment_id = String.valueOf(data.get("comment_id"));
+
         Long userID;
         Long commentID = 0L;
         String sUserId = getUserAttribute(request).get("user_id").toString();
@@ -47,7 +49,9 @@ public class CommentLikeController {
 
 
     @PostMapping("/add_like")
-    public ResponseEntity addLike(@RequestBody String comment_id, ServletRequest request) {
+    public ResponseEntity addLike(@RequestBody Map data, ServletRequest request) {
+        String comment_id = String.valueOf(data.get("comment_id"));
+
         Long userID = 0L;
         Long commentID = 0L;
         String sUserId = getUserAttribute(request).get("user_id").toString();
@@ -62,7 +66,9 @@ public class CommentLikeController {
     }
 
     @PostMapping("/unlike")
-    public ResponseEntity unLike(@RequestBody String comment_id, ServletRequest request) {
+    public ResponseEntity unLike(@RequestBody Map data, ServletRequest request) {
+        String comment_id = String.valueOf(data.get("comment_id"));
+
         Long userID = 0L;
         Long commentID = 0L;
         String sUserId = getUserAttribute(request).get("user_id").toString();

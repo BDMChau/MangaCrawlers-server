@@ -33,7 +33,9 @@ public class UserControllerUnAuth {
     }
 
     @PostMapping("/get_total_like")
-    public ResponseEntity getTotalLike(@RequestBody String comment_id) {
+    public ResponseEntity getTotalLike(@RequestBody Map data) {
+        String comment_id = String.valueOf(data.get("comment_id"));
+
         Long commentID = 0L;
         if (!comment_id.isEmpty()) {
             commentID = Long.parseLong(comment_id);
