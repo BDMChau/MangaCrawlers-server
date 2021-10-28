@@ -511,7 +511,7 @@ public class MangaService {
         if (randomPosition >= (totalRows - 5)) {
             randomPosition -= 5;
         }
-        Pageable pageable = new OffsetBasedPageRequest(randomPosition, 5);
+        Pageable pageable = new OffsetBasedPageRequest(randomPosition, 6);
         Page<Manga> mangaPage = mangaRepository.findAll(pageable);
 
         System.err.println("Getting suggestion list");
