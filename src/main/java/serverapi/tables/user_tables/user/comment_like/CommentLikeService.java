@@ -37,8 +37,8 @@ public class CommentLikeService {
             likeStatus = 1;
         }
         switch (likeStatus) {
-            case 0 -> sLikeStatus = "user have liked in this comment!";
-            case 1 -> sLikeStatus = "user still not like in this comment!";
+            case 0 -> sLikeStatus = "hasn't liked";
+            case 1 -> sLikeStatus = "liked";
         }
 
         Map<String, Object> msg = Map.of(
@@ -50,7 +50,6 @@ public class CommentLikeService {
     }
 
     public ResponseEntity getTotalLike(Long commentID) {
-
         Optional<MangaComments> mangaCommentOptional = mangaCommentsRepos.findById(commentID);
         if (mangaCommentOptional.isEmpty()) {
             Map<String, Object> msg = Map.of("err", "Comment not found!");
@@ -97,8 +96,12 @@ public class CommentLikeService {
         CommentLikes commentLikes = commentLikesOptional.get();
         MangaComments mangaComments = mangaCommentsOptional.get();
 
+        mangaComments.setCount_like(mangaComments.getCount_like() - 1);
+
         commentLikesRepos.delete(commentLikesOptional.get());
 
+        mangaCommentsRepos.saveAndFlush(mangaComments);
+        commentLikesRepos.saveAndFlush(commentLikes);
 
         Map<String, Object> msg = Map.of("msg", "Unlike successfully!");
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
