@@ -144,7 +144,7 @@ public class MangaService {
      * @return list of top 5 manga
      */
     public ResponseEntity getTop() {
-        List<Manga> topFiveMangas = mangaRepository.getTop(5);
+        List<Manga> topFiveMangas = mangaRepository.getTop(9);
 
         if (topFiveMangas.isEmpty()) {
             Map<String, Object> err = Map.of("msg", "Nothing of top mangas!");
@@ -461,7 +461,7 @@ public class MangaService {
 
         List<AuthorMangaDTO> listDailyRanking = new ArrayList<>();
 
-        List<DailyMangaDTO> top10Mangas = listDailyMangasRankingAfterRemoveDuplicates.stream().limit(10).collect(Collectors.toList());
+        List<DailyMangaDTO> top10Mangas = listDailyMangasRankingAfterRemoveDuplicates.stream().limit(9).collect(Collectors.toList());
 
         List<AuthorMangaDTO> mangas = mangaRepository.getAllMangas();
 
@@ -508,7 +508,7 @@ public class MangaService {
         if (randomPosition >= (totalRows - 5)) {
             randomPosition -= 5;
         }
-        Pageable pageable = new OffsetBasedPageRequest(randomPosition, 5);
+        Pageable pageable = new OffsetBasedPageRequest(randomPosition, 6);
         Page<Manga> mangaPage = mangaRepository.findAll(pageable);
 
         System.err.println("Getting suggestion list");
