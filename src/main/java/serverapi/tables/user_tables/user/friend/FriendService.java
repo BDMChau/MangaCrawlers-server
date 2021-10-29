@@ -14,10 +14,7 @@ import serverapi.tables.user_tables.friend_request_status.FriendRequestStatus;
 import serverapi.tables.user_tables.user.User;
 import serverapi.tables.user_tables.user_relations.UserRelations;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -62,7 +59,7 @@ public class FriendService {
 
         List<FriendDTO> exportListFriends = filterListFriends(getListFriends, userID);
         if (exportListFriends.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "Empty list friends!");
+            Map<String, Object> msg = Map.of("err", "Empty list friends!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(),
                     HttpStatus.ACCEPTED);
         }
@@ -91,17 +88,37 @@ public class FriendService {
         exportUser.setStatus(true);
 
         Optional<FriendDTO> targetUser = friendRequestRepos.findFriendByUserId(userID, toUserID);
-        if (targetUser.isEmpty() || listFriends.isEmpty() || targetUser.get().getUser_relations_id() != null) {
+        if (targetUser.isEmpty() || listFriends.isEmpty()) {
             Map<String, Object> msg = Map.of(
-                    "msg", "Cannot unfriend!"
+                    "err", "Cannot unfriend!"
             );
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(),
                     HttpStatus.ACCEPTED);
         }
         Optional<UserRelations> userRelations = userRelationsRepos.findById(targetUser.get().getUser_relations_id());
+        if (userRelations.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "err", "Something wrong!"
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(),
+                    HttpStatus.ACCEPTED);
+        }
+
         UserRelations targetRelation = userRelations.get();
         targetRelation.setFriendRequest(null);
         userRelationsRepos.saveAndFlush(targetRelation);
+
+        Optional<FriendRequestStatus> friendRequestStatus = friendRequestRepos.findById(targetUser.get().getFriend_request_id());
+        if (friendRequestStatus.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "err", "Something wrong!"
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(),
+                    HttpStatus.ACCEPTED);
+        }
+        FriendRequestStatus targetRequest = friendRequestStatus.get();
+        targetRequest.setStatus(false);
+        friendRequestRepos.saveAndFlush(targetRequest);
 
         List<FriendDTO> exportListFriends = filterListFriends(listFriends, userID);
         if (!listFriends.isEmpty()) {
@@ -122,6 +139,53 @@ public class FriendService {
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
                 HttpStatus.OK);
+    }
+
+    public ResponseEntity addFriend(Long senderID, Long receiverID) {
+        Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Optional<User> senderOptional = userRepos.findById(senderID);
+        Optional<User> receiverOptional = userRepos.findById(receiverID);
+        System.err.println("line 148");
+        Optional<FriendRequestStatus> friendRequestStatusOptional = friendRequestRepos.getFriendStatus(senderID, receiverID);
+        System.err.println("line  150");
+        if (friendRequestStatusOptional.isEmpty() || senderOptional.isEmpty() || receiverOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "err", "Cannot add friend"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        FriendRequestStatus friendRequestStatus = friendRequestStatusOptional.get();
+        friendRequestStatus.setTime_accepted(currentTime);
+        friendRequestRepos.saveAndFlush(friendRequestStatus);
+
+        Optional<UserRelations> userRelationsOptional = userRelationsRepos.findUserRelations(senderID, receiverID);
+        System.err.println("line 162");
+        if (userRelationsOptional.isEmpty()) {
+
+            UserRelations userRelations = new UserRelations();
+            userRelations.setParent_id(senderOptional.get());
+            userRelations.setChild_id(receiverOptional.get());
+            userRelations.setFriendRequest(friendRequestStatusOptional.get());
+            userRelationsRepos.saveAndFlush(userRelations);
+
+            Map<String, Object> msg = Map.of(
+                    "msg", "Add friend successfully!"
+            );
+            return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(),
+                    HttpStatus.CREATED);
+        }
+
+        UserRelations userRelations = userRelationsOptional.get();
+        userRelations.setFriendRequest(friendRequestStatusOptional.get());
+        userRelationsRepos.saveAndFlush(userRelations);
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Add friend successfully!"
+        );
+        return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(),
+                HttpStatus.CREATED);
+
     }
 
     /////////////////////////////Helper///////////////////////////////
@@ -168,21 +232,21 @@ public class FriendService {
 
     // 1: add friend; 2: pending ; 3: friend
     protected Integer checkStatus(Long senderID, Long receiverID) {
-        List<FriendRequestStatus> statusList = friendRequestRepos.getFriendStatus(senderID, receiverID);
+        Optional<FriendRequestStatus> statusOptional = friendRequestRepos.getFriendStatus(senderID, receiverID);
         AtomicInteger iStatus = new AtomicInteger();
-        if (statusList.isEmpty()) {
-           iStatus.set(0);
-        }else{
-            statusList.forEach(item ->{
-                if(item.getTime_accepted() == null){
-                    iStatus.set(1);
-                }else{
-                    iStatus.set(2);
-                }
-            });
+        if (statusOptional.isEmpty()) {
+            iStatus.set(0);
+        } else {
+            if (statusOptional.get().getTime_accepted() == null) {
+                iStatus.set(1);
+            } else {
+                iStatus.set(2);
+            }
         }
         return iStatus.get();
     }
+
+
 }
 
 

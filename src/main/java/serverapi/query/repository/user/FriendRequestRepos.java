@@ -50,13 +50,19 @@ public interface FriendRequestRepos extends JpaRepository<FriendRequestStatus, L
              """)
     Optional<FriendDTO> findFriendByUserId(Long user_id, Long to_user_id);
 
-    @Query("""
+    @Query(value = """
             SELECT frs FROM FriendRequestStatus frs
-            WHERE frs.user.user_id =?1
-            AND frs.to_user.user_id =?2
-            AND frs.status = true
+            WHERE (frs.user.user_id =?1 AND frs.to_user.user_id =?2 AND frs.status = true) or (frs.user.user_id =?2 AND frs.to_user.user_id =?1 AND frs.status = true)
+                      
             """)
-    List<FriendRequestStatus> getFriendStatus(Long user_id, Long to_user_id);
+    Optional<FriendRequestStatus> getFriendStatus(Long user_id, Long to_user_id);
+
+    @Query(value = """
+            SELECT frs FROM FriendRequestStatus frs
+            WHERE (frs.user.user_id =?1 AND frs.to_user.user_id =?2) or (frs.user.user_id =?2 AND frs.to_user.user_id =?1)
+            ORDER BY frs.friend_request_id desc 
+            """)
+    List<FriendRequestStatus> getAllFriendStatus(Long user_id, Long to_user_id);
 
 //    @Query("""
 //             SELECT DISTINCT new serverapi.query.dtos.features.FriendDTO(
