@@ -230,7 +230,7 @@ public class FriendService {
         return exportListFriends;
     }
 
-    // 1: add friend; 2: pending ; 3: friend
+    // 0: add friend; 1: pending; 2: friend; 3: accept friend
     protected Integer checkStatus(Long senderID, Long receiverID) {
         Optional<FriendRequestStatus> statusOptional = friendRequestRepos.getFriendStatus(senderID, receiverID);
         AtomicInteger iStatus = new AtomicInteger();
@@ -238,7 +238,11 @@ public class FriendService {
             iStatus.set(0);
         } else {
             if (statusOptional.get().getTime_accepted() == null) {
-                iStatus.set(1);
+                if (statusOptional.get().getUser().getUser_id().equals(senderID)) {
+                    iStatus.set(1);
+                } else if (statusOptional.get().getUser().getUser_id().equals(receiverID)) {
+                    iStatus.set(3);
+                }
             } else {
                 iStatus.set(2);
             }

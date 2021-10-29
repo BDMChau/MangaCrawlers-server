@@ -102,6 +102,7 @@ public class FriendController {
             case 0 -> "Add friend";
             case 1 -> "Pending";
             case 2 -> "Friend";
+            case 3 -> "accept friend";
             default -> "";
         };
 
