@@ -322,6 +322,15 @@ public class UserController {
         return userService.searchUsers(valToSearch, key);
     }
 
+    @PutMapping("/update_description")
+    public ResponseEntity updateDescription(ServletRequest request, @RequestBody Map data) throws IOException {
+        String description = String.valueOf(data.get("user_desc"));
+        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+        return userService.updateDescription(userId, description);
+    }
+
     ////////////////////////// Translation Group parts /////////////////////////////
 //    @CacheEvict(allEntries = true, value = {"allmangas", "transGroupInfo", "mangaInfoUploadPage"})
 //    @CacheEvict(allEntries = true, value = {"allmangas", "transGroupInfo", "mangaInfoUploadPage"})

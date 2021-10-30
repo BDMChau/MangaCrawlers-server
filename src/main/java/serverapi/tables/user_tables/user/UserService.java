@@ -1352,8 +1352,8 @@ public class UserService {
     }
 
 
-    public ResponseEntity getFriendRequests(Long userId){
-        List<NotificationDTO> requests = notificationRepos.getListByUserIdAndTypeAndNotInteract(userId,2);
+    public ResponseEntity getFriendRequests(Long userId) {
+        List<NotificationDTO> requests = notificationRepos.getListByUserIdAndTypeAndNotInteract(userId, 2);
 
 
         Map<String, Object> msg = Map.of(
@@ -1365,9 +1365,9 @@ public class UserService {
 
 
     ////////////////////////////////////// unauthenticated parts //////////////////////////////////////
-    public ResponseEntity getUserInfo(Long userId){
+    public ResponseEntity getUserInfo(Long userId) {
         Optional<UserDTO> userOptional = userRepos.findByUserId(userId);
-        if(userOptional.isEmpty()){
+        if (userOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "User does not exist!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
@@ -1378,6 +1378,40 @@ public class UserService {
 
         Map<String, Object> msg = Map.of(
                 "msg", "get user info OK!",
+                "user", userDTO
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    public ResponseEntity updateDescription(Long userId, String description) {
+        Optional<User> userOptional = userRepos.findById(userId);
+        if (userOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "err", "User not found!"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+        User user = userOptional.get();
+        if(!description.isEmpty()){
+            if(description.length()>= 150){
+                Map<String, Object> msg = Map.of(
+                        "err", "Description length must be <= 150 characters!"
+                );
+                return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+            }
+        }
+        user.setUser_desc(description);
+        userRepos.saveAndFlush(user);
+
+        Optional<UserDTO> exportUser = userRepos.findByUserId(userId);
+        UserDTO userDTO;
+        if (exportUser.isEmpty()) {
+            userDTO = new UserDTO();
+        }
+        userDTO = exportUser.get();
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Update description successfully!",
                 "user", userDTO
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
