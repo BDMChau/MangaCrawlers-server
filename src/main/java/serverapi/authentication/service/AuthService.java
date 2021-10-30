@@ -52,6 +52,7 @@ public class AuthService implements IAuthService {
         String name = user.getUser_name();
         String email = user.getUser_email();
         String avatar = user.getUser_avatar();
+        String desc = user.getUser_desc();
         Boolean isAdmin = user.getUser_isAdmin();
         Boolean isVerified = user.getUser_isVerified();
         Optional<TransGroup> transGroup = Optional.ofNullable(user.getTransgroup());
@@ -64,6 +65,7 @@ public class AuthService implements IAuthService {
             userFields.put("user_avatar", avatar);
             userFields.put("user_isAdmin", isAdmin);
             userFields.put("user_isVerified", isVerified);
+            userFields.put("user_desc", desc);
 
         } else {
             userFields.put("user_id", id);
@@ -72,6 +74,7 @@ public class AuthService implements IAuthService {
             userFields.put("user_avatar", avatar);
             userFields.put("user_isAdmin", isAdmin);
             userFields.put("user_isVerified", isVerified);
+            userFields.put("user_desc", desc);
             userFields.put("user_transgroup_id", transGroup.get().getTransgroup_id());
         }
 
