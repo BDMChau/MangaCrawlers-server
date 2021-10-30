@@ -1392,15 +1392,16 @@ public class UserService {
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
         User user = userOptional.get();
-        if(!description.isEmpty()){
-            if(description.length()>= 150){
+        String inputDesc = description.trim();
+        if(!inputDesc.isEmpty()){
+            if(inputDesc.length()>= 150){
                 Map<String, Object> msg = Map.of(
                         "err", "Description length must be <= 150 characters!"
                 );
                 return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
             }
         }
-        user.setUser_desc(description);
+        user.setUser_desc(inputDesc);
         userRepos.saveAndFlush(user);
 
         Optional<UserDTO> exportUser = userRepos.findByUserId(userId);
