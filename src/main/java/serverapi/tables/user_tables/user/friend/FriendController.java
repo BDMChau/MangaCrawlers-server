@@ -73,7 +73,7 @@ public class FriendController {
         Long userID = 0L;
         if (sUserId.isEmpty() || friendPOJO.getTo_user_id().isEmpty()) {
             Map<String, Object> msg = Map.of(
-                    "msg", "User or target user is empty!"
+                    "err", "User or target user is empty!"
             );
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(),
                     HttpStatus.BAD_REQUEST);
@@ -89,7 +89,7 @@ public class FriendController {
         String sUserId = getUserAttribute(request).get("user_id").toString();
         if (sUserId.isEmpty() || friendPOJO.getTo_user_id().isEmpty()) {
             Map<String, Object> msg = Map.of(
-                    "msg", "Missing credential!"
+                    "err", "Missing credential!"
             );
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(),
                     HttpStatus.BAD_REQUEST);
