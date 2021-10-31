@@ -78,7 +78,7 @@ public class FriendService {
     }
 
 
-    public ResponseEntity unFriend(Long userID, Long toUserID, List<FriendDTO> listFriends) {
+    public ResponseEntity unfriend(Long userID, Long toUserID, List<FriendDTO> listFriends) {
         Optional<User> toUserOptional = userRepos.findById(toUserID);
         User toUser = toUserOptional.get();
         FriendDTO exportUser = new FriendDTO();
@@ -135,6 +135,7 @@ public class FriendService {
                         friendDTO.setUser_name(user1.getUser_name());
                         friendDTO.setUser_avatar(user1.getUser_avatar());
                         friendDTO.setUser_email(user1.getUser_email());
+                        friendDTO.setSocket_session_id(user1.getSocket_session_id());
                         friendDTO.setStatus(true);
 
                         exportListFriends.add(friendDTO);
@@ -149,6 +150,7 @@ public class FriendService {
                         friendDTO.setUser_name(user1.getUser_name());
                         friendDTO.setUser_avatar(user1.getUser_avatar());
                         friendDTO.setUser_email(user1.getUser_email());
+                        friendDTO.setSocket_session_id(user1.getSocket_session_id());
                         friendDTO.setStatus(true);
 
                         exportListFriends.add(friendDTO);

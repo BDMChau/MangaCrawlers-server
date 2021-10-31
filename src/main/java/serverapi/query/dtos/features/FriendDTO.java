@@ -9,6 +9,7 @@ import org.h2.api.TimestampWithTimeZone;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -19,6 +20,7 @@ public class FriendDTO {
     private String user_name;
     private String user_avatar;
     private String user_email;
+    private UUID socket_session_id;
 
     private Long user_relations_id;
     private Long child_user_id;
