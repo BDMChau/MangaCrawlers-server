@@ -66,6 +66,9 @@ public class Notifications {
     @Column(columnDefinition = "boolean default false", nullable = false)
     private Boolean is_interacted;
 
+    @Column(columnDefinition = "boolean default false", nullable = false)
+    private Boolean is_delete;
+
     @Column(
             nullable = false,
             updatable = true,

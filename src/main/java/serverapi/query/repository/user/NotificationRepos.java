@@ -14,13 +14,13 @@ import java.util.Optional;
 @Repository
 public interface NotificationRepos extends JpaRepository<Notifications, Long> {
 
-    @Query("SELECT no FROM Notifications no JOIN User u ON no.to_user.user_id = u.user_id WHERE u.user_id = ?1")
+    @Query("SELECT no FROM Notifications no JOIN User u ON no.to_user.user_id = u.user_id WHERE u.user_id = ?1 AND no.is_delete = false")
     List<Notifications> getAllByUserId(Long user_id);
 
-    @Query("SELECT no FROM Notifications no WHERE no.target_id = ?1 AND no.is_interacted = false")
+    @Query("SELECT no FROM Notifications no WHERE no.target_id = ?1 AND no.is_interacted = false AND no.is_delete = false")
     List<Notifications> findByTargetTitleUserAndNotInteract(Long targetId);
 
-    @Query("SELECT no FROM Notifications no WHERE no.to_user.user_id = ?1 AND no.is_interacted = false")
+    @Query("SELECT no FROM Notifications no WHERE no.to_user.user_id = ?1 AND no.is_interacted = false AND no.is_delete = false")
     List<Notifications> findByToUserIdAndNotInteract(Long targetId);
 
 
@@ -32,7 +32,7 @@ public interface NotificationRepos extends JpaRepository<Notifications, Long> {
              FROM Notifications no JOIN NotificationTypes type ON no.notification_type = type.notification_type_id 
              JOIN User receiver ON no.to_user.user_id = receiver.user_id 
              JOIN User sender ON no.from_user.user_id = sender.user_id 
-             WHERE receiver.user_id = ?1 ORDER BY no.created_at DESC
+             WHERE receiver.user_id = ?1 AND no.is_delete = false ORDER BY no.created_at DESC
             """)
     List<NotificationDTO> getAllByUserId(Long user_id, Pageable pageable);
 
@@ -46,7 +46,7 @@ public interface NotificationRepos extends JpaRepository<Notifications, Long> {
              FROM Notifications no JOIN NotificationTypes type ON no.notification_type = type.notification_type_id 
              JOIN User receiver ON no.to_user.user_id = receiver.user_id 
              JOIN User sender ON no.from_user.user_id = sender.user_id 
-             WHERE receiver.user_id = ?1 AND type.type = ?2 AND no.is_interacted = false OR no.is_interacted = null
+             WHERE receiver.user_id = ?1 AND type.type = ?2 AND no.is_delete = false AND no.is_interacted = false OR no.is_interacted = null
              ORDER BY no.created_at DESC
             """)
     List<NotificationDTO> getListByUserIdAndTypeAndNotInteract(Long user_id, int notification_type);
@@ -61,7 +61,7 @@ public interface NotificationRepos extends JpaRepository<Notifications, Long> {
              FROM Notifications no JOIN NotificationTypes type ON no.notification_type = type.notification_type_id 
              JOIN User receiver ON no.to_user.user_id = receiver.user_id 
              JOIN User sender ON no.from_user.user_id = sender.user_id 
-             WHERE receiver.user_id = ?1 AND type.type = ?2
+             WHERE receiver.user_id = ?1 AND type.type = ?2 AND no.is_delete = false
              ORDER BY no.created_at DESC
             """)
     List<NotificationDTO> getAllByUserIdAndType(Long user_id, int notification_type);
