@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import serverapi.tables.forum.post.Post;
 import serverapi.tables.manga_tables.manga_comment.manga_comment_likes.CommentLikes;
 import serverapi.tables.manga_tables.manga_comment.manga_comment_tags.CommentTags;
 import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
@@ -95,6 +96,10 @@ public class User {
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<FriendRequestStatus> friendRequestStatuses;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Collection<Post> posts;
 
     @JsonBackReference
     @OneToMany(mappedBy = "to_user", cascade = CascadeType.ALL)

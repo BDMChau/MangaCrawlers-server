@@ -61,6 +61,24 @@ public class FriendController {
         return friendService.unfriend(userID, toUserID, listFriends);
     }
 
+    @PostMapping("/add_friend")
+    public ResponseEntity addFriend(ServletRequest request, @RequestBody FriendPOJO friendPOJO) {
+        String sUserId = getUserAttribute(request).get("user_id").toString();
+        Long toUserID = 0l;
+        Long userID = 0L;
+        if (sUserId.isEmpty() || friendPOJO.getTo_user_id().isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "User or target user is empty!"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+        userID = Long.parseLong(sUserId);
+        toUserID = Long.parseLong(friendPOJO.getTo_user_id());
+
+        return friendService.addFriend(userID, toUserID);
+    }
+
     @PostMapping("/check_status")
     public ResponseEntity checkStatus(ServletRequest request, @RequestBody FriendPOJO friendPOJO) {
         String sUserId = getUserAttribute(request).get("user_id").toString();
@@ -71,13 +89,13 @@ public class FriendController {
         }
         Long senderID = Long.parseLong(sUserId);
         Long receiverID = Long.parseLong(friendPOJO.getTo_user_id());
-        Long statusID = Long.parseLong(friendPOJO.getStatus_id());
 
         int checkStatus = friendService.checkStatus(senderID, receiverID);
         String exportCheck = switch (checkStatus) {
             case 0 -> "Add friend";
             case 1 -> "Pending";
             case 2 -> "Friend";
+            case 3 -> "accept friend";
             default -> "";
         };
 
