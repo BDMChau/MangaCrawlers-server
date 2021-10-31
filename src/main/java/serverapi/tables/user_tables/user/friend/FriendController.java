@@ -51,6 +51,7 @@ public class FriendController {
         String sUserId = getUserAttribute(request).get("user_id").toString();
         Long toUserID = 0L;
         List<FriendDTO> listFriends = friendPOJO.getListFriends();
+
         if (sUserId.isEmpty() || friendPOJO.getTo_user_id().isEmpty()) {
             Map<String, Object> err = Map.of("err", "User or target user is empty!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
