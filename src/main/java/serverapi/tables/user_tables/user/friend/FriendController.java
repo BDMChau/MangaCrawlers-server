@@ -36,7 +36,7 @@ public class FriendController {
     }
 
     @GetMapping("/get_list_friends")
-    public ResponseEntity getListFriends(@RequestParam int from, int amount, ServletRequest request) {
+    public ResponseEntity getListFriends(@RequestParam int from, @RequestParam int amount, ServletRequest request) {
         Long userID = 0L;
         String sUserId = getUserAttribute(request).get("user_id").toString();
         if (!sUserId.isEmpty()) {
@@ -81,7 +81,7 @@ public class FriendController {
     @PostMapping("/check_status")
     public ResponseEntity checkStatus(ServletRequest request, @RequestBody FriendPOJO friendPOJO) {
         String sUserId = getUserAttribute(request).get("user_id").toString();
-        if (sUserId.isEmpty() || friendPOJO.getTo_user_id().isEmpty() || friendPOJO.getStatus_id().isEmpty() || friendPOJO.getStatus_id().equals("")) {
+        if (sUserId.isEmpty() || friendPOJO.getTo_user_id().isEmpty()) {
             Map<String, Object> err = Map.of("err", "Missing credential!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
