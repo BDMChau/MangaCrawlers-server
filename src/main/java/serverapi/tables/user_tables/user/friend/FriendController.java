@@ -66,12 +66,10 @@ public class FriendController {
         String sUserId = getUserAttribute(request).get("user_id").toString();
         Long toUserID = 0l;
         Long userID = 0L;
+
         if (sUserId.isEmpty() || friendPOJO.getTo_user_id().isEmpty()) {
-            Map<String, Object> msg = Map.of(
-                    "msg", "User or target user is empty!"
-            );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(),
-                    HttpStatus.BAD_REQUEST);
+            Map<String, Object> err = Map.of("err", "User or target user is empty!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
         userID = Long.parseLong(sUserId);
         toUserID = Long.parseLong(friendPOJO.getTo_user_id());
@@ -84,8 +82,7 @@ public class FriendController {
         String sUserId = getUserAttribute(request).get("user_id").toString();
         if (sUserId.isEmpty() || friendPOJO.getTo_user_id().isEmpty() || friendPOJO.getStatus_id().isEmpty() || friendPOJO.getStatus_id().equals("")) {
             Map<String, Object> err = Map.of("err", "Missing credential!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
         Long senderID = Long.parseLong(sUserId);
         Long receiverID = Long.parseLong(friendPOJO.getTo_user_id());

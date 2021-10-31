@@ -137,6 +137,7 @@ public class FriendService {
                 HttpStatus.OK);
     }
 
+
     public ResponseEntity addFriend(Long senderID, Long receiverID) {
         Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         Optional<User> senderOptional = userRepos.findById(senderID);
@@ -168,8 +169,7 @@ public class FriendService {
             Map<String, Object> msg = Map.of(
                     "msg", "Add friend successfully!"
             );
-            return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(),
-                    HttpStatus.CREATED);
+            return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
         }
 
         UserRelations userRelations = userRelationsOptional.get();
