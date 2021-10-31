@@ -27,7 +27,6 @@ public class FriendRequestStatusService {
         Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
         FriendRequestStatus friendRequestStatus = new FriendRequestStatus();
-        friendRequestStatus.setStatus(false);
         friendRequestStatus.setUser(sender);
         friendRequestStatus.setTo_user(reciever);
         friendRequestStatus.setTime_accepted(currentTime);
