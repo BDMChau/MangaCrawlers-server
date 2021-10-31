@@ -47,9 +47,9 @@ public class MySocketService {
         if (!userOptional.isEmpty()) {
             User user = userOptional.get();
 
-            if(String.valueOf(sessionId).equals("00000000-0000-0000-0000-000000000000")){
+            if (String.valueOf(sessionId).equals("00000000-0000-0000-0000-000000000000")) {
                 user.setSocket_session_id(null);
-            }else{
+            } else {
                 user.setSocket_session_id(sessionId);
             }
 
@@ -67,12 +67,12 @@ public class MySocketService {
             int notification_type = socketMessage.getType();
 
             User receiver = getReciever(identify_type, toUserVal);
-            if(receiver == null) return;
+            if (receiver == null) return;
 
             handleNotificationType(notification_type, receiver);
 
             NotificationDTO dataToSend = notificationService.saveNew(receiver, socketMessage);
-            if (dataToSend != null)  sendToUsersExceptSender(dataToSend);
+            if (dataToSend != null) sendToUsersExceptSender(dataToSend);
 
         });
     }
@@ -95,7 +95,7 @@ public class MySocketService {
         }
     }
 
-    public User getReciever(String identify_type, Object toUserVal){
+    public User getReciever(String identify_type, Object toUserVal) {
         Optional<User> userOptional = Optional.empty();
         if (identify_type.equals("java.lang.String")) {
             String userEmail = String.valueOf(toUserVal);
@@ -106,7 +106,7 @@ public class MySocketService {
             userOptional = userRepos.findById(userId);
         }
 
-        if(userOptional.isEmpty()) return null;
+        if (userOptional.isEmpty()) return null;
 
         return userOptional.get();
     }

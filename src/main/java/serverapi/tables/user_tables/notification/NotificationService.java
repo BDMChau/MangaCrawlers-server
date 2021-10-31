@@ -16,6 +16,7 @@ import serverapi.query.repository.user.NotificationTypesRepos;
 import serverapi.query.repository.user.UserRepos;
 import serverapi.socket.message.SocketMessage;
 import serverapi.tables.manga_tables.manga.Manga;
+import serverapi.tables.user_tables.friend_request_status.FriendRequestStatusService;
 import serverapi.tables.user_tables.notification.notification_types.NotificationTypes;
 import serverapi.tables.user_tables.notification.notifications.Notifications;
 import serverapi.tables.user_tables.user.User;
@@ -29,12 +30,15 @@ public class NotificationService {
     private final UserRepos userRepos;
     private final NotificationRepos notificationRepos;
     private final NotificationTypesRepos notificationTypesRepos;
+    private final FriendRequestStatusService friendRequestStatusService;
 
     @Autowired
-    public NotificationService(UserRepos userRepos, NotificationRepos notificationRepos, NotificationTypesRepos notificationTypesRepos) {
+    public NotificationService(UserRepos userRepos, NotificationRepos notificationRepos,
+                               NotificationTypesRepos notificationTypesRepos, FriendRequestStatusService friendRequestStatusService) {
         this.userRepos = userRepos;
         this.notificationRepos = notificationRepos;
         this.notificationTypesRepos = notificationTypesRepos;
+        this.friendRequestStatusService = friendRequestStatusService;
     }
 
 
@@ -55,6 +59,8 @@ public class NotificationService {
 
     protected ResponseEntity updateToInteracted(Long notificationId) {
         Notifications notification = notificationRepos.findById(notificationId).get();
+
+        handleUpdateTargetUnit(notification.getFrom_user().getUser_id(), notification.getTarget_id(), notification.getTarget_title());
 
         notification.setIs_interacted(true);
         notification.setIs_viewed(true);
@@ -79,6 +85,15 @@ public class NotificationService {
 
 
     ////////////////////////////////////////////// usable //////////////////////////////////////////////
+    private void handleUpdateTargetUnit(Long fromUserId, Long targetId, String targetTitle) {
+        if (targetTitle.equals("user")) {
+            Long toUserId = targetId;
+
+            friendRequestStatusService.updateDeclineReq(fromUserId, toUserId);
+        }
+    }
+
+
     public void updateInteractedById(Long notificationId) {
         Notifications notification = notificationRepos.findById(notificationId).get();
 
