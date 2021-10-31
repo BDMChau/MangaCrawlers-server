@@ -14,6 +14,7 @@ import serverapi.tables.user_tables.friend_request_status.FriendRequestStatus;
 import serverapi.tables.user_tables.friend_request_status.FriendRequestStatusService;
 import serverapi.tables.user_tables.notification.NotificationService;
 import serverapi.tables.user_tables.user.User;
+import serverapi.tables.user_tables.user.friend.FriendService;
 
 import java.util.*;
 
@@ -32,12 +33,14 @@ public class MySocketService {
 
     private NotificationService notificationService;
     private FriendRequestStatusService friendRequestStatusService;
+    private FriendService friendService;
 
     @Autowired
-    public MySocketService(UserRepos userRepos, NotificationService notificationService, FriendRequestStatusService friendRequestStatusService) {
+    public MySocketService(UserRepos userRepos, NotificationService notificationService, FriendRequestStatusService friendRequestStatusService, FriendService friendService) {
         this.notificationService = notificationService;
         this.userRepos = userRepos;
         this.friendRequestStatusService = friendRequestStatusService;
+        this.friendService = friendService;
     }
 
 
@@ -67,9 +70,27 @@ public class MySocketService {
             int notification_type = socketMessage.getType();
 
             User receiver = getReciever(identify_type, toUserVal);
-            if (receiver == null) return;
+            if (receiver == null) {
+                senderClient.sendEvent(EVENTs_NAME.getSEND_FAILED(), "Failed!");
+                return;
+            };
 
-            handleNotificationType(notification_type, receiver);
+            Long senderId = socketMessage.getUserId();
+            User sender = userRepos.findById(senderId).get();
+
+            // check allow to send friend request
+            if (identify_type.equals("java.lang.Integer") && socketMessage.getObjData().get("target_title").equals("user")) {
+                Long receiverId = Long.parseLong(String.valueOf(toUserVal));
+
+                int checkStatus = friendService.checkStatus(senderId, receiverId);
+                if(checkStatus != 0) {
+                    senderClient.sendEvent(EVENTs_NAME.getSEND_FAILED(), "Failed!");
+                    return;
+                }
+            }
+
+
+            handleNotificationType(notification_type, receiver, sender);
 
             NotificationDTO dataToSend = notificationService.saveNew(receiver, socketMessage);
             if (dataToSend != null) sendToUsersExceptSender(dataToSend);
@@ -86,10 +107,8 @@ public class MySocketService {
 
 
     /////////////////////////////// services ///////////////////////////////
-    private void handleNotificationType(int notificationType, User receiver) {
+    private void handleNotificationType(int notificationType, User receiver, User sender) {
         if (notificationType == 2) {
-            Long senderId = socketMessage.getUserId();
-            User sender = userRepos.findById(senderId).get();
 
             friendRequestStatusService.saveNew(sender, receiver);
         }
@@ -122,7 +141,7 @@ public class MySocketService {
             UUID receiver_sessionId = dataToSend.getReceiver_socket_id();
 
             for (SocketIOClient client : allClients) {
-                if (!client.getSessionId().equals(senderClient.getSessionId())) {
+                if (!client.getSessionId().equals(senderClient.getSessionId())) { // except sender
                     if (client.getSessionId().equals(receiver_sessionId)) {
                         client.sendEvent(EVENTs_NAME.getFROM_SERVER_TO_SPECIFIC_USERS(), dataToSend);
                     }

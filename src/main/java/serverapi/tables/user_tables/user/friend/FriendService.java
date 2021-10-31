@@ -226,7 +226,7 @@ public class FriendService {
     }
 
     // 0: add friend; 1: pending; 2: friend; 3: accept friend
-    protected Integer checkStatus(Long senderID, Long receiverID) {
+    public Integer checkStatus(Long senderID, Long receiverID) {
         Optional<FriendRequestStatus> statusOptional = friendRequestRepos.getFriendStatus(senderID, receiverID);
         AtomicInteger iStatus = new AtomicInteger();
         if (statusOptional.isEmpty()) {

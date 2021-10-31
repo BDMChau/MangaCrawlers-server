@@ -59,6 +59,12 @@ public class FriendController {
         Long userID = Long.parseLong(sUserId);
         toUserID = Long.parseLong(friendPOJO.getTo_user_id());
 
+        int checkStatus = friendService.checkStatus(userID, toUserID);
+        if(checkStatus != 2) {
+            Map<String, Object> err = Map.of("err", "Cannot unfriend!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+
         return friendService.unfriend(userID, toUserID, listFriends);
     }
 
@@ -74,6 +80,12 @@ public class FriendController {
         }
         userID = Long.parseLong(sUserId);
         toUserID = Long.parseLong(friendPOJO.getTo_user_id());
+
+        int checkStatus = friendService.checkStatus(userID, toUserID);
+        if(checkStatus != 3){
+            Map<String, Object> err = Map.of("err", "Cannot add friend!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+        }
 
         return friendService.addFriend(userID, toUserID);
     }
