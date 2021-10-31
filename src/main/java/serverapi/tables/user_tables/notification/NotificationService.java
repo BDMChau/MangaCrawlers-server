@@ -57,10 +57,12 @@ public class NotificationService {
     }
 
 
-    protected ResponseEntity updateToInteracted(Long notificationId) {
+    protected ResponseEntity updateToInteracted(Long notificationId, int action) {
         Notifications notification = notificationRepos.findById(notificationId).get();
 
-        handleUpdateTargetUnit(notification.getFrom_user().getUser_id(), notification.getTarget_id(), notification.getTarget_title());
+        if (action == 1) {
+            handleUpdateTargetUnit(notification.getFrom_user().getUser_id(), notification.getTarget_id(), notification.getTarget_title());
+        }
 
         notification.setIs_interacted(true);
         notification.setIs_viewed(true);

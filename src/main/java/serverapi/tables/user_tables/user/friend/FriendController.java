@@ -90,10 +90,10 @@ public class FriendController {
 
         int checkStatus = friendService.checkStatus(senderID, receiverID);
         String exportCheck = switch (checkStatus) {
-            case 0 -> "Add friend";
-            case 1 -> "Pending";
+            case 0 -> "Add Friend";
+            case 1 -> "Cancle Request";
             case 2 -> "Friend";
-            case 3 -> "accept friend";
+            case 3 -> "Accept";
             default -> "";
         };
 

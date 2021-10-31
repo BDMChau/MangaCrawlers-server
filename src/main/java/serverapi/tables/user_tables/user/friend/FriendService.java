@@ -145,11 +145,10 @@ public class FriendService {
         System.err.println("line 148");
         Optional<FriendRequestStatus> friendRequestStatusOptional = friendRequestRepos.getFriendStatus(senderID, receiverID);
         System.err.println("line  150");
+
         if (friendRequestStatusOptional.isEmpty() || senderOptional.isEmpty() || receiverOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of(
-                    "err", "Cannot add friend"
-            );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(),
+            Map<String, Object> err = Map.of("err", "Cannot add friend");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
                     HttpStatus.BAD_REQUEST);
         }
         FriendRequestStatus friendRequestStatus = friendRequestStatusOptional.get();
@@ -166,9 +165,7 @@ public class FriendService {
             userRelations.setFriendRequest(friendRequestStatusOptional.get());
             userRelationsRepos.saveAndFlush(userRelations);
 
-            Map<String, Object> msg = Map.of(
-                    "msg", "Add friend successfully!"
-            );
+            Map<String, Object> msg = Map.of("msg", "Add friend successfully!");
             return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
         }
 

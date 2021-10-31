@@ -54,6 +54,11 @@ public class NotificationController {
     public ResponseEntity updateToInteracted(@RequestBody Map data) {
         Long notificationId = Long.parseLong(String.valueOf(data.get("notification_id")));
 
-        return notificationService.updateToInteracted(notificationId);
+        // 1: delete,
+        // 2: accept join team,
+        // 3: accept friend request
+        int action = (int) data.get("action");
+
+        return notificationService.updateToInteracted(notificationId, action);
     }
 }
