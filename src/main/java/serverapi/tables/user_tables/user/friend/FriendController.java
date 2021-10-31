@@ -35,7 +35,6 @@ public class FriendController {
         return user;
     }
 
-    @Cacheable(value = "listfriends", key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @GetMapping("/get_list_friends")
     public ResponseEntity getListFriends(@RequestParam int from, int amount, ServletRequest request) {
         Long userID = 0L;
@@ -47,18 +46,14 @@ public class FriendController {
         return friendService.getListFriends(userID, from, amount);
     }
 
-    @CacheEvict(value = {"listfriends"}, key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @PostMapping("/unfriend")
     public ResponseEntity unFriend(ServletRequest request, @RequestBody FriendPOJO friendPOJO) {
         String sUserId = getUserAttribute(request).get("user_id").toString();
-        Long toUserID = 0l;
+        Long toUserID = 0L;
         List<FriendDTO> listFriends = friendPOJO.getListFriends();
         if (sUserId.isEmpty() || friendPOJO.getTo_user_id().isEmpty()) {
-            Map<String, Object> msg = Map.of(
-                    "msg", "User or target user is empty!"
-            );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(),
-                    HttpStatus.BAD_REQUEST);
+            Map<String, Object> err = Map.of("err", "User or target user is empty!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
         Long userID = Long.parseLong(sUserId);
         toUserID = Long.parseLong(friendPOJO.getTo_user_id());
@@ -70,10 +65,10 @@ public class FriendController {
     public ResponseEntity checkStatus(ServletRequest request, @RequestBody FriendPOJO friendPOJO) {
         String sUserId = getUserAttribute(request).get("user_id").toString();
         if (sUserId.isEmpty() || friendPOJO.getTo_user_id().isEmpty() || friendPOJO.getStatus_id().isEmpty() || friendPOJO.getStatus_id().equals("")) {
-            Map<String, Object> msg = Map.of(
-                    "msg", "Missing credential!"
+            Map<String, Object> err = Map.of(
+                    "err", "Missing credential!"
             );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(),
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
                     HttpStatus.BAD_REQUEST);
         }
         Long senderID = Long.parseLong(sUserId);
@@ -89,8 +84,8 @@ public class FriendController {
         };
 
         if (exportCheck.equals("")) {
-            Map<String, Object> msg = Map.of("err", "Error when check status!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+            Map<String, Object> err = Map.of("err", "Error when check status!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
 
         Map<String, Object> msg = Map.of(

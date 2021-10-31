@@ -1364,25 +1364,6 @@ public class UserService {
     }
 
 
-    ////////////////////////////////////// unauthenticated parts //////////////////////////////////////
-    public ResponseEntity getUserInfo(Long userId) {
-        Optional<UserDTO> userOptional = userRepos.findByUserId(userId);
-        if (userOptional.isEmpty()) {
-            Map<String, Object> err = Map.of("err", "User does not exist!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
-        }
-        UserDTO userDTO = userOptional.get();
-
-        // status service
-        userDTO.setStatus(1);
-
-        Map<String, Object> msg = Map.of(
-                "msg", "get user info OK!",
-                "user", userDTO
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
-
     public ResponseEntity updateDescription(Long userId, String description) {
         Optional<User> userOptional = userRepos.findById(userId);
         if (userOptional.isEmpty()) {
@@ -1417,6 +1398,27 @@ public class UserService {
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
+
+
+    ////////////////////////////////////// unauthenticated parts //////////////////////////////////////
+    public ResponseEntity getUserInfo(Long userId) {
+        Optional<UserDTO> userOptional = userRepos.findByUserId(userId);
+        if (userOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "User does not exist!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+        }
+        UserDTO userDTO = userOptional.get();
+
+        // status service
+        userDTO.setStatus(1);
+
+        Map<String, Object> msg = Map.of(
+                "msg", "get user info OK!",
+                "user", userDTO
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
 
 
     /////////////////////////////////////// HELPERS /////////////////////////////////

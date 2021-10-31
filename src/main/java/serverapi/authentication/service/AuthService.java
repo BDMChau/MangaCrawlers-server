@@ -52,7 +52,7 @@ public class AuthService implements IAuthService {
         String name = user.getUser_name();
         String email = user.getUser_email();
         String avatar = user.getUser_avatar();
-        String desc = user.getUser_desc();
+        String desc = user.getUser_desc() == null ? "" : user.getUser_desc();
         Boolean isAdmin = user.getUser_isAdmin();
         Boolean isVerified = user.getUser_isVerified();
         Optional<TransGroup> transGroup = Optional.ofNullable(user.getTransgroup());

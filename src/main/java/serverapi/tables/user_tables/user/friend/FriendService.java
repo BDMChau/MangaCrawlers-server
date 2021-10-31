@@ -34,23 +34,21 @@ public class FriendService {
     }
 
     public ResponseEntity getListFriends(Long userID, int from, int amount) {
-
         Pageable pageable = new OffsetBasedPageRequest(from, amount);
         List<FriendDTO> getListFriends = friendRequestRepos.getListByUserId(userID, pageable);
         Optional<User> userOptional = userRepos.findById(userID);
         if (userOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("err", "User not found!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(),
-                    HttpStatus.BAD_REQUEST);
+            Map<String, Object> err = Map.of("err", "User not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
+
         if (getListFriends.isEmpty()) {
-            Map<String, Object> msg = Map.of(
-                    "err", "Empty list friend!",
+            Map<String, Object> err = Map.of(
+                    "err", "List friends empty!",
                     "list_friends", new ArrayList<>()
             );
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
-        ////////////////////////////////////////////////
         User user = userOptional.get();
 
         FriendDTO exportUser = new FriendDTO();
@@ -62,9 +60,11 @@ public class FriendService {
 
         List<FriendDTO> exportListFriends = filterListFriends(getListFriends, userID);
         if (exportListFriends.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "Empty list friends!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(),
-                    HttpStatus.ACCEPTED);
+            Map<String, Object> msg = Map.of(
+                    "err", "List friends empty!",
+                    "list_friends", new ArrayList<>()
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
         }
 
         Map<String, Object> msg = Map.of(
@@ -74,13 +74,11 @@ public class FriendService {
                 "user_info", exportUser,
                 "list_friends", exportListFriends
         );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
-                HttpStatus.OK);
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
 
     public ResponseEntity unFriend(Long userID, Long toUserID, List<FriendDTO> listFriends) {
-
         Optional<User> toUserOptional = userRepos.findById(toUserID);
         User toUser = toUserOptional.get();
         FriendDTO exportUser = new FriendDTO();
@@ -92,14 +90,12 @@ public class FriendService {
 
         Optional<FriendDTO> targetUser = friendRequestRepos.findFriendByUserId(userID, toUserID);
         if (targetUser.isEmpty() || listFriends.isEmpty() || targetUser.get().getUser_relations_id() != null) {
-            Map<String, Object> msg = Map.of(
-                    "msg", "Cannot unfriend!"
-            );
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(),
-                    HttpStatus.ACCEPTED);
+            Map<String, Object> err = Map.of("err", "Cannot unfriend!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
         Optional<UserRelations> userRelations = userRelationsRepos.findById(targetUser.get().getUser_relations_id());
         UserRelations targetRelation = userRelations.get();
+
         targetRelation.setFriendRequest(null);
         userRelationsRepos.saveAndFlush(targetRelation);
 
@@ -116,7 +112,7 @@ public class FriendService {
             });
         }
         Map<String, Object> msg = Map.of(
-                "msg", "Un Friend successfully!",
+                "msg", "Unfriend successfully!",
                 "target_user", exportUser,
                 "list_friends_after_delete", exportListFriends
         );
@@ -171,12 +167,12 @@ public class FriendService {
         List<FriendRequestStatus> statusList = friendRequestRepos.getFriendStatus(senderID, receiverID);
         AtomicInteger iStatus = new AtomicInteger();
         if (statusList.isEmpty()) {
-           iStatus.set(0);
-        }else{
-            statusList.forEach(item ->{
-                if(item.getTime_accepted() == null){
+            iStatus.set(0);
+        } else {
+            statusList.forEach(item -> {
+                if (item.getTime_accepted() == null) {
                     iStatus.set(1);
-                }else{
+                } else {
                     iStatus.set(2);
                 }
             });
