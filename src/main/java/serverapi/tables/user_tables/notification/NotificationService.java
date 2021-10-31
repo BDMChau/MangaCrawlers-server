@@ -139,16 +139,9 @@ public class NotificationService {
             String targetTitle = String.valueOf(socketMessage.getObjData().get("target_title"));
             Long toUserId = receiver.getUser_id();
 
+            Boolean isExisted = checkIsExisted(targetTitle, targetId, toUserId);
+            if (isExisted) return null;
 
-            if (targetTitle.equals("user")) {
-                List<Notifications> isExisted = notificationRepos.findByTargetTitleUserAndNotInteract(targetId);
-                if (!isExisted.isEmpty()) return null;
-            } else {
-                List<Notifications> isExisted = notificationRepos.findByToUserIdAndNotInteract(toUserId);
-                System.err.println(isExisted);
-
-                if (!isExisted.isEmpty()) return null;
-            }
 
             notifications.setTarget_id(targetId);
             notifications.setTarget_title(targetTitle);
@@ -179,6 +172,21 @@ public class NotificationService {
         dataToSend.setReceiver_socket_id(receiver.getSocket_session_id());
 
         return dataToSend;
+    }
+
+
+    //////////////////// HELPERS ////////////////////
+    Boolean checkIsExisted(String targetTitle, Long targetId, Long toUserId) {
+        if (targetTitle.equals("user")) {
+            List<Notifications> isExisted = notificationRepos.findByTargetTitleUserAndNotInteract(targetId);
+            if (!isExisted.isEmpty()) return true;
+
+        } else if (targetTitle.equals("transgroup")) {
+            List<Notifications> isExisted = notificationRepos.findByTargetTitleTransGroupAndNotInteract(targetId, toUserId);
+            if (!isExisted.isEmpty()) return true;
+        }
+
+        return false;
     }
 
 }
