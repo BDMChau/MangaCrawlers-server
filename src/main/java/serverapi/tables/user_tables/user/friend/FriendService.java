@@ -75,7 +75,7 @@ public class FriendService {
     }
 
 
-    public ResponseEntity unfriend(Long userID, Long toUserID, List<FriendDTO> listFriends) {
+    public ResponseEntity unfriend(Long userID, Long toUserID) {
         Optional<User> toUserOptional = userRepos.findById(toUserID);
         User toUser = toUserOptional.get();
         FriendDTO exportUser = new FriendDTO();
@@ -86,7 +86,7 @@ public class FriendService {
         exportUser.setStatus(true);
 
         Optional<FriendDTO> targetUser = friendRequestRepos.findFriendByUserId(userID, toUserID);
-        if (targetUser.isEmpty() || listFriends.isEmpty() || targetUser.get().getUser_relations_id() != null) {
+        if (targetUser.isEmpty() || targetUser.get().getUser_relations_id() != null) {
             Map<String, Object> err = Map.of("err", "Cannot unfriend!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
@@ -115,23 +115,9 @@ public class FriendService {
         FriendRequestStatus targetRequest = friendRequestStatus.get();
         targetRequest.setStatus(false);
         friendRequestRepos.saveAndFlush(targetRequest);
-
-        List<FriendDTO> exportListFriends = filterListFriends(listFriends, userID);
-        if (!listFriends.isEmpty()) {
-            AtomicBoolean flag = new AtomicBoolean(false);
-            exportListFriends.forEach(friend -> {
-                if (!flag.get()) {
-                    if (friend.getUser_id().equals(toUserID)) {
-                        exportListFriends.remove(friend);
-                        flag.set(true);
-                    }
-                }
-            });
-        }
         Map<String, Object> msg = Map.of(
                 "msg", "Unfriend successfully!",
-                "target_user", exportUser,
-                "list_friends_after_delete", exportListFriends
+                "target_user", exportUser
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
                 HttpStatus.OK);

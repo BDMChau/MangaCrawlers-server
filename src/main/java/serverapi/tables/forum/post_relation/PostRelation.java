@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import serverapi.tables.forum.post.Post;
 import serverapi.tables.user_tables.friend_request_status.FriendRequestStatus;
 import serverapi.tables.user_tables.user.User;
 
@@ -32,16 +33,12 @@ public class PostRelation {
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
-    private User post_id;
+    private Post post_id;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reply_post_id")
-    private User reply_post_id;
+    private Post reply_post_id;
 
-    @JsonManagedReference
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="friend_request_id")
-    private FriendRequestStatus friendRequest;
 
 }

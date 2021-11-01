@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import serverapi.tables.forum.post.Post;
+import serverapi.tables.forum.post_category.PostCategory;
 import serverapi.tables.user_tables.report.report_example_titles.ReportExampleTitles;
 import serverapi.tables.user_tables.report.reports.Reports;
 
@@ -18,7 +19,7 @@ import java.util.Collection;
 @Setter
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@Table(name = "report_types")
+@Table(name = "post_topic")
 public class PostTopic {
 
     @Id
@@ -40,7 +41,7 @@ public class PostTopic {
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_category_id")
-    private PostTopic post_category;
+    private PostCategory post_category;
 
 
     @Column(columnDefinition = "TEXT", nullable = false)

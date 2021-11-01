@@ -50,7 +50,6 @@ public class FriendController {
     public ResponseEntity unFriend(ServletRequest request, @RequestBody FriendPOJO friendPOJO) {
         String sUserId = getUserAttribute(request).get("user_id").toString();
         Long toUserID = 0L;
-        List<FriendDTO> listFriends = friendPOJO.getListFriends();
 
         if (sUserId.isEmpty() || friendPOJO.getTo_user_id().isEmpty()) {
             Map<String, Object> err = Map.of("err", "User or target user is empty!");
@@ -65,7 +64,7 @@ public class FriendController {
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
 
-        return friendService.unfriend(userID, toUserID, listFriends);
+        return friendService.unfriend(userID, toUserID);
     }
 
     @PostMapping("/add_friend")
