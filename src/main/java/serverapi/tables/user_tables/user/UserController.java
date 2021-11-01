@@ -16,6 +16,7 @@ import serverapi.tables.manga_tables.manga.pojo.MangaPOJO;
 import serverapi.tables.manga_tables.manga.pojo.RatingPOJO;
 import serverapi.tables.user_tables.user.pojo.TransGroupPOJO;
 import serverapi.tables.user_tables.user.pojo.UserPOJO;
+import serverapi.utils.UserHelpers;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -43,12 +44,8 @@ public class UserController {
         this.userService = userService;
     }
 
+    UserHelpers userHelpers = new UserHelpers();
 
-    public Map getUserAttribute(ServletRequest request) {
-        HttpServletRequest req = (HttpServletRequest) request;
-        Map user = (HashMap) req.getAttribute("user");
-        return user;
-    }
 
 
     ///////////////////////////////// Users parts //////////////////////////////
@@ -56,7 +53,7 @@ public class UserController {
     @Cacheable(value = "historymangas", key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @GetMapping("/gethistorymanga")
     public ResponseEntity GetReadingHistory(ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long user_id = Long.parseLong(StrUserId);
 
         return userService.GetReadingHistory(user_id);
@@ -68,7 +65,7 @@ public class UserController {
     @CacheEvict(value = {"historymangas"}, key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @PutMapping("/updatereadinghistory")
     public ResponseEntity updateReadingHistory(@RequestBody UserPOJO userPOJO, ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
         Long mangaId = Long.parseLong(userPOJO.getManga_id());
         Long chapterId = Long.parseLong(userPOJO.getChapter_id());
@@ -80,7 +77,7 @@ public class UserController {
     @Cacheable(value = "followingmangas", key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @GetMapping("/getfollowingmangas")
     public ResponseEntity getFollowingMangas(ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
         return userService.getFollowingMangas(userId);
@@ -92,7 +89,7 @@ public class UserController {
     @CacheEvict(value = {"followingmangas"}, key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @PostMapping("/addfollowingmanga")
     public ResponseEntity addFollowingMangas(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
         Long mangaId = Long.parseLong(mangaPOJO.getManga_id());
 
@@ -105,7 +102,7 @@ public class UserController {
     @CacheEvict(value = {"followingmangas"}, key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @DeleteMapping("/deletefollowingmanga")
     public ResponseEntity deleteFollowingMangas(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
         Long mangaId = Long.parseLong(mangaPOJO.getManga_id());
@@ -116,7 +113,7 @@ public class UserController {
 
     @PutMapping("/ratingmanga")
     public ResponseEntity ratingManga(@RequestBody RatingPOJO ratingPOJO, ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
         Long mangaId = Long.parseLong(ratingPOJO.getManga_id());
         Float newValue = Float.parseFloat(ratingPOJO.getValue());
@@ -131,7 +128,7 @@ public class UserController {
             ServletRequest request,
             @RequestParam(required = false) MultipartFile file
     ) throws IOException, ParseException {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
         String[] splitedFileName = file.getOriginalFilename().split(Pattern.quote("."));
@@ -145,7 +142,7 @@ public class UserController {
 
     @DeleteMapping("/removeavatar")
     public ResponseEntity removeAvatar(ServletRequest request) throws IOException {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
         return userService.removeAvatar(userId);
@@ -154,7 +151,7 @@ public class UserController {
 
     @GetMapping("/get_friend_requests")
     public ResponseEntity getFriendRequests(ServletRequest request) throws IOException {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
         return userService.getFriendRequests(userId);
@@ -172,7 +169,7 @@ public class UserController {
         Long chapterID = 0L;
         Long parentID = 0L;
 
-        String strUserID = getUserAttribute(request).get("user_id").toString();
+        String strUserID = userHelpers.getUserAttribute(request).get("user_id").toString();
         String content = commentPOJO.getManga_comment_content();
         String stickerUrl = commentPOJO.getSticker_url();
 
@@ -257,7 +254,7 @@ public class UserController {
         Long commentID = 0L;
 
         String content = commentPOJO.getManga_comment_content();
-        String strUserID = getUserAttribute(request).get("user_id").toString();
+        String strUserID = userHelpers.getUserAttribute(request).get("user_id").toString();
 
         MultipartFile image = commentPOJO.getImage();
         if (image.getOriginalFilename().equals(fileNameDefault)) {
@@ -302,7 +299,7 @@ public class UserController {
         /**
          * Declare variables
          */
-        String strUserID = getUserAttribute(request).get("user_id").toString();
+        String strUserID = userHelpers.getUserAttribute(request).get("user_id").toString();
         /**
          * Format variable necessary
          */
@@ -325,7 +322,7 @@ public class UserController {
     @PutMapping("/update_description")
     public ResponseEntity updateDescription(ServletRequest request, @RequestBody Map data) throws IOException {
         String description = String.valueOf(data.get("user_desc"));
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
         return userService.updateDescription(userId, description);
@@ -342,10 +339,10 @@ public class UserController {
             @RequestParam(required = false) Integer manga_id,
             @RequestParam(required = false) String chapter_name
     ) throws IOException, ParseException {
-        String strUserId = getUserAttribute(request).get("user_id").toString();
+        String strUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(strUserId);
 
-        String strTransGrId = String.valueOf(getUserAttribute(request).get("user_transgroup_id"));
+        String strTransGrId = String.valueOf(userHelpers.getUserAttribute(request).get("user_transgroup_id"));
 
         for (MultipartFile file : files) {
             System.err.println(file.getOriginalFilename());
@@ -360,7 +357,7 @@ public class UserController {
     @CacheEvict(allEntries = true, value = {"transGroupInfo"})
     @PostMapping("/accept_to_join_team")
     public ResponseEntity acceptToJoinTeam(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) throws NoSuchAlgorithmException {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
         Long transGroupId = Long.parseLong(transGroupPOJO.getTransgroup_id());
 
@@ -370,7 +367,7 @@ public class UserController {
 
     @PostMapping("/signuptransgroup")
     public ResponseEntity signUpTransGroup(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) throws NoSuchAlgorithmException {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
         if (Boolean.FALSE.equals(transGroupPOJO.isValid())) {
@@ -389,15 +386,15 @@ public class UserController {
     @Cacheable(value = "transGroupInfo", key = "{#request.getAttribute(\"user\").get(\"user_id\"), #request.getAttribute(\"user\").get(\"user_transgroup_id\")}")
     @PostMapping("/gettransgroupinfo")
     public ResponseEntity getTransGroupInfo(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
-        if (getUserAttribute(request).get("user_transgroup_id") == null) {
+        if (userHelpers.getUserAttribute(request).get("user_transgroup_id") == null) {
             Map<String, String> error = Map.of("err", "Login again before visit this page, thank you!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(),
                     HttpStatus.ACCEPTED);
         }
-        Long transGroupId = Long.parseLong(getUserAttribute(request).get("user_transgroup_id").toString());
+        Long transGroupId = Long.parseLong(userHelpers.getUserAttribute(request).get("user_transgroup_id").toString());
 
 
         return userService.getTransGroupInfo(userId, transGroupId);
@@ -408,7 +405,7 @@ public class UserController {
     @CacheEvict(value = {"transGroupInfo"}, key = "{#request.getAttribute(\"user\").get(\"user_id\"), #request.getAttribute(\"user\").get(\"user_transgroup_id\")}")
     @DeleteMapping("/deletemanga")
     public ResponseEntity deleteManga(@RequestBody TransGroupPOJO transGroupPOJO, ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userID = Long.parseLong(StrUserId);
 
         Long mangaId = Long.parseLong(transGroupPOJO.getManga_id().toString());
@@ -421,7 +418,7 @@ public class UserController {
     @CacheEvict(value = {"transGroupInfo"}, key = "{#request.getAttribute(\"user\").get(\"user_id\"), #request.getAttribute(\"user\").get(\"user_transgroup_id\")}")
     @DeleteMapping("/deletetransgroup")
     public ResponseEntity deleteTransGroup(@RequestBody TransGroupPOJO transGroupPOJO, ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
         Long transGroupId = Long.parseLong(transGroupPOJO.getTransgroup_id());
@@ -434,7 +431,7 @@ public class UserController {
     @CacheEvict(value = {"transGroupInfo"}, key = "{#request.getAttribute(\"user\").get(\"user_id\"), #request.getAttribute(\"user\").get(\"user_transgroup_id\")}")
     @DeleteMapping("/remove_member")
     public ResponseEntity removeMember(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
         Long memberId = Long.parseLong(transGroupPOJO.getMember_id());
@@ -445,7 +442,7 @@ public class UserController {
 
 //    @GetMapping("/checkroletransgroup")
 //    public ResponseEntity checkRoleTransGroup(ServletRequest request) {
-//        String StrUserId = getUserAttribute(request).get("user_id").toString();
+//        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
 //        Long userId = Long.parseLong(StrUserId);
 //
 //        String StrTransGroupId = getUserAttribute(request).get("transgroup_id").toString();
@@ -467,12 +464,12 @@ public class UserController {
     @Cacheable(value = "mangaInfoUploadPage", key = "{#request.getAttribute(\"user\").get(\"user_id\"), #transGroupPOJO.getManga_id()}")
     @PostMapping("/getmangainfo")
     public ResponseEntity getMangaInfoUploadPage(ServletRequest request, @RequestBody TransGroupPOJO transGroupPOJO) {
-        if (getUserAttribute(request).get("user_transgroup_id") == null) {
+        if (userHelpers.getUserAttribute(request).get("user_transgroup_id") == null) {
             Map<String, String> error = Map.of("err", "Login again before visit this page, thank you!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(),
                     HttpStatus.ACCEPTED);
         }
-        Long transGroupId = Long.parseLong(getUserAttribute(request).get("user_transgroup_id").toString());
+        Long transGroupId = Long.parseLong(userHelpers.getUserAttribute(request).get("user_transgroup_id").toString());
 
         Long mangaId = Long.parseLong(transGroupPOJO.getManga_id().toString());
 
@@ -486,15 +483,15 @@ public class UserController {
             ServletRequest request,
             @RequestBody FieldsCreateMangaDTO fieldsCreateMangaDTO
     ) throws IOException {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
-        if (getUserAttribute(request).get("user_transgroup_id") == null) {
+        if (userHelpers.getUserAttribute(request).get("user_transgroup_id") == null) {
             Map<String, String> error = Map.of("err", "Login again before visit this page|");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(),
                     HttpStatus.ACCEPTED);
         }
-        Long transGrId = Long.parseLong(getUserAttribute(request).get("user_transgroup_id").toString());
+        Long transGrId = Long.parseLong(userHelpers.getUserAttribute(request).get("user_transgroup_id").toString());
 
 
         if (fieldsCreateMangaDTO.isFieldsEmpty()) {
@@ -516,9 +513,9 @@ public class UserController {
             @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestParam(value = "manga_id", required = false) Integer manga_id
     ) throws IOException {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
+        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
-        String StrTransGrId = getUserAttribute(request).get("user_transgroup_id").toString();
+        String StrTransGrId = userHelpers.getUserAttribute(request).get("user_transgroup_id").toString();
         Long transGrId = Long.parseLong(StrTransGrId);
 
         if (file == null && manga_id != 0) {

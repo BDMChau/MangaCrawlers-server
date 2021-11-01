@@ -61,4 +61,17 @@ public class NotificationController {
 
         return notificationService.updateToInteracted(notificationId, action);
     }
+
+
+    @PostMapping("/update_deleted")
+    public ResponseEntity updateToDeleted(@RequestBody Map data) {
+        Long notificationId = Long.parseLong(String.valueOf(data.get("notification_id")));
+
+        // 1: delete,
+        // 2: accept join team,
+        // 3: accept friend request
+        int action = (int) data.get("action");
+
+        return notificationService.updateToDeleted(notificationId, action);
+    }
 }

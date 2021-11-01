@@ -23,12 +23,19 @@ public class FriendRequestStatusService {
     }
 
 
+
+
     ////////////////////////// usable //////////////////////////
-    public void updateDeclineReq(Long senderID, Long receiverID) {
-        FriendRequestStatus friendRequestStatus = friendRequestRepos.getFriendStatus(senderID, receiverID).get();
+    public Boolean updateDeclineReq(Long senderID, Long receiverID) {
+        Optional<FriendRequestStatus> friendRequestStatusOptional = friendRequestRepos.getFriendStatus(senderID, receiverID);
+        if(friendRequestStatusOptional.isEmpty()) return false;
+
+        FriendRequestStatus friendRequestStatus = friendRequestStatusOptional.get();
 
         friendRequestStatus.setStatus(false);
         friendRequestRepos.saveAndFlush(friendRequestStatus);
+
+        return true;
     }
 
     public void saveNew(User sender, User reciever) {
