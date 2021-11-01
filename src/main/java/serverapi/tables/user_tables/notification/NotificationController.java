@@ -34,8 +34,8 @@ public class NotificationController {
     /////////////////////////////////////////////
     @PostMapping("/get_list_notification")
     public ResponseEntity getListNotifications(ServletRequest request, @RequestBody Map data) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(strUserId);
         Integer fromPos = (Integer) data.get("from");
 
         return notificationService.getListNotifications(userId, fromPos);
@@ -44,8 +44,8 @@ public class NotificationController {
 
     @PostMapping("/update_viewed")
     public ResponseEntity updateToViewed(ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(strUserId);
 
         return notificationService.updateToViewed(userId);
     }
@@ -73,5 +73,23 @@ public class NotificationController {
         int action = (int) data.get("action");
 
         return notificationService.updateToDeleted(notificationId, action);
+    }
+
+
+    // without notification_id
+    @PostMapping("/update_delete_friend_req")
+    public ResponseEntity updateToDeletedFriendReq(ServletRequest request, @RequestBody Map data) {
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+
+        Long fromUserId = Long.parseLong((strUserId));
+        Long toUserId = Long.parseLong(String.valueOf(data.get("to_user_id")));
+        String targetTitle = String.valueOf(data.get("target_title"));
+
+        // 1: delete,
+        // 2: accept join team,
+        // 3: accept friend request
+        int action = (int) data.get("action");
+
+        return notificationService.updateToDeleteFriendReq(fromUserId, toUserId, targetTitle, action);
     }
 }

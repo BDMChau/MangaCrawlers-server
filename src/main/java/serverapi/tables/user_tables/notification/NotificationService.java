@@ -1,8 +1,6 @@
 package serverapi.tables.user_tables.notification;
 
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,19 +8,16 @@ import org.springframework.stereotype.Service;
 import serverapi.api.Response;
 import serverapi.helpers.OffsetBasedPageRequest;
 import serverapi.query.dtos.tables.NotificationDTO;
-import serverapi.query.dtos.tables.UserDTO;
 import serverapi.query.repository.user.NotificationRepos;
 import serverapi.query.repository.user.NotificationTypesRepos;
 import serverapi.query.repository.user.UserRepos;
 import serverapi.socket.message.SocketMessage;
-import serverapi.tables.manga_tables.manga.Manga;
 import serverapi.tables.user_tables.friend_request_status.FriendRequestStatusService;
 import serverapi.tables.user_tables.notification.notification_types.NotificationTypes;
 import serverapi.tables.user_tables.notification.notifications.Notifications;
 import serverapi.tables.user_tables.user.User;
 
 import javax.transaction.Transactional;
-import java.lang.reflect.Field;
 import java.util.*;
 
 @Service
@@ -72,6 +67,23 @@ public class NotificationService {
 
     protected ResponseEntity updateToDeleted(Long notificationId, int action) {
         Notifications notification = notificationRepos.findById(notificationId).get();
+
+        if(action == 1) handleUpdateTargetUnit(notification.getFrom_user().getUser_id(), notification.getTarget_id(), notification.getTarget_title());
+
+        notification.setIs_delete(true);
+        notificationRepos.saveAndFlush(notification);
+
+        Map<String, Object> msg = Map.of("msg", "deleted notification");
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    protected ResponseEntity updateToDeleteFriendReq(Long senderId, Long recieverId, String targetTitle, int action){
+        Optional<Notifications> notificationsOptional = notificationRepos.getFriendReqByTargetTitleUser(senderId, recieverId, targetTitle, 2);
+        if(notificationsOptional.isEmpty()){
+            Map<String, Object> err = Map.of("err", "cannot delete");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+        Notifications notification = notificationsOptional.get();
 
         if(action == 1) handleUpdateTargetUnit(notification.getFrom_user().getUser_id(), notification.getTarget_id(), notification.getTarget_title());
 

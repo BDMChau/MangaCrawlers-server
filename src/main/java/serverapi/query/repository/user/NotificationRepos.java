@@ -37,7 +37,6 @@ public interface NotificationRepos extends JpaRepository<Notifications, Long> {
     List<NotificationDTO> getAllByUserId(Long user_id, Pageable pageable);
 
 
-
     @Query("""
             SELECT new serverapi.query.dtos.tables.NotificationDTO(
                 no.notification_id, no.content, no.image_url, no.created_at, no.target_id, no.target_title, no.is_viewed,no.is_interacted,
@@ -52,7 +51,6 @@ public interface NotificationRepos extends JpaRepository<Notifications, Long> {
     List<NotificationDTO> getListByUserIdAndTypeAndNotInteract(Long user_id, int notification_type);
 
 
-
     @Query("""
             SELECT new serverapi.query.dtos.tables.NotificationDTO(
                 no.notification_id, no.content, no.image_url, no.created_at, no.target_id, no.target_title, no.is_viewed,no.is_interacted,
@@ -65,4 +63,15 @@ public interface NotificationRepos extends JpaRepository<Notifications, Long> {
              ORDER BY no.created_at DESC
             """)
     List<NotificationDTO> getAllByUserIdAndType(Long user_id, int notification_type);
+
+
+    @Query("""
+            SELECT no
+             FROM Notifications no JOIN NotificationTypes type ON no.notification_type = type.notification_type_id 
+             JOIN User receiver ON no.to_user.user_id = receiver.user_id 
+             JOIN User sender ON no.from_user.user_id = sender.user_id 
+             WHERE sender.user_id = ?1 AND receiver.user_id = ?2 AND no.target_title = ?3 AND type.type = ?4 AND no.is_delete = false
+             ORDER BY no.created_at DESC
+            """)
+    Optional<Notifications> getFriendReqByTargetTitleUser(Long senderId, Long recieverId, String targetTitle, int notification_type);
 }
