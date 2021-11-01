@@ -155,6 +155,7 @@ public class NotificationService {
         notifications.setTo_user(receiver);
         notifications.setIs_viewed(false);
         notifications.setIs_interacted(false);
+        notifications.setIs_delete(false);
         notifications.setCreated_at(currentTime);
 
 

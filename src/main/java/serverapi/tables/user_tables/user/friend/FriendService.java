@@ -86,7 +86,7 @@ public class FriendService {
         exportUser.setStatus(true);
 
         Optional<FriendDTO> targetUser = friendRequestRepos.findFriendByUserId(userID, toUserID);
-        if (targetUser.isEmpty() || targetUser.get().getUser_relations_id() != null) {
+        if (targetUser.isEmpty() || targetUser.get().getUser_relations_id() == null) {
             Map<String, Object> err = Map.of("err", "Cannot unfriend!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
