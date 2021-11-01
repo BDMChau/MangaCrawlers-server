@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import serverapi.tables.forum.post.Post;
 import serverapi.tables.forum.post_topic.PostTopic;
 import serverapi.tables.user_tables.report.report_example_titles.ReportExampleTitles;
 import serverapi.tables.user_tables.report.reports.Reports;
@@ -34,9 +35,16 @@ public class PostCategory {
 
     @JsonBackReference
     @OneToMany(mappedBy = "post_category", cascade = CascadeType.ALL)
-    private Collection<PostTopic> postTopics;
+    private Collection<Post> post;
 
     @Column(columnDefinition = "TEXT", nullable = false)
-    private String category_name;
+    private String name;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String color;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String description;
+
 
 }

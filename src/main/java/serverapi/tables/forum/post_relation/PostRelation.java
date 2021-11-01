@@ -33,12 +33,12 @@ public class PostRelation {
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
-    private Post post_id;
+    private Post post;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reply_post_id")
-    private Post reply_post_id;
+    private Post reply_post;
 
 
 }

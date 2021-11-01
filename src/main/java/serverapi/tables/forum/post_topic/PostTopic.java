@@ -36,15 +36,16 @@ public class PostTopic {
 
     @JsonBackReference
     @OneToMany(mappedBy = "post_topic", cascade = CascadeType.ALL)
-    private Collection<Post> posts;
-
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_category_id")
-    private PostCategory post_category;
+    private Collection<Post> post;
 
 
     @Column(columnDefinition = "TEXT", nullable = false)
-    private String topic_name;
+    private String name;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String color;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String description;
 
 }
