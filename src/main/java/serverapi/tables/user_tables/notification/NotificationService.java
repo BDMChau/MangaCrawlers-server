@@ -55,7 +55,8 @@ public class NotificationService {
     protected ResponseEntity updateToInteracted(Long notificationId, int action) {
         Notifications notification = notificationRepos.findById(notificationId).get();
 
-        if(action == 1) handleUpdateTargetUnit(notification.getFrom_user().getUser_id(), notification.getTarget_id(), notification.getTarget_title());
+        if (action == 1)
+            handleUpdateTargetUnit(notification.getFrom_user().getUser_id(), notification.getTarget_id(), notification.getTarget_title());
 
         notification.setIs_interacted(true);
         notification.setIs_viewed(true);
@@ -68,7 +69,8 @@ public class NotificationService {
     protected ResponseEntity updateToDeleted(Long notificationId, int action) {
         Notifications notification = notificationRepos.findById(notificationId).get();
 
-        if(action == 1) handleUpdateTargetUnit(notification.getFrom_user().getUser_id(), notification.getTarget_id(), notification.getTarget_title());
+        if (action == 1)
+            handleUpdateTargetUnit(notification.getFrom_user().getUser_id(), notification.getTarget_id(), notification.getTarget_title());
 
         notification.setIs_delete(true);
         notificationRepos.saveAndFlush(notification);
@@ -77,18 +79,29 @@ public class NotificationService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
-    protected ResponseEntity updateFriendReq(Long senderId, Long recieverId, String targetTitle, int action, int type){
-        Optional<Notifications> notificationsOptional = notificationRepos.getFriendReqByTargetTitleUser(senderId, recieverId, targetTitle, 2);
-        if(notificationsOptional.isEmpty()){
+    protected ResponseEntity updateFriendReq(Long senderId, Long recieverId, String targetTitle, int action, int type, int cmdFrom) {
+        Optional<Notifications> notificationsOptional = Optional.empty();
+        if (cmdFrom == 1)
+            notificationsOptional = notificationRepos.getFriendReqByTargetTitleUser(senderId, recieverId, targetTitle, 2);
+        else if (cmdFrom == 2)
+            notificationsOptional = notificationRepos.getFriendReqByTargetTitleUser(recieverId, senderId, targetTitle, 2);
+
+
+        if (notificationsOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "cannot delete");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
         Notifications notification = notificationsOptional.get();
 
-        if(action == 1) handleUpdateTargetUnit(notification.getFrom_user().getUser_id(), notification.getTarget_id(), notification.getTarget_title());
+        if (action == 1)
+            handleUpdateTargetUnit(notification.getFrom_user().getUser_id(), notification.getTarget_id(), notification.getTarget_title());
 
-        if(type == 1) notification.setIs_delete(true);
-        else if(type == 2) notification.setIs_interacted(true);
+        if (type == 1) notification.setIs_delete(true);
+        else if (type == 2) {
+            notification.setIs_interacted(true);
+            notification.setIs_viewed(true);
+        }
+
 
         notificationRepos.saveAndFlush(notification);
 

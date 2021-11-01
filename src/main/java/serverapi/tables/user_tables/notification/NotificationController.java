@@ -94,6 +94,10 @@ public class NotificationController {
         // 2: set interact to true
         int type = (int) data.get("type");
 
-        return notificationService.updateFriendReq(fromUserId, toUserId, targetTitle, action, type);
+        // 1: sender update
+        // 2: receiver update
+        int cmdFrom = (int) data.get("cmd_from");
+
+        return notificationService.updateFriendReq(fromUserId, toUserId, targetTitle, action, type, cmdFrom);
     }
 }

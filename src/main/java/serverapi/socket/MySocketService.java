@@ -148,7 +148,7 @@ public class MySocketService {
                 }
             }
 
-            senderClient.sendEvent(EVENTs_NAME.getSEND_OK(), "ok");
+            senderClient.sendEvent(EVENTs_NAME.getSEND_OK(), "okkkkkk");
         }
     }
 
