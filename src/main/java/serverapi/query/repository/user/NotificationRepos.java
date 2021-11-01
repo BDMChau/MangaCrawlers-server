@@ -70,8 +70,9 @@ public interface NotificationRepos extends JpaRepository<Notifications, Long> {
              FROM Notifications no JOIN NotificationTypes type ON no.notification_type = type.notification_type_id 
              JOIN User receiver ON no.to_user.user_id = receiver.user_id 
              JOIN User sender ON no.from_user.user_id = sender.user_id 
-             WHERE sender.user_id = ?1 AND receiver.user_id = ?2 AND no.target_title = ?3 AND type.type = ?4 AND no.is_delete = false
+             WHERE sender.user_id = ?1 AND receiver.user_id = ?2 AND no.target_title LIKE ?3 AND type.type = ?4
+             AND no.is_delete = false AND no.is_interacted = false
              ORDER BY no.created_at DESC
             """)
-    Optional<Notifications> getFriendReqByTargetTitleUser(Long senderId, Long recieverId, String targetTitle, int notification_type);
+    Optional<Notifications> getFriendReqByTargetTitleUser(Long senderId, Long receiverId, String targetTitle, int notification_type);
 }
