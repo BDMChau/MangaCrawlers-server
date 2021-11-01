@@ -77,8 +77,8 @@ public class NotificationController {
 
 
     // without notification_id
-    @PostMapping("/update_delete_friend_req")
-    public ResponseEntity updateToDeletedFriendReq(ServletRequest request, @RequestBody Map data) {
+    @PostMapping("/update_notification_friend_req")
+    public ResponseEntity updateFriendReq(ServletRequest request, @RequestBody Map data) {
         String strUserId = getUserAttribute(request).get("user_id").toString();
 
         Long fromUserId = Long.parseLong((strUserId));
@@ -90,6 +90,10 @@ public class NotificationController {
         // 3: accept friend request
         int action = (int) data.get("action");
 
-        return notificationService.updateToDeleteFriendReq(fromUserId, toUserId, targetTitle, action);
+        // 1: set delete to true
+        // 2: set interact to true
+        int type = (int) data.get("type");
+
+        return notificationService.updateFriendReq(fromUserId, toUserId, targetTitle, action, type);
     }
 }
