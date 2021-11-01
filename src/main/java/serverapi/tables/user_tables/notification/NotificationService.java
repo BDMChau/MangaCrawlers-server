@@ -77,7 +77,7 @@ public class NotificationService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
-    protected ResponseEntity updateToDeleteFriendReq(Long senderId, Long recieverId, String targetTitle, int action){
+    protected ResponseEntity updateFriendReq(Long senderId, Long recieverId, String targetTitle, int action, int type){
         Optional<Notifications> notificationsOptional = notificationRepos.getFriendReqByTargetTitleUser(senderId, recieverId, targetTitle, 2);
         if(notificationsOptional.isEmpty()){
             Map<String, Object> err = Map.of("err", "cannot delete");
@@ -87,7 +87,9 @@ public class NotificationService {
 
         if(action == 1) handleUpdateTargetUnit(notification.getFrom_user().getUser_id(), notification.getTarget_id(), notification.getTarget_title());
 
-        notification.setIs_delete(true);
+        if(type == 1) notification.setIs_delete(true);
+        else if(type == 2) notification.setIs_interacted(true);
+
         notificationRepos.saveAndFlush(notification);
 
         Map<String, Object> msg = Map.of("msg", "deleted notification");
