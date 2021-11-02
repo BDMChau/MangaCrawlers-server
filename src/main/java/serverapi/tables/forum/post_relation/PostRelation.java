@@ -28,7 +28,7 @@ public class PostRelation {
             strategy = GenerationType.SEQUENCE,
             generator = "post_relation_sequence" // same as NAME in SequenceGenerator
     )
-    private Long user_relation_id;
+    private Long post_relation_id;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
