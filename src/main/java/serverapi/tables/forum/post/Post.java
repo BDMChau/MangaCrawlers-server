@@ -7,8 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import serverapi.tables.forum.post_category.PostCategory;
-import serverapi.tables.forum.post_topic.PostTopic;
-import serverapi.tables.user_tables.notification.notification_types.NotificationTypes;
+import serverapi.tables.forum.post_like.PostLike;
 import serverapi.tables.user_tables.user.User;
 
 import javax.persistence.*;
@@ -40,15 +39,13 @@ public class Post {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_category_id")
-    private PostCategory post_category;
+    @JsonBackReference
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private Collection<PostCategory> postCategories;
 
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_topic_id")
-    private PostTopic post_topic;
+    @JsonBackReference
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private Collection<PostLike> postLikes;
 
     @Column(columnDefinition = "TEXT")
     private String title;
@@ -58,6 +55,9 @@ public class Post {
 
     @Column(columnDefinition = "boolean default false", nullable = false)
     private Boolean is_deprecated;
+
+    @Column(columnDefinition = "boolean default false", nullable = false)
+    private Boolean is_approved;
 
     @Column(nullable = false, updatable = true, columnDefinition = "timestamp with time zone")
     private Calendar created_at;

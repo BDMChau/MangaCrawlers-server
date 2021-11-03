@@ -2,13 +2,12 @@ package serverapi.tables.forum.post_category;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import serverapi.tables.forum.category.Category;
 import serverapi.tables.forum.post.Post;
-import serverapi.tables.forum.post_topic.PostTopic;
-import serverapi.tables.user_tables.report.report_example_titles.ReportExampleTitles;
-import serverapi.tables.user_tables.report.reports.Reports;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -33,18 +32,15 @@ public class PostCategory {
     )
     private Long post_category_id;
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "post_category", cascade = CascadeType.ALL)
-    private Collection<Post> post;
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id", insertable = false, updatable = false)
+    private Post post;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String name;
-
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String color;
-
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String description;
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", insertable = false, updatable = false)
+    private Category category;
 
 
 }
