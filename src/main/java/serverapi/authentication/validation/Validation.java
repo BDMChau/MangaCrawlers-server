@@ -88,7 +88,7 @@ public class Validation implements Validator {
         )) {
 
             // length 8 , at least 1 letter and 1 number
-            errors.rejectValue(null, "Not strong enough, password must be length 8 , at least 1 letter and 1 number!");
+            errors.rejectValue(null, "Password strong failed, must be length 8, at least 1 number!");
         }
     }
 

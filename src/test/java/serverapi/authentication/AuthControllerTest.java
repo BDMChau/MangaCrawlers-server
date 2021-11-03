@@ -59,7 +59,7 @@ public class AuthControllerTest {
     private AuthRepository authRepository;
 
     @Test // OK
-    public void testSignIn01() throws Exception {
+    public void testSignInOK() throws Exception {
         String uri = "/api/auth/signin";
 
         Map<String, String> dataObj = Map.of(
@@ -84,7 +84,7 @@ public class AuthControllerTest {
     }
 
     @Test // invalid format email
-    public void testSignIn02() throws Exception {
+    public void testSignInInvalidEmail() throws Exception {
         String uri = "/api/auth/signin";
 
         Map<String, String> dataObj = Map.of(
@@ -109,7 +109,7 @@ public class AuthControllerTest {
     }
 
     @Test // missing credential
-    public void testSignIn03() throws Exception {
+    public void testSignInMissingCredential() throws Exception {
         String uri = "/api/auth/signin";
 
         Map<String, String> dataObj = Map.of(
@@ -134,7 +134,7 @@ public class AuthControllerTest {
     }
 
     @Test // email null
-    public void testSignIn04() throws Exception {
+    public void testSignInNullField() throws Exception {
         String uri = "/api/auth/signin";
 
         Map<String, String> dataObj = new HashMap<>();
@@ -158,35 +158,10 @@ public class AuthControllerTest {
         assertArrayEquals(expectedList, resultList);
     }
 
-    @Test // password null
-    public void testSignIn05() throws Exception {
-        String uri = "/api/auth/signin";
-
-        Map<String, String> dataObj = new HashMap<>();
-        dataObj.put("user_email", "bdmchau105@gmail.com");
-        dataObj.put("user_password", null);
-
-        String inputJson = new HelpersTest().mapToJson(dataObj);
-
-
-        MockHttpServletResponse response = mockMvc.perform(post(uri)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(inputJson))
-                .andReturn()
-                .getResponse();
-        String resultStr = response.getContentAsString();
-        System.err.println(resultStr);
-
-        Object[] expectedList = {true, 200};
-        Object[] resultList = {resultStr.contains("Sign in successfully!"), response.getStatus()};
-
-        assertArrayEquals(expectedList, resultList);
-    }
-
 
     /////////////////////////////////////////////
     @Test // password is not strong enough (1 number, 8 length)
-    public void testSignUp01() throws Exception {
+    public void testSignUpPasswordStrongFailed() throws Exception {
         String uri = "/api/auth/signup";
 
         Map<String, String> dataObj = Map.of(
@@ -212,7 +187,7 @@ public class AuthControllerTest {
     }
 
     @Test // missing creadential name
-    public void testSignUp02() throws Exception {
+    public void testSignUpMissingCredential() throws Exception {
         String uri = "/api/auth/signup";
 
         Map<String, String> dataObj = Map.of(
@@ -237,34 +212,9 @@ public class AuthControllerTest {
         assertArrayEquals(expectedList, resultList);
     }
 
-    @Test // password null
-    public void testSignUp03() throws Exception {
-        String uri = "/api/auth/signup";
-
-        Map dataObj = new HashMap();
-        dataObj.put("user_name", "MinhChau");
-        dataObj.put("user_email", "bdmchau105@gmail.com");
-        dataObj.put("user_password", null);
-
-        String inputJson = new HelpersTest().mapToJson(dataObj);
-
-
-        MockHttpServletResponse response = mockMvc.perform(post(uri)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(inputJson))
-                .andReturn()
-                .getResponse();
-        String resultStr = response.getContentAsString();
-        System.err.println(resultStr);
-
-        Object[] expectedList = {true, 200};
-        Object[] resultList = {resultStr.contains("Sign up successfully!"), response.getStatus()};
-
-        assertArrayEquals(expectedList, resultList);
-    }
 
     @Test // invalid email
-    public void testSignUp04() throws Exception {
+    public void testSignUpInvalidEmail() throws Exception {
         String uri = "/api/auth/signup";
 
         Map<String, String> dataObj = Map.of(
@@ -290,7 +240,7 @@ public class AuthControllerTest {
     }
 
     @Test // OK
-    public void testSignUp05() throws Exception {
+    public void testSignUpOK() throws Exception {
         String uri = "/api/auth/signup";
 
         Map<String, String> dataObj = Map.of(
