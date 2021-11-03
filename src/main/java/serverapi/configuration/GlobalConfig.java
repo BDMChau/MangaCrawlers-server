@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -21,6 +22,9 @@ import org.springframework.web.filter.CommonsRequestLoggingFilter;
 import org.zalando.logbook.*;
 import org.zalando.logbook.json.JsonHttpLogFormatter;
 import serverapi.authentication.RegistrationOauth;
+import serverapi.authentication.filters.TokenVerification;
+import serverapi.authentication.filters.TokenVerificationAdmin;
+import serverapi.configuration.filters.HttpFilter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -79,7 +83,27 @@ public class GlobalConfig {
         return new JsonHttpLogFormatter(mapper);
     }
 
-    //////////// auto call http every 25 minutes to wake up app on heroku
+
+    @Bean
+    public FilterRegistrationBean<HttpFilter> HttpFiltering() {
+        FilterRegistrationBean<HttpFilter> registrationBean
+                = new FilterRegistrationBean<>();
+
+        registrationBean.setFilter(new HttpFilter());
+        registrationBean.addUrlPatterns("/api/user_unauth/*");
+        registrationBean.addUrlPatterns("/api/manga/*");
+        registrationBean.addUrlPatterns("/api/genre/*");
+        registrationBean.addUrlPatterns("/api/post/*");
+        registrationBean.addUrlPatterns("/api/post-category/*");
+        registrationBean.setOrder(1);
+        return registrationBean;
+    }
+
+
+}
+
+
+//////////// auto call http every 25 minutes to wake up app on heroku
 //    @Scheduled(fixedRate = 1500000)
 //    public void autoCallHttp() throws IOException {
 //        URL url = new URL(System.getenv("HOST_PRODUCTION") + "api/auth/autocallhttp");
@@ -90,4 +114,4 @@ public class GlobalConfig {
 //    }
 
 
-}
+
