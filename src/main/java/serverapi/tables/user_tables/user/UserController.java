@@ -44,7 +44,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    UserHelpers userHelpers = new UserHelpers();
+    private UserHelpers userHelpers = new UserHelpers();
 
 
 

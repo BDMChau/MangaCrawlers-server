@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import serverapi.tables.manga_tables.genre.GenreService;
 
 @RestController
-@RequestMapping("/api/post-category")
+@RequestMapping("/api/forum/post-category")
 public class PostCategoryController {
 
     private final PostCategoryService postCategoryService;
@@ -19,9 +19,5 @@ public class PostCategoryController {
         this.postCategoryService = postCategoryService;
     }
 
-    @GetMapping("/getall")
-    public ResponseEntity getAll(){
 
-        return postCategoryService.getAll();
-    }
 }

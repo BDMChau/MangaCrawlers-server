@@ -94,7 +94,9 @@ public class GlobalConfig {
         registrationBean.addUrlPatterns("/api/manga/*");
         registrationBean.addUrlPatterns("/api/genre/*");
         registrationBean.addUrlPatterns("/api/post/*");
-        registrationBean.addUrlPatterns("/api/post-category/*");
+        registrationBean.addUrlPatterns("/api/forum/*");
+        registrationBean.addUrlPatterns("/api/forum_unauth/*");
+        registrationBean.addUrlPatterns("/api/notification/*");
         registrationBean.setOrder(1);
         return registrationBean;
     }

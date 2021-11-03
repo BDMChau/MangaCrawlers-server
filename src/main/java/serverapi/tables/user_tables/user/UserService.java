@@ -1177,8 +1177,7 @@ public class UserService {
         Optional<User> userOptional = userRepos.findById(userId);
         if (userOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "user not found!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
         User user = userOptional.get();
         Long transgroupId = user.getTransgroup().getTransgroup_id();

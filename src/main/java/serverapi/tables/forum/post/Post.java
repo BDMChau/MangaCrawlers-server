@@ -13,6 +13,7 @@ import serverapi.tables.user_tables.user.User;
 import javax.persistence.*;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Getter
@@ -41,7 +42,7 @@ public class Post {
 
     @JsonBackReference
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private Collection<PostCategory> postCategories;
+    private List<PostCategory> postCategories;
 
     @JsonBackReference
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)

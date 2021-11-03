@@ -21,18 +21,6 @@ public class PostCategoryService {
     }
 
 
-    protected ResponseEntity getAll() {
-        List<PostCategory> postCategoryList = postCategoryRepos.findAll();
-        if (postCategoryList.isEmpty()) {
-            Map<String, Object> err = Map.of("err", "No categories!");
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
-        }
 
-        Map<String, Object> msg = Map.of(
-                "msg", "Get all categories OK!",
-                "categories", postCategoryList
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
 
 }
