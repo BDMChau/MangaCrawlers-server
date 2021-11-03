@@ -22,7 +22,7 @@ public class CorsConfig {
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
         config.setExposedHeaders(Arrays.asList("x-auth-token"));
-        source.registerCorsConfiguration("/api/*/*", config);
+        source.registerCorsConfiguration("/api/**", config);
 
         FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
         bean.setOrder(Ordered.HIGHEST_PRECEDENCE); // set HIGHEST level for oauth
