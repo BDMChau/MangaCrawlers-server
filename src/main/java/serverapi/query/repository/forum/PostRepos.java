@@ -1,5 +1,6 @@
 package serverapi.query.repository.forum;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -35,6 +36,21 @@ public interface PostRepos extends JpaRepository<Post, Long> {
             )
             FROM Post post
             JOIN User user ON user.user_id = post.user.user_id
+            ORDER BY post.created_at
             """)
-    List<PostUserDTO> getAllPosts();
+    List<PostUserDTO> getPosts(Pageable pageable);
+
+
+    @Query("""
+  SELECT new serverapi.query.dtos.tables.PostUserDTO(
+            post.post_id, post.title, post.content, post.created_at,
+            user.user_id, user.user_name, user.user_email, user.user_avatar, user.user_isAdmin
+            )
+            FROM Post post
+            JOIN User user ON user.user_id = post.user.user_id
+            JOIN PostCategory post_cate ON post_cate.post.post_id = post.post_id
+            WHERE post_cate.category.category_id = ?1
+            ORDER BY post.created_at
+            """)
+    List<PostUserDTO> getPostsByCategory(Long categoryId);
 }

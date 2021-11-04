@@ -1,6 +1,7 @@
 package serverapi.tables.forum.post;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 
 import serverapi.api.Response;
+import serverapi.helpers.OffsetBasedPageRequest;
 import serverapi.query.dtos.tables.PostUserDTO;
 import serverapi.query.repository.forum.CategoryRepos;
 import serverapi.query.repository.forum.PostCategoryRepos;
@@ -83,14 +85,16 @@ public class PostService {
     }
 
 
-    protected ResponseEntity getAll() {
-        List<PostUserDTO> posts = postRepos.getAllPosts();
+    protected ResponseEntity getPosts(int from, int amount) {
+        Pageable pageable = new OffsetBasedPageRequest(from, amount);
+        List<PostUserDTO> posts = postRepos.getPosts(pageable);
         if (posts.isEmpty()) {
             Map<String, Object> err = Map.of(
                     "err", "no posts!",
+                    "from", 0,
                     "posts", new ArrayList<>()
             );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
 
         posts.forEach(post -> {
@@ -101,7 +105,8 @@ public class PostService {
 
         Map<String, Object> msg = Map.of(
                 "msg", "get posts OK!",
-                "post", posts
+                "from", from + amount,
+                "posts", posts
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
@@ -123,4 +128,34 @@ public class PostService {
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
+
+
+    protected ResponseEntity getByCategory(Long categoryId){
+        Optional<Category> categoryOptional = categoryRepos.findById(categoryId);
+
+        List<PostUserDTO> posts = postRepos.getPostsByCategory(categoryId);
+        if (posts.isEmpty() || categoryOptional.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "err", "no posts with this category!",
+                    "category", new HashMap<>(),
+                    "posts", new ArrayList<>()
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+        }
+        Category category = categoryOptional.get();
+
+        posts.forEach(post -> {
+            List<Category> categoryList = postCategoryRepos.getCategoriesByPostId(post.getPost_id());
+            post.setCategoryList(categoryList);
+        });
+
+        Map<String, Object> msg = Map.of(
+                "msg", "get posts with category OK!",
+                "category", category,
+                "posts", posts
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
 }
