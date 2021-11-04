@@ -14,22 +14,36 @@ import java.util.Map;
 @CacheConfig(cacheNames = {"user_unauth"})
 public class UserControllerUnAuth {
 
-    private final UserService userService;
+    private final UserUnauthService userUnauthService;
     private final CommentLikeService commentLikeService;
 
     @Autowired
-    public UserControllerUnAuth(UserService userService, CommentLikeService commentLikeService) {
-        this.userService = userService;
+    public UserControllerUnAuth(UserUnauthService userUnauthService, CommentLikeService commentLikeService) {
+        this.userUnauthService = userUnauthService;
         this.commentLikeService = commentLikeService;
     }
 
 
     ///////////////////////////////// Users parts //////////////////////////////
-    @PostMapping("/get_userinfo")
-    public ResponseEntity GetReadingHistory(@RequestBody Map data) {
-        Long userId = Long.parseLong(String.valueOf(data.get("user_id")));
+    @GetMapping("/get_userinfo")
+    public ResponseEntity getUserInfo(@RequestParam String user_id) {
+        Long userId = Long.parseLong(user_id);
 
-        return userService.getUserInfo(userId);
+        return userUnauthService.getUserInfo(userId);
+    }
+
+    @GetMapping("/get_posts_of_user")
+    public ResponseEntity getPostOfUser(@RequestParam String user_id, @RequestParam int from, @RequestParam int amount) {
+        Long userId = Long.parseLong(user_id);
+
+        return userUnauthService.getPostOfUser(userId, from, amount);
+    }
+
+    @GetMapping("/get_friends_of_user")
+    public ResponseEntity getFriendsOfUser(@RequestParam String user_id, @RequestParam int from, @RequestParam int amount) {
+        Long userId = Long.parseLong(user_id);
+
+        return userUnauthService.getFriendsOfUser(userId, from, amount);
     }
 
     @PostMapping("/get_total_like")

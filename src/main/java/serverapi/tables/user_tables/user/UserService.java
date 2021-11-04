@@ -19,6 +19,7 @@ import serverapi.query.dtos.features.MangaCommentDTOs.CommentTreesDTO;
 import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
 import serverapi.query.dtos.features.SearchCriteriaDTO;
 import serverapi.query.dtos.tables.*;
+import serverapi.query.repository.forum.PostRepos;
 import serverapi.query.repository.manga.*;
 import serverapi.query.repository.manga.comment.*;
 import serverapi.query.repository.user.*;
@@ -67,6 +68,7 @@ public class UserService {
     private final CommentImageRepos commentImageRepos;
     private final CommentTagsRepos commentTagsRepos;
     private final CommentLikesRepos commentLikesRepos;
+    private final PostRepos postRepos;
     private final NotificationRepos notificationRepos;
 
     @Autowired
@@ -79,7 +81,7 @@ public class UserService {
                        MangaCommentsRepos mangaCommentsRepos, RatingMangaRepos ratingMangaRepos,
                        TransGroupRepos transGroupRepos, GenreRepos genreRepos, MangaGenreRepos mangaGenreRepos,
                        AuthorRepos authorRepos, ImgChapterRepos imgChapterRepos, CommentRelationRepos commentRelationRepos,
-                       CommentImageRepos commentImageRepos, CommentTagsRepos commentTagsRepos, CommentLikesRepos commentLikesRepos, NotificationRepos notificationRepos) {
+                       CommentImageRepos commentImageRepos, PostRepos postRepos,CommentTagsRepos commentTagsRepos, CommentLikesRepos commentLikesRepos, NotificationRepos notificationRepos) {
         this.mangaRepository = mangaRepository;
         this.followingRepos = followingRepos;
         this.userRepos = userRepos;
@@ -96,6 +98,7 @@ public class UserService {
         this.commentImageRepos = commentImageRepos;
         this.commentTagsRepos = commentTagsRepos;
         this.commentLikesRepos = commentLikesRepos;
+        this.postRepos = postRepos;
         this.notificationRepos = notificationRepos;
     }
 
@@ -1392,26 +1395,6 @@ public class UserService {
 
         Map<String, Object> msg = Map.of(
                 "msg", "Update description successfully!",
-                "user", userDTO
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
-
-
-    ////////////////////////////////////// unauthenticated parts //////////////////////////////////////
-    public ResponseEntity getUserInfo(Long userId) {
-        Optional<UserDTO> userOptional = userRepos.findByUserId(userId);
-        if (userOptional.isEmpty()) {
-            Map<String, Object> err = Map.of("err", "User does not exist!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
-        }
-        UserDTO userDTO = userOptional.get();
-
-        // status service
-        userDTO.setStatus(1);
-
-        Map<String, Object> msg = Map.of(
-                "msg", "get user info OK!",
                 "user", userDTO
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
