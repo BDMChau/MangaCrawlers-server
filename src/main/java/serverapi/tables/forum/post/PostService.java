@@ -62,10 +62,9 @@ public class PostService {
         PostCategory postCategory = new PostCategory();
         categories.forEach(category -> {
             postCategory.setCategory(category);
+            postCategory.setPost(newPost);
+            postCategoryRepos.saveAndFlush(postCategory);
         });
-        postCategory.setPost(newPost);
-
-        postCategoryRepos.saveAndFlush(postCategory);
 
 
         // response

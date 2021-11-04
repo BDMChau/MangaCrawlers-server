@@ -1233,10 +1233,9 @@ public class UserService {
         MangaGenre mangaGenre = new MangaGenre();
         genres.forEach(genre -> {
             mangaGenre.setGenre(genre);
+            mangaGenre.setManga(manga);
+            mangaGenreRepos.saveAndFlush(mangaGenre);
         });
-        mangaGenre.setManga(manga);
-        mangaGenreRepos.saveAndFlush(mangaGenre);
-        System.err.println("04");
 
 
         Map<String, Object> msg = Map.of(
