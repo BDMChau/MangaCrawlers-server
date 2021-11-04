@@ -59,8 +59,8 @@ public class PostService {
         // set categories
         List<Category> categories = categoryRepos.findAllById(listCategoryId);
 
-        PostCategory postCategory = new PostCategory();
         categories.forEach(category -> {
+            PostCategory postCategory = new PostCategory();
             postCategory.setCategory(category);
             postCategory.setPost(newPost);
             postCategoryRepos.saveAndFlush(postCategory);

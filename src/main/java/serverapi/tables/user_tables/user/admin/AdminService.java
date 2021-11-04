@@ -84,7 +84,7 @@ public class AdminService {
 
             ReportsDTO reportsDTO = new ReportsDTO();
             int finalI = i + 1;
-            System.err.println("lỗi" + finalI);
+            System.err.println("err" + finalI);
             List<UserRDTO> userDTOList = new ArrayList<>();
 
             getUserInfo.forEach(item -> {
@@ -139,7 +139,7 @@ public class AdminService {
 
             ReportsDTO reportsDTO = new ReportsDTO();
             int finalI = i + 1;
-            System.err.println("lỗi" + finalI);
+            System.err.println("err" + finalI);
             List<Manga> mangaList = new ArrayList<>();
 
 
@@ -194,7 +194,7 @@ public class AdminService {
 
             ReportsDTO reportsDTO = new ReportsDTO();
             int finalI = i + 1;
-            System.err.println("lỗi" + finalI);
+            System.err.println("err" + finalI);
             List<TransGroup> transGroupList = new ArrayList<>();
 
             getTransGroupInfo.forEach(item -> {

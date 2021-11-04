@@ -24,7 +24,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/admin")
 @CacheConfig(cacheNames = {"admin"})
-
 public class AdminController {
 
 

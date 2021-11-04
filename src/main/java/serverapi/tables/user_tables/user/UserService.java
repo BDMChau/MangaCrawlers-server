@@ -1230,8 +1230,8 @@ public class UserService {
         });
         List<Genre> genres = genreRepos.findAllById(listGenreId);
 
-        MangaGenre mangaGenre = new MangaGenre();
         genres.forEach(genre -> {
+            MangaGenre mangaGenre = new MangaGenre();
             mangaGenre.setGenre(genre);
             mangaGenre.setManga(manga);
             mangaGenreRepos.saveAndFlush(mangaGenre);
