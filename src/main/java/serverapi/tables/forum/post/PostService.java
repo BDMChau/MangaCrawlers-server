@@ -1,11 +1,12 @@
 package serverapi.tables.forum.post;
 
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 import javax.transaction.Transactional;
+
 import serverapi.api.Response;
 import serverapi.query.dtos.tables.PostUserDTO;
 import serverapi.query.repository.forum.CategoryRepos;
@@ -70,7 +71,9 @@ public class PostService {
 
 
         // response
-       PostUserDTO postUserDTO = postRepos.getByPostId(newPost.getPost_id()).get();
+        PostUserDTO postUserDTO = postRepos.getByPostId(newPost.getPost_id()).get();
+        List<Category> categoryList = categoryRepos.getAllByPostId(newPost.getPost_id());
+        postUserDTO.setCategoryList(categoryList);
 
         Map<String, Object> msg = Map.of(
                 "msg", "create post OK!",
@@ -81,17 +84,19 @@ public class PostService {
 
     @Transactional
     protected ResponseEntity getPost(Long postId) {
-        Optional<PostUserDTO> postOptional = postRepos.getByPostId(postId);
-        if (postOptional.isEmpty()) {
+        Optional<PostUserDTO> postUserDTOOptional = postRepos.getByPostId(postId);
+        if (postUserDTOOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "post not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
-        PostUserDTO post = postOptional.get();
+        PostUserDTO postUserDTO = postUserDTOOptional.get();
 
+        List<Category> categoryList = categoryRepos.getAllByPostId(postUserDTO.getPost_id());
+        postUserDTO.setCategoryList(categoryList);
 
         Map<String, Object> msg = Map.of(
                 "msg", "create post OK!",
-                "post", post
+                "post", postUserDTO
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }

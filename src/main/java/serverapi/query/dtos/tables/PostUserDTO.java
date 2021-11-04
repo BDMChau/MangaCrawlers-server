@@ -18,10 +18,10 @@ public class PostUserDTO {
     String content;
     Calendar created_at;
 
-    Long cate_id;
-    String cate_name;
-    String cate_color;
-    String cate_desc;
+//    Long cate_id;
+//    String cate_name;
+//    String cate_color;
+//    String cate_desc;
     List<Category> categoryList;
 
     Long user_id;
@@ -29,27 +29,13 @@ public class PostUserDTO {
     String user_email;
     String user_avatar;
     Boolean user_isAdmin;
-    Map user;
+//    Map user;
 
-    public PostUserDTO(Long post_id, String title, String content, Calendar created_at, List<Category> categoryList, Map user) {
-        this.post_id = post_id;
-        this.title = title;
-        this.content = content;
-        this.categoryList = categoryList;
-        this.created_at = created_at;
-        this.user = user;
-    }
-
-    public PostUserDTO(Long post_id, String title, String content, Calendar created_at, Long cate_id, String cate_name, String cate_color, String cate_desc, Long user_id, String user_name, String user_email, String user_avatar, Boolean user_isAdmin) {
+    public PostUserDTO(Long post_id, String title, String content, Calendar created_at, Long user_id, String user_name, String user_email, String user_avatar, Boolean user_isAdmin) {
         this.post_id = post_id;
         this.title = title;
         this.content = content;
         this.created_at = created_at;
-
-        this.cate_id = cate_id;
-        this.cate_name = cate_name;
-        this.cate_color = cate_color;
-        this.cate_desc = cate_desc;
 
         this.user_id = user_id;
         this.user_name = user_name;

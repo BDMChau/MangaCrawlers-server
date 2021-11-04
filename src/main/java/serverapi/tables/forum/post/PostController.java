@@ -30,7 +30,6 @@ public class PostController {
 
     @PostMapping("/create")
     public ResponseEntity createPost(ServletRequest request, @RequestBody PostPOJO postPOJO) {
-        try {
             Long userId = Long.parseLong(userHelpers.getUserAttribute(request).get("user_id").toString());
 
             String title = postPOJO.getTitle();
@@ -42,11 +41,5 @@ public class PostController {
             });
 
             return postService.createPost(userId, title, content, listCategoryId);
-
-        } catch (Exception ex) {
-            System.err.println(ex.getMessage());
-            Map<String, Object> err = Map.of("err", "missing fields!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
-        }
     }
 }
