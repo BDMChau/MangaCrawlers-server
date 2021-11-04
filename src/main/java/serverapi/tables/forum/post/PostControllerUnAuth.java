@@ -19,6 +19,11 @@ public class PostControllerUnAuth {
         this.postService = postService;
     }
 
+    @GetMapping("/getall")
+    public ResponseEntity getAll(){
+        return postService.getAll();
+    }
+
     @GetMapping("/getpost")
     public ResponseEntity getPost(@RequestParam String post_id){
         Long postId = Long.parseLong(post_id);

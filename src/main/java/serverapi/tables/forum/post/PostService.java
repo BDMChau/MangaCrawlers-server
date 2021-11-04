@@ -82,7 +82,30 @@ public class PostService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
-    @Transactional
+
+    protected ResponseEntity getAll() {
+        List<PostUserDTO> posts = postRepos.getAllPosts();
+        if (posts.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "err", "no posts!",
+                    "posts", new ArrayList<>()
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+
+        posts.forEach(post -> {
+            List<Category> categoryList = postCategoryRepos.getCategoriesByPostId(post.getPost_id());
+            post.setCategoryList(categoryList);
+        });
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "get posts OK!",
+                "post", posts
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
     protected ResponseEntity getPost(Long postId) {
         Optional<PostUserDTO> postUserDTOOptional = postRepos.getByPostId(postId);
         if (postUserDTOOptional.isEmpty()) {
@@ -95,7 +118,7 @@ public class PostService {
         postUserDTO.setCategoryList(categoryList);
 
         Map<String, Object> msg = Map.of(
-                "msg", "create post OK!",
+                "msg", "get post OK!",
                 "post", postUserDTO
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
