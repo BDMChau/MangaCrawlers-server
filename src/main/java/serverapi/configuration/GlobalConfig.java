@@ -86,17 +86,26 @@ public class GlobalConfig {
 
     @Bean
     public FilterRegistrationBean<HttpFilter> HttpFiltering() {
-        FilterRegistrationBean<HttpFilter> registrationBean
-                = new FilterRegistrationBean<>();
-
+        FilterRegistrationBean<HttpFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(new HttpFilter());
-        registrationBean.addUrlPatterns("/api/user_unauth/*");
-        registrationBean.addUrlPatterns("/api/manga/*");
+
+        // genres of manga
         registrationBean.addUrlPatterns("/api/genre/*");
-        registrationBean.addUrlPatterns("/api/post/*");
-        registrationBean.addUrlPatterns("/api/forum/*");
-        registrationBean.addUrlPatterns("/api/forum_unauth/*");
-        registrationBean.addUrlPatterns("/api/notification/*");
+
+        // user unauth
+        registrationBean.addUrlPatterns("/api/user_unauth/get_userinfo");
+
+        // manga
+        registrationBean.addUrlPatterns("/api/manga/getlastest");
+        registrationBean.addUrlPatterns("/api/manga/gettop");
+        registrationBean.addUrlPatterns("/api/manga/getweekly");
+        registrationBean.addUrlPatterns("/api/manga/getdaily");
+
+        //forum unauth
+        registrationBean.addUrlPatterns("/api/forum_unauth/category/getall");
+        registrationBean.addUrlPatterns("/api/forum_unauth/post/getall");
+
+
         registrationBean.setOrder(1);
         return registrationBean;
     }
