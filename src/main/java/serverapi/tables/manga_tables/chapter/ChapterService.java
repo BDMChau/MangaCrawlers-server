@@ -69,6 +69,9 @@ public class ChapterService {
 
         if (mangaIdOfChapter.equals(mangaId)) {
             List<ChapterDTO> listChapter = chapterRepos.findChaptersbyMangaId(mangaId);
+            listChapter.forEach(item ->{
+                System.err.println(item.getChapter_name());
+            });
 
             List<ChapterImgDTO> listImgs = imgChapterRepos.findImgsByChapterId(chapterId);
             Map<String, Object> msg = Map.of(
