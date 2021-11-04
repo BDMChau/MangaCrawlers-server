@@ -1,9 +1,11 @@
 package serverapi.tables.forum.post;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import javax.transaction.Transactional;
 import serverapi.api.Response;
 import serverapi.query.dtos.tables.PostUserDTO;
 import serverapi.query.repository.forum.CategoryRepos;
@@ -68,25 +70,28 @@ public class PostService {
 
 
         // response
-        Map<String, Object> userMap = new HashMap<String, Object>();
-        userMap.put("user_id", user.getUser_id());
-        userMap.put("user_email", user.getUser_email());
-        userMap.put("user_name", user.getUser_name());
-        userMap.put("user_avatar", user.getUser_avatar());
-        userMap.put("user_isAdmin", user.getUser_isAdmin());
-
-
-        PostUserDTO postUserDTO = new PostUserDTO(
-                newPost.getPost_id(),
-                newPost.getTitle(),
-                newPost.getContent(),
-                categories,
-                userMap
-        );
+       PostUserDTO postUserDTO = postRepos.getByPostId(newPost.getPost_id()).get();
 
         Map<String, Object> msg = Map.of(
                 "msg", "create post OK!",
                 "post", postUserDTO
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    @Transactional
+    protected ResponseEntity getPost(Long postId) {
+        Optional<PostUserDTO> postOptional = postRepos.getByPostId(postId);
+        if (postOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "post not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+        PostUserDTO post = postOptional.get();
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "create post OK!",
+                "post", post
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
