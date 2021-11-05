@@ -35,6 +35,8 @@ public class FriendDTO {
     private boolean status;
     private Calendar time_accepted;
 
+    private Long count_friend;
+
     public FriendDTO(Long friend_request_id, Long user_id, Long to_user_id, boolean status, Calendar time_accepted) {
         this.friend_request_id = friend_request_id;
         this.user_id = user_id;
@@ -55,5 +57,9 @@ public class FriendDTO {
         this.user_id = user_id;
         this.to_user_id = to_user_id;
         this.friend_request_id = friend_request_id;
+    }
+
+    public FriendDTO(Long count_friend) {
+        this.count_friend = count_friend;
     }
 }

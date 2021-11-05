@@ -30,6 +30,30 @@ public class FriendService {
         this.userRelationsRepos = userRelationsRepos;
     }
 
+    public  ResponseEntity getTotalFriend(Long userID) {
+
+        Optional<User> userOptional = userRepos.findById(userID);
+        if(userOptional.isEmpty()){
+            Map<String, Object> err = Map.of("err", "User not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<FriendDTO> friendDTOOptional = friendRequestRepos.getTotalFriend(userID);
+        if(friendDTOOptional.isEmpty()){
+            Map<String, Object> err = Map.of("err", "Empty friend!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+        }
+        String sTotalFriend = friendDTOOptional.get().getCount_friend().toString();
+        int totalFriend = Integer.parseInt(sTotalFriend);
+
+        Map<String, Object> err = Map.of(
+                "msg", "Get total friend successfully!",
+                "total_friend",totalFriend
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, err).toJSON(), HttpStatus.OK);
+    }
+
+
     public ResponseEntity getListFriends(Long userID, int from, int amount) {
         Pageable pageable = new OffsetBasedPageRequest(from, amount);
         List<FriendDTO> getListFriends = friendRequestRepos.getListByUserId(userID, pageable);
@@ -230,6 +254,7 @@ public class FriendService {
         }
         return iStatus.get();
     }
+
 
 
 }
