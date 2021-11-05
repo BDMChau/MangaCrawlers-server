@@ -125,7 +125,7 @@ public class FriendController {
     @PostMapping("/get_total_friend")
     public ResponseEntity getTotalFriend(ServletRequest request, @RequestBody Map data) {
         String sUserID = getUserAttribute(request).get("user_id").toString();
-        String user_id = String.valueOf(data.get("user_id"));
+        String user_id = String.valueOf(data.get("to_user_id"));
 
         Long userID = 0L;
         if (!user_id.isEmpty()) {
