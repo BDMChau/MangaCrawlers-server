@@ -121,4 +121,18 @@ public class FriendController {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(),
                 HttpStatus.OK);
     }
+
+    @PostMapping("/get_total_friend")
+    public ResponseEntity getTotalFriend(ServletRequest request, @RequestBody Map data) {
+        String sUserID = getUserAttribute(request).get("user_id").toString();
+        String user_id = String.valueOf(data.get("user_id"));
+
+        Long userID = 0L;
+        if (!user_id.isEmpty()) {
+            userID = Long.parseLong(user_id);
+        }
+
+        return friendService.getTotalFriend(userID);
+    }
+
 }
