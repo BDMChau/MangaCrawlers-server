@@ -109,7 +109,4 @@ public class UserUnauthService {
     }
 
 
-    protected ResponseEntity getFriendsOfUser(Long userId, int from, int amount){
-
-    }
 }
