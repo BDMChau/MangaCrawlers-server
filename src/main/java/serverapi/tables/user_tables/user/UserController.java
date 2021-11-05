@@ -110,7 +110,7 @@ public class UserController {
         return userService.deleteFollowManga(mangaId, userId);
     }
 
-
+    @CacheEvict(value = {"mangapage"}, key = "#ratingPOJO.getManga_id()")
     @PutMapping("/ratingmanga")
     public ResponseEntity ratingManga(@RequestBody RatingPOJO ratingPOJO, ServletRequest request) {
         String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();

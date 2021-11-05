@@ -57,7 +57,7 @@ public class MangaController {
         return mangaService.findMangaFromGenre(genreId);
     }
 
-    @Cacheable(value = "mangaPage", key = "#manga_id")
+    @Cacheable(value = "mangapage", key = "#manga_id")
     @GetMapping("/getmangapage")
     public ResponseEntity getMangaPage(@RequestParam(required = false) String manga_id) {
 
