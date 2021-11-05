@@ -59,7 +59,7 @@ public class FriendController {
         toUserID = Long.parseLong(friendPOJO.getTo_user_id());
 
         int checkStatus = friendService.checkStatus(userID, toUserID);
-        if(checkStatus != 2) {
+        if (checkStatus != 2) {
             Map<String, Object> err = Map.of("err", "Cannot unfriend!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
@@ -81,7 +81,7 @@ public class FriendController {
         toUserID = Long.parseLong(friendPOJO.getTo_user_id());
 
         int checkStatus = friendService.checkStatus(userID, toUserID);
-        if(checkStatus != 3){
+        if (checkStatus != 3) {
             Map<String, Object> err = Map.of("err", "Cannot add friend!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
@@ -122,17 +122,14 @@ public class FriendController {
                 HttpStatus.OK);
     }
 
-    @PostMapping("/get_total_friend")
-    public ResponseEntity getTotalFriend(ServletRequest request, @RequestBody Map data) {
-        String sUserID = getUserAttribute(request).get("user_id").toString();
-        String user_id = String.valueOf(data.get("to_user_id"));
 
-        Long userID = 0L;
-        if (!user_id.isEmpty()) {
-            userID = Long.parseLong(user_id);
-        }
+    @GetMapping("/get_total_friend")
+    public ResponseEntity getTotalFriend(ServletRequest request) {
+        String sUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(sUserId);
 
-        return friendService.getTotalFriend(userID);
+
+        return friendService.getTotalFriend(userId);
     }
 
 }

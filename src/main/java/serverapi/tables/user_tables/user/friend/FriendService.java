@@ -48,7 +48,7 @@ public class FriendService {
 
         Map<String, Object> err = Map.of(
                 "msg", "Get total friend successfully!",
-                "total_friend",totalFriend
+                "total_friends", totalFriend
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, err).toJSON(), HttpStatus.OK);
     }
