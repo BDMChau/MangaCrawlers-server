@@ -83,7 +83,8 @@ public class MySocketService {
                 Long receiverId = Long.parseLong(String.valueOf(toUserVal));
 
                 int checkStatus = friendService.checkStatus(senderId, receiverId);
-                if(checkStatus != 0) {
+                if (checkStatus != 0) {
+                    System.err.println("checkStatus  failed");
                     senderClient.sendEvent(EVENTs_NAME.getSEND_FAILED(), "Failed!");
                     return;
                 }
@@ -93,8 +94,13 @@ public class MySocketService {
             handleNotificationType(notification_type, receiver, sender);
 
             NotificationDTO dataToSend = notificationService.saveNew(receiver, socketMessage);
-            if (dataToSend != null) sendToUsersExceptSender(dataToSend);
+            if (dataToSend == null) {
+                System.err.println("datasToSend null");
+                senderClient.sendEvent(EVENTs_NAME.getSEND_FAILED(), "failed");
+                return;
+            }
 
+            sendToUsersExceptSender(dataToSend);
         });
     }
 

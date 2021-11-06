@@ -177,7 +177,7 @@ public class NotificationService {
             String targetTitle = String.valueOf(socketMessage.getObjData().get("target_title"));
             Long toUserId = receiver.getUser_id();
 
-            Boolean isExisted = checkIsExisted(targetTitle, targetId, toUserId);
+            Boolean isExisted = checkIsExisted(targetTitle, targetId, toUserId, sender.getUser_id());
             if (isExisted) return null;
 
 
@@ -214,13 +214,13 @@ public class NotificationService {
 
 
     //////////////////// HELPERS ////////////////////
-    Boolean checkIsExisted(String targetTitle, Long targetId, Long toUserId) {
+    public Boolean checkIsExisted(String targetTitle, Long targetId, Long toUserId, Long fromUserId) {
         if (targetTitle.equals("user")) {
-            List<Notifications> isExisted = notificationRepos.findByTargetTitleUserAndNotInteract(targetId);
+            List<Notifications> isExisted = notificationRepos.findByTargetTitleUserAndNotInteract(targetId, fromUserId);
             if (!isExisted.isEmpty()) return true;
 
         } else if (targetTitle.equals("transgroup")) {
-            List<Notifications> isExisted = notificationRepos.findByTargetTitleTransGroupAndNotInteract(targetId, toUserId);
+            List<Notifications> isExisted = notificationRepos.findByTargetTitleTransGroupAndNotInteract(targetId, toUserId, fromUserId);
             if (!isExisted.isEmpty()) return true;
         }
 

@@ -150,11 +150,11 @@ public class UserController {
 
 
     @GetMapping("/get_friend_requests")
-    public ResponseEntity getFriendRequests(ServletRequest request) throws IOException {
+    public ResponseEntity getFriendRequests(ServletRequest request, @RequestParam int from, @RequestParam int amount) throws IOException {
         String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(StrUserId);
 
-        return userService.getFriendRequests(userId);
+        return userService.getFriendRequests(userId, from, amount);
     }
 
 

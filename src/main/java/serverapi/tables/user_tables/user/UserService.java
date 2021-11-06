@@ -1353,12 +1353,14 @@ public class UserService {
     }
 
 
-    public ResponseEntity getFriendRequests(Long userId) {
-        List<NotificationDTO> requests = notificationRepos.getListByUserIdAndTypeAndNotInteract(userId, 2);
+    public ResponseEntity getFriendRequests(Long userId, int from, int amount) {
+        Pageable pageable = new OffsetBasedPageRequest(from, amount);
+        List<NotificationDTO> requests = notificationRepos.getListByUserIdAndTypeAndNotInteract(userId, 2, pageable);
 
 
         Map<String, Object> msg = Map.of(
                 "msg", "get friends request OK!",
+                "from", from + amount,
                 "requests", requests
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);

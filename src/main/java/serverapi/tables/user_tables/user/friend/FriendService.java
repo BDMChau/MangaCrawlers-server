@@ -11,6 +11,7 @@ import serverapi.query.repository.user.FriendRequestRepos;
 import serverapi.query.repository.user.UserRelationsRepos;
 import serverapi.query.repository.user.UserRepos;
 import serverapi.tables.user_tables.friend_request_status.FriendRequestStatus;
+import serverapi.tables.user_tables.notification.NotificationService;
 import serverapi.tables.user_tables.user.User;
 import serverapi.tables.user_tables.user_relations.UserRelations;
 
@@ -23,11 +24,13 @@ public class FriendService {
     private final UserRepos userRepos;
     private final FriendRequestRepos friendRequestRepos;
     private final UserRelationsRepos userRelationsRepos;
+    private final NotificationService notificationService;
 
-    public FriendService(UserRepos userRepos, FriendRequestRepos friendRequestRepos, UserRelationsRepos userRelationsRepos) {
+    public FriendService(UserRepos userRepos, FriendRequestRepos friendRequestRepos, UserRelationsRepos userRelationsRepos, NotificationService notificationService) {
         this.userRepos = userRepos;
         this.friendRequestRepos = friendRequestRepos;
         this.userRelationsRepos = userRelationsRepos;
+        this.notificationService = notificationService;
     }
 
     public  ResponseEntity getTotalFriend(Long userID) {
@@ -149,12 +152,19 @@ public class FriendService {
 
 
     public ResponseEntity addFriend(Long senderID, Long receiverID) {
+        Boolean isExistedReq = notificationService.checkIsExisted("user", receiverID, receiverID,senderID);
+        if(isExistedReq == true) {
+            Map<String, Object> err = Map.of("err", "Request not found");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+
         Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         Optional<User> senderOptional = userRepos.findById(senderID);
         Optional<User> receiverOptional = userRepos.findById(receiverID);
-        System.err.println("line 148");
+
         Optional<FriendRequestStatus> friendRequestStatusOptional = friendRequestRepos.getFriendStatus(senderID, receiverID);
-        System.err.println("line  150");
+
 
         if (friendRequestStatusOptional.isEmpty() || senderOptional.isEmpty() || receiverOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "Cannot add friend");

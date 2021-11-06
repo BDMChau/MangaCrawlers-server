@@ -17,11 +17,11 @@ public interface NotificationRepos extends JpaRepository<Notifications, Long> {
     @Query("SELECT no FROM Notifications no JOIN User u ON no.to_user.user_id = u.user_id WHERE u.user_id = ?1 AND no.is_delete = false")
     List<Notifications> getAllByUserId(Long user_id);
 
-    @Query("SELECT no FROM Notifications no WHERE no.target_id = ?1 AND no.is_interacted = false AND no.is_delete = false")
-    List<Notifications> findByTargetTitleUserAndNotInteract(Long targetId);
+    @Query("SELECT no FROM Notifications no WHERE no.target_title LIKE 'user' AND no.target_id = ?1 AND no.from_user.user_id = ?2 AND no.is_interacted = false AND no.is_delete = false")
+    List<Notifications> findByTargetTitleUserAndNotInteract(Long targetId, Long fromUserId);
 
-    @Query("SELECT no FROM Notifications no WHERE no.to_user.user_id = ?2 AND no.target_id = ?1 AND no.is_interacted = false AND no.is_delete = false")
-    List<Notifications> findByTargetTitleTransGroupAndNotInteract(Long targetId, Long toUserId);
+    @Query("SELECT no FROM Notifications no WHERE no.to_user.user_id = ?2 AND no.target_id = ?1 AND no.from_user.user_id = ?3 AND no.is_interacted = false AND no.is_delete = false")
+    List<Notifications> findByTargetTitleTransGroupAndNotInteract(Long targetId, Long toUserId, Long fromUserId);
 
 
     @Query("""
@@ -48,7 +48,7 @@ public interface NotificationRepos extends JpaRepository<Notifications, Long> {
              WHERE receiver.user_id = ?1 AND type.type = ?2 AND no.is_delete = false AND no.is_interacted = false
              ORDER BY no.created_at DESC
             """)
-    List<NotificationDTO> getListByUserIdAndTypeAndNotInteract(Long user_id, int notification_type);
+    List<NotificationDTO> getListByUserIdAndTypeAndNotInteract(Long user_id, int notification_type, Pageable pageable);
 
 
     @Query("""
