@@ -25,7 +25,7 @@ public interface PostRepos extends JpaRepository<Post, Long> {
             )
             FROM Post post
             JOIN User user ON user.user_id = post.user.user_id
-            WHERE post.post_id = ?1
+            WHERE post.post_id = ?1 AND post.is_deprecated = false AND post.is_approved = true
             """)
     Optional<PostUserDTO> getByPostId(Long postId);
 
@@ -35,7 +35,8 @@ public interface PostRepos extends JpaRepository<Post, Long> {
             user.user_id, user.user_name, user.user_email, user.user_avatar, user.user_isAdmin
             )
             FROM Post post
-            JOIN User user ON user.user_id = post.user.user_id
+            JOIN User user ON user.user_id = post.user.user_id 
+            WHERE post.is_deprecated = false AND post.is_approved = true
             ORDER BY post.created_at
             """)
     List<PostUserDTO> getPosts(Pageable pageable);
@@ -48,7 +49,7 @@ public interface PostRepos extends JpaRepository<Post, Long> {
             )
             FROM Post post
             JOIN User user ON user.user_id = post.user.user_id
-            WHERE user.user_id = ?1
+            WHERE user.user_id = ?1 AND post.is_deprecated = false AND post.is_approved = true
             ORDER BY post.created_at
             """)
     List<PostUserDTO> getPostsByUserId(Long userId, Pageable pageable);
@@ -62,7 +63,7 @@ public interface PostRepos extends JpaRepository<Post, Long> {
             FROM Post post
             JOIN User user ON user.user_id = post.user.user_id
             JOIN PostCategory post_cate ON post_cate.post.post_id = post.post_id
-            WHERE post_cate.category.category_id = ?1
+            WHERE post_cate.category.category_id = ?1 AND post.is_deprecated = false AND post.is_approved = true
             ORDER BY post.created_at
             """)
     List<PostUserDTO> getPostsByCategory(Long categoryId);
