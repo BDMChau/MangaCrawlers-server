@@ -13,7 +13,7 @@ import serverapi.tables.manga_tables.manga_genre.MangaGenre;
 import serverapi.tables.manga_tables.rating_manga.RatingManga;
 import serverapi.tables.manga_tables.update_view.UpdateView;
 import serverapi.tables.user_tables.following_manga.FollowingManga;
-import serverapi.tables.user_tables.report.reports.Reports;
+import serverapi.tables.user_tables.report.reports.Report;
 import serverapi.tables.user_tables.reading_history.ReadingHistory;
 import serverapi.tables.user_tables.trans_group.TransGroup;
 
@@ -81,9 +81,6 @@ public class Manga {
     @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
     private Collection<MangaComments> mangaComments;
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "manga", cascade = CascadeType.ALL)
-    private Collection<Reports> report;
 
 
     @Column(

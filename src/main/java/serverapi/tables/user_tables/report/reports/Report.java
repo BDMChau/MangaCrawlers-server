@@ -7,10 +7,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.tables.manga_tables.manga.Manga;
-import serverapi.tables.user_tables.report.report_example_titles.ReportExampleTitles;
-import serverapi.tables.user_tables.report.report_images.ReportImages;
-import serverapi.tables.user_tables.report.report_types.ReportTypes;
+import serverapi.tables.user_tables.report.report_example_title.ReportExampleTitle;
+import serverapi.tables.user_tables.report.report_image.ReportImage;
+import serverapi.tables.user_tables.report.report_types.ReportType;
 import serverapi.tables.user_tables.user.User;
 
 import javax.persistence.*;
@@ -22,8 +21,8 @@ import java.util.Collection;
 @Setter
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@Table(name = "reports")
-public class Reports {
+@Table(name = "report")
+public class Report {
 
     @Id
     @SequenceGenerator(
@@ -37,31 +36,19 @@ public class Reports {
     )
     private Long report_id;
 
-
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="report_type_id")
-    private ReportTypes report_type;
-
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="report_exam_title_id")
-    private ReportExampleTitles report_example_title;
+    private ReportExampleTitle report_example_title;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="user_id")
     private User user;
 
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="manga_id")
-    private Manga manga;
-
     @JsonBackReference
-    @OneToMany(mappedBy = "reports", cascade = CascadeType.ALL)
-    private Collection<ReportImages> report_image;
-
+    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
+    private Collection<ReportImage> report_image;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
@@ -75,7 +62,5 @@ public class Reports {
             columnDefinition = "timestamp with time zone"
     )
     private Calendar created_at;
-
-
 
 }
