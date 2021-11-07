@@ -6,17 +6,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-
 import serverapi.api.Response;
 import serverapi.helpers.OffsetBasedPageRequest;
+import serverapi.query.dtos.features.MangaCommentDTOs.CommentTreesDTO;
+import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
 import serverapi.query.dtos.tables.PostUserDTO;
 import serverapi.query.repository.forum.CategoryRepos;
 import serverapi.query.repository.forum.PostCategoryRepos;
 import serverapi.query.repository.forum.PostRepos;
+import serverapi.query.repository.manga.comment.MangaCommentsRepos;
 import serverapi.query.repository.user.UserRepos;
 import serverapi.tables.forum.category.Category;
 import serverapi.tables.forum.post_category.PostCategory;
+import serverapi.tables.manga_tables.manga.MangaService;
 import serverapi.tables.user_tables.user.User;
 
 import java.util.*;
@@ -28,13 +30,17 @@ public class PostService {
     private final PostRepos postRepos;
     private final PostCategoryRepos postCategoryRepos;
     private final CategoryRepos categoryRepos;
+    private final MangaCommentsRepos mangaCommentsRepos;
+    private final MangaService mangaService;
 
     @Autowired
-    public PostService(UserRepos userRepos, PostRepos postRepos, PostCategoryRepos postCategoryRepos, CategoryRepos categoryRepos) {
+    public PostService(UserRepos userRepos, PostRepos postRepos, PostCategoryRepos postCategoryRepos, CategoryRepos categoryRepos, MangaCommentsRepos mangaCommentsRepos, MangaService mangaService) {
         this.userRepos = userRepos;
         this.postCategoryRepos = postCategoryRepos;
         this.postRepos = postRepos;
         this.categoryRepos = categoryRepos;
+        this.mangaCommentsRepos = mangaCommentsRepos;
+        this.mangaService = mangaService;
     }
 
 
@@ -155,6 +161,77 @@ public class PostService {
                 "posts", posts
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    protected ResponseEntity getCommentsPost(Long postID, int from, int amount) {
+
+        // Initialize variable
+        final String level1 = "1";
+        final String level2 = "2";
+
+        final Pageable pageable = new OffsetBasedPageRequest(from, amount);
+        final Pageable childPageable = new OffsetBasedPageRequest(0, 5);
+
+        // Check condition
+        Optional<Post> postOptional = postRepos.findById(postID);
+        if (postOptional.isEmpty()) {
+
+            Map<String, Object> err = Map.of("err", "Post not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        // get manga comments in each level
+        List<MangaCommentDTOs> cmtsLv0 = mangaCommentsRepos.getPostCommentsLevel0(postID, pageable);
+        if (cmtsLv0.isEmpty()) {
+
+            Map<String, Object> msg = Map.of("msg", "No comments found!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+        }
+
+        // Get comment
+        //set tags for each comment
+        List<MangaCommentDTOs> comments;
+        cmtsLv0.forEach(lv0 ->{
+
+            lv0 = mangaService.setListTags(lv0);
+
+            //get child comments
+            List<CommentTreesDTO> cmtsLv1 = mangaCommentsRepos.getCommentsChild(lv0.getManga_comment_id(), level1,childPageable);
+            List<CommentTreesDTO> cmtsLv2 = mangaCommentsRepos.getCommentsChild(lv0.getManga_comment_id(), level2, childPageable);
+
+            MangaCommentDTOs finalLv0 = lv0;
+            cmtsLv1.forEach(lv01 ->{
+
+                CommentTreesDTO finalLv01 = lv01;
+                cmtsLv2.forEach(lv02 ->{
+
+                    lv02 = mangaService.setListTags(lv02);
+
+                    if(finalLv0.getManga_comment_id() == lv02.getParent_id()){
+
+                        finalLv01.getComments_level_02().add(lv02);
+                    }
+                });
+
+                lv01 = mangaService.setListTags(lv01);
+
+                if(finalLv0.getManga_comment_id() == lv01.getParent_id()){
+
+                    finalLv0.getComments_level_01().add(lv01);
+                }
+            });
+        });
+        comments = cmtsLv0;
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get post's comments successfully!",
+                "post_info", postOptional,
+                "don't use these param","manga_comment_relation_id, parent_id, child_id, level, manga_comment_tag_id",
+                "comments", comments
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+
     }
 
 

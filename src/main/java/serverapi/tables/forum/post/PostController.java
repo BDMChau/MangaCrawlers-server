@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import serverapi.api.Response;
 import serverapi.tables.forum.post.pojo.PostPOJO;
 import serverapi.tables.manga_tables.genre.Genre;
+import serverapi.tables.manga_tables.manga.pojo.CommentPOJO;
 import serverapi.tables.user_tables.notification.NotificationController;
 import serverapi.utils.UserHelpers;
 
@@ -44,4 +45,6 @@ public class PostController {
 
             return postService.createPost(userId, title, content, listCategoryId);
     }
+
+
 }

@@ -5,10 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import serverapi.tables.manga_tables.manga.pojo.CommentPOJO;
 
 @RestController
 @RequestMapping("/api/forum_unauth/post")
@@ -41,5 +39,19 @@ public class PostControllerUnAuth {
         Long categoryId = Long.parseLong(category_id);
 
         return postService.getByCategory(categoryId);
+    }
+
+    @PostMapping("/getcommentspost")
+    public ResponseEntity getCommentsPost(@RequestBody CommentPOJO commentPOJO) {
+
+        Long postID = Long.parseLong(commentPOJO.getPost_id());
+
+        int from = commentPOJO.getFrom();
+        System.out.println("from_" + from);
+
+        int amount = commentPOJO.getAmount();
+        System.out.println("amount_" + amount);
+
+        return postService.getCommentsPost(postID, from, amount);
     }
 }

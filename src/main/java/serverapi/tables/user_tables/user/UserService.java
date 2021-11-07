@@ -494,7 +494,7 @@ public class UserService {
 
         if (userOptional.isEmpty() || mangaCommentsOptional.isEmpty()) {
 
-            Map<String, Object> msg = Map.of("msg", "User or comment not found!");
+            Map<String, Object> msg = Map.of("err", "User or comment not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
         MangaComments mangaComments = mangaCommentsOptional.get();
