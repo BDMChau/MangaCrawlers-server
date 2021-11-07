@@ -10,11 +10,13 @@ import javax.transaction.Transactional;
 
 import serverapi.api.Response;
 import serverapi.helpers.OffsetBasedPageRequest;
+import serverapi.query.dtos.features.SearchCriteriaDTO;
 import serverapi.query.dtos.tables.PostUserDTO;
 import serverapi.query.repository.forum.CategoryRepos;
 import serverapi.query.repository.forum.PostCategoryRepos;
 import serverapi.query.repository.forum.PostRepos;
 import serverapi.query.repository.user.UserRepos;
+import serverapi.query.specification.Specificationn;
 import serverapi.tables.forum.category.Category;
 import serverapi.tables.forum.post_category.PostCategory;
 import serverapi.tables.user_tables.user.User;
@@ -130,7 +132,7 @@ public class PostService {
     }
 
 
-    protected ResponseEntity getByCategory(Long categoryId){
+    protected ResponseEntity getByCategory(Long categoryId) {
         Optional<Category> categoryOptional = categoryRepos.findById(categoryId);
 
         List<PostUserDTO> posts = postRepos.getPostsByCategory(categoryId);
@@ -158,4 +160,16 @@ public class PostService {
     }
 
 
+    protected ResponseEntity searchByTitle(String valToSearch) {
+        Specificationn specificationn = new Specificationn(new SearchCriteriaDTO("title", ":", valToSearch));
+        Specificationn.SearchingPosts searchingPosts = specificationn.new SearchingPosts();
+
+        List<Post> results = postRepos.findAll(searchingPosts);
+
+        Map<String, Object> msg = Map.of(
+                "msg", "search posts OK!",
+                "posts", results
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
 }

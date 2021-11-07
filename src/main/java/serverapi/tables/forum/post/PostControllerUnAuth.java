@@ -5,10 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/forum_unauth/post")
@@ -41,5 +38,11 @@ public class PostControllerUnAuth {
         Long categoryId = Long.parseLong(category_id);
 
         return postService.getByCategory(categoryId);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity searchByTitle(@RequestParam String value) {
+
+        return postService.searchByTitle(value);
     }
 }

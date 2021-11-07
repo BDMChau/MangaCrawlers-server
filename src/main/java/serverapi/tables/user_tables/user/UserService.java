@@ -493,12 +493,17 @@ public class UserService {
         Optional<MangaComments> mangaCommentsOptional = mangaCommentsRepos.findById(commentID);
 
         if (userOptional.isEmpty() || mangaCommentsOptional.isEmpty()) {
-
             Map<String, Object> msg = Map.of("msg", "User or comment not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
         MangaComments mangaComments = mangaCommentsOptional.get();
         User user = userOptional.get();
+
+        // check allow
+        if(!user.getUser_id().equals(mangaComments.getUser().getUser_id())){
+            Map<String, Object> msg = Map.of("err", "You don't have permission!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
 
         // Get current image in this comment
         Optional<CommentImages> commentImagesOptional = commentImageRepos.getCommentImagesByManga_comment(commentID);
@@ -516,21 +521,16 @@ public class UserService {
          * update comment will become delete comment by set isDeprecated = true;
          */
         if (commentContent.equals("") && image.isEmpty()) {
-
             mangaComments.setIs_deprecated(true);
             mangaCommentsRepos.save(mangaComments);
 
-            Map<String, Object> msg = Map.of(
-                    "msg", "Delete comment successfully!"
-            );
-
+            Map<String, Object> msg = Map.of("msg", "Delete comment successfully!");
             return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
         }
 
         //Check input tags
         List<User> toUsersInput = new ArrayList<>();
         for (int i = 0; i < toUsersID.size(); i++) {
-
             Optional<User> userTagOptional = userRepos.findById(toUsersID.get(i));
 
             if (!userTagOptional.isEmpty()) {
@@ -539,9 +539,7 @@ public class UserService {
                 toUsersInput.add(userTag);
 
             } else {
-                Map<String, Object> msg = Map.of(
-                        "msg", "Invalid user tag!"
-                );
+                Map<String, Object> msg = Map.of("msg", "Invalid user tag!");
                 return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
             }
         }
@@ -688,6 +686,7 @@ public class UserService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
+
     public ResponseEntity deleteComment(Long userID, Long commentID, List<MangaCommentDTOs> comments) {
         Optional<User> userOptional = userRepos.findById(userID);
         Optional<MangaComments> mangaCommentsOptional = mangaCommentsRepos.findById(commentID);
@@ -696,14 +695,15 @@ public class UserService {
             Map<String, Object> msg = Map.of("msg", "Empty user or comment or comments!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
+        MangaComments mangaComment = mangaCommentsOptional.get();
         User user = userOptional.get();
 
+
         // Check if user is not the owner
-        MangaComments mangaComment = mangaCommentsOptional.get();
-//        if(!mangaComments.getUser().equals(user)){
-//            Map<String, Object> msg = Map.of("msg", "Don't have permission!");
-//            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
-//        }
+        if(!user.getUser_id().equals(mangaComment.getUser().getUser_id())){
+            Map<String, Object> msg = Map.of("err", "You don't have permission!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
 
         // Set deprecate this comment
         mangaComment.setIs_deprecated(true);
@@ -712,9 +712,7 @@ public class UserService {
         List<MangaCommentDTOs> responseListComments = filterComments(mangaComment.getManga_comment_id(), comments, 1);
 
         if (responseListComments.isEmpty()) {
-            Map<String, Object> msg = Map.of(
-                    "err", "Get comments list failed!"
-            );
+            Map<String, Object> msg = Map.of("err", "Get comments list failed!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
         }
         Map<String, Object> msg = Map.of(
