@@ -166,9 +166,21 @@ public class PostService {
 
         List<Post> results = postRepos.findAll(searchingPosts);
 
+
+        List<PostUserDTO> listToRes = new ArrayList();
+        results.forEach(post -> {
+            PostUserDTO postUserDTO = new PostUserDTO(post.getPost_id(), post.getTitle(), null, post.getCreated_at(), null, null, null, null, null);
+
+            List<Category> categoryList = categoryRepos.getAllByPostId(post.getPost_id());
+            postUserDTO.setCategoryList(categoryList);
+
+            listToRes.add(postUserDTO);
+        });
+
+
         Map<String, Object> msg = Map.of(
                 "msg", "search posts OK!",
-                "posts", results
+                "posts", listToRes
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
