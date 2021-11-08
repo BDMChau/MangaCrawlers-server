@@ -87,7 +87,7 @@ public class AuthControllerTest {
         String uri = "/api/auth/signin";
 
         Map<String, String> dataObj = Map.of(
-                "user_email", "bdmchau105",
+                "user_email", "bdmchau105@gmail.com",
                 "user_password", "MinhTriet11223"
         );
         String inputJson = new HelpersTest().mapToJson(dataObj);
@@ -101,8 +101,8 @@ public class AuthControllerTest {
         String resultStr = response.getContentAsString();
         System.err.println(resultStr);
 
-        Object[] expectedList = {true, 200};
-        Object[] resultList = {resultStr.contains("Sign in successfully!"), response.getStatus()};
+        Object[] expectedList = {true, 400};
+        Object[] resultList = {resultStr.contains("Invalid format email!"), response.getStatus()};
 
         assertArrayEquals(expectedList, resultList);
     }
@@ -126,8 +126,8 @@ public class AuthControllerTest {
         String resultStr = response.getContentAsString();
         System.err.println(resultStr);
 
-        Object[] expectedList = {true, 200};
-        Object[] resultList = {resultStr.contains("Sign in successfully!"), response.getStatus()};
+        Object[] expectedList = {true, 400};
+        Object[] resultList = {resultStr.contains("Missing credential!"), response.getStatus()};
 
         assertArrayEquals(expectedList, resultList);
     }
@@ -151,8 +151,8 @@ public class AuthControllerTest {
         String resultStr = response.getContentAsString();
         System.err.println(resultStr);
 
-        Object[] expectedList = {true, 200};
-        Object[] resultList = {resultStr.contains("Sign in successfully!"), response.getStatus()};
+        Object[] expectedList = {true, 400};
+        Object[] resultList = {resultStr.contains("Missing credential!"), response.getStatus()};
 
         assertArrayEquals(expectedList, resultList);
     }
@@ -179,8 +179,8 @@ public class AuthControllerTest {
         String resultStr = response.getContentAsString();
         System.err.println(resultStr);
 
-        Object[] expectedList = {true, 200};
-        Object[] resultList = {resultStr.contains("Sign up successfully!"), response.getStatus()};
+        Object[] expectedList = {true, 400};
+        Object[] resultList = {resultStr.contains("Password strong failed, must be length 8, at least 1 number!"), response.getStatus()};
 
         assertArrayEquals(expectedList, resultList);
     }
@@ -205,8 +205,8 @@ public class AuthControllerTest {
         String resultStr = response.getContentAsString();
         System.err.println(resultStr);
 
-        Object[] expectedList = {true, 200};
-        Object[] resultList = {resultStr.contains("Sign up successfully!"), response.getStatus()};
+        Object[] expectedList = {true, 400};
+        Object[] resultList = {resultStr.contains("Missing credential!"), response.getStatus()};
 
         assertArrayEquals(expectedList, resultList);
     }
@@ -232,8 +232,8 @@ public class AuthControllerTest {
         String resultStr = response.getContentAsString();
         System.err.println(resultStr);
 
-        Object[] expectedList = {true, 200};
-        Object[] resultList = {resultStr.contains("Sign up successfully!"), response.getStatus()};
+        Object[] expectedList = {true, 400};
+        Object[] resultList = {resultStr.contains("Invalid format email!"), response.getStatus()};
 
         assertArrayEquals(expectedList, resultList);
     }
