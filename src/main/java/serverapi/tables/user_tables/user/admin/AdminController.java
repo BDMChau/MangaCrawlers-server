@@ -48,8 +48,8 @@ public class AdminController {
     @Cacheable(value = "allmangas", key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @GetMapping("/getallmangas")
     public ResponseEntity getAllMangas(ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(strUserId);
 
         return adminService.getAllMangas(userId);
     }
@@ -58,16 +58,24 @@ public class AdminController {
     @Cacheable(value = "allusers", key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @GetMapping("/getallusers")
     public ResponseEntity getAllUsers(ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(strUserId);
 
         return adminService.getAllUsers(userId);
     }
 
+    @GetMapping("/getallposts")
+    public ResponseEntity getAllPosts(ServletRequest request) {
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(strUserId);
+
+        return adminService.getAllPosts(userId);
+    }
+
     @GetMapping("/getalltransgroup")
     public ResponseEntity getAllTransGroup(ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(strUserId);
 
         return adminService.getAllTransGroup(userId);
     }
@@ -78,8 +86,8 @@ public class AdminController {
     @PutMapping("/deprecateuser")
     public ResponseEntity deprecateUser(@RequestBody UserPOJO userPOJO, ServletRequest request) {
 
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long adminId = Long.parseLong(StrUserId);
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+        Long adminId = Long.parseLong(strUserId);
 
         Long userId = Long.parseLong(userPOJO.getUser_id());
 
@@ -90,8 +98,8 @@ public class AdminController {
     @CacheEvict(allEntries = true, value = {"allusers"})
     @DeleteMapping("/deleteuser")
     public ResponseEntity deleteUser(@RequestBody UserPOJO userPOJO, ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long adminId = Long.parseLong(StrUserId);
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+        Long adminId = Long.parseLong(strUserId);
 
         Long userId = Long.parseLong(userPOJO.getUser_id());
 
@@ -102,8 +110,8 @@ public class AdminController {
     @CacheEvict(allEntries = true, value = {"allmangas"})
     @DeleteMapping("/deletemanga")
     public ResponseEntity deleteManga(@RequestBody MangaPOJO mangaPOJO, ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long adminId = Long.parseLong(StrUserId);
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+        Long adminId = Long.parseLong(strUserId);
 
         Long mangaId = Long.parseLong(mangaPOJO.getManga_id());
 
@@ -113,8 +121,8 @@ public class AdminController {
 
     @DeleteMapping("/deletetransgroup")
     public ResponseEntity deleteTransGroup(@RequestBody TransGroupPOJO transGroupPOJO, ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long adminId = Long.parseLong(StrUserId);
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+        Long adminId = Long.parseLong(strUserId);
 
         Long transGroupId = Long.parseLong(transGroupPOJO.getTransgroup_id());
 
@@ -124,8 +132,8 @@ public class AdminController {
     @CacheEvict(allEntries = true, value = {"mangaPage"})
     @PutMapping("/editmanga")
     public ResponseEntity editManga(@RequestBody MangaChapterPOJO mangaChapterPOJO, ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long adminId = Long.parseLong(StrUserId);
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+        Long adminId = Long.parseLong(strUserId);
 
         Long mangaId = mangaChapterPOJO.getManga_id();
         String mangaName = mangaChapterPOJO.getManga_name();
@@ -138,8 +146,8 @@ public class AdminController {
     @CacheEvict(allEntries = true, value = {"mangaPage"})
     @PutMapping("/editchapter")
     public ResponseEntity editChapter(@RequestBody MangaChapterPOJO mangaChapterPOJO, ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long adminId = Long.parseLong(StrUserId);
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+        Long adminId = Long.parseLong(strUserId);
 
         Long chapterId = mangaChapterPOJO.getChapter_id();
         String chapterName = mangaChapterPOJO.getChapter_name();
@@ -150,8 +158,8 @@ public class AdminController {
     @CacheEvict(allEntries = true, value = {"mangaPage"})
     @DeleteMapping("/deletechapter")
     public ResponseEntity deleteChapter(@RequestBody MangaChapterPOJO mangaChapterPOJO, ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long adminId = Long.parseLong(StrUserId);
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+        Long adminId = Long.parseLong(strUserId);
 
         Long chapterId = mangaChapterPOJO.getChapter_id();
 
@@ -161,8 +169,8 @@ public class AdminController {
     /////////////////////////// chart report
     @GetMapping("/reporttransgroup")
     public ResponseEntity reportTransGroup(ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(strUserId);
 
         return adminService.reportTransGroup(userId);
     }
@@ -170,8 +178,8 @@ public class AdminController {
 
     @GetMapping("/reportmanga")
     public ResponseEntity reportManga(ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(strUserId);
 
         return adminService.reportManga(userId);
     }
@@ -179,8 +187,8 @@ public class AdminController {
 
     @GetMapping("/reportuser")
     public ResponseEntity reportUser(ServletRequest request) {
-        String StrUserId = getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(strUserId);
 
         return adminService.reportUser(userId);
     }

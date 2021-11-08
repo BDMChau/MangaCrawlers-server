@@ -43,6 +43,17 @@ public interface PostRepos extends JpaRepository<Post, Long>, JpaSpecificationEx
             """)
     List<PostUserDTO> getPosts(Pageable pageable);
 
+    @Query("""
+            SELECT new serverapi.query.dtos.tables.PostUserDTO(
+            post.post_id, post.title, post.content, post.created_at,
+            user.user_id, user.user_name, user.user_email, user.user_avatar, user.user_isAdmin
+            )
+            FROM Post post
+            JOIN User user ON user.user_id = post.user.user_id 
+            ORDER BY post.created_at
+            """)
+    List<PostUserDTO> getAllPostsAndUserInfo();
+
 
     @Query("""
             SELECT new serverapi.query.dtos.tables.PostUserDTO(

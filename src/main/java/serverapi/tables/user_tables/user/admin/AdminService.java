@@ -11,6 +11,8 @@ import serverapi.query.dtos.features.ReportDTOs.ReportUserFollowMangaDTO;
 import serverapi.query.dtos.features.ReportDTOs.ReportsDTO;
 import serverapi.query.dtos.features.ReportDTOs.UserRDTO;
 import serverapi.query.dtos.tables.AuthorMangaDTO;
+import serverapi.query.dtos.tables.PostUserDTO;
+import serverapi.query.repository.forum.PostRepos;
 import serverapi.query.repository.manga.AuthorRepos;
 import serverapi.query.repository.manga.ChapterRepos;
 import serverapi.query.repository.manga.MangaRepos;
@@ -36,17 +38,19 @@ public class AdminService {
     private final TransGroupRepos transGroupRepos;
     private final ChapterRepos chapterRepos;
     private final AuthorRepos authorRepos;
+    private final PostRepos postRepos;
 
 
     @Autowired
     public AdminService(UserRepos userRepos, FollowingRepos followingRepos, MangaRepos mangaRepos,
-                        TransGroupRepos transGroupRepos, ChapterRepos chapterRepos, AuthorRepos authorRepos) {
+                        TransGroupRepos transGroupRepos, ChapterRepos chapterRepos, AuthorRepos authorRepos, PostRepos postRepos) {
         this.userRepos = userRepos;
         this.followingRepos = followingRepos;
         this.mangaRepos = mangaRepos;
         this.transGroupRepos = transGroupRepos;
         this.chapterRepos = chapterRepos;
         this.authorRepos = authorRepos;
+        this.postRepos = postRepos;
     }
 
 
@@ -474,9 +478,7 @@ public class AdminService {
     public ResponseEntity getAllUsers(Long userId) {
         Boolean isAdmin = isUserAdmin(userId);
         if (!isAdmin) {
-            Map<String, Object> err = Map.of(
-                    "err", "You are not allowed to access this resource!"
-            );
+            Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
             return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
                     HttpStatus.FORBIDDEN);
         }
@@ -499,15 +501,37 @@ public class AdminService {
     }
 
 
+    public ResponseEntity getAllPosts(Long userId) {
+        Boolean isAdmin = isUserAdmin(userId);
+        if (!isAdmin) {
+            Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(), HttpStatus.FORBIDDEN);
+        }
+
+        List<PostUserDTO> posts = postRepos.getAllPostsAndUserInfo();
+        if (posts.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Empty posts!",
+                    "posts", posts
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get all posts successfully!",
+                "posts", posts
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
     public ResponseEntity getAllMangas(Long userId) {
-//        Boolean isAdmin = isUserAdmin(userId);
-//        if (!isAdmin) {
-//            Map<String, Object> err = Map.of(
-//                    "err", "You are not allowed to access this resource!"
-//            );
-//            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
-//                    HttpStatus.FORBIDDEN);
-//        }
+        Boolean isAdmin = isUserAdmin(userId);
+        if (!isAdmin) {
+            Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(), HttpStatus.FORBIDDEN);
+        }
 
         List<AuthorMangaDTO> mangas = mangaRepos.getAllMangasInfo();
 
@@ -529,11 +553,8 @@ public class AdminService {
     public ResponseEntity getAllTransGroup(Long userId) {
         Boolean isAdmin = isUserAdmin(userId);
         if (!isAdmin) {
-            Map<String, Object> err = Map.of(
-                    "err", "You are not allowed to access this resource!"
-            );
-            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
-                    HttpStatus.FORBIDDEN);
+            Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(), HttpStatus.FORBIDDEN);
         }
 
         List<TransGroup> getTransGroupInfo = transGroupRepos.findAll();
