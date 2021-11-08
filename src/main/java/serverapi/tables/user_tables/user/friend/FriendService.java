@@ -267,6 +267,19 @@ public class FriendService {
 
 
 
+    public Boolean checkStatusOnlOff(Long userId, Long userIdToCheck){
+        int isFriend = checkStatus(userId, userIdToCheck);
+        if(isFriend != 2) return null;
+
+        User user = userRepos.findById(userIdToCheck).get();
+
+        UUID socketSessionId = user.getSocket_session_id();
+        if(socketSessionId == null) return false;
+
+        return true;
+    }
+
+
 }
 
 

@@ -530,5 +530,10 @@ public class UserController {
         return userService.addNewProjectMangaThumbnail(userId, transGrId, file, mangaId);
     }
 
-
 }
+
+
+
+
+
+

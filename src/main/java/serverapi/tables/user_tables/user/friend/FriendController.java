@@ -132,4 +132,33 @@ public class FriendController {
         return friendService.getTotalFriend(userId);
     }
 
+
+    @PostMapping("check_stt_onl")
+    public ResponseEntity checkStatusOnlOff(ServletRequest request, @RequestParam String user_id) {
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(strUserId);
+
+        Long userIdToCheck = Long.parseLong(user_id);
+
+        Boolean status = friendService.checkStatusOnlOff(userId, userIdToCheck);
+        if (status == null) {
+            Map<String, Object> err = Map.of("err", "not friend, cannot check");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+
+        if (!status) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "check stt onl off OK",
+                    "is_online", false
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
+
+        Map<String, Object> msg = Map.of(
+                "msg", "check stt onl off OK",
+                "is_online", true
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
 }
