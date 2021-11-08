@@ -160,24 +160,61 @@ public class AdminService {
 
 
             });
-            System.out.println("reportmangadtolist" + mangaList);
-
-            System.out.println("report manga dtos" + listReportManga.size());
-
 
             reportsDTO.setValues(mangaList.size());
             reportsDTO.setMonth(finalI);
             System.out.println("dieu kien dung" + finalI);
             listReportManga.add(reportsDTO);
-
-
         }
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get report of mangas successfully!",
                 "mangas_report", listReportManga);
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
 
+
+    public ResponseEntity reportPosts(Long userId) {
+        Boolean isAdmin = isUserAdmin(userId);
+        if (!isAdmin) {
+            Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(), HttpStatus.FORBIDDEN);
+        }
+
+        List<PostUserDTO> postUserDTOList = postRepos.getAllPostsAndUserInfo();
+        List<ReportsDTO> listReportManga = new ArrayList<>();
+
+        for (int i = 0; i < 12; i++) {
+            ReportsDTO reportsDTO = new ReportsDTO();
+            int finalI = i + 1;
+            System.err.println("err" + finalI);
+            List<Manga> mangaList = new ArrayList<>();
+
+
+            mangasInfo.forEach(item -> {
+
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
+                Integer monthOfUser = Integer.parseInt(simpleDateFormat.format(item.getCreated_at().getTime()));
+
+                if (monthOfUser == finalI) {
+                    mangaList.add(item);
+                    System.out.println("them " + finalI);
+
+                }
+
+
+            });
+
+            reportsDTO.setValues(mangaList.size());
+            reportsDTO.setMonth(finalI);
+            System.out.println("dieu kien dung" + finalI);
+            listReportManga.add(reportsDTO);
+        }
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get report of mangas successfully!",
+                "mangas_report", listReportManga);
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
 
@@ -213,10 +250,6 @@ public class AdminService {
                 }
 
             });
-            System.out.println("reportuserdtolist" + transGroupList);
-
-            System.out.println("report user dtos" + listReportTransGroup.size());
-
 
             reportsDTO.setValues(transGroupList.size());
             reportsDTO.setMonth(finalI);
