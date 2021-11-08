@@ -6,19 +6,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-
 import serverapi.api.Response;
 import serverapi.helpers.OffsetBasedPageRequest;
 import serverapi.query.dtos.features.SearchCriteriaDTO;
 import serverapi.query.dtos.tables.PostUserDTO;
 import serverapi.query.repository.forum.CategoryRepos;
 import serverapi.query.repository.forum.PostCategoryRepos;
+import serverapi.query.repository.forum.PostLikeRepos;
 import serverapi.query.repository.forum.PostRepos;
 import serverapi.query.repository.user.UserRepos;
 import serverapi.query.specification.Specificationn;
 import serverapi.tables.forum.category.Category;
 import serverapi.tables.forum.post_category.PostCategory;
+import serverapi.tables.forum.post_like.PostLike;
+import serverapi.tables.manga_tables.manga_comment.manga_comment_likes.CommentLikes;
+import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
 import serverapi.tables.user_tables.user.User;
 
 import java.util.*;
@@ -30,13 +32,15 @@ public class PostService {
     private final PostRepos postRepos;
     private final PostCategoryRepos postCategoryRepos;
     private final CategoryRepos categoryRepos;
+    private final PostLikeRepos postLikeRepos;
 
     @Autowired
-    public PostService(UserRepos userRepos, PostRepos postRepos, PostCategoryRepos postCategoryRepos, CategoryRepos categoryRepos) {
+    public PostService(UserRepos userRepos, PostRepos postRepos, PostCategoryRepos postCategoryRepos, CategoryRepos categoryRepos, PostLikeRepos postLikeRepos) {
         this.userRepos = userRepos;
         this.postCategoryRepos = postCategoryRepos;
         this.postRepos = postRepos;
         this.categoryRepos = categoryRepos;
+        this.postLikeRepos = postLikeRepos;
     }
 
 
@@ -182,6 +186,84 @@ public class PostService {
                 "msg", "search posts OK!",
                 "posts", listToRes
         );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    public ResponseEntity checkUserLike(Long userID, Long postID) {
+        int likeStatus = 1;
+        String sLikeStatus = "";
+        Optional<PostLike> postLikeOptional = postLikeRepos.getPostLike(postID, userID);
+
+        if (postLikeOptional.isEmpty()) {
+            likeStatus = 0;
+        }
+        switch (likeStatus) {
+            case 0 -> sLikeStatus = "hasn't liked";
+            case 1 -> sLikeStatus = "liked";
+        }
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Check like successfully!",
+                "status_number", likeStatus,
+                "status", sLikeStatus
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    public ResponseEntity getTotalLike(Long postID) {
+        Optional<Post> postOptional = postRepos.findById(postID);
+        if (postOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of("err", "Post not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get total like successfully!",
+                "total_like", postOptional.get().getCount_like()
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    public ResponseEntity addLike(Long userID, Long postID) {
+        Optional<Post> postOptional = postRepos.findById(postID);
+        Optional<User> userOptional = userRepos.findById(userID);
+        if (postOptional.isEmpty() || userOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of("err", "Post or user is not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+
+        Post post = postOptional.get();
+        post.setCount_like(post.getCount_like()+1);
+
+        PostLike postLike = new PostLike();
+        postLike.setPost(post);
+        postLike.setUser(userOptional.get());
+
+        postRepos.saveAndFlush(post);
+        postLikeRepos.saveAndFlush(postLike);
+
+        Map<String, Object> msg = Map.of("msg", "Like successfully!");
+        return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
+    }
+
+    public ResponseEntity unlike(Long userID, Long postID) {
+        Optional<PostLike> postLikeOptional = postLikeRepos.getPostLike(postID, userID);
+        Optional<Post> postOptional = postRepos.findById(postID);
+        if (postLikeOptional.isEmpty() || postOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of("err", "Like is not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+
+        PostLike postLike = postLikeOptional.get();
+        Post post = postOptional.get();
+
+        if (post.getCount_like() > 0) {
+            post.setCount_like(post.getCount_like() - 1);
+        }
+        postRepos.saveAndFlush(post);
+        postLikeRepos.delete(postLike);
+
+        Map<String, Object> msg = Map.of("msg", "Unlike successfully!");
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 }
