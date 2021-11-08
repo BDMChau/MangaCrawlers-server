@@ -16,6 +16,8 @@ public class PostUserDTO {
     Long post_id;
     String title;
     String content;
+    Boolean is_deprecated;
+    Boolean is_approved;
     Calendar created_at;
 
 //    Long cate_id;
@@ -27,6 +29,21 @@ public class PostUserDTO {
     Long user_id;
     String user_name;
     String user_email;
+
+    public PostUserDTO(Long post_id, String title, String content, Boolean is_deprecated, Boolean is_approved, Calendar created_at, Long user_id, String user_name, String user_email, String user_avatar, Boolean user_isAdmin) {
+        this.post_id = post_id;
+        this.title = title;
+        this.content = content;
+        this.is_deprecated = is_deprecated;
+        this.is_approved = is_approved;
+        this.created_at = created_at;
+        this.user_id = user_id;
+        this.user_name = user_name;
+        this.user_email = user_email;
+        this.user_avatar = user_avatar;
+        this.user_isAdmin = user_isAdmin;
+    }
+
     String user_avatar;
     Boolean user_isAdmin;
 //    Map user;
