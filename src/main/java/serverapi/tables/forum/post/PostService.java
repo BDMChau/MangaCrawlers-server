@@ -22,8 +22,6 @@ import serverapi.query.specification.Specificationn;
 import serverapi.tables.forum.category.Category;
 import serverapi.tables.forum.post_category.PostCategory;
 import serverapi.tables.forum.post_like.PostLike;
-import serverapi.tables.manga_tables.manga_comment.manga_comment_likes.CommentLikes;
-import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
 import serverapi.tables.manga_tables.manga.MangaService;
 import serverapi.tables.user_tables.user.User;
 
@@ -37,13 +35,14 @@ public class PostService {
     private final PostCategoryRepos postCategoryRepos;
     private final CategoryRepos categoryRepos;
     private final PostLikeRepos postLikeRepos;
-
+    private final MangaCommentsRepos mangaCommentsRepos;
+    private final MangaService mangaService;
 
     @Autowired
-    public PostService(UserRepos userRepos, PostRepos postRepos, PostCategoryRepos postCategoryRepos, CategoryRepos categoryRepos, MangaCommentsRepos mangaCommentsRepos, MangaService mangaService) {
+    public PostService(UserRepos userRepos, PostRepos postRepos, PostCategoryRepos postCategoryRepos, CategoryRepos categoryRepos, PostLikeRepos postLikeRepos, MangaCommentsRepos mangaCommentsRepos, MangaService mangaService) {
         this.userRepos = userRepos;
-        this.postCategoryRepos = postCategoryRepos;
         this.postRepos = postRepos;
+        this.postCategoryRepos = postCategoryRepos;
         this.categoryRepos = categoryRepos;
         this.postLikeRepos = postLikeRepos;
         this.mangaCommentsRepos = mangaCommentsRepos;
