@@ -167,6 +167,7 @@ public class UserController {
          */
         Long mangaID;
         Long chapterID = 0L;
+        Long postID = 0L;
         Long parentID = 0L;
 
         String strUserID = userHelpers.getUserAttribute(request).get("user_id").toString();
@@ -203,12 +204,18 @@ public class UserController {
             chapterID = Long.parseLong(commentPOJO.getChapter_id());
         }
 
+        //postID
+        if (!commentPOJO.getPost_id().equals("")) {
+
+            chapterID = Long.parseLong(commentPOJO.getPost_id());
+        }
+
         //parentID
         if (!commentPOJO.getParent_id().equals("")) {
 
             parentID = Long.parseLong(commentPOJO.getParent_id());
         }
-        return userService.addCommentManga(to_users, userID, mangaID, chapterID, content, image, stickerUrl, parentID);
+        return userService.addCommentManga(to_users, userID, mangaID, chapterID, postID, content, image, stickerUrl, parentID);
     }
 
     @PostMapping("/filter_comments")
