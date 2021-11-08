@@ -25,6 +25,7 @@ import serverapi.query.repository.manga.comment.*;
 import serverapi.query.repository.user.*;
 import serverapi.query.specification.Specificationn;
 import serverapi.sharing_services.CloudinaryUploader;
+import serverapi.tables.forum.post.Post;
 import serverapi.tables.manga_tables.author.Author;
 import serverapi.tables.manga_tables.chapter.Chapter;
 import serverapi.tables.manga_tables.genre.Genre;
@@ -304,23 +305,28 @@ public class UserService {
 
 
     /////////////////////////////////////// COMMENT /////////////////////////////////
-    public ResponseEntity addCommentManga(List<Long> toUsersID, Long userID, Long mangaID, Long chapterID,
+    public ResponseEntity addCommentManga(List<Long> toUsersID, Long userID, Long mangaID, Long chapterID, Long postID,
                                           String content, MultipartFile image, String stickerUrl,
                                           Long parentID) throws IOException {
         // Check variable
         Calendar timeUpdated = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Optional<Post> postOptional = postRepos.findById(postID);
         Optional<Chapter> chapterOptional = chapterRepos.findById(chapterID);
         Optional<Manga> mangaOptional = mangaRepository.findById(mangaID);
         Optional<User> userOptional = userRepos.findById(userID);
 
+        Post post = null;
+        if (!postOptional.isEmpty()) {
+            post = postOptional.get();
+        }
 
         Chapter chapter = null;
         if (!chapterOptional.isEmpty()) {
             chapter = chapterOptional.get();
         }
 
-        if (mangaOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("err", "Manga not found!");
+        if (mangaOptional.isEmpty() && postOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of("err", "Manga or post not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
         Manga manga = mangaOptional.get();
@@ -345,7 +351,8 @@ public class UserService {
         /* Add comment */
         MangaComments mangaComments = new MangaComments();
         mangaComments.setManga(manga);
-        mangaComments.setChapter(chapter); // if chapter null >> set null
+        mangaComments.setChapter(chapter);
+        mangaComments.setPost(post);// if chapter null >> set null
         mangaComments.setUser(user);
         mangaComments.setManga_comment_content(content);
         mangaComments.setManga_comment_time(timeUpdated);
@@ -453,7 +460,14 @@ public class UserService {
         exportComment.setUser_name(user.getUser_name());
         exportComment.setUser_avatar(user.getUser_avatar());
 
-        exportComment.setManga_id(manga.getManga_id());
+        if(post != null){
+            exportComment.setPost_id(post.getPost_id());
+            exportComment.setPost_content(post.getContent());
+        }
+
+        if(manga != null){
+            exportComment.setManga_id(manga.getManga_id());
+        }
 
         if (chapter != null) {
 
@@ -479,7 +493,7 @@ public class UserService {
                 "msg", "Add comment successfully!",
                 "comment_information", exportComment
         );
-        return new ResponseEntity<>(new Response(200, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
+        return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
     }
 
 
@@ -493,7 +507,8 @@ public class UserService {
         Optional<MangaComments> mangaCommentsOptional = mangaCommentsRepos.findById(commentID);
 
         if (userOptional.isEmpty() || mangaCommentsOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "User or comment not found!");
+
+            Map<String, Object> msg = Map.of("err", "User or comment not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
         MangaComments mangaComments = mangaCommentsOptional.get();

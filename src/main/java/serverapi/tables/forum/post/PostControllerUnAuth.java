@@ -59,4 +59,19 @@ public class PostControllerUnAuth {
 
         return postService.getTotalLike(posttID);
     }
+    
+
+    @PostMapping("/getcommentspost")
+    public ResponseEntity getCommentsPost(@RequestBody CommentPOJO commentPOJO) {
+
+        Long postID = Long.parseLong(commentPOJO.getPost_id());
+
+        int from = commentPOJO.getFrom();
+        System.out.println("from_" + from);
+
+        int amount = commentPOJO.getAmount();
+        System.out.println("amount_" + amount);
+
+        return postService.getCommentsPost(postID, from, amount);
+    }
 }

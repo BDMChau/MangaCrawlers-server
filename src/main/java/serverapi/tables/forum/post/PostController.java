@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import serverapi.api.Response;
 import serverapi.tables.forum.post.pojo.PostPOJO;
+import serverapi.tables.manga_tables.genre.Genre;
+import serverapi.tables.manga_tables.manga.pojo.CommentPOJO;
+import serverapi.tables.user_tables.notification.NotificationController;
 import serverapi.utils.UserHelpers;
 
 import javax.servlet.ServletRequest;
