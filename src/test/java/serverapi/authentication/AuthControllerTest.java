@@ -68,7 +68,6 @@ public class AuthControllerTest {
         );
         String inputJson = new HelpersTest().mapToJson(dataObj);
 
-
         MockHttpServletResponse response = mockMvc.perform(post(uri)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(inputJson))
