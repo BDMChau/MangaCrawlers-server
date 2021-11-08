@@ -80,4 +80,6 @@ public interface PostRepos extends JpaRepository<Post, Long>, JpaSpecificationEx
             ORDER BY post.created_at
             """)
     List<PostUserDTO> getPostsByCategory(Long categoryId);
+
+
 }

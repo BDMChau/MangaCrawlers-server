@@ -7,8 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import serverapi.api.Response;
 import serverapi.tables.forum.post.pojo.PostPOJO;
-import serverapi.tables.manga_tables.genre.Genre;
-import serverapi.tables.user_tables.notification.NotificationController;
 import serverapi.utils.UserHelpers;
 
 import javax.servlet.ServletRequest;
@@ -43,5 +41,59 @@ public class PostController {
             });
 
             return postService.createPost(userId, title, content, listCategoryId);
+    }
+
+    @PostMapping("/check_user_like")
+    public ResponseEntity checkUserLike(@RequestBody Map data, ServletRequest request) {
+        String post_id = String.valueOf(data.get("post_id"));
+
+        Long userID;
+        Long postID = 0L;
+        String sUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
+        if (sUserId.isEmpty()) {
+            Map<String, Object> msg = Map.of("err", "User empty!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+        userID = Long.parseLong(sUserId);
+        if (!post_id.isEmpty()) {
+            postID = Long.parseLong(post_id);
+        }
+
+        return postService.checkUserLike(userID, postID);
+    }
+
+
+    @PostMapping("/add_like")
+    public ResponseEntity addLike(@RequestBody Map data, ServletRequest request) {
+        String post_id = String.valueOf(data.get("post_id"));
+
+        Long userID = 0L;
+        Long postID = 0L;
+        String sUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
+        if (!sUserId.isEmpty()) {
+            userID = Long.parseLong(sUserId);
+        }
+        if (!post_id.isEmpty()) {
+            postID = Long.parseLong(post_id);
+        }
+
+        return postService.addLike(userID, postID);
+    }
+
+    @PostMapping("/unlike")
+    public ResponseEntity unlike(@RequestBody Map data, ServletRequest request) {
+        String post_id = String.valueOf(data.get("post_id"));
+
+        Long userID = 0L;
+        Long postID = 0L;
+        String sUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
+        if (!sUserId.isEmpty()) {
+            userID = Long.parseLong(sUserId);
+        }
+        if (!post_id.isEmpty()) {
+            postID = Long.parseLong(post_id);
+        }
+
+        return postService.unlike(userID, postID);
     }
 }

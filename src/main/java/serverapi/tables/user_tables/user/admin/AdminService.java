@@ -206,8 +206,8 @@ public class AdminService {
         }
 
         Map<String, Object> msg = Map.of(
-                "msg", "Get report of mangas successfully!",
-                "mangas_report", reportsDTOList
+                "msg", "Get report of posts successfully!",
+                "posts_report", reportsDTOList
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }

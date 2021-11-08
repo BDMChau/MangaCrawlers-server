@@ -7,6 +7,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/forum_unauth/post")
 @CacheConfig(cacheNames = {"post_unauth"})
@@ -44,5 +46,17 @@ public class PostControllerUnAuth {
     public ResponseEntity searchByTitle(@RequestParam String value) {
 
         return postService.searchByTitle(value);
+    }
+
+    @PostMapping("/get_total_like")
+    public ResponseEntity getTotalLike(@RequestBody Map data) {
+        String post_id = String.valueOf(data.get("post_id"));
+
+        Long posttID = 0L;
+        if (!post_id.isEmpty()) {
+            posttID = Long.parseLong(post_id);
+        }
+
+        return postService.getTotalLike(posttID);
     }
 }
