@@ -241,8 +241,12 @@ public class PostService {
 
         postRepos.saveAndFlush(post);
         postLikeRepos.saveAndFlush(postLike);
+        int countLikes = post.getCount_like();
 
-        Map<String, Object> msg = Map.of("msg", "Like successfully!");
+        Map<String, Object> msg = Map.of(
+                "msg", "Like successfully!",
+                "likes", countLikes
+        );
         return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
     }
 
@@ -262,8 +266,11 @@ public class PostService {
         }
         postRepos.saveAndFlush(post);
         postLikeRepos.delete(postLike);
+        int countLikes = post.getCount_like();
 
-        Map<String, Object> msg = Map.of("msg", "Unlike successfully!");
+        Map<String, Object> msg = Map.of(
+                "msg", "Unlike successfully!",
+                "likes",countLikes);
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 }
