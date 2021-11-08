@@ -184,6 +184,14 @@ public class AdminController {
         return adminService.reportManga(userId);
     }
 
+    @GetMapping("/reportposts")
+    public ResponseEntity reportPosts(ServletRequest request) {
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(strUserId);
+
+        return adminService.reportPosts(userId);
+    }
+
 
     @GetMapping("/reportuser")
     public ResponseEntity reportUser(ServletRequest request) {

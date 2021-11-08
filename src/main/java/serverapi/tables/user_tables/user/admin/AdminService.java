@@ -19,6 +19,7 @@ import serverapi.query.repository.manga.MangaRepos;
 import serverapi.query.repository.user.FollowingRepos;
 import serverapi.query.repository.user.TransGroupRepos;
 import serverapi.query.repository.user.UserRepos;
+import serverapi.tables.forum.post.Post;
 import serverapi.tables.manga_tables.author.Author;
 import serverapi.tables.manga_tables.chapter.Chapter;
 import serverapi.tables.manga_tables.manga.Manga;
@@ -182,38 +183,32 @@ public class AdminService {
         }
 
         List<PostUserDTO> postUserDTOList = postRepos.getAllPostsAndUserInfo();
-        List<ReportsDTO> listReportManga = new ArrayList<>();
+        List<ReportsDTO> reportsDTOList = new ArrayList<>();
 
         for (int i = 0; i < 12; i++) {
             ReportsDTO reportsDTO = new ReportsDTO();
             int finalI = i + 1;
-            System.err.println("err" + finalI);
-            List<Manga> mangaList = new ArrayList<>();
+            List<PostUserDTO> postList = new ArrayList<>();
 
-
-            mangasInfo.forEach(item -> {
-
+            postUserDTOList.forEach(item -> {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
                 Integer monthOfUser = Integer.parseInt(simpleDateFormat.format(item.getCreated_at().getTime()));
 
                 if (monthOfUser == finalI) {
-                    mangaList.add(item);
-                    System.out.println("them " + finalI);
-
+                    postList.add(item);
                 }
-
-
             });
 
-            reportsDTO.setValues(mangaList.size());
+            reportsDTO.setValues(postList.size());
             reportsDTO.setMonth(finalI);
-            System.out.println("dieu kien dung" + finalI);
-            listReportManga.add(reportsDTO);
+
+            reportsDTOList.add(reportsDTO);
         }
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get report of mangas successfully!",
-                "mangas_report", listReportManga);
+                "mangas_report", reportsDTOList
+        );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
