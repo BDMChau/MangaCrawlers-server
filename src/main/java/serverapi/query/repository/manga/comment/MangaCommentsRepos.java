@@ -15,6 +15,11 @@ import java.util.Optional;
 public interface MangaCommentsRepos extends JpaRepository<MangaComments, Long> {
 
 
+    @Query("""
+        SELECT manga_cmt from MangaComments manga_cmt where manga_cmt.post.post_id = ?1
+    """)
+    List<MangaComments> getCmtsByPostId(Long post_id);
+
     /**
      * Use for get manga comments level 0 by using manga_id, level
      * Use pageable to get a number of comments

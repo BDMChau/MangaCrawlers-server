@@ -23,6 +23,7 @@ import serverapi.tables.forum.category.Category;
 import serverapi.tables.forum.post_category.PostCategory;
 import serverapi.tables.forum.post_like.PostLike;
 import serverapi.tables.manga_tables.manga.MangaService;
+import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
 import serverapi.tables.user_tables.user.User;
 
 import java.util.*;
@@ -100,6 +101,12 @@ public class PostService {
     protected ResponseEntity getPosts(int from, int amount) {
         Pageable pageable = new OffsetBasedPageRequest(from, amount);
         List<PostUserDTO> posts = postRepos.getPosts(pageable);
+
+        posts.forEach(post ->{
+            List<MangaComments> cmts = mangaCommentsRepos.getCmtsByPostId(post.getPost_id());
+            post.setComment_count(cmts.size());
+        });
+
         if (posts.isEmpty()) {
             Map<String, Object> err = Map.of(
                     "err", "no posts!",
@@ -198,23 +205,23 @@ public class PostService {
         // Get comment
         //set tags for each comment
         List<MangaCommentDTOs> comments;
-        cmtsLv0.forEach(lv0 ->{
+        cmtsLv0.forEach(lv0 -> {
 
             lv0 = mangaService.setListTags(lv0);
 
             //get child comments
-            List<CommentTreesDTO> cmtsLv1 = mangaCommentsRepos.getCommentsChild(lv0.getManga_comment_id(), level1,childPageable);
+            List<CommentTreesDTO> cmtsLv1 = mangaCommentsRepos.getCommentsChild(lv0.getManga_comment_id(), level1, childPageable);
             List<CommentTreesDTO> cmtsLv2 = mangaCommentsRepos.getCommentsChild(lv0.getManga_comment_id(), level2, childPageable);
 
             MangaCommentDTOs finalLv0 = lv0;
-            cmtsLv1.forEach(lv01 ->{
+            cmtsLv1.forEach(lv01 -> {
 
                 CommentTreesDTO finalLv01 = lv01;
-                cmtsLv2.forEach(lv02 ->{
+                cmtsLv2.forEach(lv02 -> {
 
                     lv02 = mangaService.setListTags(lv02);
 
-                    if(finalLv0.getManga_comment_id() == lv02.getParent_id()){
+                    if (finalLv0.getManga_comment_id() == lv02.getParent_id()) {
 
                         finalLv01.getComments_level_02().add(lv02);
                     }
@@ -222,7 +229,7 @@ public class PostService {
 
                 lv01 = mangaService.setListTags(lv01);
 
-                if(finalLv0.getManga_comment_id() == lv01.getParent_id()){
+                if (finalLv0.getManga_comment_id() == lv01.getParent_id()) {
 
                     finalLv0.getComments_level_01().add(lv01);
                 }
@@ -233,7 +240,7 @@ public class PostService {
         Map<String, Object> msg = Map.of(
                 "msg", "Get post's comments successfully!",
                 "post_info", postOptional,
-                "don't use these param","manga_comment_relation_id, parent_id, child_id, level, manga_comment_tag_id",
+                "don't use these param", "manga_comment_relation_id, parent_id, child_id, level, manga_comment_tag_id",
                 "comments", comments
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
@@ -250,7 +257,7 @@ public class PostService {
 
         List<PostUserDTO> listToRes = new ArrayList();
         results.forEach(post -> {
-            PostUserDTO postUserDTO = new PostUserDTO(post.getPost_id(), post.getTitle(), null, post.getCreated_at(), null, null, null, null, null);
+            PostUserDTO postUserDTO = new PostUserDTO(post.getPost_id(), post.getTitle(), null, post.getCount_like(), post.getCreated_at(), null, null, null, null, null);
 
             List<Category> categoryList = categoryRepos.getAllByPostId(post.getPost_id());
             postUserDTO.setCategoryList(categoryList);
@@ -310,7 +317,7 @@ public class PostService {
         }
 
         Post post = postOptional.get();
-        post.setCount_like(post.getCount_like()+1);
+        post.setCount_like(post.getCount_like() + 1);
 
         PostLike postLike = new PostLike();
         postLike.setPost(post);
@@ -347,7 +354,8 @@ public class PostService {
 
         Map<String, Object> msg = Map.of(
                 "msg", "Unlike successfully!",
-                "likes",countLikes);
+                "likes", countLikes
+        );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 }
