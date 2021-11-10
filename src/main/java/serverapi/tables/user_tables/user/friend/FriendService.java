@@ -216,8 +216,10 @@ public class FriendService {
                         friendDTO.setUser_name(user1.getUser_name());
                         friendDTO.setUser_avatar(user1.getUser_avatar());
                         friendDTO.setUser_email(user1.getUser_email());
-                        friendDTO.setSocket_session_id(user1.getSocket_session_id());
                         friendDTO.setStatus(true);
+                        friendDTO.setSocket_session_id(user1.getSocket_session_id());
+                        friendDTO.setIs_online(false);
+                        if(user1.getSocket_session_id() != null) friendDTO.setIs_online(true);
 
                         exportListFriends.add(friendDTO);
                     }
@@ -231,8 +233,10 @@ public class FriendService {
                         friendDTO.setUser_name(user1.getUser_name());
                         friendDTO.setUser_avatar(user1.getUser_avatar());
                         friendDTO.setUser_email(user1.getUser_email());
-                        friendDTO.setSocket_session_id(user1.getSocket_session_id());
                         friendDTO.setStatus(true);
+                        friendDTO.setSocket_session_id(user1.getSocket_session_id());
+                        friendDTO.setIs_online(false);
+                        if(user1.getSocket_session_id() != null) friendDTO.setIs_online(true);
 
                         exportListFriends.add(friendDTO);
                     }

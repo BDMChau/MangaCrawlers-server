@@ -183,7 +183,8 @@ public class MySocketService {
                     if (!client.getSessionId().equals(senderClient.getSessionId())) { // except sender
                         if (client.getSessionId().equals(receiver_sessionId)) {
                             Map<String, Object> dataToSend = Map.of(
-                                    "user_id", user.getUser_id(),
+                                    "sender_id", user.getUser_id(),
+                                    "reciever_id", friend.getUser_id(),
                                     "status", user.getSocket_session_id() != null ? "online" : "offline",
                                     "status_number", user.getSocket_session_id() != null ? 1 : 0
                             );

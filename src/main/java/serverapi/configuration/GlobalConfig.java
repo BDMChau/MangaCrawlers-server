@@ -93,7 +93,6 @@ public class GlobalConfig {
         registrationBean.addUrlPatterns("/api/genre/*");
 
         // user unauth
-        registrationBean.addUrlPatterns("/api/user_unauth/get_userinfo");
 
         // manga
         registrationBean.addUrlPatterns("/api/manga/getlastest");

@@ -74,11 +74,12 @@ public class SocketIOService implements ISocketIOService {
                 return;
             }
 
+            mySocketService.updateSocketId(userId, sessionId);
+
             SocketMessage socketMessage = new SocketMessage();
             socketMessage.setUserId(userId);
             socketMessage.setMessage("notify_onl_off");
             pushMessageToUsersExceptSender(socketMessage, clients, senderClient);
-            mySocketService.updateSocketId(userId, sessionId);
         });
 
 

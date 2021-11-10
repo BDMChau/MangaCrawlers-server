@@ -20,6 +20,7 @@ public class FriendDTO {
     private String user_name;
     private String user_avatar;
     private String user_email;
+    private Boolean is_online;
     private UUID socket_session_id;
 
     private Long user_relations_id;

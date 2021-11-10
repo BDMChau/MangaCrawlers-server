@@ -77,6 +77,13 @@ public class UserUnauthService {
         }
         UserDTO user = userOptional.get();
 
+        user.setIs_online(false);
+        if(user.getSocket_session_id() != null) {
+            user.setIs_online(true);
+            user.setSocket_session_id(null);
+        }
+
+
         // user's posts
 
         Map<String, Object> msg = Map.of(
