@@ -89,6 +89,23 @@ public class FriendController {
         return friendService.addFriend(userID, toUserID);
     }
 
+    @GetMapping("/get_mutual_friends")
+    public ResponseEntity getMutualFriends(ServletRequest request, @RequestParam String to_user_id) {
+        String sUserId = getUserAttribute(request).get("user_id").toString();
+        Long toUserID = 0L;
+        Long userID = 0L;
+
+        if (sUserId.isEmpty() || to_user_id.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "User or target user is empty!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+        userID = Long.parseLong(sUserId);
+        toUserID = Long.parseLong(to_user_id);
+
+
+        return friendService.getMutualFriends(userID, toUserID);
+    }
+
     @PostMapping("/check_status")
     public ResponseEntity checkStatus(ServletRequest request, @RequestBody FriendPOJO friendPOJO) {
         String sUserId = getUserAttribute(request).get("user_id").toString();

@@ -201,6 +201,46 @@ public class FriendService {
 
     }
 
+    public ResponseEntity getMutualFriends(Long userID, Long toUserID) {
+
+        List<FriendDTO> senderFriends = friendRequestRepos.getListByUserId(userID);
+        List<FriendDTO> receiverFriends = friendRequestRepos.getListByUserId(toUserID);
+
+        if(senderFriends.isEmpty() || receiverFriends.isEmpty()){
+            Map<String, Object> err = Map.of("err", "User or to_user doesn't have any friend!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+        }
+
+        List<FriendDTO> listFriendsSender = filterListFriends(senderFriends, userID);
+        List<FriendDTO> listFriendsReceiver = filterListFriends(receiverFriends, toUserID);
+
+        if(listFriendsSender.isEmpty() || listFriendsReceiver.isEmpty()){
+            Map<String, Object> err = Map.of("err", "User or to_user doesn't have any friend!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+        }
+        List<FriendDTO> mutualFriends = new ArrayList<>();
+        listFriendsSender.forEach(senderFriend ->{
+            listFriendsReceiver.forEach(receiverFriend ->{
+                if(senderFriend.getUser_id().equals(receiverFriend.getUser_id())){
+
+                    mutualFriends.add(senderFriend);
+                }
+            });
+        });
+        if(mutualFriends.isEmpty()){
+            Map<String, Object> err = Map.of("err", "User or to_user doesn't have any friend!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+        }
+
+
+        Map<String, Object> err = Map.of(
+                "msg", "Get mutual friend successfully!",
+                "count_mutual",mutualFriends.size(),
+                "list_mutual",mutualFriends
+                );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, err).toJSON(), HttpStatus.OK);
+    }
+
     /////////////////////////////Helper///////////////////////////////
     public List<FriendDTO> filterListFriends(List<FriendDTO> getListFriends, Long userID) {
         List<FriendDTO> exportListFriends = new ArrayList<>();
@@ -282,6 +322,7 @@ public class FriendService {
 
         return true;
     }
+
 
 
 }
