@@ -6,7 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import serverapi.query.dtos.features.FriendDTO;
 import serverapi.query.dtos.tables.NotificationDTO;
+import serverapi.query.repository.user.FriendRequestRepos;
 import serverapi.query.repository.user.UserRepos;
 import serverapi.socket.message.EventsName;
 import serverapi.socket.message.SocketMessage;
@@ -34,11 +36,13 @@ public class MySocketService {
     private NotificationService notificationService;
     private FriendRequestStatusService friendRequestStatusService;
     private FriendService friendService;
+    private FriendRequestRepos friendRequestRepos;
 
     @Autowired
-    public MySocketService(UserRepos userRepos, NotificationService notificationService, FriendRequestStatusService friendRequestStatusService, FriendService friendService) {
+    public MySocketService(UserRepos userRepos, FriendRequestRepos friendRequestRepos, NotificationService notificationService, FriendRequestStatusService friendRequestStatusService, FriendService friendService) {
         this.notificationService = notificationService;
         this.userRepos = userRepos;
+        this.friendRequestRepos = friendRequestRepos;
         this.friendRequestStatusService = friendRequestStatusService;
         this.friendService = friendService;
     }
@@ -73,7 +77,8 @@ public class MySocketService {
             if (receiver == null) {
                 senderClient.sendEvent(EVENTs_NAME.getSEND_FAILED(), "Failed!");
                 return;
-            };
+            }
+            ;
 
             Long senderId = socketMessage.getUserId();
             User sender = userRepos.findById(senderId).get();
@@ -104,6 +109,16 @@ public class MySocketService {
         });
     }
 
+
+    public void notifyFriendsWhenUserOnline() {
+        Long userId = socketMessage.getUserId();
+        User user = userRepos.findById(userId).get();
+
+        List<FriendDTO> friendDTOList = friendRequestRepos.getListByUserId(userId);
+        List<FriendDTO> friends = friendService.filterListFriends(friendDTOList, userId);
+
+        notifyFriendsStatusOnline(user, friends);
+    }
 
     public void pushMessageToAllUsersExceptSender() {
         Object message = socketMessage.getMessage();
@@ -156,6 +171,28 @@ public class MySocketService {
 
             senderClient.sendEvent(EVENTs_NAME.getSEND_OK(), "okkkkkk");
         }
+    }
+
+
+    private void notifyFriendsStatusOnline(User user, List<FriendDTO> friends) {
+        friends.forEach(friend -> {
+            if (friend.getSocket_session_id() != null) {
+                UUID receiver_sessionId = friend.getSocket_session_id();
+
+                for (SocketIOClient client : allClients) {
+                    if (!client.getSessionId().equals(senderClient.getSessionId())) { // except sender
+                        if (client.getSessionId().equals(receiver_sessionId)) {
+                            Map<String, Object> dataToSend = Map.of(
+                                    "user_id", user.getUser_id(),
+                                    "status", user.getSocket_session_id() != null ? "online" : "offline",
+                                    "status_number", user.getSocket_session_id() != null ? 1 : 0
+                            );
+                            client.sendEvent(EVENTs_NAME.getNOTIFY_ONLINE(), dataToSend);
+                        }
+                    }
+                }
+            }
+        });
     }
 
 

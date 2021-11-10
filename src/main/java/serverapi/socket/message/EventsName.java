@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public class EventsName {
     String UPDATE_SOCKETID = "updateSocketId";
+    String NOTIFY_ONLINE = "notifyonline";
 
     String SEND_OK = "sendmessage_ok";
     String SEND_FAILED = "sendmessage_failed";

@@ -202,7 +202,7 @@ public class FriendService {
     }
 
     /////////////////////////////Helper///////////////////////////////
-    private List<FriendDTO> filterListFriends(List<FriendDTO> getListFriends, Long userID) {
+    public List<FriendDTO> filterListFriends(List<FriendDTO> getListFriends, Long userID) {
         List<FriendDTO> exportListFriends = new ArrayList<>();
         getListFriends.forEach(friend -> {
             if (friend.isStatus()) {

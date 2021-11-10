@@ -13,10 +13,7 @@ import serverapi.tables.user_tables.user.User;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -24,7 +21,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SocketIOService implements ISocketIOService {
     private final EventsName EVENTs_NAME = new EventsName();
     private static final Map<Object, SocketIOClient> clientMap = new ConcurrentHashMap<>();
-    private final SocketMessage socketMessage = new SocketMessage();
+
+    List<User> usersConnected = new ArrayList<>();
 
     private final MySocketService mySocketService;
 
@@ -63,11 +61,23 @@ public class SocketIOService implements ISocketIOService {
             Long userId = Long.parseLong(String.valueOf(data.get("user_id")));
             UUID sessionId = client.getSessionId();
 
+            SocketIOClient senderClient = client;
+            Collection<SocketIOClient> clients = socketIOServer.getAllClients();
+
             if (data.get("is_disconnect").equals(true)) {
                 mySocketService.updateSocketId(userId, new UUID(0L, 0L));
+
+                SocketMessage socketMessage = new SocketMessage();
+                socketMessage.setUserId(userId);
+                socketMessage.setMessage("notify_onl_off");
+                pushMessageToUsersExceptSender(socketMessage, clients, senderClient);
                 return;
             }
 
+            SocketMessage socketMessage = new SocketMessage();
+            socketMessage.setUserId(userId);
+            socketMessage.setMessage("notify_onl_off");
+            pushMessageToUsersExceptSender(socketMessage, clients, senderClient);
             mySocketService.updateSocketId(userId, sessionId);
         });
 
@@ -88,6 +98,9 @@ public class SocketIOService implements ISocketIOService {
                 SocketIOClient senderClient = client;
                 Collection<SocketIOClient> clients = socketIOServer.getAllClients();
 
+                usersConnected = listTo;
+
+                SocketMessage socketMessage = new SocketMessage();
                 socketMessage.setType(type);
                 socketMessage.setUserId(userId);
                 socketMessage.setListTo(listTo);
@@ -101,23 +114,12 @@ public class SocketIOService implements ISocketIOService {
         });
 
 
-        socketIOServer.addEventListener(EVENTs_NAME.getALL_USERS(), Map.class, (client, data, ackSender) -> {
-            String message = String.valueOf(data.get("message"));
-
-            SocketIOClient senderClient = client;
-            Collection<SocketIOClient> clients = socketIOServer.getAllClients();
-
-            socketMessage.setMessage(message);
-            pushMessageToAllUsersExceptSender(socketMessage, clients, senderClient);
-        });
 
 
         socketIOServer.addDisconnectListener(client -> {
             client.disconnect();
-            if (socketMessage.getMessage() != null) {
-                socketMessage.getListTo().forEach(toUserVal -> {
-                    clientMap.remove(toUserVal);
-                });
+            if (!usersConnected.isEmpty()) {
+                usersConnected.forEach(clientMap::remove);
             }
         });
 
@@ -132,7 +134,11 @@ public class SocketIOService implements ISocketIOService {
         mySocketService.setAllClients(clients);
         mySocketService.setSenderClient(senderClient);
 
-        mySocketService.pushMessageToUsersExceptSender();
+        if(socketMessage.getMessage().equals("notify_onl_off")){
+            mySocketService.notifyFriendsWhenUserOnline();
+        } else{
+            mySocketService.pushMessageToUsersExceptSender();
+        }
     }
 
 

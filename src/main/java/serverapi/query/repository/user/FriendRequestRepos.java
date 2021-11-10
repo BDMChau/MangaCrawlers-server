@@ -39,6 +39,21 @@ public interface FriendRequestRepos extends JpaRepository<FriendRequestStatus, L
              """)
     List<FriendDTO> getListByUserId(Long user_id, Pageable pageable);
 
+
+    @Query("""
+             SELECT DISTINCT new serverapi.query.dtos.features.FriendDTO(
+              us.child_id.user_id, us.parent_id.user_id,
+              frs.status
+              )
+            FROM UserRelations us
+            JOIN FriendRequestStatus frs on frs.friend_request_id = us.friendRequest.friend_request_id
+            left join User u on u.user_id = us.child_id.user_id
+            or frs.to_user = us.child_id
+            where us.parent_id.user_id =?1 or us.child_id.user_id =?1
+             """)
+    List<FriendDTO> getListByUserId(Long user_id);
+
+
     @Query("""
              SELECT DISTINCT new serverapi.query.dtos.features.FriendDTO(
              COUNT(us.user_relation_id)
