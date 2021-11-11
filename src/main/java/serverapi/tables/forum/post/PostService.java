@@ -305,7 +305,7 @@ public class PostService {
 
     protected ResponseEntity getTopPostsCmts(int quantity){
         final Pageable pageable = new OffsetBasedPageRequest(0, quantity);
-        List<PostUserDTO> postUserDTOList = postRepos.getTopPostsNumberOfCmts(pageable);
+        List<PostUserDTO> postUserDTOList = postRepos.getTopPostsNumberOfCmts(pageable,7,0);
 
         Map<String, Object> msg = Map.of(
                 "msg", "get top post cmts OK!",
