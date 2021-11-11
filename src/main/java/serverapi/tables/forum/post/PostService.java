@@ -317,7 +317,7 @@ public class PostService {
 
     protected ResponseEntity getTopPostsLike(int quantity){
         final Pageable pageable = new OffsetBasedPageRequest(0, quantity);
-        List<PostUserDTO> postUserDTOList = postRepos.getTopPostsLike(pageable);
+        List<PostUserDTO> postUserDTOList = postRepos.getTopPostsLike(pageable, 7, 0);
 
         Map<String, Object> msg = Map.of(
                 "msg", "get top post like OK!",
