@@ -60,6 +60,18 @@ public class PostControllerUnAuth {
 
         return postService.getTotalLike(posttID);
     }
+
+    @PostMapping("/get_total_dislike")
+    public ResponseEntity getTotalDislike(@RequestBody Map data) {
+        String post_id = String.valueOf(data.get("post_id"));
+
+        Long posttID = 0L;
+        if (!post_id.isEmpty()) {
+            posttID = Long.parseLong(post_id);
+        }
+
+        return postService.getTotalDislike(posttID);
+    }
     
 
     @PostMapping("/getcommentspost")

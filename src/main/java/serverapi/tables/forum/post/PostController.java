@@ -99,4 +99,38 @@ public class PostController {
 
         return postService.unlike(userID, postID);
     }
+
+    @PostMapping("/add_dislike")
+    public ResponseEntity addDislike(@RequestBody Map data, ServletRequest request) {
+        String post_id = String.valueOf(data.get("post_id"));
+
+        Long userID = 0L;
+        Long postID = 0L;
+        String sUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
+        if (!sUserId.isEmpty()) {
+            userID = Long.parseLong(sUserId);
+        }
+        if (!post_id.isEmpty()) {
+            postID = Long.parseLong(post_id);
+        }
+
+        return postService.addDislike(userID, postID);
+    }
+
+    @PostMapping("/undislike")
+    public ResponseEntity undislike(@RequestBody Map data, ServletRequest request) {
+        String post_id = String.valueOf(data.get("post_id"));
+
+        Long userID = 0L;
+        Long postID = 0L;
+        String sUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
+        if (!sUserId.isEmpty()) {
+            userID = Long.parseLong(sUserId);
+        }
+        if (!post_id.isEmpty()) {
+            postID = Long.parseLong(post_id);
+        }
+
+        return postService.undislike(userID, postID);
+    }
 }

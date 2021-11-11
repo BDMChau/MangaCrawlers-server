@@ -31,4 +31,5 @@ public interface PostLikeRepos extends JpaRepository<PostLike, Long> {
             order by pl.post_like_id
             """)
     Optional<PostLike> getPostLike(Long post_id, Long user_id);
+
 }
