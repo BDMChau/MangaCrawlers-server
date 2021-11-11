@@ -106,7 +106,7 @@ public class PostService {
 
         posts.forEach(post ->{
             List<MangaComments> cmts = mangaCommentsRepos.getCmtsByPostId(post.getPost_id());
-            post.setComment_count(cmts.size());
+            post.setComment_count(Long.parseLong(String.valueOf(cmts.size())));
         });
 
         if (posts.isEmpty()) {
@@ -228,8 +228,8 @@ public class PostService {
         List<MangaCommentDTOs> cmtsLv0 = mangaCommentsRepos.getPostCommentsLevel0(postID, pageable);
         if (cmtsLv0.isEmpty()) {
 
-            Map<String, Object> msg = Map.of("msg", "No comments found!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+            Map<String, Object> err = Map.of("err", "No comments found!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
 
         // Get comment
@@ -274,7 +274,6 @@ public class PostService {
                 "comments", comments
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-
     }
 
 
@@ -302,6 +301,31 @@ public class PostService {
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
+
+
+    protected ResponseEntity getTopPostsCmts(int quantity){
+        final Pageable pageable = new OffsetBasedPageRequest(0, quantity);
+        List<PostUserDTO> postUserDTOList = postRepos.getTopPostsNumberOfCmts(pageable);
+
+        Map<String, Object> msg = Map.of(
+                "msg", "get top post cmts OK!",
+                "posts", postUserDTOList
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
+    protected ResponseEntity getTopPostsLike(int quantity){
+        final Pageable pageable = new OffsetBasedPageRequest(0, quantity);
+        List<PostUserDTO> postUserDTOList = postRepos.getTopPostsLike(pageable);
+
+        Map<String, Object> msg = Map.of(
+                "msg", "get top post like OK!",
+                "posts", postUserDTOList
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
 
     public ResponseEntity checkUserLike(Long userID, Long postID) {
         int likeStatus = 1;
