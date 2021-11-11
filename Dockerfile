@@ -3,9 +3,9 @@
 FROM maven:3.8.1-openjdk-15 AS build
 COPY src /server-mangaclawers/src
 COPY pom.xml /server-mangaclawers/
-RUN mvn package -f /server-mangaclawers/pom.xml -D
-# RUN mvn package -f /server-mangaclawers/pom.xml -Denv01=val01 -Denv02=val02  >>  add env variable
+RUN mvn package -f /server-mangaclawers/pom.xml 
 
+# RUN mvn package -f /server-mangaclawers/pom.xml -Denv01=val01 -Denv02=val02  >>  add env variables
 
 # run jar file
 FROM openjdk:15-jdk-alpine

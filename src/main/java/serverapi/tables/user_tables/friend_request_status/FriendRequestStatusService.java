@@ -8,6 +8,7 @@ import serverapi.socket.message.SocketMessage;
 import serverapi.tables.user_tables.user.User;
 
 import java.util.Calendar;
+import java.util.Optional;
 import java.util.TimeZone;
 
 @Service
@@ -22,15 +23,28 @@ public class FriendRequestStatusService {
     }
 
 
+
+
     ////////////////////////// usable //////////////////////////
-    public void saveNew(User sender, User reciever){
+    public Boolean updateDeclineReq(Long senderID, Long receiverID) {
+        Optional<FriendRequestStatus> friendRequestStatusOptional = friendRequestRepos.getFriendStatus(senderID, receiverID);
+        if(friendRequestStatusOptional.isEmpty()) return false;
+
+        FriendRequestStatus friendRequestStatus = friendRequestStatusOptional.get();
+
+        friendRequestStatus.setStatus(false);
+        friendRequestRepos.saveAndFlush(friendRequestStatus);
+
+        return true;
+    }
+
+    public void saveNew(User sender, User reciever) {
         Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
         FriendRequestStatus friendRequestStatus = new FriendRequestStatus();
-        friendRequestStatus.setStatus(false);
+        friendRequestStatus.setStatus(true);
         friendRequestStatus.setUser(sender);
         friendRequestStatus.setTo_user(reciever);
-        friendRequestStatus.setTime_accepted(currentTime);
 
         friendRequestRepos.save(friendRequestStatus);
     }

@@ -1,8 +1,6 @@
 package serverapi.tables.user_tables.notification;
 
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,18 +8,16 @@ import org.springframework.stereotype.Service;
 import serverapi.api.Response;
 import serverapi.helpers.OffsetBasedPageRequest;
 import serverapi.query.dtos.tables.NotificationDTO;
-import serverapi.query.dtos.tables.UserDTO;
 import serverapi.query.repository.user.NotificationRepos;
 import serverapi.query.repository.user.NotificationTypesRepos;
 import serverapi.query.repository.user.UserRepos;
 import serverapi.socket.message.SocketMessage;
-import serverapi.tables.manga_tables.manga.Manga;
+import serverapi.tables.user_tables.friend_request_status.FriendRequestStatusService;
 import serverapi.tables.user_tables.notification.notification_types.NotificationTypes;
 import serverapi.tables.user_tables.notification.notifications.Notifications;
 import serverapi.tables.user_tables.user.User;
 
 import javax.transaction.Transactional;
-import java.lang.reflect.Field;
 import java.util.*;
 
 @Service
@@ -29,12 +25,15 @@ public class NotificationService {
     private final UserRepos userRepos;
     private final NotificationRepos notificationRepos;
     private final NotificationTypesRepos notificationTypesRepos;
+    private final FriendRequestStatusService friendRequestStatusService;
 
     @Autowired
-    public NotificationService(UserRepos userRepos, NotificationRepos notificationRepos, NotificationTypesRepos notificationTypesRepos) {
+    public NotificationService(UserRepos userRepos, NotificationRepos notificationRepos,
+                               NotificationTypesRepos notificationTypesRepos, FriendRequestStatusService friendRequestStatusService) {
         this.userRepos = userRepos;
         this.notificationRepos = notificationRepos;
         this.notificationTypesRepos = notificationTypesRepos;
+        this.friendRequestStatusService = friendRequestStatusService;
     }
 
 
@@ -53,14 +52,60 @@ public class NotificationService {
     }
 
 
-    protected ResponseEntity updateToInteracted(Long notificationId) {
+    protected ResponseEntity updateToInteracted(Long notificationId, int action) {
         Notifications notification = notificationRepos.findById(notificationId).get();
+
+        if (action == 1)
+            handleUpdateTargetUnit(notification.getFrom_user().getUser_id(), notification.getTarget_id(), notification.getTarget_title());
 
         notification.setIs_interacted(true);
         notification.setIs_viewed(true);
         notificationRepos.saveAndFlush(notification);
 
         Map<String, Object> msg = Map.of("msg", "updated interacted notification");
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    protected ResponseEntity updateToDeleted(Long notificationId, int action) {
+        Notifications notification = notificationRepos.findById(notificationId).get();
+
+        if (action == 1)
+            handleUpdateTargetUnit(notification.getFrom_user().getUser_id(), notification.getTarget_id(), notification.getTarget_title());
+
+        notification.setIs_delete(true);
+        notificationRepos.saveAndFlush(notification);
+
+        Map<String, Object> msg = Map.of("msg", "deleted notification");
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    protected ResponseEntity updateFriendReq(Long senderId, Long recieverId, String targetTitle, int action, int type, int cmdFrom) {
+        Optional<Notifications> notificationsOptional = Optional.empty();
+        if (cmdFrom == 1)
+            notificationsOptional = notificationRepos.getFriendReqByTargetTitleUser(senderId, recieverId, targetTitle, 2);
+        else if (cmdFrom == 2)
+            notificationsOptional = notificationRepos.getFriendReqByTargetTitleUser(recieverId, senderId, targetTitle, 2);
+
+
+        if (notificationsOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "cannot delete");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+        Notifications notification = notificationsOptional.get();
+
+        if (action == 1)
+            handleUpdateTargetUnit(notification.getFrom_user().getUser_id(), notification.getTarget_id(), notification.getTarget_title());
+
+        if (type == 1) notification.setIs_delete(true);
+        else if (type == 2) {
+            notification.setIs_interacted(true);
+            notification.setIs_viewed(true);
+        }
+
+
+        notificationRepos.saveAndFlush(notification);
+
+        Map<String, Object> msg = Map.of("msg", "deleted notification");
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
@@ -79,6 +124,15 @@ public class NotificationService {
 
 
     ////////////////////////////////////////////// usable //////////////////////////////////////////////
+    private void handleUpdateTargetUnit(Long fromUserId, Long targetId, String targetTitle) {
+        if (targetTitle.equals("user")) {
+            Long toUserId = targetId;
+
+            friendRequestStatusService.updateDeclineReq(fromUserId, toUserId);
+        }
+    }
+
+
     public void updateInteractedById(Long notificationId) {
         Notifications notification = notificationRepos.findById(notificationId).get();
 
@@ -114,6 +168,7 @@ public class NotificationService {
         notifications.setTo_user(receiver);
         notifications.setIs_viewed(false);
         notifications.setIs_interacted(false);
+        notifications.setIs_delete(false);
         notifications.setCreated_at(currentTime);
 
 
@@ -122,16 +177,9 @@ public class NotificationService {
             String targetTitle = String.valueOf(socketMessage.getObjData().get("target_title"));
             Long toUserId = receiver.getUser_id();
 
+            Boolean isExisted = checkIsExisted(targetTitle, targetId, toUserId, sender.getUser_id());
+            if (isExisted) return null;
 
-            if (targetTitle.equals("user")) {
-                List<Notifications> isExisted = notificationRepos.findByTargetTitleUserAndNotInteract(targetId);
-                if (!isExisted.isEmpty()) return null;
-            } else {
-                List<Notifications> isExisted = notificationRepos.findByToUserIdAndNotInteract(toUserId);
-                System.err.println(isExisted);
-
-                if (!isExisted.isEmpty()) return null;
-            }
 
             notifications.setTarget_id(targetId);
             notifications.setTarget_title(targetTitle);
@@ -162,6 +210,21 @@ public class NotificationService {
         dataToSend.setReceiver_socket_id(receiver.getSocket_session_id());
 
         return dataToSend;
+    }
+
+
+    //////////////////// HELPERS ////////////////////
+    public Boolean checkIsExisted(String targetTitle, Long targetId, Long toUserId, Long fromUserId) {
+        if (targetTitle.equals("user")) {
+            List<Notifications> isExisted = notificationRepos.findByTargetTitleUserAndNotInteract(targetId, fromUserId);
+            if (!isExisted.isEmpty()) return true;
+
+        } else if (targetTitle.equals("transgroup")) {
+            List<Notifications> isExisted = notificationRepos.findByTargetTitleTransGroupAndNotInteract(targetId, toUserId, fromUserId);
+            if (!isExisted.isEmpty()) return true;
+        }
+
+        return false;
     }
 
 }

@@ -41,6 +41,31 @@ public interface FriendRequestRepos extends JpaRepository<FriendRequestStatus, L
 
 
     @Query("""
+             SELECT DISTINCT new serverapi.query.dtos.features.FriendDTO(
+              us.child_id.user_id, us.parent_id.user_id,
+              frs.status
+              )
+            FROM UserRelations us
+            JOIN FriendRequestStatus frs on frs.friend_request_id = us.friendRequest.friend_request_id
+            left join User u on u.user_id = us.child_id.user_id
+            or frs.to_user = us.child_id
+            where us.parent_id.user_id =?1 or us.child_id.user_id =?1
+             """)
+    List<FriendDTO> getListByUserId(Long user_id);
+
+
+    @Query("""
+             SELECT DISTINCT new serverapi.query.dtos.features.FriendDTO(
+             COUNT(us.user_relation_id)
+               )
+            FROM UserRelations us
+            JOIN FriendRequestStatus frs on frs.friend_request_id = us.friendRequest.friend_request_id
+            where us.parent_id.user_id =?1 or us.child_id.user_id =?1
+             """)
+    Optional<FriendDTO> getTotalFriend(Long user_id);
+
+
+    @Query("""
              SELECT new serverapi.query.dtos.features.FriendDTO(us.user_relation_id, us.parent_id.user_id, us.child_id.user_id,
                                                                 frs.friend_request_id)
             FROM UserRelations us
@@ -50,13 +75,19 @@ public interface FriendRequestRepos extends JpaRepository<FriendRequestStatus, L
              """)
     Optional<FriendDTO> findFriendByUserId(Long user_id, Long to_user_id);
 
-    @Query("""
+    @Query(value = """
             SELECT frs FROM FriendRequestStatus frs
-            WHERE frs.user.user_id =?1
-            AND frs.to_user.user_id =?2
-            AND frs.status = true
+            WHERE (frs.user.user_id =?1 AND frs.to_user.user_id =?2 AND frs.status = true) or (frs.user.user_id =?2 AND frs.to_user.user_id =?1 AND frs.status = true)
+                      
             """)
-    List<FriendRequestStatus> getFriendStatus(Long user_id, Long to_user_id);
+    Optional<FriendRequestStatus> getFriendStatus(Long user_id, Long to_user_id);
+
+    @Query(value = """
+            SELECT frs FROM FriendRequestStatus frs
+            WHERE (frs.user.user_id =?1 AND frs.to_user.user_id =?2) or (frs.user.user_id =?2 AND frs.to_user.user_id =?1)
+            ORDER BY frs.friend_request_id desc 
+            """)
+    List<FriendRequestStatus> getAllFriendStatus(Long user_id, Long to_user_id);
 
 //    @Query("""
 //             SELECT DISTINCT new serverapi.query.dtos.features.FriendDTO(

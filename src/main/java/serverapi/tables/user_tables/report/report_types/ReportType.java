@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.tables.user_tables.report.report_example_titles.ReportExampleTitles;
-import serverapi.tables.user_tables.report.reports.Reports;
+import serverapi.tables.user_tables.report.report_example_title.ReportExampleTitle;
+import serverapi.tables.user_tables.report.reports.Report;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -16,8 +16,8 @@ import java.util.Collection;
 @Setter
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@Table(name = "report_types")
-public class ReportTypes {
+@Table(name = "report_type")
+public class ReportType {
 
     @Id
     @SequenceGenerator(
@@ -33,12 +33,7 @@ public class ReportTypes {
 
     @JsonBackReference
     @OneToMany(mappedBy = "report_type", cascade = CascadeType.ALL)
-    private Collection<ReportExampleTitles> report_example_title;
-
-    @JsonBackReference
-    @OneToMany(mappedBy = "report_type", cascade = CascadeType.ALL)
-    private Collection<Reports> reports;
-
+    private Collection<ReportExampleTitle> report_example_title;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;

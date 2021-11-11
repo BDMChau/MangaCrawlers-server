@@ -1,12 +1,11 @@
-package serverapi.tables.user_tables.report.report_images;
+package serverapi.tables.user_tables.report.report_image;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.tables.user_tables.report.report_replies.ReportReplies;
-import serverapi.tables.user_tables.report.reports.Reports;
+import serverapi.tables.user_tables.report.reports.Report;
 
 import javax.persistence.*;
 
@@ -15,8 +14,8 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@Table(name = "report_images")
-public class ReportImages {
+@Table(name = "report_image")
+public class ReportImage {
 
     @Id
     @SequenceGenerator(
@@ -33,12 +32,7 @@ public class ReportImages {
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="report_id")
-    private Reports reports;
-
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="report_reply_id")
-    private ReportReplies report_reply;
+    private Report report;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String image_url;

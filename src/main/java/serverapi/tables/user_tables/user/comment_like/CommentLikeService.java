@@ -29,12 +29,12 @@ public class CommentLikeService {
     }
 
     public ResponseEntity checkUserLike(Long userID, Long commentID) {
-        int likeStatus = 0;
+        int likeStatus = 1;
         String sLikeStatus = "";
         Optional<CommentLikes> commentLikeOptional = commentLikesRepos.getCommentLike(commentID, userID);
 
         if (commentLikeOptional.isEmpty()) {
-            likeStatus = 1;
+            likeStatus = 0;
         }
         switch (likeStatus) {
             case 0 -> sLikeStatus = "hasn't liked";
@@ -102,13 +102,12 @@ public class CommentLikeService {
         CommentLikes commentLikes = commentLikesOptional.get();
         MangaComments mangaComments = mangaCommentsOptional.get();
 
-        if(mangaComments.getCount_like() >=1){
+        if (mangaComments.getCount_like() > 0) {
             mangaComments.setCount_like(mangaComments.getCount_like() - 1);
         }
-        commentLikesRepos.delete(commentLikesOptional.get());
+        commentLikesRepos.delete(commentLikes);
 
         mangaCommentsRepos.saveAndFlush(mangaComments);
-        commentLikesRepos.saveAndFlush(commentLikes);
 
         Map<String, Object> msg = Map.of("msg", "Unlike successfully!");
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);

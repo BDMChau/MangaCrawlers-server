@@ -19,11 +19,13 @@ import serverapi.query.dtos.features.MangaCommentDTOs.CommentTreesDTO;
 import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
 import serverapi.query.dtos.features.SearchCriteriaDTO;
 import serverapi.query.dtos.tables.*;
+import serverapi.query.repository.forum.PostRepos;
 import serverapi.query.repository.manga.*;
 import serverapi.query.repository.manga.comment.*;
 import serverapi.query.repository.user.*;
 import serverapi.query.specification.Specificationn;
 import serverapi.sharing_services.CloudinaryUploader;
+import serverapi.tables.forum.post.Post;
 import serverapi.tables.manga_tables.author.Author;
 import serverapi.tables.manga_tables.chapter.Chapter;
 import serverapi.tables.manga_tables.genre.Genre;
@@ -67,6 +69,7 @@ public class UserService {
     private final CommentImageRepos commentImageRepos;
     private final CommentTagsRepos commentTagsRepos;
     private final CommentLikesRepos commentLikesRepos;
+    private final PostRepos postRepos;
     private final NotificationRepos notificationRepos;
 
     @Autowired
@@ -79,7 +82,7 @@ public class UserService {
                        MangaCommentsRepos mangaCommentsRepos, RatingMangaRepos ratingMangaRepos,
                        TransGroupRepos transGroupRepos, GenreRepos genreRepos, MangaGenreRepos mangaGenreRepos,
                        AuthorRepos authorRepos, ImgChapterRepos imgChapterRepos, CommentRelationRepos commentRelationRepos,
-                       CommentImageRepos commentImageRepos, CommentTagsRepos commentTagsRepos, CommentLikesRepos commentLikesRepos, NotificationRepos notificationRepos) {
+                       CommentImageRepos commentImageRepos, PostRepos postRepos,CommentTagsRepos commentTagsRepos, CommentLikesRepos commentLikesRepos, NotificationRepos notificationRepos) {
         this.mangaRepository = mangaRepository;
         this.followingRepos = followingRepos;
         this.userRepos = userRepos;
@@ -96,6 +99,7 @@ public class UserService {
         this.commentImageRepos = commentImageRepos;
         this.commentTagsRepos = commentTagsRepos;
         this.commentLikesRepos = commentLikesRepos;
+        this.postRepos = postRepos;
         this.notificationRepos = notificationRepos;
     }
 
@@ -301,23 +305,28 @@ public class UserService {
 
 
     /////////////////////////////////////// COMMENT /////////////////////////////////
-    public ResponseEntity addCommentManga(List<Long> toUsersID, Long userID, Long mangaID, Long chapterID,
+    public ResponseEntity addCommentManga(List<Long> toUsersID, Long userID, Long mangaID, Long chapterID, Long postID,
                                           String content, MultipartFile image, String stickerUrl,
                                           Long parentID) throws IOException {
         // Check variable
         Calendar timeUpdated = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Optional<Post> postOptional = postRepos.findById(postID);
         Optional<Chapter> chapterOptional = chapterRepos.findById(chapterID);
         Optional<Manga> mangaOptional = mangaRepository.findById(mangaID);
         Optional<User> userOptional = userRepos.findById(userID);
 
+        Post post = null;
+        if (!postOptional.isEmpty()) {
+            post = postOptional.get();
+        }
 
         Chapter chapter = null;
         if (!chapterOptional.isEmpty()) {
             chapter = chapterOptional.get();
         }
 
-        if (mangaOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("err", "Manga not found!");
+        if (mangaOptional.isEmpty() && postOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of("err", "Manga or post not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
         Manga manga = mangaOptional.get();
@@ -342,7 +351,8 @@ public class UserService {
         /* Add comment */
         MangaComments mangaComments = new MangaComments();
         mangaComments.setManga(manga);
-        mangaComments.setChapter(chapter); // if chapter null >> set null
+        mangaComments.setChapter(chapter);
+        mangaComments.setPost(post);// if chapter null >> set null
         mangaComments.setUser(user);
         mangaComments.setManga_comment_content(content);
         mangaComments.setManga_comment_time(timeUpdated);
@@ -450,7 +460,14 @@ public class UserService {
         exportComment.setUser_name(user.getUser_name());
         exportComment.setUser_avatar(user.getUser_avatar());
 
-        exportComment.setManga_id(manga.getManga_id());
+        if(post != null){
+            exportComment.setPost_id(post.getPost_id());
+            exportComment.setPost_content(post.getContent());
+        }
+
+        if(manga != null){
+            exportComment.setManga_id(manga.getManga_id());
+        }
 
         if (chapter != null) {
 
@@ -476,7 +493,7 @@ public class UserService {
                 "msg", "Add comment successfully!",
                 "comment_information", exportComment
         );
-        return new ResponseEntity<>(new Response(200, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
+        return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
     }
 
 
@@ -491,11 +508,17 @@ public class UserService {
 
         if (userOptional.isEmpty() || mangaCommentsOptional.isEmpty()) {
 
-            Map<String, Object> msg = Map.of("msg", "User or comment not found!");
+            Map<String, Object> msg = Map.of("err", "User or comment not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
         MangaComments mangaComments = mangaCommentsOptional.get();
         User user = userOptional.get();
+
+        // check allow
+        if(!user.getUser_id().equals(mangaComments.getUser().getUser_id())){
+            Map<String, Object> msg = Map.of("err", "You don't have permission!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
 
         // Get current image in this comment
         Optional<CommentImages> commentImagesOptional = commentImageRepos.getCommentImagesByManga_comment(commentID);
@@ -513,21 +536,16 @@ public class UserService {
          * update comment will become delete comment by set isDeprecated = true;
          */
         if (commentContent.equals("") && image.isEmpty()) {
-
             mangaComments.setIs_deprecated(true);
             mangaCommentsRepos.save(mangaComments);
 
-            Map<String, Object> msg = Map.of(
-                    "msg", "Delete comment successfully!"
-            );
-
+            Map<String, Object> msg = Map.of("msg", "Delete comment successfully!");
             return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
         }
 
         //Check input tags
         List<User> toUsersInput = new ArrayList<>();
         for (int i = 0; i < toUsersID.size(); i++) {
-
             Optional<User> userTagOptional = userRepos.findById(toUsersID.get(i));
 
             if (!userTagOptional.isEmpty()) {
@@ -536,9 +554,7 @@ public class UserService {
                 toUsersInput.add(userTag);
 
             } else {
-                Map<String, Object> msg = Map.of(
-                        "msg", "Invalid user tag!"
-                );
+                Map<String, Object> msg = Map.of("msg", "Invalid user tag!");
                 return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
             }
         }
@@ -685,6 +701,7 @@ public class UserService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
+
     public ResponseEntity deleteComment(Long userID, Long commentID, List<MangaCommentDTOs> comments) {
         Optional<User> userOptional = userRepos.findById(userID);
         Optional<MangaComments> mangaCommentsOptional = mangaCommentsRepos.findById(commentID);
@@ -693,14 +710,15 @@ public class UserService {
             Map<String, Object> msg = Map.of("msg", "Empty user or comment or comments!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
+        MangaComments mangaComment = mangaCommentsOptional.get();
         User user = userOptional.get();
 
+
         // Check if user is not the owner
-        MangaComments mangaComment = mangaCommentsOptional.get();
-//        if(!mangaComments.getUser().equals(user)){
-//            Map<String, Object> msg = Map.of("msg", "Don't have permission!");
-//            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
-//        }
+        if(!user.getUser_id().equals(mangaComment.getUser().getUser_id())){
+            Map<String, Object> msg = Map.of("err", "You don't have permission!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
 
         // Set deprecate this comment
         mangaComment.setIs_deprecated(true);
@@ -709,9 +727,7 @@ public class UserService {
         List<MangaCommentDTOs> responseListComments = filterComments(mangaComment.getManga_comment_id(), comments, 1);
 
         if (responseListComments.isEmpty()) {
-            Map<String, Object> msg = Map.of(
-                    "err", "Get comments list failed!"
-            );
+            Map<String, Object> msg = Map.of("err", "Get comments list failed!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
         }
         Map<String, Object> msg = Map.of(
@@ -1177,8 +1193,7 @@ public class UserService {
         Optional<User> userOptional = userRepos.findById(userId);
         if (userOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "user not found!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
         User user = userOptional.get();
         Long transgroupId = user.getTransgroup().getTransgroup_id();
@@ -1231,13 +1246,12 @@ public class UserService {
         });
         List<Genre> genres = genreRepos.findAllById(listGenreId);
 
-        MangaGenre mangaGenre = new MangaGenre();
         genres.forEach(genre -> {
+            MangaGenre mangaGenre = new MangaGenre();
             mangaGenre.setGenre(genre);
+            mangaGenre.setManga(manga);
+            mangaGenreRepos.saveAndFlush(mangaGenre);
         });
-        mangaGenre.setManga(manga);
-        mangaGenreRepos.saveAndFlush(mangaGenre);
-        System.err.println("04");
 
 
         Map<String, Object> msg = Map.of(
@@ -1352,36 +1366,55 @@ public class UserService {
     }
 
 
-    public ResponseEntity getFriendRequests(Long userId){
-        List<NotificationDTO> requests = notificationRepos.getListByUserIdAndTypeAndNotInteract(userId,2);
+    public ResponseEntity getFriendRequests(Long userId, int from, int amount) {
+        Pageable pageable = new OffsetBasedPageRequest(from, amount);
+        List<NotificationDTO> requests = notificationRepos.getListByUserIdAndTypeAndNotInteract(userId, 2, pageable);
 
 
         Map<String, Object> msg = Map.of(
                 "msg", "get friends request OK!",
+                "from", from + amount,
                 "requests", requests
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
 
-    ////////////////////////////////////// unauthenticated parts //////////////////////////////////////
-    public ResponseEntity getUserInfo(Long userId){
-        Optional<UserDTO> userOptional = userRepos.findByUserId(userId);
-        if(userOptional.isEmpty()){
-            Map<String, Object> err = Map.of("err", "User does not exist!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+    public ResponseEntity updateDescription(Long userId, String description) {
+        Optional<User> userOptional = userRepos.findById(userId);
+        if (userOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "err", "User not found!"
+            );
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
-        UserDTO userDTO = userOptional.get();
+        User user = userOptional.get();
+        String inputDesc = description.trim();
+        if(!inputDesc.isEmpty()){
+            if(inputDesc.length()>= 150){
+                Map<String, Object> msg = Map.of(
+                        "err", "Description length must be <= 150 characters!"
+                );
+                return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+            }
+        }
+        user.setUser_desc(inputDesc);
+        userRepos.saveAndFlush(user);
 
-        // status service
-        userDTO.setStatus(1);
+        Optional<UserDTO> exportUser = userRepos.findByUserId(userId);
+        UserDTO userDTO;
+        if (exportUser.isEmpty()) {
+            userDTO = new UserDTO();
+        }
+        userDTO = exportUser.get();
 
         Map<String, Object> msg = Map.of(
-                "msg", "get user info OK!",
+                "msg", "Update description successfully!",
                 "user", userDTO
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
+
 
 
     /////////////////////////////////////// HELPERS /////////////////////////////////

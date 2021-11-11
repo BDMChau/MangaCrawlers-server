@@ -127,7 +127,7 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
     @Query("SELECT new serverapi.query.dtos.tables.AuthorMangaDTO( COUNT(c.chapter_id), a.author_id, a.author_name," +
             " m.manga_id, m.manga_name, m.status, m.description, m.stars, " +
             "m.views, m.thumbnail, m.date_publications, m.created_at) " +
-            "FROM Author a JOIN a.mangas m JOIN m.chapters c GROUP BY a.author_id, a.author_name, " +
+            "FROM Author a JOIN a.mangas m LEFT JOIN m.chapters c GROUP BY a.author_id, a.author_name, " +
             "m.manga_id, m.manga_name, m.status, m.description, m.stars, m.views, m.thumbnail, m.date_publications, m.created_at")
     List<AuthorMangaDTO> getAllMangasInfo();
 

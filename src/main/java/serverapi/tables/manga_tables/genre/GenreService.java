@@ -20,18 +20,13 @@ public class GenreService {
     }
 
 
-    public ResponseEntity getAllgenres() {
+    protected ResponseEntity getAllgenres() {
         List<Genre> genres = genreRepos.findAll();
-
         if (genres.isEmpty()) {
-            Map<String, Object> err = Map.of(
-                    "msg", "No genres!"
-            );
-            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(),
-                    HttpStatus.NO_CONTENT);
+            Map<String, Object> err = Map.of("err", "No genres!");
+            return new ResponseEntity<>(new Response(204, HttpStatus.NO_CONTENT, err).toJSON(), HttpStatus.NO_CONTENT);
         }
 
-//a
         Map<String, Object> msg = Map.of(
                 "msg", "Get all genres successfully!",
                 "genres", genres

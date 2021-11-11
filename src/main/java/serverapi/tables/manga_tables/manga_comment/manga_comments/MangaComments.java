@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import serverapi.tables.forum.post.Post;
 import serverapi.tables.manga_tables.manga_comment.manga_comment_likes.CommentLikes;
 import serverapi.tables.manga_tables.manga_comment.manga_comment_tags.CommentTags;
 import serverapi.tables.manga_tables.chapter.Chapter;
@@ -52,6 +53,11 @@ public class MangaComments {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chapter_id")
     private Chapter chapter;
+
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Post post;
 
     @Column(columnDefinition = "boolean default false", nullable = false)
     private Boolean is_deprecated;

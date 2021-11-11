@@ -2,10 +2,12 @@ package serverapi.tables.forum.post_category;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.tables.user_tables.notification.notifications.Notifications;
+import serverapi.tables.forum.category.Category;
+import serverapi.tables.forum.post.Post;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -20,22 +22,25 @@ public class PostCategory {
 
     @Id
     @SequenceGenerator(
-            name = "notification_type_sequence",
-            sequenceName = "notification_type_sequence",
+            name = "post_category_sequence",
+            sequenceName = "post_category_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "notification_type_sequence" // same as NAME in SequenceGenerator
+            generator = "post_category_sequence" // same as NAME in SequenceGenerator
     )
-    private Long notification_type_id;
+    private Long post_category_id;
 
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Post post;
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "notification_type", cascade = CascadeType.ALL)
-    private Collection<Notifications> notifications;
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
-    @Column(nullable = false)
-    private Integer type;
 
 }

@@ -31,11 +31,11 @@ public class MangaGenre {
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manga_id", insertable = false, updatable = false)
+    @JoinColumn(name = "manga_id")
     private Manga manga;
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "genre_id", insertable = false, updatable = false)
+    @JoinColumn(name = "genre_id")
     private Genre genre;
 }

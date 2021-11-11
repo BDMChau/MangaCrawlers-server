@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import serverapi.tables.forum.post.Post;
+import serverapi.tables.forum.post_like.PostLike;
 import serverapi.tables.manga_tables.manga_comment.manga_comment_likes.CommentLikes;
 import serverapi.tables.manga_tables.manga_comment.manga_comment_tags.CommentTags;
 import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
@@ -13,8 +15,7 @@ import serverapi.tables.user_tables.following_manga.FollowingManga;
 import serverapi.tables.manga_tables.rating_manga.RatingManga;
 import serverapi.tables.user_tables.friend_request_status.FriendRequestStatus;
 import serverapi.tables.user_tables.notification.notifications.Notifications;
-import serverapi.tables.user_tables.report.report_replies.ReportReplies;
-import serverapi.tables.user_tables.report.reports.Reports;
+import serverapi.tables.user_tables.report.reports.Report;
 import serverapi.tables.user_tables.reading_history.ReadingHistory;
 import serverapi.tables.user_tables.trans_group.TransGroup;
 import serverapi.tables.user_tables.user_relations.UserRelations;
@@ -70,11 +71,8 @@ public class User {
 
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Collection<Reports> report;
+    private Collection<Report> report;
 
-    @JsonBackReference
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Collection<ReportReplies> report_reply;
 
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -95,6 +93,14 @@ public class User {
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<FriendRequestStatus> friendRequestStatuses;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Collection<Post> posts;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Collection<PostLike> postLikes;
 
     @JsonBackReference
     @OneToMany(mappedBy = "to_user", cascade = CascadeType.ALL)

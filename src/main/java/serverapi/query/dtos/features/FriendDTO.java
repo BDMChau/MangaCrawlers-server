@@ -9,6 +9,7 @@ import org.h2.api.TimestampWithTimeZone;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -19,6 +20,8 @@ public class FriendDTO {
     private String user_name;
     private String user_avatar;
     private String user_email;
+    private Boolean is_online;
+    private UUID socket_session_id;
 
     private Long user_relations_id;
     private Long child_user_id;
@@ -32,6 +35,8 @@ public class FriendDTO {
     private Long friend_request_id;
     private boolean status;
     private Calendar time_accepted;
+
+    private Long count_friend;
 
     public FriendDTO(Long friend_request_id, Long user_id, Long to_user_id, boolean status, Calendar time_accepted) {
         this.friend_request_id = friend_request_id;
@@ -53,5 +58,9 @@ public class FriendDTO {
         this.user_id = user_id;
         this.to_user_id = to_user_id;
         this.friend_request_id = friend_request_id;
+    }
+
+    public FriendDTO(Long count_friend) {
+        this.count_friend = count_friend;
     }
 }

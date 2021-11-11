@@ -19,6 +19,7 @@ public class CommentPOJO {
     private List<String> to_users_id = new ArrayList<>();
     private String manga_id;
     private String chapter_id;
+    private String post_id;
     private String manga_comment_id;
     private String manga_comment_content;
     private MultipartFile image;

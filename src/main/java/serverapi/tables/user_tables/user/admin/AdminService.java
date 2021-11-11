@@ -11,12 +11,15 @@ import serverapi.query.dtos.features.ReportDTOs.ReportUserFollowMangaDTO;
 import serverapi.query.dtos.features.ReportDTOs.ReportsDTO;
 import serverapi.query.dtos.features.ReportDTOs.UserRDTO;
 import serverapi.query.dtos.tables.AuthorMangaDTO;
+import serverapi.query.dtos.tables.PostUserDTO;
+import serverapi.query.repository.forum.PostRepos;
 import serverapi.query.repository.manga.AuthorRepos;
 import serverapi.query.repository.manga.ChapterRepos;
 import serverapi.query.repository.manga.MangaRepos;
 import serverapi.query.repository.user.FollowingRepos;
 import serverapi.query.repository.user.TransGroupRepos;
 import serverapi.query.repository.user.UserRepos;
+import serverapi.tables.forum.post.Post;
 import serverapi.tables.manga_tables.author.Author;
 import serverapi.tables.manga_tables.chapter.Chapter;
 import serverapi.tables.manga_tables.manga.Manga;
@@ -36,17 +39,19 @@ public class AdminService {
     private final TransGroupRepos transGroupRepos;
     private final ChapterRepos chapterRepos;
     private final AuthorRepos authorRepos;
+    private final PostRepos postRepos;
 
 
     @Autowired
     public AdminService(UserRepos userRepos, FollowingRepos followingRepos, MangaRepos mangaRepos,
-                        TransGroupRepos transGroupRepos, ChapterRepos chapterRepos, AuthorRepos authorRepos) {
+                        TransGroupRepos transGroupRepos, ChapterRepos chapterRepos, AuthorRepos authorRepos, PostRepos postRepos) {
         this.userRepos = userRepos;
         this.followingRepos = followingRepos;
         this.mangaRepos = mangaRepos;
         this.transGroupRepos = transGroupRepos;
         this.chapterRepos = chapterRepos;
         this.authorRepos = authorRepos;
+        this.postRepos = postRepos;
     }
 
 
@@ -84,7 +89,7 @@ public class AdminService {
 
             ReportsDTO reportsDTO = new ReportsDTO();
             int finalI = i + 1;
-            System.err.println("lỗi" + finalI);
+            System.err.println("err" + finalI);
             List<UserRDTO> userDTOList = new ArrayList<>();
 
             getUserInfo.forEach(item -> {
@@ -139,7 +144,7 @@ public class AdminService {
 
             ReportsDTO reportsDTO = new ReportsDTO();
             int finalI = i + 1;
-            System.err.println("lỗi" + finalI);
+            System.err.println("err" + finalI);
             List<Manga> mangaList = new ArrayList<>();
 
 
@@ -156,24 +161,55 @@ public class AdminService {
 
 
             });
-            System.out.println("reportmangadtolist" + mangaList);
-
-            System.out.println("report manga dtos" + listReportManga.size());
-
 
             reportsDTO.setValues(mangaList.size());
             reportsDTO.setMonth(finalI);
             System.out.println("dieu kien dung" + finalI);
             listReportManga.add(reportsDTO);
-
-
         }
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get report of mangas successfully!",
                 "mangas_report", listReportManga);
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
 
+
+    public ResponseEntity reportPosts(Long userId) {
+        Boolean isAdmin = isUserAdmin(userId);
+        if (!isAdmin) {
+            Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(), HttpStatus.FORBIDDEN);
+        }
+
+        List<PostUserDTO> postUserDTOList = postRepos.getAllPostsAndUserInfo();
+        List<ReportsDTO> reportsDTOList = new ArrayList<>();
+
+        for (int i = 0; i < 12; i++) {
+            ReportsDTO reportsDTO = new ReportsDTO();
+            int finalI = i + 1;
+            List<PostUserDTO> postList = new ArrayList<>();
+
+            postUserDTOList.forEach(item -> {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM");
+                Integer monthOfUser = Integer.parseInt(simpleDateFormat.format(item.getCreated_at().getTime()));
+
+                if (monthOfUser == finalI) {
+                    postList.add(item);
+                }
+            });
+
+            reportsDTO.setValues(postList.size());
+            reportsDTO.setMonth(finalI);
+
+            reportsDTOList.add(reportsDTO);
+        }
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get report of posts successfully!",
+                "posts_report", reportsDTOList
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
 
@@ -194,7 +230,7 @@ public class AdminService {
 
             ReportsDTO reportsDTO = new ReportsDTO();
             int finalI = i + 1;
-            System.err.println("lỗi" + finalI);
+            System.err.println("err" + finalI);
             List<TransGroup> transGroupList = new ArrayList<>();
 
             getTransGroupInfo.forEach(item -> {
@@ -209,10 +245,6 @@ public class AdminService {
                 }
 
             });
-            System.out.println("reportuserdtolist" + transGroupList);
-
-            System.out.println("report user dtos" + listReportTransGroup.size());
-
 
             reportsDTO.setValues(transGroupList.size());
             reportsDTO.setMonth(finalI);
@@ -474,9 +506,7 @@ public class AdminService {
     public ResponseEntity getAllUsers(Long userId) {
         Boolean isAdmin = isUserAdmin(userId);
         if (!isAdmin) {
-            Map<String, Object> err = Map.of(
-                    "err", "You are not allowed to access this resource!"
-            );
+            Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
             return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
                     HttpStatus.FORBIDDEN);
         }
@@ -499,15 +529,37 @@ public class AdminService {
     }
 
 
+    public ResponseEntity getAllPosts(Long userId) {
+        Boolean isAdmin = isUserAdmin(userId);
+        if (!isAdmin) {
+            Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(), HttpStatus.FORBIDDEN);
+        }
+
+        List<PostUserDTO> posts = postRepos.getAllPostsAndUserInfo();
+        if (posts.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "Empty posts!",
+                    "posts", posts
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get all posts successfully!",
+                "posts", posts
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
     public ResponseEntity getAllMangas(Long userId) {
-//        Boolean isAdmin = isUserAdmin(userId);
-//        if (!isAdmin) {
-//            Map<String, Object> err = Map.of(
-//                    "err", "You are not allowed to access this resource!"
-//            );
-//            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
-//                    HttpStatus.FORBIDDEN);
-//        }
+        Boolean isAdmin = isUserAdmin(userId);
+        if (!isAdmin) {
+            Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(), HttpStatus.FORBIDDEN);
+        }
 
         List<AuthorMangaDTO> mangas = mangaRepos.getAllMangasInfo();
 
@@ -529,11 +581,8 @@ public class AdminService {
     public ResponseEntity getAllTransGroup(Long userId) {
         Boolean isAdmin = isUserAdmin(userId);
         if (!isAdmin) {
-            Map<String, Object> err = Map.of(
-                    "err", "You are not allowed to access this resource!"
-            );
-            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(),
-                    HttpStatus.FORBIDDEN);
+            Map<String, Object> err = Map.of("err", "You are not allowed to access this resource!");
+            return new ResponseEntity<>(new Response(403, HttpStatus.FORBIDDEN, err).toJSON(), HttpStatus.FORBIDDEN);
         }
 
         List<TransGroup> getTransGroupInfo = transGroupRepos.findAll();
