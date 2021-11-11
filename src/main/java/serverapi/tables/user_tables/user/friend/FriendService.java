@@ -33,16 +33,16 @@ public class FriendService {
         this.notificationService = notificationService;
     }
 
-    public  ResponseEntity getTotalFriend(Long userID) {
+    public ResponseEntity getTotalFriend(Long userID) {
 
         Optional<User> userOptional = userRepos.findById(userID);
-        if(userOptional.isEmpty()){
+        if (userOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "User not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
 
         Optional<FriendDTO> friendDTOOptional = friendRequestRepos.getTotalFriend(userID);
-        if(friendDTOOptional.isEmpty()){
+        if (friendDTOOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "Empty friend!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
@@ -152,8 +152,8 @@ public class FriendService {
 
 
     public ResponseEntity addFriend(Long senderID, Long receiverID) {
-        Boolean isExistedReq = notificationService.checkIsExisted("user", receiverID, receiverID,senderID);
-        if(isExistedReq == true) {
+        Boolean isExistedReq = notificationService.checkIsExisted("user", receiverID, receiverID, senderID);
+        if (isExistedReq == true) {
             Map<String, Object> err = Map.of("err", "Request not found");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
                     HttpStatus.BAD_REQUEST);
@@ -206,7 +206,7 @@ public class FriendService {
         List<FriendDTO> senderFriends = friendRequestRepos.getListByUserId(userID);
         List<FriendDTO> receiverFriends = friendRequestRepos.getListByUserId(toUserID);
 
-        if(senderFriends.isEmpty() || receiverFriends.isEmpty()){
+        if (senderFriends.isEmpty() || receiverFriends.isEmpty()) {
             Map<String, Object> err = Map.of("err", "User or to_user doesn't have any friend!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
@@ -214,20 +214,20 @@ public class FriendService {
         List<FriendDTO> listFriendsSender = filterListFriends(senderFriends, userID);
         List<FriendDTO> listFriendsReceiver = filterListFriends(receiverFriends, toUserID);
 
-        if(listFriendsSender.isEmpty() || listFriendsReceiver.isEmpty()){
+        if (listFriendsSender.isEmpty() || listFriendsReceiver.isEmpty()) {
             Map<String, Object> err = Map.of("err", "User or to_user doesn't have any friend!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
         List<FriendDTO> mutualFriends = new ArrayList<>();
-        listFriendsSender.forEach(senderFriend ->{
-            listFriendsReceiver.forEach(receiverFriend ->{
-                if(senderFriend.getUser_id().equals(receiverFriend.getUser_id())){
+        listFriendsSender.forEach(senderFriend -> {
+            listFriendsReceiver.forEach(receiverFriend -> {
+                if (senderFriend.getUser_id().equals(receiverFriend.getUser_id())) {
 
                     mutualFriends.add(senderFriend);
                 }
             });
         });
-        if(mutualFriends.isEmpty()){
+        if (mutualFriends.isEmpty()) {
             Map<String, Object> err = Map.of("err", "User or to_user doesn't have any friend!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
@@ -235,9 +235,9 @@ public class FriendService {
 
         Map<String, Object> err = Map.of(
                 "msg", "Get mutual friend successfully!",
-                "count_mutual",mutualFriends.size(),
-                "list_mutual",mutualFriends
-                );
+                "count_mutual", mutualFriends.size(),
+                "list_mutual", mutualFriends
+        );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, err).toJSON(), HttpStatus.OK);
     }
 
@@ -259,7 +259,7 @@ public class FriendService {
                         friendDTO.setStatus(true);
                         friendDTO.setSocket_session_id(user1.getSocket_session_id());
                         friendDTO.setIs_online(false);
-                        if(user1.getSocket_session_id() != null) friendDTO.setIs_online(true);
+                        if (user1.getSocket_session_id() != null) friendDTO.setIs_online(true);
 
                         exportListFriends.add(friendDTO);
                     }
@@ -276,7 +276,7 @@ public class FriendService {
                         friendDTO.setStatus(true);
                         friendDTO.setSocket_session_id(user1.getSocket_session_id());
                         friendDTO.setIs_online(false);
-                        if(user1.getSocket_session_id() != null) friendDTO.setIs_online(true);
+                        if (user1.getSocket_session_id() != null) friendDTO.setIs_online(true);
 
                         exportListFriends.add(friendDTO);
                     }
@@ -310,19 +310,17 @@ public class FriendService {
     }
 
 
-
-    public Boolean checkStatusOnlOff(Long userId, Long userIdToCheck){
+    public Boolean checkStatusOnlOff(Long userId, Long userIdToCheck) {
         int isFriend = checkStatus(userId, userIdToCheck);
-        if(isFriend != 2) return null;
+        if (isFriend != 2) return null;
 
         User user = userRepos.findById(userIdToCheck).get();
 
         UUID socketSessionId = user.getSocket_session_id();
-        if(socketSessionId == null) return false;
+        if (socketSessionId == null) return false;
 
         return true;
     }
-
 
 
 }
