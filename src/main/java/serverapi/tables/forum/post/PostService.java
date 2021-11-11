@@ -1,6 +1,7 @@
 package serverapi.tables.forum.post;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import serverapi.query.specification.Specificationn;
 import serverapi.tables.forum.category.Category;
 import serverapi.tables.forum.post_category.PostCategory;
 import serverapi.tables.forum.post_like.PostLike;
+import serverapi.tables.manga_tables.manga.Manga;
 import serverapi.tables.manga_tables.manga.MangaService;
 import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
 import serverapi.tables.user_tables.user.User;
@@ -129,6 +131,34 @@ public class PostService {
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
+
+
+    protected ResponseEntity getSuggestion(int quantity){
+        Long totalRows = postRepos.count();
+        int randomPosition = (int) (Math.random() * totalRows);
+        if (randomPosition >= (totalRows - quantity)) {
+            randomPosition -= quantity;
+
+            if(randomPosition < 0) randomPosition = 0;
+        }
+
+        Pageable pageable = new OffsetBasedPageRequest(randomPosition, quantity);
+        List<PostUserDTO> posts = postRepos.getPosts(pageable);
+        if (posts.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "err", "No suggestion posts!",
+                    "suggestion_list", new ArrayList<>()
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+        }
+
+        Map<String, Object> msg = Map.of(
+                "err", "get suggestion posts OK!",
+                "suggestion_list", posts
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
 
     protected ResponseEntity getPost(Long postId) {
         Optional<PostUserDTO> postUserDTOOptional = postRepos.getByPostId(postId);

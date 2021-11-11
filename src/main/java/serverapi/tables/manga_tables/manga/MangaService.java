@@ -505,8 +505,10 @@ public class MangaService {
 
         Long totalRows = mangaRepository.count();
         int randomPosition = (int) (Math.random() * totalRows);
-        if (randomPosition >= (totalRows - 5)) {
-            randomPosition -= 5;
+        if (randomPosition >= (totalRows - 6)) {
+            randomPosition -= 6;
+
+            if(randomPosition < 0) randomPosition = 0;
         }
         Pageable pageable = new OffsetBasedPageRequest(randomPosition, 6);
         Page<Manga> mangaPage = mangaRepository.findAll(pageable);

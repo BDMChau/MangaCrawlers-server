@@ -28,6 +28,12 @@ public class PostControllerUnAuth {
         return postService.getPosts(from, amount);
     }
 
+    @GetMapping("/getsuggestion")
+    public ResponseEntity getSuggestion(@RequestParam int quantity) {
+
+        return postService.getSuggestion(quantity);
+    }
+
     @GetMapping("/getpost")
     public ResponseEntity getPost(@RequestParam String post_id) {
         Long postId = Long.parseLong(post_id);
