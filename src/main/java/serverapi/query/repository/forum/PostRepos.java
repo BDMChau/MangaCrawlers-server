@@ -125,4 +125,18 @@ public interface PostRepos extends JpaRepository<Post, Long>, JpaSpecificationEx
             """)
     List<PostUserDTO> getTopPostsLike(Pageable pageable);
 
+    @Query("""
+            SELECT new serverapi.query.dtos.tables.PostUserDTO(
+                      post.post_id, post.title, post.content, post.count_like, post.created_at,
+                      user.user_id, user.user_name, user.user_email, user.user_avatar, user.user_isAdmin
+                      )
+                      FROM Post post
+                      JOIN User user ON user.user_id = post.user.user_id
+                      WHERE post.created_at >= (current_date - (:from_time)) and post.created_at < (current_date - (:to_time))
+                      GROUP BY post.post_id, post.title, post.content, post.count_like, post.created_at,
+                                user.user_id, user.user_name, user.user_email, user.user_avatar, user.user_isAdmin
+                      ORDER BY post.count_like DESC
+            """)
+    List<PostUserDTO> getTopPostsLike(Pageable pageable, @Param("from_time") int from_time, @Param("to_time") int to_time);
+
 }
