@@ -311,7 +311,7 @@ public class UserService {
         // Check variable
         Calendar timeUpdated = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         Optional<Post> postOptional = postRepos.findById(postID);
-        Optional<Chapter> chapterOptional = chapterRepos.findById(chapterID);
+//        Optional<Chapter> chapterOptional = chapterRepos.findById(chapterID);
         Optional<Manga> mangaOptional = mangaRepository.findById(mangaID);
         Optional<User> userOptional = userRepos.findById(userID);
 
@@ -320,16 +320,21 @@ public class UserService {
             post = postOptional.get();
         }
 
-        Chapter chapter = null;
-        if (!chapterOptional.isEmpty()) {
-            chapter = chapterOptional.get();
+//        Chapter chapter = null;
+//        if (!chapterOptional.isEmpty()) {
+//            chapter = chapterOptional.get();
+//        }
+
+        Manga manga = null;
+        if (!mangaOptional.isEmpty()) {
+            manga =  mangaOptional.get();
         }
 
         if (mangaOptional.isEmpty() && postOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("err", "Manga or post not found!");
+            Map<String, Object> msg = Map.of("err", "Manga and post not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
-        Manga manga = mangaOptional.get();
+
 
 
         if (userOptional.isEmpty()) {
@@ -351,7 +356,7 @@ public class UserService {
         /* Add comment */
         MangaComments mangaComments = new MangaComments();
         mangaComments.setManga(manga);
-        mangaComments.setChapter(chapter);
+//        mangaComments.setChapter(chapter);
         mangaComments.setPost(post);// if chapter null >> set null
         mangaComments.setUser(user);
         mangaComments.setManga_comment_content(content);
@@ -469,12 +474,12 @@ public class UserService {
             exportComment.setManga_id(manga.getManga_id());
         }
 
-        if (chapter != null) {
-
-            exportComment.setChapter_id(chapter.getChapter_id());
-            exportComment.setChapter_name(chapter.getChapter_name());
-            exportComment.setCreated_at(chapter.getCreated_at());
-        }
+//        if (chapter != null) {
+//
+//            exportComment.setChapter_id(chapter.getChapter_id());
+//            exportComment.setChapter_name(chapter.getChapter_name());
+//            exportComment.setCreated_at(chapter.getCreated_at());
+//        }
         if (!level.equals("0")) {
             exportComment.setLevel(level);
         }
