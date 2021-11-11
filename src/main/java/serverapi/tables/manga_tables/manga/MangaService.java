@@ -373,7 +373,6 @@ public class MangaService {
         List<UpdateViewDTO> listCurrentDaily = mangaRepository.getWeekly(1, 0);
         List<UpdateViewDTO> listPreviousDaily = mangaRepository.getWeekly(2, 1);
 
-        System.err.println("listPreviousDaily check " + listPreviousDaily.isEmpty());
         if (listCurrentDaily.isEmpty()) {
             Map<String, Object> err = Map.of(
                     "err", "Nothing from daily mangas ranking!",
