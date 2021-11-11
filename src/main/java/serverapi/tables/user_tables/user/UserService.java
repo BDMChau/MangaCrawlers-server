@@ -82,7 +82,7 @@ public class UserService {
                        MangaCommentsRepos mangaCommentsRepos, RatingMangaRepos ratingMangaRepos,
                        TransGroupRepos transGroupRepos, GenreRepos genreRepos, MangaGenreRepos mangaGenreRepos,
                        AuthorRepos authorRepos, ImgChapterRepos imgChapterRepos, CommentRelationRepos commentRelationRepos,
-                       CommentImageRepos commentImageRepos, PostRepos postRepos,CommentTagsRepos commentTagsRepos, CommentLikesRepos commentLikesRepos, NotificationRepos notificationRepos) {
+                       CommentImageRepos commentImageRepos, PostRepos postRepos, CommentTagsRepos commentTagsRepos, CommentLikesRepos commentLikesRepos, NotificationRepos notificationRepos) {
         this.mangaRepository = mangaRepository;
         this.followingRepos = followingRepos;
         this.userRepos = userRepos;
@@ -315,6 +315,11 @@ public class UserService {
         Optional<Manga> mangaOptional = mangaRepository.findById(mangaID);
         Optional<User> userOptional = userRepos.findById(userID);
 
+        if (mangaOptional.isEmpty() && postOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of("err", "Manga and post not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+
         Post post = null;
         if (!postOptional.isEmpty()) {
             post = postOptional.get();
@@ -327,15 +332,8 @@ public class UserService {
 
         Manga manga = null;
         if (!mangaOptional.isEmpty()) {
-            manga =  mangaOptional.get();
+            manga = mangaOptional.get();
         }
-
-        if (mangaOptional.isEmpty() && postOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("err", "Manga and post not found!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
-        }
-
-
 
         if (userOptional.isEmpty()) {
             Map<String, Object> msg = Map.of("err", "User not found!");
@@ -405,7 +403,7 @@ public class UserService {
         if (image != null) {
             Map cloudinaryResponse = cloudinaryUploader.uploadImg(
                     image.getBytes(),
-                    manga.getManga_name(),
+                    "",
                     "user_comment_images",
                     false
 
@@ -465,12 +463,12 @@ public class UserService {
         exportComment.setUser_name(user.getUser_name());
         exportComment.setUser_avatar(user.getUser_avatar());
 
-        if(post != null){
+        if (post != null) {
             exportComment.setPost_id(post.getPost_id());
             exportComment.setPost_content(post.getContent());
         }
 
-        if(manga != null){
+        if (manga != null) {
             exportComment.setManga_id(manga.getManga_id());
         }
 
@@ -520,7 +518,7 @@ public class UserService {
         User user = userOptional.get();
 
         // check allow
-        if(!user.getUser_id().equals(mangaComments.getUser().getUser_id())){
+        if (!user.getUser_id().equals(mangaComments.getUser().getUser_id())) {
             Map<String, Object> msg = Map.of("err", "You don't have permission!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
@@ -637,7 +635,7 @@ public class UserService {
         if (image != null) {
             Map cloudinaryResponse = cloudinaryUploader.uploadImg(
                     image.getBytes(),
-                    manga.getManga_name(),
+                    "",
                     "user_comment_images",
                     false
             );
@@ -680,8 +678,9 @@ public class UserService {
         exportComment.setUser_avatar(user.getUser_avatar());
         exportComment.setComments_level_01(getLevelOptional.get().getComments_level_01());
 
-        exportComment.setManga_id(manga.getManga_id());
-
+        if(manga != null){
+            exportComment.setManga_id(manga.getManga_id());
+        }
         if (mangaComments.getChapter() != null) {
 
             Optional<Chapter> chapterOptional = chapterRepos.findById(mangaComments.getChapter().getChapter_id());
@@ -720,7 +719,7 @@ public class UserService {
 
 
         // Check if user is not the owner
-        if(!user.getUser_id().equals(mangaComment.getUser().getUser_id())){
+        if (!user.getUser_id().equals(mangaComment.getUser().getUser_id())) {
             Map<String, Object> msg = Map.of("err", "You don't have permission!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
@@ -1395,8 +1394,8 @@ public class UserService {
         }
         User user = userOptional.get();
         String inputDesc = description.trim();
-        if(!inputDesc.isEmpty()){
-            if(inputDesc.length()>= 150){
+        if (!inputDesc.isEmpty()) {
+            if (inputDesc.length() >= 150) {
                 Map<String, Object> msg = Map.of(
                         "err", "Description length must be <= 150 characters!"
                 );
@@ -1419,7 +1418,6 @@ public class UserService {
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
-
 
 
     /////////////////////////////////////// HELPERS /////////////////////////////////
@@ -1452,38 +1450,18 @@ public class UserService {
 
         /// chỗ này
         MangaCommentDTOs cmtLevel0 = inputCommentOptional.get();
-//        List<CommentTreesDTO> level1 = mangaCommentsRepos.getCommentsChild(inputCommentID, "1", pageable);
-//
-//        if(!level1.isEmpty()){
-//            level1.forEach(item ->{
-//                List<CommentTreesDTO> level2 = mangaCommentsRepos.getCommentsChild(inputCommentID, "2", pageable);
-//                if(!level2.isEmpty()){
-//                    level2.forEach(lv2 ->{
-//                        item.setComments_level_02(level2);
-//                    });
-//                }
-//            });
-//            cmtLevel0.setComments_level_01(level1);
-//
-//        }
+
 
         CommentTreesDTO cmtLevelDeeper = new CommentTreesDTO();
 
         if (!cmtLevel0.getLevel().equals("0")) {
-
-//            if(cmtLevel0.getLevel().equals("1")){
-//
-//                List<CommentTreesDTO> level2 = mangaCommentsRepos.getCommentsChild(inputCommentID, "2", pageable);
-//                if(!level2.isEmpty()){
-//                    cmtLevelDeeper.setComments_level_02(level2);
-//                }
-//            }
 
             cmtLevelDeeper.setTo_users(cmtLevel0.getTo_users());
             cmtLevelDeeper.setUser_id(cmtLevel0.getUser_id());
             cmtLevelDeeper.setUser_name(cmtLevel0.getUser_name());
             cmtLevelDeeper.setUser_avatar(cmtLevel0.getUser_avatar());
             cmtLevelDeeper.setManga_id(cmtLevel0.getManga_id());
+            cmtLevelDeeper.setPost_id(cmtLevel0.getPost_id());
             cmtLevelDeeper.setChapter_id(cmtLevel0.getChapter_id());
             cmtLevelDeeper.setChapter_name(cmtLevel0.getChapter_name());
             cmtLevelDeeper.setCreated_at(cmtLevel0.getCreated_at());
