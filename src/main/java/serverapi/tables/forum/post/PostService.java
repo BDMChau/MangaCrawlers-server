@@ -104,7 +104,7 @@ public class PostService {
         Pageable pageable = new OffsetBasedPageRequest(from, amount);
         List<PostUserDTO> posts = postRepos.getPosts(pageable);
 
-        posts.forEach(post ->{
+        posts.forEach(post -> {
             List<MangaComments> cmts = mangaCommentsRepos.getCmtsByPostId(post.getPost_id());
             post.setComment_count(Long.parseLong(String.valueOf(cmts.size())));
         });
@@ -133,13 +133,13 @@ public class PostService {
     }
 
 
-    protected ResponseEntity getSuggestion(int quantity){
+    protected ResponseEntity getSuggestion(int quantity) {
         Long totalRows = postRepos.count();
         int randomPosition = (int) (Math.random() * totalRows);
         if (randomPosition >= (totalRows - quantity)) {
             randomPosition -= quantity;
 
-            if(randomPosition < 0) randomPosition = 0;
+            if (randomPosition < 0) randomPosition = 0;
         }
 
         Pageable pageable = new OffsetBasedPageRequest(randomPosition, quantity);
@@ -303,9 +303,9 @@ public class PostService {
     }
 
 
-    protected ResponseEntity getTopPostsCmts(int quantity){
+    protected ResponseEntity getTopPostsCmts(int quantity) {
         final Pageable pageable = new OffsetBasedPageRequest(0, quantity);
-        List<PostUserDTO> postUserDTOList = postRepos.getTopPostsNumberOfCmts(pageable,7,0);
+        List<PostUserDTO> postUserDTOList = postRepos.getTopPostsNumberOfCmts(pageable, 30, 0);
 
         Map<String, Object> msg = Map.of(
                 "msg", "get top post cmts OK!",
@@ -315,9 +315,9 @@ public class PostService {
     }
 
 
-    protected ResponseEntity getTopPostsLike(int quantity){
+    protected ResponseEntity getTopPostsLike(int quantity) {
         final Pageable pageable = new OffsetBasedPageRequest(0, quantity);
-        List<PostUserDTO> postUserDTOList = postRepos.getTopPostsLike(pageable, 7, 0);
+        List<PostUserDTO> postUserDTOList = postRepos.getTopPostsLike(pageable, 30, 0);
 
         Map<String, Object> msg = Map.of(
                 "msg", "get top post like OK!",
