@@ -67,6 +67,12 @@ public class PostControllerUnAuth {
         return postService.getTopPostsLike(quantity);
     }
 
+    @GetMapping("/get_top_post_dislike")
+    public ResponseEntity getTopPostsDislike(@RequestParam int quantity) {
+
+        return postService.getTopPostsDislike(quantity);
+    }
+
     @PostMapping("/get_total_like")
     public ResponseEntity getTotalLike(@RequestBody Map data) {
         String post_id = String.valueOf(data.get("post_id"));
