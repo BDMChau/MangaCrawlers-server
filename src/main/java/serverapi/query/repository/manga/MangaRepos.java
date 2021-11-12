@@ -49,7 +49,7 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
      * @return
      */
     @Query("SELECT new serverapi.query.dtos.tables.MangaChapterDTO(c.chapter_id, c.chapter_name, c.created_at, m.manga_id," +
-            " m.manga_name, m.thumbnail) FROM Manga m JOIN m.chapters c JOIN TransGroup tg ON tg.transgroup_id = m.transgroup WHERE c.chapter_id = (SELECT MAX(ct.chapter_id) FROM Manga mg INNER JOIN mg.chapters ct " +
+            " m.manga_name, m.thumbnail) FROM Manga m JOIN m.chapters c JOIN TransGroup tg ON tg.transgroup_id = m.transgroup.transgroup_id WHERE c.chapter_id = (SELECT MAX(ct.chapter_id) FROM Manga mg INNER JOIN mg.chapters ct " +
             "WHERE mg.manga_id = m.manga_id ) AND tg.transgroup_id =?1 Order by c.chapter_id Desc")
     List<MangaChapterDTO> getLatestChapterFromMangaByTransgroup(Long transgroup_id);
 
@@ -80,7 +80,7 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
 
     @Query("SELECT new serverapi.query.dtos.tables.MangaChapterGenreDTO(c.chapter_id, c.chapter_name, c.created_at, m" +
             ".manga_id,m.manga_name, m.thumbnail, g.genre_id, g.genre_name, g.genre_description, g.genre_color) FROM " +
-            "Manga m JOIN m.chapters c JOIN m.mangaGenres mg ON mg.manga = m.manga_id JOIN Genre g ON g.genre_id = mg.genre  " +
+            "Manga m JOIN m.chapters c JOIN m.mangaGenres mg ON mg.manga.manga_id = m.manga_id JOIN Genre g ON g.genre_id = mg.genre.genre_id  " +
             "WHERE c.chapter_id = (SELECT MAX(ct.chapter_id) FROM Manga mg INNER JOIN mg.chapters ct WHERE mg.manga_id = m.manga_id " +
             "AND g.genre_id =?1) Order by c.chapter_id Desc")
     List<MangaChapterGenreDTO> findMangaByOneGenre(Long genre_id);
@@ -97,18 +97,18 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
     List<MangaViewDTO> getTotalView();
 
 
-//    @Query("SELECT new serverapi.Query.DTOs.FeaturesDTOs.UpdateViewDTO(m.manga_id,m.manga_name, m.thumbnail, m.description, m.status, m.stars," +
-//            "m.views, m.date_publications, m.created_at, u.updatedview_id, u.totalviews, u.created_at) " +
-//            "FROM UpdateView u JOIN u.manga m " +
-//            "WHERE u.created_at >= (current_date - (:from_time )) and u.created_at <= (current_date - (:to_time)) ")
-//    List<UpdateViewDTO> getWeekly(@Param("from_time") int from_time, @Param("to_time") int to_time);
-
-
     @Query("SELECT new serverapi.query.dtos.features.UpdateViewDTO(m.manga_id,m.manga_name, m.thumbnail, m.description, m.status, m.stars," +
             "m.views, m.date_publications, m.created_at, u.updatedview_id, u.totalviews, u.created_at) " +
             "FROM UpdateView u JOIN u.manga m " +
-            "WHERE DATE(u.created_at) >= (CURRENT_DATE - :from_time) and DATE(u.created_at) < (CURRENT_DATE - :to_time)")
+            "WHERE u.created_at >= (current_date - (:from_time )) and u.created_at < (current_date - (:to_time)) ")
     List<UpdateViewDTO> getWeekly(@Param("from_time") int from_time, @Param("to_time") int to_time);
+
+
+//    @Query("SELECT new serverapi.query.dtos.features.UpdateViewDTO(m.manga_id,m.manga_name, m.thumbnail, m.description, m.status, m.stars," +
+//            "m.views, m.date_publications, m.created_at, u.updatedview_id, u.totalviews, u.created_at) " +
+//            "FROM UpdateView u JOIN u.manga m " +
+//            "WHERE DATE(u.created_at) >= (CURRENT_DATE - :from_time) and DATE(u.created_at) < (CURRENT_DATE - :to_time)")
+//    List<UpdateViewDTO> getWeekly(@Param("from_time") int from_time, @Param("to_time") int to_time);
 
 
     @Query("SELECT new serverapi.query.dtos.tables.AuthorMangaDTO( a.author_id, a.author_name," +

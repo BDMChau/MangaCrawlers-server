@@ -238,13 +238,13 @@ public class MangaService {
         List<UpdateViewDTO> listCurrentWeekly = mangaRepository.getWeekly(7, 0);
         List<UpdateViewDTO> listPreviousWeekly = mangaRepository.getWeekly(14, 7);
 
-
         if (listCurrentWeekly.isEmpty()) {
             System.err.println("Current list empty!");
             Map<String, Object> err = Map.of(
-                    "msg", "Nothing from weekly mangas ranking!"
+                    "err", "Nothing from weekly mangas ranking!",
+                    "list_weekly", new ArrayList<>()
             );
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, err).toJSON(), HttpStatus.OK);
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
 
         List<WeeklyMangaDTO> listWeeklyMangasRanking = new ArrayList<>();
@@ -308,7 +308,6 @@ public class MangaService {
                         weeklyMangaDTO.setView_compares(views);
 
                         listWeeklyMangasRanking.add(weeklyMangaDTO);
-                        System.err.println("checklistweekly" + listCurrentWeekly.get(j).getManga_id());
                     }
                 }
 
@@ -322,11 +321,8 @@ public class MangaService {
         List<WeeklyMangaDTO> listWeeklyMangasRankingAfterRemoveDuplicates = listWeeklyMangasRanking.stream()
                 .collect(collectingAndThen(toCollection(() -> new TreeSet<WeeklyMangaDTO>(comparing(WeeklyMangaDTO::getManga_id))),
                         ArrayList::new));
-        listWeeklyMangasRankingAfterRemoveDuplicates.forEach(item -> {
-            System.err.println("listWeeklyMangasRankingAfterRemoveDuplicates" + item.getManga_id());
-        });
-        listWeeklyMangasRankingAfterRemoveDuplicates.sort(comparing(WeeklyMangaDTO::getView_compares).reversed());
 
+        listWeeklyMangasRankingAfterRemoveDuplicates.sort(comparing(WeeklyMangaDTO::getView_compares).reversed());
 
         List<AuthorMangaDTO> listWeeklyRanking = new ArrayList<>();
 
@@ -335,8 +331,11 @@ public class MangaService {
         List<AuthorMangaDTO> mangas = mangaRepository.getAllMangas();
 
         if (mangas.isEmpty()) {
-            Map<String, Object> err = Map.of("err", "Nothing from daily mangas ranking empty!");
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, err).toJSON(), HttpStatus.OK);
+            Map<String, Object> err = Map.of(
+                    "err", "Nothing from weekly mangas ranking empty!",
+                    "list_weekly", new ArrayList<>()
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
 
         top10Mangas.forEach(item -> {
@@ -351,8 +350,11 @@ public class MangaService {
         });
 
         if (listWeeklyRanking.isEmpty()) {
-            Map<String, Object> err = Map.of("err", "Nothing from weekly mangas ranking empty!");
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, err).toJSON(), HttpStatus.OK);
+            Map<String, Object> err = Map.of(
+                    "err", "Nothing from weekly mangas ranking empty!",
+                    "list_weekly", new ArrayList<>()
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
 
         Map<String, Object> msg = Map.of(
@@ -369,24 +371,14 @@ public class MangaService {
      */
     public ResponseEntity getDailyMangas() {
         List<UpdateViewDTO> listCurrentDaily = mangaRepository.getWeekly(1, 0);
-        listCurrentDaily.forEach(item -> {
-            System.err.println("item in listcurrent " + item.getManga_id());
-            System.err.println("item in listcurrent " + item.getCreated_at().getFirstDayOfWeek());
-
-        });
-        System.err.println("datecurrent" + LocalDateTime.now());
         List<UpdateViewDTO> listPreviousDaily = mangaRepository.getWeekly(2, 1);
-        listPreviousDaily.forEach(item -> {
-            System.err.println("item in lisprev " + item.getManga_id());
-            System.err.println("item in listprev " + item.getCreated_at().getFirstDayOfWeek());
 
-        });
-
-        System.err.println("listPreviousDaily check " + listPreviousDaily.isEmpty());
         if (listCurrentDaily.isEmpty()) {
-            System.err.println("Current list daily empty!");
-            Map<String, Object> err = Map.of("err", "Nothing from daily mangas ranking!");
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, err).toJSON(), HttpStatus.OK);
+            Map<String, Object> err = Map.of(
+                    "err", "Nothing from daily mangas ranking!",
+                    "list_daily", new ArrayList<>()
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
 
         List<DailyMangaDTO> listDailyMangasRanking = new ArrayList<>();
@@ -401,14 +393,11 @@ public class MangaService {
                     if (listCurrentDaily.get(i).getManga_id().equals(listPreviousDaily.get(j).getManga_id())) {
                         DailyMangaDTO dailyMangaDTO = new DailyMangaDTO();
                         Long views = listCurrentDaily.get(i).getTotalviews() - listPreviousDaily.get(j).getTotalviews();
-                        System.err.println("Compare " + views);
                         dailyMangaDTO.setManga_id(listCurrentDaily.get(i).getManga_id());
                         dailyMangaDTO.setViews(listCurrentDaily.get(i).getTotalviews());
                         dailyMangaDTO.setView_compares(views);
-                        System.out.println("check set");
 
                         listDailyMangasRanking.add(dailyMangaDTO);
-                        System.out.println("listWeeklyMangasRanking.set(j,mangaDTO)" + listDailyMangasRanking);
                     }
                 }
 
@@ -431,7 +420,6 @@ public class MangaService {
                 for (int j = 0; j < listCurrentDaily.size(); j++) {
                     if (listPreviousDaily.get(i).getManga_id().equals(listCurrentDaily.get(j).getManga_id())) {
                         DailyMangaDTO dailyMangaDTO = new DailyMangaDTO();
-                        System.out.println("listPreviousDaily.get(i).getManga_id()");
 
                         Long views = listCurrentDaily.get(j).getTotalviews() - listPreviousDaily.get(i).getTotalviews();
                         System.err.println("Compare " + views);
@@ -466,8 +454,11 @@ public class MangaService {
         List<AuthorMangaDTO> mangas = mangaRepository.getAllMangas();
 
         if (mangas.isEmpty()) {
-            Map<String, Object> err = Map.of("err", "Nothing from daily mangas ranking!");
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, err).toJSON(), HttpStatus.OK);
+            Map<String, Object> err = Map.of(
+                    "err", "Nothing from daily mangas ranking!",
+                    "list_daily", new ArrayList<>()
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
 
         top10Mangas.forEach(item -> {
@@ -478,8 +469,6 @@ public class MangaService {
                     System.err.println("added");
                 }
             });
-
-            System.err.println("listDailyRanking: " + listDailyRanking);
 
         });
 
@@ -500,28 +489,30 @@ public class MangaService {
      *
      * @return suggestion list
      */
-    public ResponseEntity getSuggestionList() {
+    public ResponseEntity getSuggestionList(int quantity) {
 //        List<Manga> mangaList = mangaRepository.getRandomList(5);
 
         Long totalRows = mangaRepository.count();
         int randomPosition = (int) (Math.random() * totalRows);
-        if (randomPosition >= (totalRows - 5)) {
-            randomPosition -= 5;
+        if (randomPosition >= (totalRows - quantity)) {
+            randomPosition -= quantity;
+
+            if(randomPosition < 0) randomPosition = 0;
         }
-        Pageable pageable = new OffsetBasedPageRequest(randomPosition, 6);
+        Pageable pageable = new OffsetBasedPageRequest(randomPosition, quantity);
         Page<Manga> mangaPage = mangaRepository.findAll(pageable);
 
         System.err.println("Getting suggestion list");
         if (mangaPage.isEmpty()) {
             Map<String, Object> err = Map.of(
                     "err", "No manga!",
-                    "suggestion_list", mangaPage.getContent()
+                    "suggestion_list", new ArrayList<>()
             );
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
 
         Map<String, Object> msg = Map.of(
-                "msg", "Get suggestion list successfully!",
+                "msg", "Get suggestion list OK!",
                 "suggestion_list", mangaPage.getContent()
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
@@ -542,7 +533,7 @@ public class MangaService {
         if (searchingResults.isEmpty()) {
             Map<String, Object> err = Map.of(
                     "err", "No manga!",
-                    "data", searchingResults
+                    "data", new ArrayList<>()
             );
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }

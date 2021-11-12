@@ -28,6 +28,12 @@ public class PostControllerUnAuth {
         return postService.getPosts(from, amount);
     }
 
+    @GetMapping("/getsuggestion")
+    public ResponseEntity getSuggestion(@RequestParam int quantity) {
+
+        return postService.getSuggestion(quantity);
+    }
+
     @GetMapping("/getpost")
     public ResponseEntity getPost(@RequestParam String post_id) {
         Long postId = Long.parseLong(post_id);
@@ -47,6 +53,18 @@ public class PostControllerUnAuth {
     public ResponseEntity searchByTitle(@RequestParam String value) {
 
         return postService.searchByTitle(value);
+    }
+
+    @GetMapping("/get_top_post_cmts")
+    public ResponseEntity getTopPostsCmts(@RequestParam int quantity) {
+
+        return postService.getTopPostsCmts(quantity);
+    }
+
+    @GetMapping("/get_top_post_like")
+    public ResponseEntity getTopPostsLike(@RequestParam int quantity) {
+
+        return postService.getTopPostsLike(quantity);
     }
 
     @PostMapping("/get_total_like")

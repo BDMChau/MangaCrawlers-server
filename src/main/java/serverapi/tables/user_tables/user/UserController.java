@@ -165,7 +165,7 @@ public class UserController {
         /**
          * Declare variables
          */
-        Long mangaID;
+        Long mangaID = 0L;
         Long chapterID = 0L;
         Long postID = 0L;
         Long parentID = 0L;
@@ -186,9 +186,8 @@ public class UserController {
          * Format variables necessary include: mangaID, UserID, chapterID, parentID, toUserID
          */
         Long userID = Long.parseLong(strUserID);
-        mangaID = Long.parseLong(commentPOJO.getManga_id());
 
-        //toUserID
+        // toUserID
         if (!to_usersString.isEmpty()) {
 
             to_usersString.forEach(item -> {
@@ -198,16 +197,19 @@ public class UserController {
             });
         }
 
-        //ChapterID
+        // chapterID
         if (!commentPOJO.getChapter_id().equals("")) {
-
             chapterID = Long.parseLong(commentPOJO.getChapter_id());
         }
 
-        //postID
-        if (!commentPOJO.getPost_id().equals("")) {
+        // mangaId
+        if (!commentPOJO.getManga_id().equals("")) {
+            mangaID = Long.parseLong(commentPOJO.getManga_id());
+        }
 
-            chapterID = Long.parseLong(commentPOJO.getPost_id());
+        // postID
+        if (!commentPOJO.getPost_id().equals("")) {
+            postID = Long.parseLong(commentPOJO.getPost_id());
         }
 
         //parentID

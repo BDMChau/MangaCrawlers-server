@@ -88,9 +88,9 @@ public class MangaController {
 
     // random
     @GetMapping("/getsuggestion")
-    public ResponseEntity getSuggestionList() {
+    public ResponseEntity getSuggestionList(@RequestParam int quantity) {
 
-        return mangaService.getSuggestionList();
+        return mangaService.getSuggestionList(quantity);
     }
 
 
