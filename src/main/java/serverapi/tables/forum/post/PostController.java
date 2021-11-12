@@ -118,7 +118,7 @@ public class PostController {
         return postService.addDislike(userID, postID);
     }
 
-    @PostMapping("/undislike")
+    @PostMapping("/un_dislike")
     public ResponseEntity undislike(@RequestBody Map data, ServletRequest request) {
         String post_id = String.valueOf(data.get("post_id"));
 

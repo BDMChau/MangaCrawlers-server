@@ -345,7 +345,7 @@ public class PostService {
 
     public ResponseEntity checkUserLike(Long userID, Long postID) {
         String sLikeStatus = "";
-       int likeStatus = checkLikeStatus(userID, postID);
+        int likeStatus = checkLikeStatus(userID, postID);
         switch (likeStatus) {
             case 0 -> sLikeStatus = "hasn't liked";
             case 1 -> sLikeStatus = "liked";
@@ -397,9 +397,9 @@ public class PostService {
         }
         Post post = postOptional.get();
 
-        /* 0 ="hasn't liked";
-         1 = "liked";
-         2 = "disliked"; */
+        // 0 ="hasn't liked";
+        // 1 = "liked";
+        // 2 = "disliked";
         int likeStatus = checkLikeStatus(userID, postID);
 
         switch (likeStatus) {
@@ -407,9 +407,7 @@ public class PostService {
                 Map<String, Object> msg = Map.of("err", "User already liked!");
                 return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
             }
-            case 2 -> {
-                doUndislike(userID, postID, post);
-            }
+            case 2 -> doUndislike(userID, postID, post);
         }
 
         post.setCount_like(post.getCount_like() + 1);
@@ -440,14 +438,13 @@ public class PostService {
         }
 
         Post post = postOptional.get();
-        /* 0 ="hasn't liked";
-         1 = "liked";
-         2 = "disliked"; */
+
+        // 0 ="hasn't liked";
+        // 1 = "liked";
+        // 2 = "disliked";
         int likeStatus = checkLikeStatus(userID, postID);
         switch (likeStatus) {
-            case 1 -> {
-                doUnlike(userID, postID, post);
-            }
+            case 1 -> doUnlike(userID, postID, post);
             case 2 -> {
                 Map<String, Object> msg = Map.of("err", "User already disliked!");
                 return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
@@ -469,7 +466,7 @@ public class PostService {
         Map<String, Object> msg = Map.of(
                 "msg", "Dislike successfully!",
                 "likes", countLikes,
-                "dislikes",countDislikes
+                "dislikes", countDislikes
         );
         return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
     }
@@ -478,8 +475,8 @@ public class PostService {
         Optional<PostLike> postLikeOptional = postLikeRepos.getPostLike(postID, userID);
         Optional<Post> postOptional = postRepos.findById(postID);
         if (postLikeOptional.isEmpty() || postOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("err", "Like is not found!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+            Map<String, Object> err = Map.of("err", "Like is not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
 
         Post post = postOptional.get();
@@ -519,7 +516,7 @@ public class PostService {
 
     /////////////HELPERS/////////////////////////
 
-    private void doUndislike(Long userID, Long postID, Post post){
+    private void doUndislike(Long userID, Long postID, Post post) {
 
         Optional<PostDislike> postDislikeOptional = postDislikeRepos.getPostDislike(postID, userID);
         PostDislike postDislike = postDislikeOptional.get();
@@ -533,7 +530,7 @@ public class PostService {
 
     }
 
-    private void doUnlike(Long userID, Long postID, Post post){
+    private void doUnlike(Long userID, Long postID, Post post) {
 
         Optional<PostLike> postLikeOptional = postLikeRepos.getPostLike(postID, userID);
         PostLike postLike = postLikeOptional.get();
@@ -547,7 +544,7 @@ public class PostService {
 
     }
 
-    private int checkLikeStatus(Long userID, Long postID){
+    private int checkLikeStatus(Long userID, Long postID) {
 
         int likeStatus = 1;
         Optional<PostLike> postLikeOptional = postLikeRepos.getPostLike(postID, userID);
@@ -556,7 +553,7 @@ public class PostService {
         if (postLikeOptional.isEmpty() && postDislikeOptional.isEmpty()) {
             likeStatus = 0;
         }
-        if(postDislikeOptional.isPresent()){
+        if (postDislikeOptional.isPresent()) {
             likeStatus = 2;
         }
 
