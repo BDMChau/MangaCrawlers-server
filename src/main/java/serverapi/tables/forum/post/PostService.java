@@ -144,6 +144,12 @@ public class PostService {
 
         Pageable pageable = new OffsetBasedPageRequest(randomPosition, quantity);
         List<PostUserDTO> posts = postRepos.getPosts(pageable);
+
+        posts.forEach(post -> {
+            List<Category> categoryList = postCategoryRepos.getCategoriesByPostId(post.getPost_id());
+            post.setCategoryList(categoryList);
+        });
+
         if (posts.isEmpty()) {
             Map<String, Object> err = Map.of(
                     "err", "No suggestion posts!",
@@ -305,11 +311,16 @@ public class PostService {
 
     protected ResponseEntity getTopPostsCmts(int quantity) {
         final Pageable pageable = new OffsetBasedPageRequest(0, quantity);
-        List<PostUserDTO> postUserDTOList = postRepos.getTopPostsNumberOfCmts(pageable, 30, 0);
+        List<PostUserDTO> posts = postRepos.getTopPostsNumberOfCmts(pageable, 30, 0);
+
+        posts.forEach(post -> {
+            List<Category> categoryList = postCategoryRepos.getCategoriesByPostId(post.getPost_id());
+            post.setCategoryList(categoryList);
+        });
 
         Map<String, Object> msg = Map.of(
                 "msg", "get top post cmts OK!",
-                "posts", postUserDTOList
+                "posts", posts
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
@@ -317,11 +328,16 @@ public class PostService {
 
     protected ResponseEntity getTopPostsLike(int quantity) {
         final Pageable pageable = new OffsetBasedPageRequest(0, quantity);
-        List<PostUserDTO> postUserDTOList = postRepos.getTopPostsLike(pageable, 30, 0);
+        List<PostUserDTO> posts = postRepos.getTopPostsLike(pageable, 30, 0);
+
+        posts.forEach(post -> {
+            List<Category> categoryList = postCategoryRepos.getCategoriesByPostId(post.getPost_id());
+            post.setCategoryList(categoryList);
+        });
 
         Map<String, Object> msg = Map.of(
                 "msg", "get top post like OK!",
-                "posts", postUserDTOList
+                "posts", posts
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
