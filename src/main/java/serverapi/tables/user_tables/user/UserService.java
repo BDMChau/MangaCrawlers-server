@@ -627,7 +627,7 @@ public class UserService {
         // Check imagesUrl and set if it not as same as sub_imagesUrl
         Manga manga = null;
         String exportUrl = "";
-        if(mangaComments.getManga()!= null){
+        if (mangaComments.getManga() != null) {
             Optional<Manga> mangaOptional = mangaRepository.findById(mangaComments.getManga().getManga_id());
 
 
@@ -681,7 +681,7 @@ public class UserService {
         exportComment.setUser_avatar(user.getUser_avatar());
         exportComment.setComments_level_01(getLevelOptional.get().getComments_level_01());
 
-        if(manga != null){
+        if (manga != null) {
             exportComment.setManga_id(manga.getManga_id());
         }
         if (mangaComments.getChapter() != null) {
