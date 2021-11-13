@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import serverapi.tables.forum.post.Post;
+import serverapi.tables.forum.post_dislike.PostDislike;
 import serverapi.tables.forum.post_like.PostLike;
 import serverapi.tables.manga_tables.manga_comment.manga_comment_likes.CommentLikes;
 import serverapi.tables.manga_tables.manga_comment.manga_comment_tags.CommentTags;
@@ -101,6 +102,10 @@ public class User {
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<PostLike> postLikes;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Collection<PostDislike> postDislikes;
 
     @JsonBackReference
     @OneToMany(mappedBy = "to_user", cascade = CascadeType.ALL)

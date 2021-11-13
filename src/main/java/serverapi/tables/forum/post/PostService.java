@@ -13,15 +13,13 @@ import serverapi.query.dtos.features.SearchCriteriaDTO;
 import serverapi.query.dtos.features.MangaCommentDTOs.CommentTreesDTO;
 import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
 import serverapi.query.dtos.tables.PostUserDTO;
-import serverapi.query.repository.forum.CategoryRepos;
-import serverapi.query.repository.forum.PostCategoryRepos;
-import serverapi.query.repository.forum.PostLikeRepos;
-import serverapi.query.repository.forum.PostRepos;
+import serverapi.query.repository.forum.*;
 import serverapi.query.repository.manga.comment.MangaCommentsRepos;
 import serverapi.query.repository.user.UserRepos;
 import serverapi.query.specification.Specificationn;
 import serverapi.tables.forum.category.Category;
 import serverapi.tables.forum.post_category.PostCategory;
+import serverapi.tables.forum.post_dislike.PostDislike;
 import serverapi.tables.forum.post_like.PostLike;
 import serverapi.tables.manga_tables.manga.Manga;
 import serverapi.tables.manga_tables.manga.MangaService;
@@ -40,9 +38,10 @@ public class PostService {
     private final PostLikeRepos postLikeRepos;
     private final MangaCommentsRepos mangaCommentsRepos;
     private final MangaService mangaService;
+    private final PostDislikeRepos postDislikeRepos;
 
     @Autowired
-    public PostService(UserRepos userRepos, PostRepos postRepos, PostCategoryRepos postCategoryRepos, CategoryRepos categoryRepos, PostLikeRepos postLikeRepos, MangaCommentsRepos mangaCommentsRepos, MangaService mangaService) {
+    public PostService(UserRepos userRepos, PostRepos postRepos, PostCategoryRepos postCategoryRepos, CategoryRepos categoryRepos, PostLikeRepos postLikeRepos, MangaCommentsRepos mangaCommentsRepos, MangaService mangaService, PostDislikeRepos postDislikeRepos) {
         this.userRepos = userRepos;
         this.postRepos = postRepos;
         this.postCategoryRepos = postCategoryRepos;
@@ -50,6 +49,7 @@ public class PostService {
         this.postLikeRepos = postLikeRepos;
         this.mangaCommentsRepos = mangaCommentsRepos;
         this.mangaService = mangaService;
+        this.postDislikeRepos = postDislikeRepos;
     }
 
 
@@ -144,6 +144,12 @@ public class PostService {
 
         Pageable pageable = new OffsetBasedPageRequest(randomPosition, quantity);
         List<PostUserDTO> posts = postRepos.getPosts(pageable);
+
+        posts.forEach(post -> {
+            List<Category> categoryList = postCategoryRepos.getCategoriesByPostId(post.getPost_id());
+            post.setCategoryList(categoryList);
+        });
+
         if (posts.isEmpty()) {
             Map<String, Object> err = Map.of(
                     "err", "No suggestion posts!",
@@ -286,7 +292,7 @@ public class PostService {
 
         List<PostUserDTO> listToRes = new ArrayList();
         results.forEach(post -> {
-            PostUserDTO postUserDTO = new PostUserDTO(post.getPost_id(), post.getTitle(), null, post.getCount_like(), post.getCreated_at(), null, null, null, null, null);
+            PostUserDTO postUserDTO = new PostUserDTO(post.getPost_id(), post.getTitle(), null, post.getCount_like(), post.getCount_dislike(), post.getCreated_at(), null, null, null, null, null);
 
             List<Category> categoryList = categoryRepos.getAllByPostId(post.getPost_id());
             postUserDTO.setCategoryList(categoryList);
@@ -305,11 +311,23 @@ public class PostService {
 
     protected ResponseEntity getTopPostsCmts(int quantity) {
         final Pageable pageable = new OffsetBasedPageRequest(0, quantity);
-        List<PostUserDTO> postUserDTOList = postRepos.getTopPostsNumberOfCmts(pageable, 30, 0);
+        List<PostUserDTO> posts = postRepos.getTopPostsNumberOfCmts(pageable, 30, 0);
+        if (posts.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "err", "no posts!",
+                    "posts", new ArrayList<>()
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+        }
+
+        posts.forEach(post -> {
+            List<Category> categoryList = postCategoryRepos.getCategoriesByPostId(post.getPost_id());
+            post.setCategoryList(categoryList);
+        });
 
         Map<String, Object> msg = Map.of(
                 "msg", "get top post cmts OK!",
-                "posts", postUserDTOList
+                "posts", posts
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
@@ -317,27 +335,60 @@ public class PostService {
 
     protected ResponseEntity getTopPostsLike(int quantity) {
         final Pageable pageable = new OffsetBasedPageRequest(0, quantity);
-        List<PostUserDTO> postUserDTOList = postRepos.getTopPostsLike(pageable, 30, 0);
+        List<PostUserDTO> posts = postRepos.getTopPostsLike(pageable, 30, 0);
+        if (posts.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "err", "no posts!",
+                    "posts", new ArrayList<>()
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+        }
+
+
+        posts.forEach(post -> {
+            List<Category> categoryList = postCategoryRepos.getCategoriesByPostId(post.getPost_id());
+            post.setCategoryList(categoryList);
+        });
 
         Map<String, Object> msg = Map.of(
                 "msg", "get top post like OK!",
-                "posts", postUserDTOList
+                "posts", posts
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
 
-    public ResponseEntity checkUserLike(Long userID, Long postID) {
-        int likeStatus = 1;
-        String sLikeStatus = "";
-        Optional<PostLike> postLikeOptional = postLikeRepos.getPostLike(postID, userID);
-
-        if (postLikeOptional.isEmpty()) {
-            likeStatus = 0;
+    protected ResponseEntity getTopPostsDislike(int quantity) {
+        final Pageable pageable = new OffsetBasedPageRequest(0, quantity);
+        List<PostUserDTO> posts = postRepos.getTopPostsDislike(pageable, 30, 0);
+        if (posts.isEmpty()) {
+            Map<String, Object> err = Map.of(
+                    "err", "no posts!",
+                    "posts", new ArrayList<>()
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
+
+        posts.forEach(post -> {
+            List<Category> categoryList = postCategoryRepos.getCategoriesByPostId(post.getPost_id());
+            post.setCategoryList(categoryList);
+        });
+
+        Map<String, Object> msg = Map.of(
+                "msg", "get top post dislike OK!",
+                "posts", posts
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
+    protected ResponseEntity checkUserLike(Long userID, Long postID) {
+        String sLikeStatus = "";
+        int likeStatus = checkLikeStatus(userID, postID);
         switch (likeStatus) {
             case 0 -> sLikeStatus = "hasn't liked";
             case 1 -> sLikeStatus = "liked";
+            case 2 -> sLikeStatus = "disliked";
         }
 
         Map<String, Object> msg = Map.of(
@@ -348,7 +399,7 @@ public class PostService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
-    public ResponseEntity getTotalLike(Long postID) {
+    protected ResponseEntity getTotalLike(Long postID) {
         Optional<Post> postOptional = postRepos.findById(postID);
         if (postOptional.isEmpty()) {
             Map<String, Object> msg = Map.of("err", "Post not found!");
@@ -362,15 +413,42 @@ public class PostService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
-    public ResponseEntity addLike(Long userID, Long postID) {
+    protected ResponseEntity getTotalDislike(Long postID) {
+        Optional<Post> postOptional = postRepos.findById(postID);
+        if (postOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of("err", "Post not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Get total dislike successfully!",
+                "total_like", postOptional.get().getCount_dislike()
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    protected ResponseEntity addLike(Long userID, Long postID) {
         Optional<Post> postOptional = postRepos.findById(postID);
         Optional<User> userOptional = userRepos.findById(userID);
         if (postOptional.isEmpty() || userOptional.isEmpty()) {
             Map<String, Object> msg = Map.of("err", "Post or user is not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
-
         Post post = postOptional.get();
+
+        // 0 ="hasn't liked";
+        // 1 = "liked";
+        // 2 = "disliked";
+        int likeStatus = checkLikeStatus(userID, postID);
+
+        switch (likeStatus) {
+            case 1 -> {
+                Map<String, Object> msg = Map.of("err", "User already liked!");
+                return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+            }
+            case 2 -> doUndislike(userID, postID, post);
+        }
+
         post.setCount_like(post.getCount_like() + 1);
 
         PostLike postLike = new PostLike();
@@ -380,36 +458,144 @@ public class PostService {
         postRepos.saveAndFlush(post);
         postLikeRepos.saveAndFlush(postLike);
         int countLikes = post.getCount_like();
+        int countDislikes = post.getCount_dislike();
 
         Map<String, Object> msg = Map.of(
                 "msg", "Like successfully!",
-                "likes", countLikes
+                "likes", countLikes,
+                "dislikes", countDislikes
         );
         return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
     }
 
-    public ResponseEntity unlike(Long userID, Long postID) {
-        Optional<PostLike> postLikeOptional = postLikeRepos.getPostLike(postID, userID);
+    protected ResponseEntity addDislike(Long userID, Long postID) {
         Optional<Post> postOptional = postRepos.findById(postID);
-        if (postLikeOptional.isEmpty() || postOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("err", "Like is not found!");
+        Optional<User> userOptional = userRepos.findById(userID);
+        if (postOptional.isEmpty() || userOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of("err", "Post or user is not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
 
-        PostLike postLike = postLikeOptional.get();
         Post post = postOptional.get();
 
-        if (post.getCount_like() > 0) {
-            post.setCount_like(post.getCount_like() - 1);
+        // 0 ="hasn't liked";
+        // 1 = "liked";
+        // 2 = "disliked";
+        int likeStatus = checkLikeStatus(userID, postID);
+        switch (likeStatus) {
+            case 1 -> doUnlike(userID, postID, post);
+            case 2 -> {
+                Map<String, Object> msg = Map.of("err", "User already disliked!");
+                return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+            }
         }
+
+
+        post.setCount_dislike(post.getCount_dislike() + 1);
+
+        PostDislike postDislike = new PostDislike();
+        postDislike.setPost(post);
+        postDislike.setUser(userOptional.get());
+
         postRepos.saveAndFlush(post);
-        postLikeRepos.delete(postLike);
+        postDislikeRepos.saveAndFlush(postDislike);
         int countLikes = post.getCount_like();
+        int countDislikes = post.getCount_dislike();
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Dislike successfully!",
+                "likes", countLikes,
+                "dislikes", countDislikes
+        );
+        return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
+    }
+
+    protected ResponseEntity unlike(Long userID, Long postID) {
+        Optional<PostLike> postLikeOptional = postLikeRepos.getPostLike(postID, userID);
+        Optional<Post> postOptional = postRepos.findById(postID);
+        if (postLikeOptional.isEmpty() || postOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "Like is not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+
+        Post post = postOptional.get();
+        doUnlike(userID, postID, post);
+        int countLikes = post.getCount_like();
+        int countDislikes = post.getCount_dislike();
 
         Map<String, Object> msg = Map.of(
                 "msg", "Unlike successfully!",
-                "likes", countLikes
+                "likes", countLikes,
+                "dislikes", countDislikes
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    protected ResponseEntity undislike(Long userID, Long postID) {
+        Optional<PostDislike> postDislikeOptional = postDislikeRepos.getPostDislike(postID, userID);
+        Optional<Post> postOptional = postRepos.findById(postID);
+        if (postDislikeOptional.isEmpty() || postOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of("err", "Dislike is not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+
+        Post post = postOptional.get();
+        doUndislike(userID, postID, post);
+        int countLikes = post.getCount_like();
+        int countDislikes = post.getCount_dislike();
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Undislike successfully!",
+                "likes", countLikes,
+                "dislikes", countDislikes
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
+    /////////////HELPERS/////////////////////////
+
+    private void doUndislike(Long userID, Long postID, Post post) {
+
+        Optional<PostDislike> postDislikeOptional = postDislikeRepos.getPostDislike(postID, userID);
+        PostDislike postDislike = postDislikeOptional.get();
+
+        if (post.getCount_dislike() > 0) {
+            post.setCount_dislike(post.getCount_dislike() - 1);
+
+            postRepos.saveAndFlush(post);
+            postDislikeRepos.delete(postDislike);
+        }
+
+    }
+
+    private void doUnlike(Long userID, Long postID, Post post) {
+
+        Optional<PostLike> postLikeOptional = postLikeRepos.getPostLike(postID, userID);
+        PostLike postLike = postLikeOptional.get();
+
+        if (post.getCount_like() > 0) {
+            post.setCount_like(post.getCount_like() - 1);
+
+            postRepos.saveAndFlush(post);
+            postLikeRepos.delete(postLike);
+        }
+
+    }
+
+    private int checkLikeStatus(Long userID, Long postID) {
+
+        int likeStatus = 1;
+        Optional<PostLike> postLikeOptional = postLikeRepos.getPostLike(postID, userID);
+        Optional<PostDislike> postDislikeOptional = postDislikeRepos.getPostDislike(postID, userID);
+
+        if (postLikeOptional.isEmpty() && postDislikeOptional.isEmpty()) {
+            likeStatus = 0;
+        }
+        if (postDislikeOptional.isPresent()) {
+            likeStatus = 2;
+        }
+
+        return likeStatus;
     }
 }

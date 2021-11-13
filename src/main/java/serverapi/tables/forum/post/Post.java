@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import serverapi.tables.forum.post_category.PostCategory;
+import serverapi.tables.forum.post_dislike.PostDislike;
 import serverapi.tables.forum.post_like.PostLike;
 import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
 import serverapi.tables.user_tables.user.User;
@@ -51,6 +52,10 @@ public class Post {
 
     @JsonBackReference
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private Collection<PostDislike> postDislikes;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<MangaComments> mangaComments;
 
     @Column(columnDefinition = "TEXT")
@@ -70,4 +75,7 @@ public class Post {
 
     @Column(columnDefinition = "integer default 0" , nullable = false)
     private int count_like;
+
+    @Column(columnDefinition = "integer default 0" , nullable = false)
+    private int count_dislike;
 }
