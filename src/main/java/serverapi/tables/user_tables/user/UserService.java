@@ -625,13 +625,16 @@ public class UserService {
         }
 
         // Check imagesUrl and set if it not as same as sub_imagesUrl
-        Optional<Manga> mangaOptional = mangaRepository.findById(mangaComments.getManga().getManga_id());
         Manga manga = null;
         String exportUrl = "";
-        if (!mangaOptional.isEmpty()) {
-            manga = mangaOptional.get();
-        }
+        if(mangaComments.getManga()!= null){
+            Optional<Manga> mangaOptional = mangaRepository.findById(mangaComments.getManga().getManga_id());
 
+
+            if (!mangaOptional.isEmpty()) {
+                manga = mangaOptional.get();
+            }
+        }
         if (image != null) {
             Map cloudinaryResponse = cloudinaryUploader.uploadImg(
                     image.getBytes(),
@@ -716,7 +719,7 @@ public class UserService {
         }
         MangaComments mangaComment = mangaCommentsOptional.get();
         User user = userOptional.get();
-
+        System.err.println("line 722");
 
         // Check if user is not the owner
         if (!user.getUser_id().equals(mangaComment.getUser().getUser_id())) {
@@ -728,8 +731,10 @@ public class UserService {
         mangaComment.setIs_deprecated(true);
         mangaCommentsRepos.saveAndFlush(mangaComment);
 
+        System.err.println("line 734");
         List<MangaCommentDTOs> responseListComments = filterComments(mangaComment.getManga_comment_id(), comments, 1);
 
+        System.err.println("line 736");
         if (responseListComments.isEmpty()) {
             Map<String, Object> msg = Map.of("err", "Get comments list failed!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);

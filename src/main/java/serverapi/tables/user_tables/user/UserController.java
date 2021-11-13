@@ -305,6 +305,7 @@ public class UserController {
     @PostMapping("/deletecomment")
     public ResponseEntity deleteComment(@RequestBody CommentPOJO commentPOJO, ServletRequest request) {
 
+        System.err.println("line 308");
         /**
          * Declare variables
          */
@@ -313,8 +314,11 @@ public class UserController {
          * Format variable necessary
          */
         Long userID = Long.parseLong(strUserID);
+        System.err.println("line 317");
         Long formatCommentID = Long.parseLong(commentPOJO.getManga_comment_id());
+        System.err.println("line 319");
         List<MangaCommentDTOs> comments = commentPOJO.getComments();
+        System.err.println("line 318");
 
         return userService.deleteComment(userID, formatCommentID, comments);
     }
