@@ -40,7 +40,7 @@ public interface PostRepos extends JpaRepository<Post, Long>, JpaSpecificationEx
             FROM Post post
             JOIN User user ON user.user_id = post.user.user_id 
             WHERE post.is_deprecated = false AND post.is_approved = true
-            ORDER BY post.created_at
+            ORDER BY post.created_at DESC
             """)
     List<PostUserDTO> getPosts(Pageable pageable);
 
