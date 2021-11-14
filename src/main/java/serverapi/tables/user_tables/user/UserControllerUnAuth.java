@@ -16,11 +16,13 @@ import java.util.Map;
 public class UserControllerUnAuth {
 
     private final UserUnauthService userUnauthService;
+    private final UserService userService;
     private final CommentLikeService commentLikeService;
     private final FriendService friendService;
 
     @Autowired
-    public UserControllerUnAuth(UserUnauthService userUnauthService, CommentLikeService commentLikeService, FriendService friendService) {
+    public UserControllerUnAuth(UserService userService, UserUnauthService userUnauthService, CommentLikeService commentLikeService, FriendService friendService) {
+        this.userService = userService;
         this.userUnauthService = userUnauthService;
         this.commentLikeService = commentLikeService;
         this.friendService = friendService;
@@ -28,6 +30,14 @@ public class UserControllerUnAuth {
 
 
     ///////////////////////////////// Users parts //////////////////////////////
+    @PostMapping("/searchusers")
+    public ResponseEntity searchUsers(@RequestBody Map data) {
+        String valToSearch = (String) data.get("value");
+        int key = (int) data.get("key"); // search with: 1 is email, 2 is name
+
+        return userService.searchUsers(valToSearch, key);
+    }
+
     @GetMapping("/get_userinfo")
     public ResponseEntity getUserInfo(@RequestParam String user_id) {
         Long userId = Long.parseLong(user_id);
