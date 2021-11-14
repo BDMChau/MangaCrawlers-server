@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @Service
 public class SocketIOService implements ISocketIOService {
+    private static String imgNotification_default = "https://res.cloudinary.com/mangacrawlers/image/upload/v1632847306/notification_imgs/default/notification.svg";
     private final EventsName EVENTs_NAME = new EventsName();
     private static final Map<Object, SocketIOClient> clientMap = new ConcurrentHashMap<>();
 
@@ -91,7 +92,7 @@ public class SocketIOService implements ISocketIOService {
                 List listTo = (List) data.get("list_to"); // can be String user_email or Integer user_id
                 Map objData = (Map) data.get("obj_data");
                 String imageUrl = String.valueOf(data.get("image_url"));
-                if (imageUrl.equals("")) imageUrl = getImageDefault("notify_img_default");
+                if (imageUrl.equals("")) imageUrl = imgNotification_default;
 
 
                 SocketIOClient senderClient = client;
