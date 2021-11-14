@@ -162,7 +162,7 @@ public class NotificationService {
         notificationTypes.setType(socketMessage.getType());
 
         notifications.setNotification_type(notificationTypes);
-        notifications.setContent(socketMessage.getMessage());
+        notifications.setContent(socketMessage.getMessage().trim());
         notifications.setImage_url(imgUrl);
         notifications.setFrom_user(sender);
         notifications.setTo_user(receiver);
@@ -171,15 +171,14 @@ public class NotificationService {
         notifications.setIs_delete(false);
         notifications.setCreated_at(currentTime);
 
-
-        if (socketMessage.getObjData().get("target_id").equals("") || !socketMessage.getObjData().get("target_title").equals("")) {
+        // check isExisted
+        if (!socketMessage.getObjData().get("target_id").equals("") || !socketMessage.getObjData().get("target_title").equals("")) {
             Long targetId = Long.parseLong(String.valueOf(socketMessage.getObjData().get("target_id")));
             String targetTitle = String.valueOf(socketMessage.getObjData().get("target_title"));
             Long toUserId = receiver.getUser_id();
 
             Boolean isExisted = checkIsExisted(targetTitle, targetId, toUserId, sender.getUser_id());
             if (isExisted) return null;
-
 
             notifications.setTarget_id(targetId);
             notifications.setTarget_title(targetTitle);
@@ -222,7 +221,12 @@ public class NotificationService {
         } else if (targetTitle.equals("transgroup")) {
             List<Notifications> isExisted = notificationRepos.findByTargetTitleTransGroupAndNotInteract(targetId, toUserId, fromUserId);
             if (!isExisted.isEmpty()) return true;
+
+        } else if (targetTitle.equals("post_new")) {
+            List<Notifications> isExisted = notificationRepos.findByTargetTitleNewPost(targetId, toUserId, fromUserId);
+            if (!isExisted.isEmpty()) return true;
         }
+
 
         return false;
     }

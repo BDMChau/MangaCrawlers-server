@@ -87,14 +87,12 @@ public class SocketIOService implements ISocketIOService {
             try {
                 Integer type = (Integer) data.get("type");
                 String message = String.valueOf(data.get("message"));
-                String imageUrl = String.valueOf(data.get("image"));
                 Long userId = Long.parseLong(String.valueOf(data.get("user_id")));
                 List listTo = (List) data.get("list_to"); // can be String user_email or Integer user_id
                 Map objData = (Map) data.get("obj_data");
+                String imageUrl = String.valueOf(data.get("image_url"));
+                if (imageUrl.equals("")) imageUrl = getImageDefault("notify_img_default");
 
-                if (imageUrl.equals("null")) {
-                    objData.replace("image", getImageDefault("notify_img_default"));
-                }
 
                 SocketIOClient senderClient = client;
                 Collection<SocketIOClient> clients = socketIOServer.getAllClients();
@@ -108,13 +106,12 @@ public class SocketIOService implements ISocketIOService {
                 socketMessage.setMessage(message);
                 socketMessage.setImage_url(imageUrl);
                 socketMessage.setObjData(objData);
+
                 pushMessageToUsersExceptSender(socketMessage, clients, senderClient);
             } catch (Exception ex) {
                 System.err.println("socket err: " + ex);
             }
         });
-
-
 
 
         socketIOServer.addDisconnectListener(client -> {
@@ -135,9 +132,13 @@ public class SocketIOService implements ISocketIOService {
         mySocketService.setAllClients(clients);
         mySocketService.setSenderClient(senderClient);
 
-        if(socketMessage.getMessage().equals("notify_onl_off")){
+        if (socketMessage.getMessage().equals("notify_onl_off")) {
             mySocketService.notifyFriendsWhenUserOnline();
-        } else{
+
+        } else if (socketMessage.getObjData().get("target_title").equals("post_new")) {
+            mySocketService.notifyFriends();
+
+        } else {
             mySocketService.pushMessageToUsersExceptSender();
         }
     }

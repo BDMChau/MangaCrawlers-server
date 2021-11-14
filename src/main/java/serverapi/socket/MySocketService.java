@@ -111,14 +111,31 @@ public class MySocketService {
 
 
     public void notifyFriendsWhenUserOnline() {
-        Long userId = socketMessage.getUserId();
-        User user = userRepos.findById(userId).get();
+        Map<String, Object> friendsMap = getFriendList();
+        List<FriendDTO> friends = (List<FriendDTO>) friendsMap.get("friends");
+        User user = (User) friendsMap.get("user");
 
-        List<FriendDTO> friendDTOList = friendRequestRepos.getListByUserId(userId);
-        List<FriendDTO> friends = friendService.filterListFriends(friendDTOList, userId);
-
-        notifyFriendsStatusOnline(user, friends);
+        sendToFriendsStatusOnline(user, friends);
     }
+
+
+    public void notifyFriends() {
+        Map<String, Object> friendsMap = getFriendList();
+        List<FriendDTO> friends = (List<FriendDTO>) friendsMap.get("friends");
+        User sender = (User) friendsMap.get("user");
+
+        int notification_type = socketMessage.getType();
+
+        friends.forEach(friend -> {
+            User receiver = userRepos.findById(friend.getUser_id()).get();
+
+            handleNotificationType(notification_type, receiver, sender);
+            NotificationDTO dataToSend = notificationService.saveNew(receiver, socketMessage);
+
+            sendToFriends(sender, friend, dataToSend);
+        });
+    }
+
 
     public void pushMessageToAllUsersExceptSender() {
         Object message = socketMessage.getMessage();
@@ -128,14 +145,26 @@ public class MySocketService {
 
 
     /////////////////////////////// services ///////////////////////////////
+    private Map<String, Object> getFriendList() {
+        Long userId = socketMessage.getUserId();
+        User user = userRepos.findById(userId).get();
+
+        List<FriendDTO> friendDTOList = friendRequestRepos.getListByUserId(userId);
+        List<FriendDTO> friends = friendService.filterListFriends(friendDTOList, userId);
+
+        return Map.of(
+                "user", user,
+                "friends", friends
+        );
+    }
+
     private void handleNotificationType(int notificationType, User receiver, User sender) {
         if (notificationType == 2) {
-
             friendRequestStatusService.saveNew(sender, receiver);
         }
     }
 
-    public User getReciever(String identify_type, Object toUserVal) {
+    private User getReciever(String identify_type, Object toUserVal) {
         Optional<User> userOptional = Optional.empty();
         if (identify_type.equals("java.lang.String")) {
             String userEmail = String.valueOf(toUserVal);
@@ -151,16 +180,15 @@ public class MySocketService {
         return userOptional.get();
     }
 
-    ////////////////////////// sender //////////////////////////////
+
+
+    /////////////////////////////// sender ///////////////////////////////
     private void sendToUsersExceptSender(NotificationDTO dataToSend) {
         String receiverName = dataToSend.getReceiver_name();
 
-        if (receiverName.isEmpty()) {
-            senderClient.sendEvent(EVENTs_NAME.getSEND_FAILED(), "failed");
-
-        } else {
+        if (receiverName.isEmpty()) senderClient.sendEvent(EVENTs_NAME.getSEND_FAILED(), "failed");
+        else {
             UUID receiver_sessionId = dataToSend.getReceiver_socket_id();
-
             for (SocketIOClient client : allClients) {
                 if (!client.getSessionId().equals(senderClient.getSessionId())) { // except sender
                     if (client.getSessionId().equals(receiver_sessionId)) {
@@ -169,12 +197,12 @@ public class MySocketService {
                 }
             }
 
-            senderClient.sendEvent(EVENTs_NAME.getSEND_OK(), "okkkkkk");
+            senderClient.sendEvent(EVENTs_NAME.getSEND_OK(), "send ok");
         }
     }
 
 
-    private void notifyFriendsStatusOnline(User user, List<FriendDTO> friends) {
+    private void sendToFriendsStatusOnline(User user, List<FriendDTO> friends) {
         friends.forEach(friend -> {
             if (friend.getSocket_session_id() != null) {
                 UUID receiver_sessionId = friend.getSocket_session_id();
@@ -194,6 +222,23 @@ public class MySocketService {
                 }
             }
         });
+    }
+
+
+    private void sendToFriends(User user, FriendDTO friend, NotificationDTO dataToSend) {
+        if (friend.getSocket_session_id() != null) {
+            UUID receiver_sessionId = friend.getSocket_session_id();
+
+            for (SocketIOClient client : allClients) {
+
+                if (!client.getSessionId().equals(senderClient.getSessionId())) { // except sender
+                    if (client.getSessionId().equals(receiver_sessionId)) {
+
+                        client.sendEvent(EVENTs_NAME.getFROM_SERVER_TO_SPECIFIC_USERS(), dataToSend);
+                    }
+                }
+            }
+        }
     }
 
 

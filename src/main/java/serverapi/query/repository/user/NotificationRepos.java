@@ -23,6 +23,8 @@ public interface NotificationRepos extends JpaRepository<Notifications, Long> {
     @Query("SELECT no FROM Notifications no WHERE no.to_user.user_id = ?2 AND no.target_id = ?1 AND no.from_user.user_id = ?3 AND no.is_interacted = false AND no.is_delete = false")
     List<Notifications> findByTargetTitleTransGroupAndNotInteract(Long targetId, Long toUserId, Long fromUserId);
 
+    @Query("SELECT no FROM Notifications no WHERE no.to_user.user_id = ?2 AND no.target_id = ?1 AND no.from_user.user_id = ?3 ")
+    List<Notifications> findByTargetTitleNewPost(Long targetId, Long toUserId, Long fromUserId);
 
     @Query("""
             SELECT new serverapi.query.dtos.tables.NotificationDTO(
