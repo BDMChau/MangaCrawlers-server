@@ -9,9 +9,9 @@ import lombok.Setter;
 import serverapi.tables.forum.post.Post;
 import serverapi.tables.forum.post_dislike.PostDislike;
 import serverapi.tables.forum.post_like.PostLike;
-import serverapi.tables.manga_tables.manga_comment.manga_comment_likes.CommentLikes;
-import serverapi.tables.manga_tables.manga_comment.manga_comment_tags.CommentTags;
-import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
+import serverapi.tables.manga_tables.comment.comment_like.CommentLike;
+import serverapi.tables.manga_tables.comment.comment_tag.CommentTag;
+import serverapi.tables.manga_tables.comment.comment.Comment;
 import serverapi.tables.user_tables.following_manga.FollowingManga;
 import serverapi.tables.manga_tables.rating_manga.RatingManga;
 import serverapi.tables.user_tables.friend_request_status.FriendRequestStatus;
@@ -52,7 +52,7 @@ public class User {
 
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Collection<MangaComments> mangaComments;
+    private Collection<Comment> mangaComments;
 
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -77,11 +77,11 @@ public class User {
 
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Collection<CommentLikes> commentLikes;
+    private Collection<CommentLike> commentLikes;
 
     @JsonBackReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Collection<CommentTags> commentTags;
+    private Collection<CommentTag> commentTags;
 
     @JsonBackReference
     @OneToMany(mappedBy = "to_user", cascade = CascadeType.ALL)

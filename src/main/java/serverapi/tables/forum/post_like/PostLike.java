@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import serverapi.tables.forum.post.Post;
-import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
 import serverapi.tables.user_tables.user.User;
 
 import javax.persistence.*;

@@ -1,4 +1,4 @@
-package serverapi.query.dtos.features.MangaCommentDTOs;
+package serverapi.query.dtos.features.CommentDTOs;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
@@ -27,18 +27,18 @@ public class CommentTreesDTO {
 
     private Long post_id;
 
-    private Long manga_comment_id;
-    private Calendar manga_comment_time;
-    private String manga_comment_content;
+    private Long comment_id;
+    private Calendar comment_time;
+    private String comment_content;
 
     private List<CommentTagsDTO> to_users = new ArrayList<>();
 
-    private Long manga_comment_relation_id;
+    private Long comment_relation_id;
     private Long parent_id;
     private Long child_id;
     private String level;
 
-    private Long manga_comment_image_id;
+    private Long comment_image_id;
     private String image_url;
 
     private List<CommentTreesDTO> comments_level_02 = new ArrayList<>();
@@ -46,9 +46,9 @@ public class CommentTreesDTO {
 
     public CommentTreesDTO(Long user_id, String user_name, String user_avatar,
                            Long chapter_id,
-                           Long manga_comment_id, Calendar manga_comment_time, String manga_comment_content,
-                           Long manga_comment_relation_id, Long parent_id, Long child_id, String level,
-                           Long manga_comment_image_id, String image_url) {
+                           Long comment_id, Calendar comment_time, String comment_content,
+                           Long comment_relation_id, Long parent_id, Long child_id, String level,
+                           Long comment_image_id, String image_url) {
 
         this.user_id = user_id;
         this.user_name = user_name;
@@ -56,16 +56,16 @@ public class CommentTreesDTO {
 
         this.chapter_id = chapter_id;
 
-        this.manga_comment_id = manga_comment_id;
-        this.manga_comment_time = manga_comment_time;
-        this.manga_comment_content = manga_comment_content;
+        this.comment_id = comment_id;
+        this.comment_time = comment_time;
+        this.comment_content = comment_content;
 
-        this.manga_comment_relation_id = manga_comment_relation_id;
+        this.comment_relation_id = comment_relation_id;
         this.parent_id = parent_id;
         this.child_id = child_id;
         this.level = level;
 
-        this.manga_comment_image_id = manga_comment_image_id;
+        this.comment_image_id = comment_image_id;
         this.image_url = image_url;
     }
 
@@ -73,10 +73,10 @@ public class CommentTreesDTO {
                            Long manga_id,
                            Long chapter_id, String chapter_name, Calendar created_at,
                            Long post_id,
-                           Long manga_comment_id, Calendar manga_comment_time, String manga_comment_content,
+                           Long comment_id, Calendar comment_time, String comment_content,
                            List<CommentTagsDTO> to_users,
-                           Long manga_comment_relation_id, Long parent_id, Long child_id, String level,
-                           Long manga_comment_image_id, String image_url,
+                           Long comment_relation_id, Long parent_id, Long child_id, String level,
+                           Long comment_image_id, String image_url,
                            List<CommentTreesDTO> comments_level_02) {
 
         this.user_id = user_id;
@@ -87,15 +87,15 @@ public class CommentTreesDTO {
         this.chapter_name = chapter_name;
         this.created_at = created_at;
         this.post_id = post_id;
-        this.manga_comment_id = manga_comment_id;
-        this.manga_comment_time = manga_comment_time;
-        this.manga_comment_content = manga_comment_content;
+        this.comment_id = comment_id;
+        this.comment_time = comment_time;
+        this.comment_content = comment_content;
         this.to_users = to_users;
-        this.manga_comment_relation_id = manga_comment_relation_id;
+        this.comment_relation_id = comment_relation_id;
         this.parent_id = parent_id;
         this.child_id = child_id;
         this.level = level;
-        this.manga_comment_image_id = manga_comment_image_id;
+        this.comment_image_id = comment_image_id;
         this.image_url = image_url;
         this.comments_level_02 = comments_level_02;
     }
@@ -107,23 +107,23 @@ public class CommentTreesDTO {
      * @param user_avatar
      * @param manga_id
      * @param chapter_id
-     * @param manga_comment_id
-     * @param manga_comment_time
-     * @param manga_comment_content
-     * @param manga_comment_relation_id
+     * @param comment_id
+     * @param comment_time
+     * @param comment_content
+     * @param comment_relation_id
      * @param parent_id
      * @param child_id
      * @param level
-     * @param manga_comment_image_id
+     * @param comment_image_id
      * @param image_url
      */
     public CommentTreesDTO(Long user_id, String user_name, String user_avatar,
                            Long manga_id,
                            Long chapter_id,
                            Long post_id,
-                           Long manga_comment_id, Calendar manga_comment_time, String manga_comment_content,
-                           Long manga_comment_relation_id, Long parent_id, Long child_id, String level,
-                           Long manga_comment_image_id, String image_url) {
+                           Long comment_id, Calendar comment_time, String comment_content,
+                           Long comment_relation_id, Long parent_id, Long child_id, String level,
+                           Long comment_image_id, String image_url) {
 
         this.user_id = user_id;
         this.user_name = user_name;
@@ -131,14 +131,14 @@ public class CommentTreesDTO {
         this.manga_id = manga_id;
         this.chapter_id = chapter_id;
         this.post_id = post_id;
-        this.manga_comment_id = manga_comment_id;
-        this.manga_comment_time = manga_comment_time;
-        this.manga_comment_content = manga_comment_content;
-        this.manga_comment_relation_id = manga_comment_relation_id;
+        this.comment_id = comment_id;
+        this.comment_time = comment_time;
+        this.comment_content = comment_content;
+        this.comment_relation_id = comment_relation_id;
         this.parent_id = parent_id;
         this.child_id = child_id;
         this.level = level;
-        this.manga_comment_image_id = manga_comment_image_id;
+        this.comment_image_id = comment_image_id;
         this.image_url = image_url;
     }
 }

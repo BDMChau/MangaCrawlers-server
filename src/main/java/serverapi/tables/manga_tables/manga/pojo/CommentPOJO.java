@@ -4,10 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
-import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
-import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
+import serverapi.query.dtos.features.CommentDTOs.CommentDTOs;
 
-import javax.mail.Multipart;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +26,7 @@ public class CommentPOJO {
     private String parent_id;
     private int key;
 
-    private List<MangaCommentDTOs> comments;
+    private List<CommentDTOs> comments;
     private int from;
     private int amount;
 

@@ -7,9 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.api.Response;
 import serverapi.helpers.OffsetBasedPageRequest;
-import serverapi.query.dtos.features.MangaCommentDTOs.CommentTreesDTO;
-import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
-import serverapi.query.dtos.tables.AuthorMangaDTO;
+import serverapi.query.dtos.features.CommentDTOs.CommentTreesDTO;
+import serverapi.query.dtos.features.CommentDTOs.CommentDTOs;
 import serverapi.query.dtos.tables.ChapterDTO;
 import serverapi.query.dtos.tables.ChapterImgDTO;
 import serverapi.query.repository.manga.ChapterRepos;
@@ -110,7 +109,7 @@ public class ChapterService {
         }
 
         // get manga comments in each level
-        List<MangaCommentDTOs> cmtsLv0 = mangaCommentsRepos.getChapterCommentsLevel0(chapterId, pageable);
+        List<CommentDTOs> cmtsLv0 = mangaCommentsRepos.getChapterCommentsLevel0(chapterId, pageable);
         if (cmtsLv0.isEmpty()) {
 
             Map<String, Object> msg = Map.of("msg", "No comments found!");
@@ -119,16 +118,16 @@ public class ChapterService {
 
         // Get comment
         //set tags for each comment
-        List<MangaCommentDTOs> comments;
+        List<CommentDTOs> comments;
         cmtsLv0.forEach(lv0 ->{
 
             lv0 = mangaService.setListTags(lv0);
 
             //get child comments
-            List<CommentTreesDTO> cmtsLv1 = mangaCommentsRepos.getCommentsChild(lv0.getManga_comment_id(), level1,childPageable);
-            List<CommentTreesDTO> cmtsLv2 = mangaCommentsRepos.getCommentsChild(lv0.getManga_comment_id(), level2, childPageable);
+            List<CommentTreesDTO> cmtsLv1 = mangaCommentsRepos.getCommentsChild(lv0.getComment_id(), level1,childPageable);
+            List<CommentTreesDTO> cmtsLv2 = mangaCommentsRepos.getCommentsChild(lv0.getComment_id(), level2, childPageable);
 
-            MangaCommentDTOs finalLv0 = lv0;
+            CommentDTOs finalLv0 = lv0;
             cmtsLv1.forEach(lv01 ->{
 
                 CommentTreesDTO finalLv01 = lv01;
@@ -136,7 +135,7 @@ public class ChapterService {
 
                     lv02 = mangaService.setListTags(lv02);
 
-                    if(finalLv0.getManga_comment_id() == lv02.getParent_id()){
+                    if(finalLv0.getComment_id() == lv02.getParent_id()){
 
                         finalLv01.getComments_level_02().add(lv02);
                     }
@@ -144,7 +143,7 @@ public class ChapterService {
 
                 lv01 = mangaService.setListTags(lv01);
 
-                if(finalLv0.getManga_comment_id() == lv01.getParent_id()){
+                if(finalLv0.getComment_id() == lv01.getParent_id()){
 
                     finalLv0.getComments_level_01().add(lv01);
                 }

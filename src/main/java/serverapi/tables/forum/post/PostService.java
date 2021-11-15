@@ -1,7 +1,6 @@
 package serverapi.tables.forum.post;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,8 +9,8 @@ import org.springframework.stereotype.Service;
 import serverapi.api.Response;
 import serverapi.helpers.OffsetBasedPageRequest;
 import serverapi.query.dtos.features.SearchCriteriaDTO;
-import serverapi.query.dtos.features.MangaCommentDTOs.CommentTreesDTO;
-import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
+import serverapi.query.dtos.features.CommentDTOs.CommentTreesDTO;
+import serverapi.query.dtos.features.CommentDTOs.CommentDTOs;
 import serverapi.query.dtos.tables.PostUserDTO;
 import serverapi.query.repository.forum.*;
 import serverapi.query.repository.manga.comment.MangaCommentsRepos;
@@ -21,9 +20,8 @@ import serverapi.tables.forum.category.Category;
 import serverapi.tables.forum.post_category.PostCategory;
 import serverapi.tables.forum.post_dislike.PostDislike;
 import serverapi.tables.forum.post_like.PostLike;
-import serverapi.tables.manga_tables.manga.Manga;
 import serverapi.tables.manga_tables.manga.MangaService;
-import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
+import serverapi.tables.manga_tables.comment.comment.Comment;
 import serverapi.tables.user_tables.user.User;
 
 import java.util.*;
@@ -105,7 +103,7 @@ public class PostService {
         List<PostUserDTO> posts = postRepos.getPosts(pageable);
 
         posts.forEach(post -> {
-            List<MangaComments> cmts = mangaCommentsRepos.getCmtsByPostId(post.getPost_id());
+            List<Comment> cmts = mangaCommentsRepos.getCmtsByPostId(post.getPost_id());
             post.setComment_count(Long.parseLong(String.valueOf(cmts.size())));
         });
 
@@ -231,7 +229,7 @@ public class PostService {
         }
 
         // get manga comments in each level
-        List<MangaCommentDTOs> cmtsLv0 = mangaCommentsRepos.getPostCommentsLevel0(postID, pageable);
+        List<CommentDTOs> cmtsLv0 = mangaCommentsRepos.getPostCommentsLevel0(postID, pageable);
         if (cmtsLv0.isEmpty()) {
 
             Map<String, Object> err = Map.of("err", "No comments found!");
@@ -240,16 +238,16 @@ public class PostService {
 
         // Get comment
         //set tags for each comment
-        List<MangaCommentDTOs> comments;
+        List<CommentDTOs> comments;
         cmtsLv0.forEach(lv0 -> {
 
             lv0 = mangaService.setListTags(lv0);
 
             //get child comments
-            List<CommentTreesDTO> cmtsLv1 = mangaCommentsRepos.getCommentsChild(lv0.getManga_comment_id(), level1, childPageable);
-            List<CommentTreesDTO> cmtsLv2 = mangaCommentsRepos.getCommentsChild(lv0.getManga_comment_id(), level2, childPageable);
+            List<CommentTreesDTO> cmtsLv1 = mangaCommentsRepos.getCommentsChild(lv0.getComment_id(), level1, childPageable);
+            List<CommentTreesDTO> cmtsLv2 = mangaCommentsRepos.getCommentsChild(lv0.getComment_id(), level2, childPageable);
 
-            MangaCommentDTOs finalLv0 = lv0;
+            CommentDTOs finalLv0 = lv0;
             cmtsLv1.forEach(lv01 -> {
 
                 CommentTreesDTO finalLv01 = lv01;
@@ -257,7 +255,7 @@ public class PostService {
 
                     lv02 = mangaService.setListTags(lv02);
 
-                    if (finalLv0.getManga_comment_id() == lv02.getParent_id()) {
+                    if (finalLv0.getComment_id() == lv02.getParent_id()) {
 
                         finalLv01.getComments_level_02().add(lv02);
                     }
@@ -265,7 +263,7 @@ public class PostService {
 
                 lv01 = mangaService.setListTags(lv01);
 
-                if (finalLv0.getManga_comment_id() == lv01.getParent_id()) {
+                if (finalLv0.getComment_id() == lv01.getParent_id()) {
 
                     finalLv0.getComments_level_01().add(lv01);
                 }

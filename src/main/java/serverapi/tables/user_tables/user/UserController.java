@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import serverapi.api.Response;
-import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
+import serverapi.query.dtos.features.CommentDTOs.CommentDTOs;
 import serverapi.query.dtos.tables.FieldsCreateMangaDTO;
 import serverapi.tables.manga_tables.manga.pojo.CommentPOJO;
 import serverapi.tables.manga_tables.manga.pojo.MangaPOJO;
@@ -19,14 +19,12 @@ import serverapi.tables.user_tables.user.pojo.UserPOJO;
 import serverapi.utils.UserHelpers;
 
 import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -162,9 +160,6 @@ public class UserController {
     @PostMapping("/addcommentmanga")
     public ResponseEntity addCommentManga(@Valid CommentPOJO commentPOJO, ServletRequest request) throws IOException {
 
-        /**
-         * Declare variables
-         */
         Long mangaID = 0L;
         Long chapterID = 0L;
         Long postID = 0L;
@@ -223,7 +218,7 @@ public class UserController {
     @PostMapping("/filter_comments")
     public ResponseEntity filterComments(@RequestBody CommentPOJO commentPOJO) {
         Long commentID = 0L;
-        List<MangaCommentDTOs> comments = commentPOJO.getComments();
+        List<CommentDTOs> comments = commentPOJO.getComments();
         int key = commentPOJO.getKey();
 
         if (commentPOJO.getManga_comment_id() == null || comments.isEmpty()) {
@@ -234,7 +229,7 @@ public class UserController {
         } else {
             commentID = Long.parseLong(commentPOJO.getManga_comment_id());
         }
-        List<MangaCommentDTOs> exportComment = new ArrayList<>();
+        List<CommentDTOs> exportComment = new ArrayList<>();
         try{
             exportComment = userService.filterComments(commentID, comments, key);
         }catch(Exception ex){
@@ -317,7 +312,7 @@ public class UserController {
         System.err.println("line 317");
         Long formatCommentID = Long.parseLong(commentPOJO.getManga_comment_id());
         System.err.println("line 319");
-        List<MangaCommentDTOs> comments = commentPOJO.getComments();
+        List<CommentDTOs> comments = commentPOJO.getComments();
         System.err.println("line 318");
 
         return userService.deleteComment(userID, formatCommentID, comments);
