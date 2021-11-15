@@ -16,12 +16,12 @@ import java.util.regex.Pattern;
 public class Validation implements Validator {
 
 
-    private String getRegexStr(String objKey) {
-        ReadJSONFileAndGetValue readJSONFileAndGetValue = new ReadJSONFileAndGetValue("src/main/java/serverapi/security/regexString.json", objKey);
-        readJSONFileAndGetValue.read();
-
-        return readJSONFileAndGetValue.getValue();
-    }
+//    private String getRegexStr(String objKey) {
+//        ReadJSONFileAndGetValue readJSONFileAndGetValue = new ReadJSONFileAndGetValue("src/main/java/serverapi/security/regexString.json", objKey);
+//        readJSONFileAndGetValue.read();
+//
+//        return readJSONFileAndGetValue.getValue();
+//    }
 
 
     @Override
@@ -57,7 +57,7 @@ public class Validation implements Validator {
         ) {
 
             errors.rejectValue(null, "Missing credential!");
-        } else if (!Pattern.matches(getRegexStr("email"), signInPojo.getUser_email())) {
+        } else if (!Pattern.matches("^([\\w-\\.]+){1,64}@([\\w&&[^_]]+){2,255}.[a-z]{2,}$", signInPojo.getUser_email())) {
 
             errors.rejectValue(null, "Invalid format email!");
         }
@@ -77,12 +77,12 @@ public class Validation implements Validator {
 
             errors.rejectValue(null, "Missing credential!");
         } else if (!Pattern.matches(
-                getRegexStr("email"),
+                "^([\\w-\\.]+){1,64}@([\\w&&[^_]]+){2,255}.[a-z]{2,}$",
                 signUpPojo.getUser_email())) {
 
             errors.rejectValue(null, "Invalid format email!");
         } else if (!Pattern.matches(
-                getRegexStr("passwordLength8Number1"),
+                "\"^(?=.*[A-Za-z])(?=.*\\\\d)[A-Za-z\\\\d]{8,}$\"",
                 signUpPojo.getUser_password()
         )) {
 
@@ -99,7 +99,7 @@ public class Validation implements Validator {
                 || changePassPojo.getUser_password().equals("")
                 || changePassPojo.getUser_change_pass_token() == null
                 || changePassPojo.getUser_change_pass_token().equals("")
-                || !Pattern.matches(getRegexStr("passwordLength8Number1"), changePassPojo.getUser_password())
+                || !Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", changePassPojo.getUser_password())
         ) {
             errors.rejectValue(null, "Missing new password or token for changing!");
         }
