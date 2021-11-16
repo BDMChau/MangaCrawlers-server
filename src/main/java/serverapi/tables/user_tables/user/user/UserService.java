@@ -1,4 +1,4 @@
-package serverapi.tables.user_tables.user;
+package serverapi.tables.user_tables.user.user;
 
 
 import org.hibernate.Hibernate;
@@ -28,18 +28,20 @@ import serverapi.sharing_services.CloudinaryUploader;
 import serverapi.tables.forum.post.Post;
 import serverapi.tables.manga_tables.author.Author;
 import serverapi.tables.manga_tables.chapter.Chapter;
-import serverapi.tables.manga_tables.comment.comment.Comment;
+import serverapi.tables.comment.comment.Comment;
 import serverapi.tables.manga_tables.genre.Genre;
 import serverapi.tables.manga_tables.image_chapter.ImageChapter;
 import serverapi.tables.manga_tables.manga.Manga;
-import serverapi.tables.manga_tables.comment.comment_image.CommentImage;
-import serverapi.tables.manga_tables.comment.comment_relation.CommentRelation;
-import serverapi.tables.manga_tables.comment.comment_tag.CommentTag;
+import serverapi.tables.comment.comment_image.CommentImage;
+import serverapi.tables.comment.comment_relation.CommentRelation;
+import serverapi.tables.comment.comment_tag.CommentTag;
 import serverapi.tables.manga_tables.manga_genre.MangaGenre;
 import serverapi.tables.manga_tables.rating_manga.RatingManga;
 import serverapi.tables.user_tables.following_manga.FollowingManga;
 import serverapi.tables.user_tables.reading_history.ReadingHistory;
 import serverapi.tables.user_tables.trans_group.TransGroup;
+import serverapi.tables.user_tables.user.HelpingUser;
+import serverapi.tables.user_tables.user.User;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
@@ -58,7 +60,7 @@ public class UserService {
     private final UserRepos userRepos;
     private final ReadingHistoryRepos readingHistoryRepos;
     private final ChapterRepos chapterRepos;
-    private final MangaCommentsRepos mangaCommentsRepos;
+    private final CommentRepos commentRepos;
     private final RatingMangaRepos ratingMangaRepos;
     private final TransGroupRepos transGroupRepos;
     private final GenreRepos genreRepos;
@@ -79,7 +81,7 @@ public class UserService {
     @Autowired
     public UserService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos,
                        ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos,
-                       MangaCommentsRepos mangaCommentsRepos, RatingMangaRepos ratingMangaRepos,
+                       CommentRepos commentRepos, RatingMangaRepos ratingMangaRepos,
                        TransGroupRepos transGroupRepos, GenreRepos genreRepos, MangaGenreRepos mangaGenreRepos,
                        AuthorRepos authorRepos, ImgChapterRepos imgChapterRepos, CommentRelationRepos commentRelationRepos,
                        CommentImageRepos commentImageRepos, PostRepos postRepos, CommentTagsRepos commentTagsRepos, CommentLikesRepos commentLikesRepos, NotificationRepos notificationRepos) {
@@ -88,7 +90,7 @@ public class UserService {
         this.userRepos = userRepos;
         this.readingHistoryRepos = readingHistoryRepos;
         this.chapterRepos = chapterRepos;
-        this.mangaCommentsRepos = mangaCommentsRepos;
+        this.commentRepos = commentRepos;
         this.ratingMangaRepos = ratingMangaRepos;
         this.transGroupRepos = transGroupRepos;
         this.genreRepos = genreRepos;
@@ -360,7 +362,7 @@ public class UserService {
         comment.setComment_content(content);
         comment.setComment_time(timeUpdated);
         comment.setIs_deprecated(false);
-        mangaCommentsRepos.saveAndFlush(comment);
+        commentRepos.saveAndFlush(comment);
 
         /**
          * Add tags
@@ -435,7 +437,7 @@ public class UserService {
             parentID = comment.getComment_id();
         }
 
-        Optional<Comment> parentOptional = mangaCommentsRepos.findById(parentID);
+        Optional<Comment> parentOptional = commentRepos.findById(parentID);
         Comment parent = parentOptional.get();
 
         // check level
@@ -507,7 +509,7 @@ public class UserService {
          * Initialize variable
          */
         Optional<User> userOptional = userRepos.findById(userID);
-        Optional<Comment> mangaCommentsOptional = mangaCommentsRepos.findById(commentID);
+        Optional<Comment> mangaCommentsOptional = commentRepos.findById(commentID);
 
         if (userOptional.isEmpty() || mangaCommentsOptional.isEmpty()) {
 
@@ -540,7 +542,7 @@ public class UserService {
          */
         if (commentContent.equals("") && image.isEmpty()) {
             comment.setIs_deprecated(true);
-            mangaCommentsRepos.save(comment);
+            commentRepos.save(comment);
 
             Map<String, Object> msg = Map.of("msg", "Delete comment successfully!");
             return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
@@ -666,9 +668,9 @@ public class UserService {
         }
 
         comment.setComment_content(commentContent);
-        mangaCommentsRepos.saveAndFlush(comment);
+        commentRepos.saveAndFlush(comment);
 
-        Optional<CommentDTOs> getLevelOptional = mangaCommentsRepos.findByCommentID(commentID);
+        Optional<CommentDTOs> getLevelOptional = commentRepos.findByCommentID(commentID);
         String level = getLevelOptional.get().getLevel();
 
         // Response
@@ -711,7 +713,7 @@ public class UserService {
 
     public ResponseEntity deleteComment(Long userID, Long commentID, List<CommentDTOs> comments) {
         Optional<User> userOptional = userRepos.findById(userID);
-        Optional<Comment> mangaCommentsOptional = mangaCommentsRepos.findById(commentID);
+        Optional<Comment> mangaCommentsOptional = commentRepos.findById(commentID);
 
         if (userOptional.isEmpty() || mangaCommentsOptional.isEmpty() || comments.isEmpty()) {
             Map<String, Object> msg = Map.of("msg", "Empty user or comment or comments!");
@@ -729,7 +731,7 @@ public class UserService {
 
         // Set deprecate this comment
         mangaComment.setIs_deprecated(true);
-        mangaCommentsRepos.saveAndFlush(mangaComment);
+        commentRepos.saveAndFlush(mangaComment);
 
         System.err.println("line 734");
         List<CommentDTOs> responseListComments = filterComments(mangaComment.getComment_id(), comments, 1);
@@ -1447,7 +1449,7 @@ public class UserService {
 
         // Declare variable
         List<CommentDTOs> cmtsToRes = comments;
-        Optional<CommentDTOs> inputCommentOptional = mangaCommentsRepos.findByCommentID(inputCommentID);
+        Optional<CommentDTOs> inputCommentOptional = commentRepos.findByCommentID(inputCommentID);
         if (inputCommentOptional.isEmpty()) {
             return new ArrayList<>();
         }

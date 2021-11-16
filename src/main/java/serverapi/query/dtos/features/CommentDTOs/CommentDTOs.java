@@ -39,6 +39,11 @@ public class CommentDTOs {
     private Long parent_id;
     private Long child_id;
     private String level;
+    private Long target_id;
+
+    private String title;
+
+    private Long count_comments_child;
 
     private Long comment_image_id;
     private String image_url;
@@ -64,16 +69,15 @@ public class CommentDTOs {
 
 
 
-    public CommentDTOs(Long user_id, String user_name, String user_avatar,
-                       Long manga_id,
+    public CommentDTOs(Long count_comments_child, Long user_id, String user_name, String user_avatar,
                        Long comment_id, Calendar comment_time, String comment_content,
                        Long comment_relation_id, Long parent_id, Long child_id, String level,
                        Long comment_image_id, String image_url) {
+        this.count_comments_child = count_comments_child;
         this.user_id = user_id;
         this.user_name = user_name;
         this.user_avatar = user_avatar;
 
-        this.manga_id = manga_id;
 
         this.comment_id = comment_id;
         this.comment_time = comment_time;
@@ -83,6 +87,23 @@ public class CommentDTOs {
         this.parent_id = parent_id;
         this.child_id = child_id;
         this.level = level;
+
+        this.comment_image_id = comment_image_id;
+        this.image_url = image_url;
+    }
+
+    public CommentDTOs(Long count_comments_child, Long user_id, String user_name, String user_avatar,
+                       Long comment_id, Calendar comment_time, String comment_content,
+                       Long comment_image_id, String image_url) {
+        this.count_comments_child = count_comments_child;
+        this.user_id = user_id;
+        this.user_name = user_name;
+        this.user_avatar = user_avatar;
+
+
+        this.comment_id = comment_id;
+        this.comment_time = comment_time;
+        this.comment_content = comment_content;
 
         this.comment_image_id = comment_image_id;
         this.image_url = image_url;

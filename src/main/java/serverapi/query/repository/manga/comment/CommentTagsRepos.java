@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import serverapi.query.dtos.features.CommentDTOs.CommentTagsDTO;
-import serverapi.tables.manga_tables.comment.comment_tag.CommentTag;
+import serverapi.tables.comment.comment_tag.CommentTag;
 
 import java.util.List;
 

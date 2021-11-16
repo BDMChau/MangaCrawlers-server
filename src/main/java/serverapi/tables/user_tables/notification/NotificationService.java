@@ -217,11 +217,11 @@ public class NotificationService {
     public Boolean checkIsExisted(String targetTitle, Long targetId, Long toUserId, Long fromUserId) {
         if (targetTitle.equals("user")) {
             List<Notifications> isExisted = notificationRepos.findByTargetTitleUserAndNotInteract(targetId, fromUserId);
-            if (!isExisted.isEmpty()) return true;
+            return !isExisted.isEmpty();
 
         } else if (targetTitle.equals("transgroup")) {
             List<Notifications> isExisted = notificationRepos.findByTargetTitleTransGroupAndNotInteract(targetId, toUserId, fromUserId);
-            if (!isExisted.isEmpty()) return true;
+            return !isExisted.isEmpty();
         }
 
         return false;

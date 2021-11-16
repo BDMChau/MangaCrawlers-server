@@ -1,4 +1,4 @@
-package serverapi.tables.manga_tables.comment.comment;
+package serverapi.tables.comment.comment;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -7,12 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import serverapi.tables.forum.post.Post;
-import serverapi.tables.manga_tables.comment.comment_like.CommentLike;
-import serverapi.tables.manga_tables.comment.comment_tag.CommentTag;
+import serverapi.tables.comment.comment_like.CommentLike;
+import serverapi.tables.comment.comment_tag.CommentTag;
 import serverapi.tables.manga_tables.chapter.Chapter;
 import serverapi.tables.manga_tables.manga.Manga;
-import serverapi.tables.manga_tables.comment.comment_image.CommentImage;
-import serverapi.tables.manga_tables.comment.comment_relation.CommentRelation;
+import serverapi.tables.comment.comment_image.CommentImage;
+import serverapi.tables.comment.comment_relation.CommentRelation;
 import serverapi.tables.user_tables.user.User;
 
 import javax.persistence.*;

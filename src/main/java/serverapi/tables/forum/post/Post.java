@@ -9,7 +9,7 @@ import lombok.Setter;
 import serverapi.tables.forum.post_category.PostCategory;
 import serverapi.tables.forum.post_dislike.PostDislike;
 import serverapi.tables.forum.post_like.PostLike;
-import serverapi.tables.manga_tables.comment.comment.Comment;
+import serverapi.tables.comment.comment.Comment;
 import serverapi.tables.user_tables.user.User;
 
 import javax.persistence.*;

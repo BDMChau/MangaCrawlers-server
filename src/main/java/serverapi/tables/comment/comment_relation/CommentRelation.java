@@ -1,4 +1,4 @@
-package serverapi.tables.manga_tables.comment.comment_relation;
+package serverapi.tables.comment.comment_relation;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.tables.manga_tables.comment.comment.Comment;
+import serverapi.tables.comment.comment.Comment;
 
 import javax.persistence.*;
 

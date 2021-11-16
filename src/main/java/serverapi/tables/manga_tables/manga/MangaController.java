@@ -6,7 +6,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import serverapi.query.dtos.features.CommentDTOs.CommentDTOs;
-import serverapi.tables.manga_tables.manga.pojo.CommentPOJO;
+import serverapi.tables.comment.pojo.CommentPOJO;
 import serverapi.tables.manga_tables.manga.pojo.MangaPOJO;
 
 
@@ -118,18 +118,10 @@ public class MangaController {
     }
 
 
-    @PostMapping("/getcommentsmanga")
-    public ResponseEntity getCommentsManga(@RequestBody CommentPOJO commentPOJO) {
-        Long mangaId = Long.parseLong(commentPOJO.getManga_id());
-        int from = commentPOJO.getFrom();
-        int amount = commentPOJO.getAmount();
-
-        return mangaService.getCommentsManga(mangaId, from, amount);
-    }
 
     @PostMapping("/getchildcomments")
     public ResponseEntity getChildComments(@RequestBody CommentPOJO commentPOJO) {
-        Long commentID = Long.parseLong(commentPOJO.getManga_comment_id());
+        Long commentID = Long.parseLong(commentPOJO.getComment_id());
         List<CommentDTOs> comments = commentPOJO.getComments();
 
         System.err.println("comment id "+commentID);

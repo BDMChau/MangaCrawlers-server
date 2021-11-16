@@ -1,10 +1,10 @@
-package serverapi.tables.user_tables.user;
+package serverapi.tables.user_tables.user.user_unauth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import serverapi.tables.user_tables.user.comment_like.CommentLikeService;
+import serverapi.tables.comment.comment_like.CommentLikeService;
 import serverapi.tables.user_tables.user.friend.FriendService;
 
 import java.util.Map;

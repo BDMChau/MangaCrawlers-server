@@ -1,4 +1,4 @@
-package serverapi.tables.manga_tables.manga.pojo;
+package serverapi.tables.comment.pojo;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,13 +18,15 @@ public class CommentPOJO {
     private String manga_id;
     private String chapter_id;
     private String post_id;
-    private String manga_comment_id;
-    private String manga_comment_content;
+    private String comment_id;
+    private String comment_content;
     private MultipartFile image;
     private String sticker_url;
     private String level;
     private String parent_id;
     private int key;
+    private String target_title;
+    private String target_id;
 
     private List<CommentDTOs> comments;
     private int from;

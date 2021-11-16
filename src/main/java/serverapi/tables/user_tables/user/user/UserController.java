@@ -1,4 +1,4 @@
-package serverapi.tables.user_tables.user;
+package serverapi.tables.user_tables.user.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import serverapi.api.Response;
 import serverapi.query.dtos.features.CommentDTOs.CommentDTOs;
 import serverapi.query.dtos.tables.FieldsCreateMangaDTO;
-import serverapi.tables.manga_tables.manga.pojo.CommentPOJO;
+import serverapi.tables.comment.pojo.CommentPOJO;
 import serverapi.tables.manga_tables.manga.pojo.MangaPOJO;
 import serverapi.tables.manga_tables.manga.pojo.RatingPOJO;
 import serverapi.tables.user_tables.user.pojo.TransGroupPOJO;
@@ -42,7 +42,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    private UserHelpers userHelpers = new UserHelpers();
+    private final UserHelpers userHelpers = new UserHelpers();
 
 
 
@@ -166,7 +166,7 @@ public class UserController {
         Long parentID = 0L;
 
         String strUserID = userHelpers.getUserAttribute(request).get("user_id").toString();
-        String content = commentPOJO.getManga_comment_content();
+        String content = commentPOJO.getComment_content();
         String stickerUrl = commentPOJO.getSticker_url();
 
         MultipartFile image = commentPOJO.getImage();
@@ -221,13 +221,13 @@ public class UserController {
         List<CommentDTOs> comments = commentPOJO.getComments();
         int key = commentPOJO.getKey();
 
-        if (commentPOJO.getManga_comment_id() == null || comments.isEmpty()) {
+        if (commentPOJO.getComment_id() == null || comments.isEmpty()) {
             Map<String, Object> msg = Map.of(
                     "err", "Cannot filter!"
             );
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         } else {
-            commentID = Long.parseLong(commentPOJO.getManga_comment_id());
+            commentID = Long.parseLong(commentPOJO.getComment_id());
         }
         List<CommentDTOs> exportComment = new ArrayList<>();
         try{
@@ -257,7 +257,7 @@ public class UserController {
         Long userID = 0L;
         Long commentID = 0L;
 
-        String content = commentPOJO.getManga_comment_content();
+        String content = commentPOJO.getComment_content();
         String strUserID = userHelpers.getUserAttribute(request).get("user_id").toString();
 
         MultipartFile image = commentPOJO.getImage();
@@ -276,9 +276,9 @@ public class UserController {
             userID = Long.parseLong(strUserID);
         }
 
-        if (!commentPOJO.getManga_comment_id().equals("")) {
+        if (!commentPOJO.getComment_id().equals("")) {
 
-            commentID = Long.parseLong(commentPOJO.getManga_comment_id());
+            commentID = Long.parseLong(commentPOJO.getComment_id());
         }
 
         //toUserID
@@ -310,7 +310,7 @@ public class UserController {
          */
         Long userID = Long.parseLong(strUserID);
         System.err.println("line 317");
-        Long formatCommentID = Long.parseLong(commentPOJO.getManga_comment_id());
+        Long formatCommentID = Long.parseLong(commentPOJO.getComment_id());
         System.err.println("line 319");
         List<CommentDTOs> comments = commentPOJO.getComments();
         System.err.println("line 318");

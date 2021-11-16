@@ -1,11 +1,11 @@
-package serverapi.tables.manga_tables.comment.comment_like;
+package serverapi.tables.comment.comment_like;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import serverapi.tables.manga_tables.comment.comment.Comment;
+import serverapi.tables.comment.comment.Comment;
 import serverapi.tables.user_tables.user.User;
 
 import javax.persistence.*;

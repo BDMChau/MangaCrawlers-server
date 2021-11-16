@@ -6,7 +6,6 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import serverapi.tables.manga_tables.manga.pojo.CommentPOJO;
 
 import java.util.Map;
 
@@ -96,19 +95,6 @@ public class PostControllerUnAuth {
 
         return postService.getTotalDislike(posttID);
     }
-    
 
-    @PostMapping("/getcommentspost")
-    public ResponseEntity getCommentsPost(@RequestBody CommentPOJO commentPOJO) {
 
-        Long postID = Long.parseLong(commentPOJO.getPost_id());
-
-        int from = commentPOJO.getFrom();
-        System.out.println("from_" + from);
-
-        int amount = commentPOJO.getAmount();
-        System.out.println("amount_" + amount);
-
-        return postService.getCommentsPost(postID, from, amount);
-    }
 }
