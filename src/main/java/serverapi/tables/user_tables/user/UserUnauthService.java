@@ -1,6 +1,7 @@
 package serverapi.tables.user_tables.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,10 +10,12 @@ import serverapi.api.Response;
 import serverapi.helpers.OffsetBasedPageRequest;
 import serverapi.query.dtos.tables.PostUserDTO;
 import serverapi.query.dtos.tables.UserDTO;
+import serverapi.query.repository.forum.CategoryRepos;
 import serverapi.query.repository.forum.PostRepos;
 import serverapi.query.repository.manga.*;
 import serverapi.query.repository.manga.comment.*;
 import serverapi.query.repository.user.*;
+import serverapi.tables.forum.category.Category;
 
 import java.util.List;
 import java.util.Map;
@@ -37,10 +40,11 @@ public class UserUnauthService {
     private final CommentTagsRepos commentTagsRepos;
     private final CommentLikesRepos commentLikesRepos;
     private final PostRepos postRepos;
+    private final CategoryRepos categoryRepos;
     private final NotificationRepos notificationRepos;
 
     @Autowired
-    public UserUnauthService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos,
+    public UserUnauthService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos, CategoryRepos categoryRepos,
                        ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos,
                        MangaCommentsRepos mangaCommentsRepos, RatingMangaRepos ratingMangaRepos,
                        TransGroupRepos transGroupRepos, GenreRepos genreRepos, MangaGenreRepos mangaGenreRepos,
@@ -63,6 +67,7 @@ public class UserUnauthService {
         this.commentTagsRepos = commentTagsRepos;
         this.commentLikesRepos = commentLikesRepos;
         this.postRepos = postRepos;
+        this.categoryRepos = categoryRepos;
         this.notificationRepos = notificationRepos;
     }
 
@@ -104,13 +109,21 @@ public class UserUnauthService {
 
         // user's posts
         Pageable pageable = new OffsetBasedPageRequest(from, amount);
-        List<PostUserDTO> posts = postRepos.getPostsByUserId(userId, pageable);
+        Page<PostUserDTO> postsPage = postRepos.getPostsByUserId(userId, pageable);
 
+        List<PostUserDTO> posts = postsPage.getContent();
+        Long totalPosts = postsPage.getTotalElements();
+
+        posts.forEach(post -> {
+            List<Category> categoryList = categoryRepos.getAllByPostId(post.getPost_id());
+            post.setCategoryList(categoryList);
+        });
 
         Map<String, Object> msg = Map.of(
                 "msg", "get user info OK!",
                 "from", from + amount,
-                "posts", posts
+                "posts", posts,
+                "total", totalPosts
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }

@@ -1,5 +1,6 @@
 package serverapi.query.repository.user;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -37,7 +38,7 @@ public interface FriendRequestRepos extends JpaRepository<FriendRequestStatus, L
             or frs.to_user = us.child_id
             where us.parent_id.user_id =?1 or us.child_id.user_id =?1
              """)
-    List<FriendDTO> getListByUserId(Long user_id, Pageable pageable);
+    Page<FriendDTO> getListByUserId(Long user_id, Pageable pageable);
 
 
     @Query("""
