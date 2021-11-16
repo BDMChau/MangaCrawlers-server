@@ -41,12 +41,16 @@ public class PostControllerUnAuth {
         return postService.getPost(postId);
     }
 
-    @Cacheable(value = "posts_category", key = "{#root.method, #category_id}")
+    @Cacheable(value = "posts_category", key = "{#root.method, #category_id, #from, #amount}")
     @GetMapping("/getposts_bycategory")
-    public ResponseEntity getByCategory(@RequestParam String category_id) {
+    public ResponseEntity getByCategory(
+            @RequestParam String category_id,
+            @RequestParam int from,
+            @RequestParam int amount
+    ) {
         Long categoryId = Long.parseLong(category_id);
 
-        return postService.getByCategory(categoryId);
+        return postService.getByCategory(categoryId, from, amount);
     }
 
     @GetMapping("/search")

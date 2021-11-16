@@ -81,7 +81,7 @@ public interface PostRepos extends JpaRepository<Post, Long>, JpaSpecificationEx
                       WHERE post_cate.category.category_id = ?1 AND post.is_deprecated = false AND post.is_approved = true
                       ORDER BY post.created_at
                       """)
-    List<PostUserDTO> getPostsByCategory(Long categoryId);
+    Page<PostUserDTO> getPostsByCategory(Long categoryId, Pageable pageable);
 
 
     @Query("""

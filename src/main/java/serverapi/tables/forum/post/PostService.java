@@ -185,15 +185,20 @@ public class PostService {
     }
 
 
-    protected ResponseEntity getByCategory(Long categoryId) {
+    protected ResponseEntity getByCategory(Long categoryId, int from, int amount) {
         Optional<Category> categoryOptional = categoryRepos.findById(categoryId);
 
-        List<PostUserDTO> posts = postRepos.getPostsByCategory(categoryId);
+        final Pageable pageable = new OffsetBasedPageRequest(from, amount);
+        Page<PostUserDTO> postsPage = postRepos.getPostsByCategory(categoryId, pageable);
+        List<PostUserDTO> posts = postsPage.getContent();
+        Long totalPosts = postsPage.getTotalElements();
+
+
         if (posts.isEmpty() || categoryOptional.isEmpty()) {
             Map<String, Object> err = Map.of(
                     "err", "no posts with this category!",
-                    "category", new HashMap<>(),
-                    "posts", new ArrayList<>()
+                    "category", categoryOptional.get(),
+                    "posts", posts
             );
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
@@ -206,8 +211,10 @@ public class PostService {
 
         Map<String, Object> msg = Map.of(
                 "msg", "get posts with category OK!",
+                "from", from + amount,
                 "category", category,
-                "posts", posts
+                "posts", posts,
+                "total_posts", totalPosts
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
