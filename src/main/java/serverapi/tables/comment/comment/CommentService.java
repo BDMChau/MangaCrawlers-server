@@ -117,9 +117,10 @@ public class CommentService {
     }
 
 
-    public ResponseEntity addCommentManga(String targetTitle, Long targetID,
+    public ResponseEntity addComment(String targetTitle, Long targetID,
                                           Long parentID, Long userID, List<Long> toUsersID,
                                           String content, MultipartFile image, String stickerUrl) throws IOException {
+        System.err.println("line123");
         Calendar timeUpdated = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         Optional<Manga> mangaOptional = Optional.empty();
         Optional<Post> postOptional = Optional.empty();
@@ -141,6 +142,7 @@ public class CommentService {
         User user = userOptional.get();
 
         User toUser = user;
+        System.err.println(!toUsersID.isEmpty());
         if (!toUsersID.isEmpty()) {
             Optional<User> toUserOptional = userRepos.findById(toUsersID.get(0));
             if (toUserOptional.isPresent()) toUser = toUserOptional.get();
@@ -150,8 +152,8 @@ public class CommentService {
         /*---------------------------------------------------------------------------------------------------------*/
         // Add Comment
         Comment comment = new Comment();
-        comment.setManga(mangaOptional.get());
-        comment.setPost(postOptional.get());
+        mangaOptional.ifPresent(comment::setManga);
+        postOptional.ifPresent(comment::setPost);
         comment.setUser(user);
         comment.setComment_content(content);
         comment.setComment_time(timeUpdated);
@@ -170,8 +172,6 @@ public class CommentService {
         else {
             level = "1";
         }
-
-        System.err.println("level " + level);
         CommentRelation commentRelation = new CommentRelation();
         commentRelation.setChild_id(comment);
         commentRelation.setParent_id(parent);
@@ -205,7 +205,7 @@ public class CommentService {
         }
         // Add image
         String image_url = null;
-        if (image != null) {
+        if (!image.isEmpty()) {
             Map cloudinaryResponse = cloudinaryUploader.uploadImg(
                     image.getBytes(),
                     "",
@@ -219,7 +219,7 @@ public class CommentService {
             commentImageRepos.saveAndFlush(commentImage);
             image_url = securedUrl;
         } else {
-            if (stickerUrl != null && !stickerUrl.isEmpty()) {
+            if (!stickerUrl.equals("")) {
                 CommentImage commentImage = new CommentImage();
                 commentImage.setImage_url(stickerUrl);
                 commentImage.setComment(comment);

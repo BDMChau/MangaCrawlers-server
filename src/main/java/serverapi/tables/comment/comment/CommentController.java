@@ -21,7 +21,7 @@ import java.util.Objects;
 @CacheConfig(cacheNames = {"user"})
 public class CommentController {
     private final CommentService commentService;
-    UserHelpers userHelpers;
+    private final UserHelpers userHelpers = new UserHelpers();
     private static final String fileNameDefault = "/static/media/8031DF085D7DBABC0F4B3651081CE70ED84622AE9305200F2FC1D789C95CF06F.9960248d.svg";
 
 
@@ -37,7 +37,8 @@ public class CommentController {
     // parent_id: String
     // to_users_id: Long array list
     @PostMapping("/add_comment")
-    public ResponseEntity addCommentManga(@Valid CommentPOJO commentPOJO, ServletRequest request) throws IOException {
+    public ResponseEntity addComment(@Valid CommentPOJO commentPOJO, ServletRequest request) throws IOException {
+        System.err.println("line 41");
         String target_title = commentPOJO.getTarget_title();
         String content = commentPOJO.getComment_content();
         String stickerUrl = commentPOJO.getSticker_url();
@@ -45,10 +46,12 @@ public class CommentController {
         String target_id = commentPOJO.getTarget_id();
         Long targetID = 0L;
         if(!target_id.equals("")){targetID = Long.parseLong(target_id);}
+
         // userID
         String strUserID = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userID = Long.parseLong(strUserID);
         // image
+        System.err.println("line 54");
         MultipartFile image = commentPOJO.getImage();
         if (Objects.equals(image.getOriginalFilename(), fileNameDefault)) {image = null;}
         //parentID
@@ -65,6 +68,7 @@ public class CommentController {
             });
         }
 
-        return commentService.addCommentManga(target_title, targetID, parentID, userID, toUsers, content, image, stickerUrl);
+        System.err.println("line 68");
+        return commentService.addComment(target_title, targetID, parentID, userID, toUsers, content, image, stickerUrl);
     }
 }
