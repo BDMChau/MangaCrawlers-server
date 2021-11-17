@@ -8,17 +8,14 @@ import org.springframework.web.multipart.MultipartFile;
 import serverapi.api.Response;
 import serverapi.helpers.OffsetBasedPageRequest;
 import serverapi.query.dtos.features.CommentDTOs.CommentDTO;
-import serverapi.query.dtos.features.CommentDTOs.CommentDTOs;
 import serverapi.query.dtos.features.CommentDTOs.CommentTagsDTO;
 import serverapi.query.repository.forum.PostRepos;
 import serverapi.query.repository.manga.MangaRepos;
-import serverapi.query.repository.manga.comment.CommentImageRepos;
-import serverapi.query.repository.manga.comment.CommentRelationRepos;
-import serverapi.query.repository.manga.comment.CommentTagsRepos;
-import serverapi.query.repository.manga.comment.CommentRepos;
+import serverapi.query.repository.manga.comment.*;
 import serverapi.query.repository.user.UserRepos;
 import serverapi.sharing_services.CloudinaryUploader;
 import serverapi.tables.comment.comment_image.CommentImage;
+import serverapi.tables.comment.comment_like.CommentLike;
 import serverapi.tables.comment.comment_relation.CommentRelation;
 import serverapi.tables.comment.comment_tag.CommentTag;
 import serverapi.tables.forum.post.Post;
@@ -40,8 +37,9 @@ public class CommentService {
     private final UserRepos userRepos;
     private final CommentRelationRepos commentRelationRepos;
     private final CommentImageRepos commentImageRepos;
+    private final CommentLikesRepos commentLikesRepos;
 
-    public CommentService(MangaRepos mangaRepos, CommentRepos commentRepos, CommentTagsRepos commentTagsRepos, PostRepos postRepos, UserRepos userRepos, CommentRelationRepos commentRelationRepos, CommentImageRepos commentImageRepos) {
+    public CommentService(MangaRepos mangaRepos, CommentRepos commentRepos, CommentTagsRepos commentTagsRepos, PostRepos postRepos, UserRepos userRepos, CommentRelationRepos commentRelationRepos, CommentImageRepos commentImageRepos, CommentLikesRepos commentLikesRepos) {
         this.mangaRepos = mangaRepos;
         this.commentRepos = commentRepos;
         this.commentTagsRepos = commentTagsRepos;
@@ -49,10 +47,11 @@ public class CommentService {
         this.userRepos = userRepos;
         this.commentRelationRepos = commentRelationRepos;
         this.commentImageRepos = commentImageRepos;
+        this.commentLikesRepos = commentLikesRepos;
     }
 
 
-    public ResponseEntity getComments(int from, int amount, String targetTitle, Long targetID) {
+    public ResponseEntity getComments(int from, int amount, String targetTitle, Long targetID, Long userID) {
         final Pageable pageable = new OffsetBasedPageRequest(from, amount);
         Optional<Manga> mangaOptional = Optional.empty();
         Optional<Post> postOptional = Optional.empty();
@@ -65,6 +64,12 @@ public class CommentService {
         if (cmtsLv0.isEmpty()) {
             Map<String, Object> msg = Map.of("err", "No comments found!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+        }
+        Optional<User> userOptional = userRepos.findById(userID);
+        if (userOptional.isPresent()) {
+            cmtsLv0.forEach(item -> {
+                setUserIsLike(item.getComment_id(), userID, item);
+            });
         }
         cmtsLv0.forEach(comment -> {
             if (comment.getCount_comments_child() >= 1) {
@@ -91,7 +96,7 @@ public class CommentService {
 
 
     @Transactional
-    public ResponseEntity getCommentsChild(int from, int amount, Long commentID) {
+    public ResponseEntity getCommentsChild(int from, int amount, Long commentID, Long userID) {
         boolean isEnd = false;
         int fromFromServer = from + amount;
         Pageable pageable = new OffsetBasedPageRequest(from, amount);
@@ -102,6 +107,12 @@ public class CommentService {
         }
 
         List<CommentDTO> commentsChild = commentRepos.getCommentsChild(commentID, pageable);
+        Optional<User> userOptional = userRepos.findById(userID);
+        if (userOptional.isPresent()) {
+            commentsChild.forEach(item -> {
+                setUserIsLike(item.getComment_id(), userID, item);
+            });
+        }
         commentsChild.forEach(this::setListTags);
         if (commentsChild.isEmpty() || commentsChild.size() < amount) {
             isEnd = true;
@@ -228,7 +239,7 @@ public class CommentService {
             }
         }
         // Response
-        CommentDTOs exportComment = new CommentDTOs();
+        CommentDTO exportComment = new CommentDTO();
         exportComment.setTo_users(commentTags);
         exportComment.setUser_id(user.getUser_id());
         exportComment.setUser_name(user.getUser_name());
@@ -236,13 +247,14 @@ public class CommentService {
         exportComment.setComment_id(comment.getComment_id());
         exportComment.setComment_time(comment.getComment_time());
         exportComment.setComment_content(comment.getComment_content());
+        exportComment.setCount_like(comment.getCount_like());
         exportComment.setLevel(level);
         exportComment.setParent_id(parent.getComment_id());
         exportComment.setImage_url(image_url);
 
         Map<String, Object> msg = Map.of(
                 "msg", "Add comment successfully!",
-                "comment_information", exportComment
+                "comment_info", exportComment
         );
         return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
     }
@@ -323,7 +335,7 @@ public class CommentService {
             }
         }
         // Response
-        CommentDTOs exportComment = new CommentDTOs();
+        CommentDTO exportComment = new CommentDTO();
         exportComment.setTo_users(commentTags);
         exportComment.setUser_id(user.getUser_id());
         exportComment.setUser_name(user.getUser_name());
@@ -331,6 +343,7 @@ public class CommentService {
         exportComment.setComment_id(comment.getComment_id());
         exportComment.setComment_time(comment.getComment_time());
         exportComment.setComment_content(comment.getComment_content());
+        exportComment.setCount_like(comment.getCount_like());
         exportComment.setImage_url(image_url);
 
         Map<String, Object> msg = Map.of(
@@ -380,5 +393,15 @@ public class CommentService {
         commentImageRepos.saveAndFlush(commentImage);
     }
 
-
+    private void setUserIsLike(Long commentID, Long userID, CommentDTO commentDTO) {
+        int likeStatus = 1;
+        Optional<CommentLike> commentLikeOptional = commentLikesRepos.getCommentLike(commentID, userID);
+        if (commentLikeOptional.isEmpty()) {
+            likeStatus = 0;
+        }
+        if (likeStatus == 1) {
+            commentDTO.setUser_id_is_liked(userID);
+            commentDTO.setIs_liked("liked");
+        }
+    }
 }

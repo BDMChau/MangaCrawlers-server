@@ -5,8 +5,6 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import serverapi.query.dtos.features.CommentDTOs.CommentDTOs;
-import serverapi.tables.comment.pojo.CommentPOJO;
 import serverapi.tables.manga_tables.manga.pojo.MangaPOJO;
 
 
@@ -117,20 +115,5 @@ public class MangaController {
         return mangaService.searchMangasByGenres(listGenId);
     }
 
-
-
-    @PostMapping("/getchildcomments")
-    public ResponseEntity getChildComments(@RequestBody CommentPOJO commentPOJO) {
-        Long commentID = Long.parseLong(commentPOJO.getComment_id());
-        List<CommentDTOs> comments = commentPOJO.getComments();
-
-        System.err.println("comment id "+commentID);
-        System.err.println("type"+(commentID == 1L));
-        int from = commentPOJO.getFrom();
-        int amount = commentPOJO.getAmount();
-        int level = Integer.parseInt(commentPOJO.getLevel());
-
-        return mangaService.getChildComments(commentID, comments, from, amount, level);
-    }
 
 }

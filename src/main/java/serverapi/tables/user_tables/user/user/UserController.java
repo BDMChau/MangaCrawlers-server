@@ -9,9 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import serverapi.api.Response;
-import serverapi.query.dtos.features.CommentDTOs.CommentDTOs;
 import serverapi.query.dtos.tables.FieldsCreateMangaDTO;
-import serverapi.tables.comment.pojo.CommentPOJO;
 import serverapi.tables.manga_tables.manga.pojo.MangaPOJO;
 import serverapi.tables.manga_tables.manga.pojo.RatingPOJO;
 import serverapi.tables.user_tables.user.pojo.TransGroupPOJO;
@@ -20,12 +18,9 @@ import serverapi.utils.UserHelpers;
 
 import javax.servlet.ServletRequest;
 import javax.transaction.Transactional;
-import javax.validation.Valid;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -155,168 +150,6 @@ public class UserController {
         return userService.getFriendRequests(userId, from, amount);
     }
 
-
-
-    @PostMapping("/addcommentmanga")
-    public ResponseEntity addCommentManga(@Valid CommentPOJO commentPOJO, ServletRequest request) throws IOException {
-
-        Long mangaID = 0L;
-        Long chapterID = 0L;
-        Long postID = 0L;
-        Long parentID = 0L;
-
-        String strUserID = userHelpers.getUserAttribute(request).get("user_id").toString();
-        String content = commentPOJO.getComment_content();
-        String stickerUrl = commentPOJO.getSticker_url();
-
-        MultipartFile image = commentPOJO.getImage();
-        if (image.getOriginalFilename().equals(fileNameDefault)) {
-            image = null;
-        }
-
-        List<String> to_usersString = commentPOJO.getTo_users_id();
-        List<Long> to_users = new ArrayList<>();
-
-        /**
-         * Format variables necessary include: mangaID, UserID, chapterID, parentID, toUserID
-         */
-        Long userID = Long.parseLong(strUserID);
-
-        // toUserID
-        if (!to_usersString.isEmpty()) {
-
-            to_usersString.forEach(item -> {
-
-                Long to_user = Long.parseLong(item);
-                to_users.add(to_user);
-            });
-        }
-
-        // chapterID
-        if (!commentPOJO.getChapter_id().equals("")) {
-            chapterID = Long.parseLong(commentPOJO.getChapter_id());
-        }
-
-        // mangaId
-        if (!commentPOJO.getManga_id().equals("")) {
-            mangaID = Long.parseLong(commentPOJO.getManga_id());
-        }
-
-        // postID
-        if (!commentPOJO.getPost_id().equals("")) {
-            postID = Long.parseLong(commentPOJO.getPost_id());
-        }
-
-        //parentID
-        if (!commentPOJO.getParent_id().equals("")) {
-
-            parentID = Long.parseLong(commentPOJO.getParent_id());
-        }
-        return userService.addCommentManga(to_users, userID, mangaID, chapterID, postID, content, image, stickerUrl, parentID);
-    }
-
-    @PostMapping("/filter_comments")
-    public ResponseEntity filterComments(@RequestBody CommentPOJO commentPOJO) {
-        Long commentID = 0L;
-        List<CommentDTOs> comments = commentPOJO.getComments();
-        int key = commentPOJO.getKey();
-
-        if (commentPOJO.getComment_id() == null || comments.isEmpty()) {
-            Map<String, Object> msg = Map.of(
-                    "err", "Cannot filter!"
-            );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
-        } else {
-            commentID = Long.parseLong(commentPOJO.getComment_id());
-        }
-        List<CommentDTOs> exportComment = new ArrayList<>();
-        try{
-            exportComment = userService.filterComments(commentID, comments, key);
-        }catch(Exception ex){
-            System.err.println(ex.getMessage());
-            ex.printStackTrace();
-        }
-        if (exportComment.isEmpty()) {
-            Map<String, Object> msg = Map.of(
-                    "err", "Cannot filter!",
-                    "comments", exportComment
-            );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
-        }
-        Map<String, Object> msg = Map.of(
-                "msg", "Filter successfully!",
-                "comments", exportComment
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
-
-
-
-    @PostMapping("/updatecomment")
-    public ResponseEntity updateComment(@Valid CommentPOJO commentPOJO, ServletRequest request) throws IOException {
-        Long userID = 0L;
-        Long commentID = 0L;
-
-        String content = commentPOJO.getComment_content();
-        String strUserID = userHelpers.getUserAttribute(request).get("user_id").toString();
-
-        MultipartFile image = commentPOJO.getImage();
-        if (image.getOriginalFilename().equals(fileNameDefault)) {
-            image = null;
-        }
-
-        List<String> to_usersString = commentPOJO.getTo_users_id();
-        List<Long> toUsers = new ArrayList<>();
-
-        /**
-         * Assign variable
-         */
-        if (!strUserID.isEmpty()) {
-
-            userID = Long.parseLong(strUserID);
-        }
-
-        if (!commentPOJO.getComment_id().equals("")) {
-
-            commentID = Long.parseLong(commentPOJO.getComment_id());
-        }
-
-        //toUserID
-        if (!to_usersString.isEmpty()) {
-
-            to_usersString.forEach(item -> {
-
-                Long to_user = Long.parseLong(item);
-                toUsers.add(to_user);
-            });
-        }
-
-
-        System.err.println("line 215");
-        return userService.updateComment(userID, toUsers, commentID, content, image);
-    }
-
-
-    @PostMapping("/deletecomment")
-    public ResponseEntity deleteComment(@RequestBody CommentPOJO commentPOJO, ServletRequest request) {
-
-        System.err.println("line 308");
-        /**
-         * Declare variables
-         */
-        String strUserID = userHelpers.getUserAttribute(request).get("user_id").toString();
-        /**
-         * Format variable necessary
-         */
-        Long userID = Long.parseLong(strUserID);
-        System.err.println("line 317");
-        Long formatCommentID = Long.parseLong(commentPOJO.getComment_id());
-        System.err.println("line 319");
-        List<CommentDTOs> comments = commentPOJO.getComments();
-        System.err.println("line 318");
-
-        return userService.deleteComment(userID, formatCommentID, comments);
-    }
 
 
     @PostMapping("/searchusers")

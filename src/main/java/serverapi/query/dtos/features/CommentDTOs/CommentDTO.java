@@ -31,6 +31,7 @@ public class CommentDTO {
     private Long comment_id;
     private Calendar comment_time;
     private String comment_content;
+    private int count_like;
 
     private List<CommentTagsDTO> to_users = new ArrayList<>();
 
@@ -47,11 +48,12 @@ public class CommentDTO {
     private Long comment_image_id;
     private String image_url;
 
-
+    private Long user_id_is_liked;
+    private String is_liked;
     // For comment level 0
     public CommentDTO(Long count_comments_child,
                       Long user_id, String user_name, String user_avatar,
-                      Long comment_id, Calendar comment_time, String comment_content,
+                      Long comment_id, Calendar comment_time, String comment_content, int count_like,
                       Long comment_image_id, String image_url) {
         this.count_comments_child = count_comments_child;
         this.user_id = user_id;
@@ -60,12 +62,13 @@ public class CommentDTO {
         this.comment_id = comment_id;
         this.comment_time = comment_time;
         this.comment_content = comment_content;
+        this.count_like = count_like;
         this.comment_image_id = comment_image_id;
         this.image_url = image_url;
     }
 
     public CommentDTO(Long user_id, String user_name, String user_avatar,
-                      Long comment_id, Calendar comment_time, String comment_content,
+                      Long comment_id, Calendar comment_time, String comment_content, int count_like,
                       List<CommentTagsDTO> to_users,
                       Long count_comments_child,
                       Long comment_image_id, String image_url) {
@@ -75,6 +78,7 @@ public class CommentDTO {
         this.comment_id = comment_id;
         this.comment_time = comment_time;
         this.comment_content = comment_content;
+        this.count_like = count_like;
         this.to_users = to_users;
         this.count_comments_child = count_comments_child;
         this.comment_image_id = comment_image_id;
@@ -84,7 +88,7 @@ public class CommentDTO {
     // For comments child
     public CommentDTO(
                       Long user_id, String user_name, String user_avatar,
-                      Long comment_id, Calendar comment_time, String comment_content,
+                      Long comment_id, Calendar comment_time, String comment_content, int count_like,
                       Long comment_image_id, String image_url) {
         this.user_id = user_id;
         this.user_name = user_name;
@@ -92,10 +96,8 @@ public class CommentDTO {
         this.comment_id = comment_id;
         this.comment_time = comment_time;
         this.comment_content = comment_content;
+        this.count_like = count_like;
         this.comment_image_id = comment_image_id;
         this.image_url = image_url;
     }
-
-
-
 }
