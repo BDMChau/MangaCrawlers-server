@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface CommentImageRepos extends JpaRepository<CommentImage, Long> {
 
     @Query(value = "select * " +
-            "from manga_comment_images " +
-            "where manga_comment_images.manga_comment_id =?1", nativeQuery = true)
-    Optional<CommentImage> getCommentImagesByManga_comment(Long manga_comment_id);
+                "from comment_image " +
+                "where comment_image.comment_id =?1", nativeQuery = true)
+    Optional<CommentImage> getCommentImageByCommentID(Long comment_id);
 }

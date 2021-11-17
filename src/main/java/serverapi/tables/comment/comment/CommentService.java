@@ -118,8 +118,8 @@ public class CommentService {
 
 
     public ResponseEntity addComment(String targetTitle, Long targetID,
-                                          Long parentID, Long userID, List<Long> toUsersID,
-                                          String content, MultipartFile image, String stickerUrl) throws IOException {
+                                     Long parentID, Long userID, List<Long> toUsersID,
+                                     String content, MultipartFile image, String stickerUrl) throws IOException {
         System.err.println("line123");
         Calendar timeUpdated = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         Optional<Manga> mangaOptional = Optional.empty();
@@ -130,7 +130,7 @@ public class CommentService {
             postOptional = postRepos.findById(targetID);
         }
         if (mangaOptional.isEmpty() && postOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("err", "Missing credential!");
+            Map<String, Object> msg = Map.of("err", "Invalid credential!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
 
@@ -205,7 +205,7 @@ public class CommentService {
         }
         // Add image
         String image_url = null;
-        if (!image.isEmpty()) {
+        if (image != null) {
             Map cloudinaryResponse = cloudinaryUploader.uploadImg(
                     image.getBytes(),
                     "",
@@ -233,7 +233,6 @@ public class CommentService {
         exportComment.setUser_id(user.getUser_id());
         exportComment.setUser_name(user.getUser_name());
         exportComment.setUser_avatar(user.getUser_avatar());
-        if (!level.equals("0")) {exportComment.setLevel(level);}
         exportComment.setComment_id(comment.getComment_id());
         exportComment.setComment_time(comment.getComment_time());
         exportComment.setComment_content(comment.getComment_content());
@@ -247,6 +246,125 @@ public class CommentService {
         );
         return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
     }
+
+
+    public ResponseEntity updateComment(Long userID, List<Long> toUsersID, Long commentID,
+                                        String content, MultipartFile image, String stickerUrl) throws IOException {
+        Optional<User> userOptional = userRepos.findById(userID);
+        Optional<Comment> mangaCommentsOptional = commentRepos.findById(commentID);
+        if (userOptional.isEmpty() || mangaCommentsOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of("err", "Invalid credential!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+        Comment comment = mangaCommentsOptional.get();
+        User user = userOptional.get();
+        // check allow
+        if (!user.getUser_id().equals(comment.getUser().getUser_id())) {
+            Map<String, Object> msg = Map.of("err", "You don't have permission!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+        }
+        // if content, image, toUsersID is empty or null, update comment will change to delete comment
+        if (content.isEmpty() && stickerUrl.isEmpty() && image == null) {
+            comment.setIs_deprecated(true);
+            commentRepos.save(comment);
+            Map<String, Object> msg = Map.of("msg", "Delete comment successfully!");
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
+        // comment table's part (update content)
+        comment.setComment_content(content);
+        commentRepos.saveAndFlush(comment);
+        // comment_image table's part (update image or stickerUrl)
+        // check current image of comment
+        String image_url = null;
+        Optional<CommentImage> commentImageOptional = commentImageRepos.getCommentImageByCommentID(commentID);
+
+        if (image != null) {
+            Map cloudinaryResponse = cloudinaryUploader.uploadImg(
+                    image.getBytes(),
+                    "",
+                    "user_comment_images",
+                    false
+            );
+            String securedUrl = (String) cloudinaryResponse.get("secure_url");
+            CommentImage commentImage;
+            commentImage = commentImageOptional.orElseGet(CommentImage::new);
+            addCommentImage(commentImage, comment, securedUrl);
+            image_url = securedUrl;
+        }
+        if (!stickerUrl.equals("")) {
+            CommentImage commentImage;
+            commentImage = commentImageOptional.orElseGet(CommentImage::new);
+            addCommentImage(commentImage, comment, stickerUrl);
+            image_url = stickerUrl;
+        }
+        // comment_tag table's part (update toUserID)
+        int offSet = 0;
+        List<CommentTagsDTO> commentTags = new ArrayList<>();
+        for (Long toUserID : toUsersID) {
+            Optional<User> userTagOptional = userRepos.findById(toUserID);
+            if (userTagOptional.isPresent()) {
+                User userTag = userTagOptional.get();
+                CommentTag commentTag = new CommentTag();
+                commentTag.setComment(comment);
+                commentTag.setUser(userTag);
+                commentTag.setOff_set(offSet);
+                commentTagsRepos.saveAndFlush(commentTag);
+
+                // for export
+                CommentTagsDTO commentTagsDTO = new CommentTagsDTO();
+                commentTagsDTO.setComment_id(comment.getComment_id());
+                commentTagsDTO.setComment_tag_id(commentTag.getComment_tag_id());
+                commentTagsDTO.setUser_id(commentTag.getUser().getUser_id());
+                commentTagsDTO.setUser_avatar(commentTag.getUser().getUser_avatar());
+                commentTagsDTO.setUser_name(commentTag.getUser().getUser_name());
+
+                commentTags.add(commentTagsDTO);
+                offSet++;
+            }
+        }
+        // Response
+        CommentDTOs exportComment = new CommentDTOs();
+        exportComment.setTo_users(commentTags);
+        exportComment.setUser_id(user.getUser_id());
+        exportComment.setUser_name(user.getUser_name());
+        exportComment.setUser_avatar(user.getUser_avatar());
+        exportComment.setComment_id(comment.getComment_id());
+        exportComment.setComment_time(comment.getComment_time());
+        exportComment.setComment_content(comment.getComment_content());
+        exportComment.setImage_url(image_url);
+
+        Map<String, Object> msg = Map.of(
+                "msg", "Update comment successfully!",
+                "comment_info", exportComment
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    public ResponseEntity deleteComment(Long userID, Long commentID) {
+        Optional<User> userOptional = userRepos.findById(userID);
+        Optional<Comment> commentOptional = commentRepos.findById(commentID);
+        if (userOptional.isEmpty() || commentOptional.isEmpty()) {
+            Map<String, Object> msg = Map.of("err", "Invalid credential!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+        Comment comment = commentOptional.get();
+        if (comment.getIs_deprecated().equals(true)) {
+            Map<String, Object> msg = Map.of("err", "Comment is already delete!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+        }
+        User user = userOptional.get();
+        if (!user.getUser_id().equals(comment.getUser().getUser_id())) {
+            Map<String, Object> msg = Map.of("err", "You don't have permission!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+        }
+        // Delete comment
+        comment.setIs_deprecated(true);
+        commentRepos.saveAndFlush(comment);
+        Map<String, Object> msg = Map.of(
+                "msg", "Delete comment successfully!"
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
     ///////////////////////////////// HELPERS ///////////////////////////////////////////////////////////////////
 
     private void setListTags(CommentDTO commentDTO) {
@@ -254,6 +372,12 @@ public class CommentService {
         if (!tags.isEmpty()) {
             commentDTO.setTo_users(tags);
         }
+    }
+
+    private void addCommentImage(CommentImage commentImage, Comment comment, String url) {
+        commentImage.setImage_url(url);
+        commentImage.setComment(comment);
+        commentImageRepos.saveAndFlush(commentImage);
     }
 
 

@@ -526,7 +526,7 @@ public class UserService {
         }
 
         // Get current image in this comment
-        Optional<CommentImage> commentImagesOptional = commentImageRepos.getCommentImagesByManga_comment(commentID);
+        Optional<CommentImage> commentImagesOptional = commentImageRepos.getCommentImageByCommentID(commentID);
 
         String currentImageUrl = "";
         CommentImage currentCommentImage = null;

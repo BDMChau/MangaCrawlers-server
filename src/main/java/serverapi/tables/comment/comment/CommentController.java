@@ -2,9 +2,7 @@ package serverapi.tables.comment.comment;
 
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import serverapi.tables.comment.pojo.CommentPOJO;
 import serverapi.utils.UserHelpers;
@@ -38,37 +36,91 @@ public class CommentController {
     // to_users_id: Long array list
     @PostMapping("/add_comment")
     public ResponseEntity addComment(@Valid CommentPOJO commentPOJO, ServletRequest request) throws IOException {
-        System.err.println("line 41");
         String target_title = commentPOJO.getTarget_title();
         String content = commentPOJO.getComment_content();
         String stickerUrl = commentPOJO.getSticker_url();
         //targetID
         String target_id = commentPOJO.getTarget_id();
         Long targetID = 0L;
-        if(!target_id.equals("")){targetID = Long.parseLong(target_id);}
-
+        if (!target_id.equals("")) {
+            targetID = Long.parseLong(target_id);
+        }
         // userID
         String strUserID = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userID = Long.parseLong(strUserID);
         // image
-        System.err.println("line 54");
         MultipartFile image = commentPOJO.getImage();
-        if (Objects.equals(image.getOriginalFilename(), fileNameDefault)) {image = null;}
+        if (Objects.equals(image.getOriginalFilename(), fileNameDefault)) {
+            image = null;
+        }
         //parentID
         String parent_id = commentPOJO.getParent_id();
         Long parentID = 0L;
-        if (!parent_id.equals("")) {parentID = Long.parseLong(commentPOJO.getParent_id());}
+        if (!parent_id.equals("")) {
+            parentID = Long.parseLong(commentPOJO.getParent_id());
+        }
         // toUsersID
-        List<String> to_users = commentPOJO.getTo_users_id();
-        List<Long> toUsers = new ArrayList<>();
-        if (!to_users.isEmpty()) {
-            to_users.forEach(item -> {
+        List<String> to_users_id = commentPOJO.getTo_users_id();
+        List<Long> toUsersID = new ArrayList<>();
+        if (!to_users_id.isEmpty()) {
+            to_users_id.forEach(item -> {
                 Long to_user = Long.parseLong(item);
-                toUsers.add(to_user);
+                toUsersID.add(to_user);
             });
         }
 
-        System.err.println("line 68");
-        return commentService.addComment(target_title, targetID, parentID, userID, toUsers, content, image, stickerUrl);
+        return commentService.addComment(target_title, targetID, parentID, userID, toUsersID, content, image, stickerUrl);
+    }
+
+
+    // content: String
+    // stickerUrl: String
+    // image: multipartFile
+    // comment_id: String
+    // to_users_id: Long array list
+    @PutMapping("/update_comment")
+    public ResponseEntity updateComment(@Valid CommentPOJO commentPOJO, ServletRequest request) throws IOException {
+        // content, sticker, image
+        String content = commentPOJO.getComment_content();
+        String stickerUrl = commentPOJO.getSticker_url();
+        MultipartFile image = commentPOJO.getImage();
+        if (Objects.equals(image.getOriginalFilename(), fileNameDefault)) {
+            image = null;
+        }
+        // user_id
+        String user_id = userHelpers.getUserAttribute(request).get("user_id").toString();
+        Long userID = Long.parseLong(user_id);
+        //comment_id
+        String comment_id = commentPOJO.getComment_id();
+        Long commentID = 0L;
+        if(!comment_id.equals("")){
+            commentID = Long.parseLong(comment_id);
+        }
+        //to_user_id
+        List<String> to_users_id = commentPOJO.getTo_users_id();
+        List<Long> toUsersID = new ArrayList<>();
+        if (!to_users_id.isEmpty()) {
+            to_users_id.forEach(item -> {
+                Long to_user = Long.parseLong(item);
+                toUsersID.add(to_user);
+            });
+        }
+
+        return commentService.updateComment(userID, toUsersID, commentID, content, image, stickerUrl);
+    }
+
+    // comment_id: String
+    @DeleteMapping("/delete_comment")
+    public ResponseEntity deleteComment(@RequestBody CommentPOJO commentPOJO, ServletRequest request) {
+        String strUserID = userHelpers.getUserAttribute(request).get("user_id").toString();
+        Long userID = Long.parseLong(strUserID);
+
+        String comment_id = commentPOJO.getComment_id();
+        Long commentID = 0L;
+        if (!comment_id.equals("")) {
+            commentID = Long.parseLong(comment_id);
+        }
+
+        return commentService.deleteComment(userID, commentID);
     }
 }
