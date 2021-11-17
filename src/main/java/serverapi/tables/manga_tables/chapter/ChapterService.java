@@ -16,6 +16,7 @@ import serverapi.query.repository.manga.ChapterRepos;
 import serverapi.query.repository.manga.ImgChapterRepos;
 import serverapi.query.repository.manga.MangaRepos;
 import serverapi.query.repository.manga.comment.MangaCommentsRepos;
+import serverapi.tables.manga_tables.manga.Manga;
 import serverapi.tables.manga_tables.manga.MangaService;
 
 import java.util.List;
@@ -43,7 +44,7 @@ public class ChapterService {
     }
 
 
-    public ResponseEntity getAllChapter() {
+    protected ResponseEntity getAllChapter() {
         List<Chapter> chapters = chapterRepos.findAllChapter();
 
         Map<String, Object> msg = Map.of(
@@ -54,44 +55,26 @@ public class ChapterService {
     }
 
 
-    public ResponseEntity findImgByChapter(Long chapterId, Long mangaId) {
+    protected ResponseEntity findImgByChapter(Long chapterId, Long mangaId) {
         Optional<Chapter> chapterInfo = chapterRepos.findById(chapterId);
         if (chapterInfo.isEmpty()) {
-            Map<String, Object> err = Map.of(
-                    "err", "No chapter to present!"
-            );
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-                    HttpStatus.BAD_REQUEST);
+            Map<String, Object> err = Map.of("err", "No chapter to present!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
-        Long mangaIdOfChapter = chapterInfo.get().getManga().getManga_id();
-        chapterInfo.get().getManga().getManga_name();
+        Chapter chapter = chapterInfo.get();
+
+        List<ChapterImgDTO> listImgs = imgChapterRepos.findImgsByChapterId(chapterId);
 
 
-        if (mangaIdOfChapter.equals(mangaId)) {
-            List<ChapterDTO> listChapter = chapterRepos.findChaptersbyMangaId(mangaId);
-            listChapter.forEach(item ->{
-                System.err.println(item.getChapter_name());
-            });
-
-            List<ChapterImgDTO> listImgs = imgChapterRepos.findImgsByChapterId(chapterId);
-            Map<String, Object> msg = Map.of(
-                    "msg", "Get all chapters successfully!",
-                    "chapterInfo", chapterInfo,
-                    "listChapter", listChapter,
-                    "listImg", listImgs
-            );
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-
-        } else {
-            Map<String, Object> err = Map.of(
-                    "err", "No chapter to present!"
-            );
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(),
-                    HttpStatus.ACCEPTED);
-        }
+        Map<String, Object> msg = Map.of(
+                "msg", "Get all chapters successfully!",
+                "chapterInfo", chapter,
+                "listImg", listImgs
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
-    public ResponseEntity getCommentsChapter(Long chapterId, int from, int amount) {
+    protected ResponseEntity getCommentsChapter(Long chapterId, int from, int amount) {
 
         // Initialize variable
         final String level1 = "1";
@@ -120,23 +103,23 @@ public class ChapterService {
         // Get comment
         //set tags for each comment
         List<MangaCommentDTOs> comments;
-        cmtsLv0.forEach(lv0 ->{
+        cmtsLv0.forEach(lv0 -> {
 
             lv0 = mangaService.setListTags(lv0);
 
             //get child comments
-            List<CommentTreesDTO> cmtsLv1 = mangaCommentsRepos.getCommentsChild(lv0.getManga_comment_id(), level1,childPageable);
+            List<CommentTreesDTO> cmtsLv1 = mangaCommentsRepos.getCommentsChild(lv0.getManga_comment_id(), level1, childPageable);
             List<CommentTreesDTO> cmtsLv2 = mangaCommentsRepos.getCommentsChild(lv0.getManga_comment_id(), level2, childPageable);
 
             MangaCommentDTOs finalLv0 = lv0;
-            cmtsLv1.forEach(lv01 ->{
+            cmtsLv1.forEach(lv01 -> {
 
                 CommentTreesDTO finalLv01 = lv01;
-                cmtsLv2.forEach(lv02 ->{
+                cmtsLv2.forEach(lv02 -> {
 
                     lv02 = mangaService.setListTags(lv02);
 
-                    if(finalLv0.getManga_comment_id() == lv02.getParent_id()){
+                    if (finalLv0.getManga_comment_id() == lv02.getParent_id()) {
 
                         finalLv01.getComments_level_02().add(lv02);
                     }
@@ -144,7 +127,7 @@ public class ChapterService {
 
                 lv01 = mangaService.setListTags(lv01);
 
-                if(finalLv0.getManga_comment_id() == lv01.getParent_id()){
+                if (finalLv0.getManga_comment_id() == lv01.getParent_id()) {
 
                     finalLv0.getComments_level_01().add(lv01);
                 }
@@ -155,11 +138,31 @@ public class ChapterService {
         Map<String, Object> msg = Map.of(
                 "msg", "Get chapter's comments successfully!",
                 "chapter_info", chapterOptional,
-                "don't use these param","manga_comment_relation_id, parent_id, child_id, level, manga_comment_tag_id",
+                "don't use these param", "manga_comment_relation_id, parent_id, child_id, level, manga_comment_tag_id",
                 "comments", comments
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
 
     }
 
+
+    protected ResponseEntity getTotalChapters(Long mangaId) {
+        Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
+        if (mangaOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "No manga!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+
+        Long totalChapters = chapterRepos.getTotalChaptersByMangaId(mangaId);
+        List<ChapterDTO> listChapter = chapterRepos.findChaptersbyMangaId(mangaId);
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "get total chapters OK!",
+                "manga", mangaOptional.get(),
+                "chapters", listChapter,
+                "total", totalChapters
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
 }

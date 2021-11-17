@@ -35,5 +35,11 @@ public interface ChapterRepos extends JpaRepository<Chapter, Long> {
     List<ChapterDTO> getAllChapter();
 
 
+    @Query("""
+            SELECT COUNT(c.chapter_id)
+            FROM Manga m JOIN m.chapters c ON m.manga_id = c.manga.manga_id
+            WHERE m.manga_id = ?1
+            """)
+    Long getTotalChaptersByMangaId(Long mangaId);
 
 }
