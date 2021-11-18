@@ -24,7 +24,8 @@ public interface CommentRepos extends JpaRepository<Comment, Long> {
             SELECT new serverapi.query.dtos.features.CommentDTOs.CommentDTO(
                             COUNT(cr.child_id.comment_id),
                             us.user_id, us.user_name, us.user_avatar,
-                            cm.comment_id, cm.comment_time, cm.comment_content, cm.count_like,
+                            cm.comment_id, cm.comment_time, cm.comment_content, cm.count_like, cm.is_deprecated,
+                            cr.parent_id.comment_id,
                             ci.comment_image_id, ci.image_url)
                 
             FROM Comment cm
@@ -44,7 +45,8 @@ public interface CommentRepos extends JpaRepository<Comment, Long> {
                     AND  cm.is_deprecated = false)
             GROUP BY us.user_id, us.user_name, us.user_avatar,
                     po.post_id,
-                    cm.comment_id, cm.comment_time, cm.comment_content,
+                    cm.comment_id, cm.comment_time, cm.comment_content,cm.is_deprecated,
+                    cr.parent_id.comment_id,
                     ci.comment_image_id, ci.image_url
             ORDER BY cm.comment_time desc
             """)
@@ -53,7 +55,8 @@ public interface CommentRepos extends JpaRepository<Comment, Long> {
     @Query("""
             SELECT new serverapi.query.dtos.features.CommentDTOs.CommentDTO(
                             us.user_id, us.user_name, us.user_avatar,
-                            cm.comment_id, cm.comment_time, cm.comment_content, cm.count_like,
+                            cm.comment_id, cm.comment_time, cm.comment_content, cm.count_like, cm.is_deprecated,
+                            cr.parent_id.comment_id,
                             ci.comment_image_id, ci.image_url)  
             FROM Comment cm
             JOIN CommentRelation cr ON cm.comment_id = cr.child_id.comment_id
