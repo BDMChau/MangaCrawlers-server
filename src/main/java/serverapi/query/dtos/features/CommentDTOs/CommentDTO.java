@@ -32,6 +32,7 @@ public class CommentDTO {
     private Calendar comment_time;
     private String comment_content;
     private int count_like;
+    private boolean is_deprecated;
 
     private List<CommentTagsDTO> to_users = new ArrayList<>();
 
@@ -53,7 +54,8 @@ public class CommentDTO {
     // For comment level 0
     public CommentDTO(Long count_comments_child,
                       Long user_id, String user_name, String user_avatar,
-                      Long comment_id, Calendar comment_time, String comment_content, int count_like,
+                      Long comment_id, Calendar comment_time, String comment_content, int count_like, boolean is_deprecated,
+                      Long parent_id,
                       Long comment_image_id, String image_url) {
         this.count_comments_child = count_comments_child;
         this.user_id = user_id;
@@ -63,24 +65,8 @@ public class CommentDTO {
         this.comment_time = comment_time;
         this.comment_content = comment_content;
         this.count_like = count_like;
-        this.comment_image_id = comment_image_id;
-        this.image_url = image_url;
-    }
-
-    public CommentDTO(Long user_id, String user_name, String user_avatar,
-                      Long comment_id, Calendar comment_time, String comment_content, int count_like,
-                      List<CommentTagsDTO> to_users,
-                      Long count_comments_child,
-                      Long comment_image_id, String image_url) {
-        this.user_id = user_id;
-        this.user_name = user_name;
-        this.user_avatar = user_avatar;
-        this.comment_id = comment_id;
-        this.comment_time = comment_time;
-        this.comment_content = comment_content;
-        this.count_like = count_like;
-        this.to_users = to_users;
-        this.count_comments_child = count_comments_child;
+        this.is_deprecated = is_deprecated;
+        this.parent_id = parent_id;
         this.comment_image_id = comment_image_id;
         this.image_url = image_url;
     }
@@ -88,7 +74,8 @@ public class CommentDTO {
     // For comments child
     public CommentDTO(
                       Long user_id, String user_name, String user_avatar,
-                      Long comment_id, Calendar comment_time, String comment_content, int count_like,
+                      Long comment_id, Calendar comment_time, String comment_content, int count_like, boolean is_deprecated,
+                      Long parent_id,
                       Long comment_image_id, String image_url) {
         this.user_id = user_id;
         this.user_name = user_name;
@@ -97,6 +84,8 @@ public class CommentDTO {
         this.comment_time = comment_time;
         this.comment_content = comment_content;
         this.count_like = count_like;
+        this.is_deprecated = is_deprecated;
+        this.parent_id = parent_id;
         this.comment_image_id = comment_image_id;
         this.image_url = image_url;
     }
