@@ -65,7 +65,7 @@ public interface CommentRepos extends JpaRepository<Comment, Long> {
             WHERE cm.is_deprecated = false
                    AND cr.parent_id.comment_id = (:comment_id)
                    AND cr.level = '1'
-            ORDER BY cm.comment_id desc
+            ORDER BY cm.comment_time ASC
             """)
     List<CommentDTO> getCommentsChild(@Param("comment_id") Long comment_id, Pageable pageable);
 
