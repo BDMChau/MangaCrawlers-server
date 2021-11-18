@@ -22,7 +22,7 @@ public interface CommentRepos extends JpaRepository<Comment, Long> {
 
     @Query("""
             SELECT new serverapi.query.dtos.features.CommentDTOs.CommentDTO(
-                            COUNT(cr.child_id.comment_id),
+                            COUNT(select crr.child_id.comment_id from CommentRelation crr, Comment cmm where cmm.comment_id = crr.child_id.comment_id and cmm.is_deprecated = false),
                             us.user_id, us.user_name, us.user_avatar,
                             cm.comment_id, cm.comment_time, cm.comment_content, cm.count_like, cm.is_deprecated,
                             cr.parent_id.comment_id,
