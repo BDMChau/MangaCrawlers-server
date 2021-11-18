@@ -1,7 +1,6 @@
 package serverapi.tables.forum.post;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,20 +9,17 @@ import org.springframework.stereotype.Service;
 import serverapi.api.Response;
 import serverapi.helpers.OffsetBasedPageRequest;
 import serverapi.query.dtos.features.SearchCriteriaDTO;
-import serverapi.query.dtos.features.MangaCommentDTOs.CommentTreesDTO;
-import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
 import serverapi.query.dtos.tables.PostUserDTO;
 import serverapi.query.repository.forum.*;
-import serverapi.query.repository.manga.comment.MangaCommentsRepos;
+import serverapi.query.repository.manga.comment.CommentRepos;
 import serverapi.query.repository.user.UserRepos;
 import serverapi.query.specification.Specificationn;
 import serverapi.tables.forum.category.Category;
 import serverapi.tables.forum.post_category.PostCategory;
 import serverapi.tables.forum.post_dislike.PostDislike;
 import serverapi.tables.forum.post_like.PostLike;
-import serverapi.tables.manga_tables.manga.Manga;
 import serverapi.tables.manga_tables.manga.MangaService;
-import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
+import serverapi.tables.comment.comment.Comment;
 import serverapi.tables.user_tables.user.User;
 
 import java.util.*;
@@ -36,18 +32,18 @@ public class PostService {
     private final PostCategoryRepos postCategoryRepos;
     private final CategoryRepos categoryRepos;
     private final PostLikeRepos postLikeRepos;
-    private final MangaCommentsRepos mangaCommentsRepos;
+    private final CommentRepos commentRepos;
     private final MangaService mangaService;
     private final PostDislikeRepos postDislikeRepos;
 
     @Autowired
-    public PostService(UserRepos userRepos, PostRepos postRepos, PostCategoryRepos postCategoryRepos, CategoryRepos categoryRepos, PostLikeRepos postLikeRepos, MangaCommentsRepos mangaCommentsRepos, MangaService mangaService, PostDislikeRepos postDislikeRepos) {
+    public PostService(UserRepos userRepos, PostRepos postRepos, PostCategoryRepos postCategoryRepos, CategoryRepos categoryRepos, PostLikeRepos postLikeRepos, CommentRepos commentRepos, MangaService mangaService, PostDislikeRepos postDislikeRepos) {
         this.userRepos = userRepos;
         this.postRepos = postRepos;
         this.postCategoryRepos = postCategoryRepos;
         this.categoryRepos = categoryRepos;
         this.postLikeRepos = postLikeRepos;
-        this.mangaCommentsRepos = mangaCommentsRepos;
+        this.commentRepos = commentRepos;
         this.mangaService = mangaService;
         this.postDislikeRepos = postDislikeRepos;
     }
@@ -105,7 +101,7 @@ public class PostService {
         List<PostUserDTO> posts = postRepos.getPosts(pageable);
 
         posts.forEach(post -> {
-            List<MangaComments> cmts = mangaCommentsRepos.getCmtsByPostId(post.getPost_id());
+            List<Comment> cmts = commentRepos.getCmtsByPostId(post.getPost_id());
             post.setComment_count(Long.parseLong(String.valueOf(cmts.size())));
         });
 
@@ -215,76 +211,6 @@ public class PostService {
                 "category", category,
                 "posts", posts,
                 "total_posts", totalPosts
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
-
-    protected ResponseEntity getCommentsPost(Long postID, int from, int amount) {
-
-        // Initialize variable
-        final String level1 = "1";
-        final String level2 = "2";
-
-        final Pageable pageable = new OffsetBasedPageRequest(from, amount);
-        final Pageable childPageable = new OffsetBasedPageRequest(0, 5);
-
-        // Check condition
-        Optional<Post> postOptional = postRepos.findById(postID);
-        if (postOptional.isEmpty()) {
-
-            Map<String, Object> err = Map.of("err", "Post not found!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(),
-                    HttpStatus.BAD_REQUEST);
-        }
-
-        // get manga comments in each level
-        List<MangaCommentDTOs> cmtsLv0 = mangaCommentsRepos.getPostCommentsLevel0(postID, pageable);
-        if (cmtsLv0.isEmpty()) {
-
-            Map<String, Object> err = Map.of("err", "No comments found!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
-        }
-
-        // Get comment
-        //set tags for each comment
-        List<MangaCommentDTOs> comments;
-        cmtsLv0.forEach(lv0 -> {
-
-            lv0 = mangaService.setListTags(lv0);
-
-            //get child comments
-            List<CommentTreesDTO> cmtsLv1 = mangaCommentsRepos.getCommentsChild(lv0.getManga_comment_id(), level1, childPageable);
-            List<CommentTreesDTO> cmtsLv2 = mangaCommentsRepos.getCommentsChild(lv0.getManga_comment_id(), level2, childPageable);
-
-            MangaCommentDTOs finalLv0 = lv0;
-            cmtsLv1.forEach(lv01 -> {
-
-                CommentTreesDTO finalLv01 = lv01;
-                cmtsLv2.forEach(lv02 -> {
-
-                    lv02 = mangaService.setListTags(lv02);
-
-                    if (finalLv0.getManga_comment_id() == lv02.getParent_id()) {
-
-                        finalLv01.getComments_level_02().add(lv02);
-                    }
-                });
-
-                lv01 = mangaService.setListTags(lv01);
-
-                if (finalLv0.getManga_comment_id() == lv01.getParent_id()) {
-
-                    finalLv0.getComments_level_01().add(lv01);
-                }
-            });
-        });
-        comments = cmtsLv0;
-
-        Map<String, Object> msg = Map.of(
-                "msg", "Get post's comments successfully!",
-                "post_info", postOptional,
-                "don't use these param", "manga_comment_relation_id, parent_id, child_id, level, manga_comment_tag_id",
-                "comments", comments
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }

@@ -2,10 +2,8 @@ package serverapi.query.repository.forum;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import serverapi.query.dtos.features.MangaCommentDTOs.CommentLikesDTO;
 import serverapi.query.dtos.tables.PostLikeDTO;
 import serverapi.tables.forum.post_like.PostLike;
-import serverapi.tables.manga_tables.manga_comment.manga_comment_likes.CommentLikes;
 
 import java.util.List;
 import java.util.Optional;
