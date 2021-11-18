@@ -96,7 +96,7 @@ public class CommentService {
 
 
     @Transactional
-    public ResponseEntity getCommentsChild(int from, int amount, Long commentID, Long userID) {
+    public ResponseEntity getChildComments(int from, int amount, Long commentID, Long userID) {
         boolean isEnd = false;
         int fromFromServer = from + amount;
         Pageable pageable = new OffsetBasedPageRequest(from, amount);

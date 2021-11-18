@@ -49,8 +49,8 @@ public class CommentControllerUnAuth {
     // from: int
     // amount: int
     // user_id: String
-    @GetMapping("/get_comments_child")
-    public ResponseEntity getCommentsChild(CommentPOJO commentPOJO) {
+    @GetMapping("/get_child_comments")
+    public ResponseEntity getChildComments(CommentPOJO commentPOJO) {
         int from = commentPOJO.getFrom();
         int amount = commentPOJO.getAmount();
 
@@ -67,7 +67,7 @@ public class CommentControllerUnAuth {
             userID = Long.parseLong(user_id);
         }
 
-        return commentService.getCommentsChild(from, amount, commentID, userID);
+        return commentService.getChildComments(from, amount, commentID, userID);
     }
 
 
