@@ -371,7 +371,10 @@ public class CommentService {
         }
         Comment comment = commentOptional.get();
         if (comment.getIs_deprecated().equals(true)) {
-            Map<String, Object> msg = Map.of("err", "Comment is already delete!");
+            Map<String, Object> msg = Map.of(
+                    "err", "Comment is already delete!",
+                    "comment", comment
+            );
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
         }
         User user = userOptional.get();
@@ -383,7 +386,8 @@ public class CommentService {
         comment.setIs_deprecated(true);
         commentRepos.saveAndFlush(comment);
         Map<String, Object> msg = Map.of(
-                "msg", "Delete comment successfully!"
+                "msg", "Delete comment successfully!",
+                "comment", comment
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }

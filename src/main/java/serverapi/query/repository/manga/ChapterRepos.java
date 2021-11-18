@@ -24,7 +24,7 @@ public interface ChapterRepos extends JpaRepository<Chapter, Long> {
 //    List<Chapter> getTotalView();
     @Query("SELECT new serverapi.query.dtos.tables.ChapterDTO(c.chapter_id, c.chapter_name, c.created_at) FROM " +
             "Manga m JOIN m.chapters c " +
-            "WHERE m.manga_id = ?1 ORDER BY c.created_at ")
+            "WHERE m.manga_id = ?1 ORDER BY c.chapter_id ")
     List<ChapterDTO> findChaptersbyMangaId(Long manga_id);
 
     @Query("SELECT new serverapi.query.dtos.tables.ChapterDTO(c.chapter_id, c.chapter_name, c.created_at, m.manga_id) FROM " +
