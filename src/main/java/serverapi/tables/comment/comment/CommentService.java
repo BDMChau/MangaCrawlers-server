@@ -221,7 +221,7 @@ public class CommentService {
         }
         // Add image
         String image_url = null;
-        if (image != null) {
+        if (image != null || !image.isEmpty()) {
             Map cloudinaryResponse = cloudinaryUploader.uploadImg(
                     image.getBytes(),
                     "",

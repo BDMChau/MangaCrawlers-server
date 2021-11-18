@@ -22,7 +22,7 @@ public interface CommentRepos extends JpaRepository<Comment, Long> {
 
     @Query("""
             SELECT new serverapi.query.dtos.features.CommentDTOs.CommentDTO(
-                            COUNT(select crr.child_id.comment_id from CommentRelation crr, Comment cmm where cmm.comment_id = crr.child_id.comment_id and cmm.is_deprecated = false),
+                            COUNT(case when cr.child_id.is_deprecated = false then cr.child_id.comment_id else null end),
                             us.user_id, us.user_name, us.user_avatar,
                             cm.comment_id, cm.comment_time, cm.comment_content, cm.count_like, cm.is_deprecated,
                             cr.parent_id.comment_id,
@@ -36,7 +36,7 @@ public interface CommentRepos extends JpaRepository<Comment, Long> {
             LEFT JOIN cm.post po
             LEFT JOIN cm.comment_image ci
             WHERE (cm.is_deprecated = false
-                    AND po.post_id = case when (:title) = 'post' then (select post_id from Post where post_id = (:target_id))
+                   AND po.post_id = case when (:title) = 'post' then (select post_id from Post where post_id = (:target_id))
                                  else null
                                  end)
                     OR (ma.manga_id = case when (:title) = 'manga' then (select manga_id from Manga where manga_id = (:target_id))
@@ -65,7 +65,7 @@ public interface CommentRepos extends JpaRepository<Comment, Long> {
             WHERE cm.is_deprecated = false
                    AND cr.parent_id.comment_id = (:comment_id)
                    AND cr.level = '1'
-            ORDER BY cm.comment_id desc
+            ORDER BY cm.comment_time ASC
             """)
     List<CommentDTO> getCommentsChild(@Param("comment_id") Long comment_id, Pageable pageable);
 
