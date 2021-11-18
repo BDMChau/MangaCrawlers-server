@@ -46,9 +46,9 @@ public interface CommentRepos extends JpaRepository<Comment, Long> {
                     po.post_id,
                     cm.comment_id, cm.comment_time, cm.comment_content,
                     ci.comment_image_id, ci.image_url
-            ORDER BY cm.comment_id desc
+            ORDER BY cm.comment_time desc
             """)
-    List<CommentDTO> getComments(@Param("title") String title, @Param("target_id") Long target_id, Pageable pageable);
+    List<CommentDTO> getComments(@Param("title") String target_title, @Param("target_id") Long target_id, Pageable pageable);
 
     @Query("""
             SELECT new serverapi.query.dtos.features.CommentDTOs.CommentDTO(

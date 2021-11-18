@@ -62,8 +62,11 @@ public class CommentService {
         }
         List<CommentDTO> cmtsLv0 = commentRepos.getComments(targetTitle, targetID, pageable);
         if (cmtsLv0.isEmpty()) {
-            Map<String, Object> msg = Map.of("err", "No comments found!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
+            Map<String, Object> err = Map.of(
+                    "err", "No comments found!",
+                    "comments", new ArrayList<>()
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
         Optional<User> userOptional = userRepos.findById(userID);
         if (userOptional.isPresent()) {
@@ -82,6 +85,7 @@ public class CommentService {
             Map<String, Object> msg = Map.of(
                     "msg", "Get comments level 0 successfully!",
                     "manga_info", mangaOptional.get(),
+                    "from", from + amount,
                     "comments", cmtsLv0
             );
             return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
@@ -89,6 +93,7 @@ public class CommentService {
         Map<String, Object> msg = Map.of(
                 "msg", "Get comments level 0 successfully!",
                 "post_info", postOptional.get(),
+                "from", from + amount,
                 "comments", cmtsLv0
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
