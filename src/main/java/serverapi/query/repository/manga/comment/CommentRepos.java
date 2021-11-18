@@ -34,14 +34,14 @@ public interface CommentRepos extends JpaRepository<Comment, Long> {
             LEFT JOIN cm.chapter ch
             LEFT JOIN cm.post po
             LEFT JOIN cm.comment_image ci
-            WHERE cm.is_deprecated = false
-                    AND po.post_id = case
-                                         when (:title) = 'post' then (select post_id from Post where post_id = (:target_id))
-                                         else null
-                                     end
-                    OR ma.manga_id = case when (:title) = 'manga' then (select manga_id from Manga where manga_id = (:target_id))
-                                          else null
-                                     end
+            WHERE (cm.is_deprecated = false
+                    AND po.post_id = case when (:title) = 'post' then (select post_id from Post where post_id = (:target_id))
+                                 else null
+                                 end)
+                    OR (ma.manga_id = case when (:title) = 'manga' then (select manga_id from Manga where manga_id = (:target_id))
+                                 else null
+                                 end
+                    AND  cm.is_deprecated = false)
             GROUP BY us.user_id, us.user_name, us.user_avatar,
                     po.post_id,
                     cm.comment_id, cm.comment_time, cm.comment_content,
