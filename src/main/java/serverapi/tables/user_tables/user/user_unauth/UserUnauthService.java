@@ -49,7 +49,8 @@ public class UserUnauthService {
                              CommentRepos commentRepos, RatingMangaRepos ratingMangaRepos,
                              TransGroupRepos transGroupRepos, GenreRepos genreRepos, MangaGenreRepos mangaGenreRepos,
                              AuthorRepos authorRepos, ImgChapterRepos imgChapterRepos, CommentRelationRepos commentRelationRepos,
-                             CommentImageRepos commentImageRepos, PostRepos postRepos, CommentTagsRepos commentTagsRepos, CommentLikesRepos commentLikesRepos, NotificationRepos notificationRepos) {
+                             CommentImageRepos commentImageRepos, PostRepos postRepos, CommentTagsRepos commentTagsRepos, CommentLikesRepos commentLikesRepos,
+                             CategoryRepos categoryRepos, NotificationRepos notificationRepos) {
         this.mangaRepository = mangaRepository;
         this.followingRepos = followingRepos;
         this.userRepos = userRepos;
@@ -72,7 +73,6 @@ public class UserUnauthService {
     }
 
 
-
     ////////////////////////////////////// unauthenticated parts //////////////////////////////////////
     protected ResponseEntity getUserInfo(Long userId) {
         Optional<UserDTO> userOptional = userRepos.findByUserId(userId);
@@ -83,7 +83,7 @@ public class UserUnauthService {
         UserDTO user = userOptional.get();
 
         user.setIs_online(false);
-        if(user.getSocket_session_id() != null) {
+        if (user.getSocket_session_id() != null) {
             user.setIs_online(true);
             user.setSocket_session_id(null);
         }

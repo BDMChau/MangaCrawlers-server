@@ -11,6 +11,7 @@ import serverapi.query.repository.manga.ChapterRepos;
 import serverapi.query.repository.manga.ImgChapterRepos;
 import serverapi.query.repository.manga.MangaRepos;
 import serverapi.query.repository.manga.comment.CommentRepos;
+import serverapi.tables.manga_tables.manga.Manga;
 import serverapi.tables.manga_tables.manga.MangaService;
 
 import java.util.List;

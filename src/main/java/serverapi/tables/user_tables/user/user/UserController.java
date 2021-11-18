@@ -157,6 +157,9 @@ public class UserController {
         String valToSearch = (String) data.get("value");
         int key = (int) data.get("key"); // search with: 1 is email, 2 is name
 
+        return userService.searchUsers(valToSearch, key);
+    }
+
 
     @PutMapping("/update_description")
     public ResponseEntity updateDescription(ServletRequest request, @RequestBody Map data) throws IOException {

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import serverapi.tables.comment.comment_like.CommentLikeService;
 import serverapi.tables.user_tables.user.friend.FriendService;
+import serverapi.tables.user_tables.user.user.UserService;
 
 import java.util.Map;
 
