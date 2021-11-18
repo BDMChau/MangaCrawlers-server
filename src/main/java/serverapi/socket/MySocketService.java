@@ -78,7 +78,6 @@ public class MySocketService {
                 senderClient.sendEvent(EVENTs_NAME.getSEND_FAILED(), "Failed!");
                 return;
             }
-            ;
 
             Long senderId = socketMessage.getUserId();
             User sender = userRepos.findById(senderId).get();

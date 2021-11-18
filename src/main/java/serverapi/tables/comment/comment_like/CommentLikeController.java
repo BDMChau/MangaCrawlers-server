@@ -1,7 +1,6 @@
-package serverapi.tables.user_tables.user.comment_like;
+package serverapi.tables.comment.comment_like;
 
 import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +23,7 @@ public class CommentLikeController {
 
     public Map getUserAttribute(ServletRequest request) {
         HttpServletRequest req = (HttpServletRequest) request;
-        return (Map) (HashMap) req.getAttribute("user");
+        return (Map) req.getAttribute("user");
     }
 
     @PostMapping("/check_user_like")

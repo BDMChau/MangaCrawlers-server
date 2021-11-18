@@ -1,4 +1,4 @@
-package serverapi.query.dtos.features.MangaCommentDTOs;
+package serverapi.query.dtos.features.CommentDTOs;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -13,8 +13,8 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CommentLikesDTO {
 
-    private Long manga_comment_id;
-    private Long manga_comment_like_id;
+    private Long comment_id;
+    private Long comment_like_id;
 
     private Long user_id;
     private String user_name;

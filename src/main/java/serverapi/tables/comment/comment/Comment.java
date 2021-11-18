@@ -1,4 +1,4 @@
-package serverapi.tables.manga_tables.manga_comment.manga_comments;
+package serverapi.tables.comment.comment;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -7,12 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import serverapi.tables.forum.post.Post;
-import serverapi.tables.manga_tables.manga_comment.manga_comment_likes.CommentLikes;
-import serverapi.tables.manga_tables.manga_comment.manga_comment_tags.CommentTags;
+import serverapi.tables.comment.comment_like.CommentLike;
+import serverapi.tables.comment.comment_tag.CommentTag;
 import serverapi.tables.manga_tables.chapter.Chapter;
 import serverapi.tables.manga_tables.manga.Manga;
-import serverapi.tables.manga_tables.manga_comment.manga_comment_images.CommentImages;
-import serverapi.tables.manga_tables.manga_comment.manga_comment_relations.CommentRelations;
+import serverapi.tables.comment.comment_image.CommentImage;
+import serverapi.tables.comment.comment_relation.CommentRelation;
 import serverapi.tables.user_tables.user.User;
 
 import javax.persistence.*;
@@ -24,19 +24,19 @@ import java.util.Collection;
 @Setter
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@Table(name = "manga_comments")
-public class MangaComments {
+@Table(name = "comment")
+public class Comment {
     @Id
     @SequenceGenerator(
-            name = "manga_comment_sequence",
-            sequenceName = "manga_comment_sequence",
+            name = "comment_sequence",
+            sequenceName = "comment_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "manga_comment_sequence" // same as NAME in SequenceGenerator
+            generator = "comment_sequence" // same as NAME in SequenceGenerator
     )
-    private Long manga_comment_id;
+    private Long comment_id;
 
 
     @JsonManagedReference
@@ -64,29 +64,29 @@ public class MangaComments {
 
     @JsonBackReference
     @OneToMany(mappedBy = "parent_id", cascade = CascadeType.ALL)
-    private Collection<CommentRelations> parent_commentRelations;
+    private Collection<CommentRelation> parent_commentRelations;
 
     @JsonBackReference
     @OneToMany(mappedBy = "child_id", cascade = CascadeType.ALL)
-    private Collection<CommentRelations> child_commentRelations;
+    private Collection<CommentRelation> child_commentRelations;
 
     @JsonBackReference
-    @OneToMany(mappedBy = "manga_comment", cascade = CascadeType.ALL)
-    private Collection<CommentImages> comment_image;
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    private Collection<CommentImage> comment_image;
 
     @JsonBackReference
-    @OneToMany(mappedBy = "manga_comment", cascade = CascadeType.ALL)
-    private Collection<CommentLikes> comment_like;
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    private Collection<CommentLike> comment_like;
 
     @JsonBackReference
-    @OneToMany(mappedBy = "manga_comment", cascade = CascadeType.ALL)
-    private Collection<CommentTags> comment_tag;
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    private Collection<CommentTag> comment_tag;
 
     @Column(columnDefinition = "timestamp with time zone", nullable = false)
-    private Calendar manga_comment_time;
+    private Calendar comment_time;
 
     @Column(columnDefinition = "TEXT", nullable = false)
-    private String manga_comment_content;
+    private String comment_content;
 
     @Column(columnDefinition = "integer default 0" , nullable = false)
     private int count_like;

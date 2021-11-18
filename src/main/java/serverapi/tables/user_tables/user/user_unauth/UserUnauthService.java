@@ -1,4 +1,4 @@
-package serverapi.tables.user_tables.user;
+package serverapi.tables.user_tables.user.user_unauth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,7 +28,7 @@ public class UserUnauthService {
     private final UserRepos userRepos;
     private final ReadingHistoryRepos readingHistoryRepos;
     private final ChapterRepos chapterRepos;
-    private final MangaCommentsRepos mangaCommentsRepos;
+    private final CommentRepos commentRepos;
     private final RatingMangaRepos ratingMangaRepos;
     private final TransGroupRepos transGroupRepos;
     private final GenreRepos genreRepos;
@@ -44,18 +44,18 @@ public class UserUnauthService {
     private final NotificationRepos notificationRepos;
 
     @Autowired
-    public UserUnauthService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos, CategoryRepos categoryRepos,
-                       ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos,
-                       MangaCommentsRepos mangaCommentsRepos, RatingMangaRepos ratingMangaRepos,
-                       TransGroupRepos transGroupRepos, GenreRepos genreRepos, MangaGenreRepos mangaGenreRepos,
-                       AuthorRepos authorRepos, ImgChapterRepos imgChapterRepos, CommentRelationRepos commentRelationRepos,
-                       CommentImageRepos commentImageRepos, PostRepos postRepos,CommentTagsRepos commentTagsRepos, CommentLikesRepos commentLikesRepos, NotificationRepos notificationRepos) {
+    public UserUnauthService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos,
+                             ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos,
+                             CommentRepos commentRepos, RatingMangaRepos ratingMangaRepos,
+                             TransGroupRepos transGroupRepos, GenreRepos genreRepos, MangaGenreRepos mangaGenreRepos,
+                             AuthorRepos authorRepos, ImgChapterRepos imgChapterRepos, CommentRelationRepos commentRelationRepos,
+                             CommentImageRepos commentImageRepos, PostRepos postRepos, CommentTagsRepos commentTagsRepos, CommentLikesRepos commentLikesRepos, NotificationRepos notificationRepos) {
         this.mangaRepository = mangaRepository;
         this.followingRepos = followingRepos;
         this.userRepos = userRepos;
         this.readingHistoryRepos = readingHistoryRepos;
         this.chapterRepos = chapterRepos;
-        this.mangaCommentsRepos = mangaCommentsRepos;
+        this.commentRepos = commentRepos;
         this.ratingMangaRepos = ratingMangaRepos;
         this.transGroupRepos = transGroupRepos;
         this.genreRepos = genreRepos;

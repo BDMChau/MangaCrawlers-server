@@ -331,9 +331,7 @@ public class FriendService {
         User user = userRepos.findById(userIdToCheck).get();
 
         UUID socketSessionId = user.getSocket_session_id();
-        if (socketSessionId == null) return false;
-
-        return true;
+        return socketSessionId != null;
     }
 
 

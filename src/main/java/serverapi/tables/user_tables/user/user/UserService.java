@@ -1,4 +1,4 @@
-package serverapi.tables.user_tables.user;
+package serverapi.tables.user_tables.user.user;
 
 
 import org.hibernate.Hibernate;
@@ -14,9 +14,6 @@ import serverapi.configuration.cache.CacheService;
 import serverapi.helpers.OffsetBasedPageRequest;
 import serverapi.helpers.RoundNumber;
 import serverapi.helpers.UserAvatarCollection;
-import serverapi.query.dtos.features.MangaCommentDTOs.CommentTagsDTO;
-import serverapi.query.dtos.features.MangaCommentDTOs.CommentTreesDTO;
-import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
 import serverapi.query.dtos.features.SearchCriteriaDTO;
 import serverapi.query.dtos.tables.*;
 import serverapi.query.repository.forum.PostRepos;
@@ -25,21 +22,18 @@ import serverapi.query.repository.manga.comment.*;
 import serverapi.query.repository.user.*;
 import serverapi.query.specification.Specificationn;
 import serverapi.sharing_services.CloudinaryUploader;
-import serverapi.tables.forum.post.Post;
 import serverapi.tables.manga_tables.author.Author;
 import serverapi.tables.manga_tables.chapter.Chapter;
 import serverapi.tables.manga_tables.genre.Genre;
 import serverapi.tables.manga_tables.image_chapter.ImageChapter;
 import serverapi.tables.manga_tables.manga.Manga;
-import serverapi.tables.manga_tables.manga_comment.manga_comment_images.CommentImages;
-import serverapi.tables.manga_tables.manga_comment.manga_comment_relations.CommentRelations;
-import serverapi.tables.manga_tables.manga_comment.manga_comment_tags.CommentTags;
-import serverapi.tables.manga_tables.manga_comment.manga_comments.MangaComments;
 import serverapi.tables.manga_tables.manga_genre.MangaGenre;
 import serverapi.tables.manga_tables.rating_manga.RatingManga;
 import serverapi.tables.user_tables.following_manga.FollowingManga;
 import serverapi.tables.user_tables.reading_history.ReadingHistory;
 import serverapi.tables.user_tables.trans_group.TransGroup;
+import serverapi.tables.user_tables.user.HelpingUser;
+import serverapi.tables.user_tables.user.User;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
@@ -58,7 +52,7 @@ public class UserService {
     private final UserRepos userRepos;
     private final ReadingHistoryRepos readingHistoryRepos;
     private final ChapterRepos chapterRepos;
-    private final MangaCommentsRepos mangaCommentsRepos;
+    private final CommentRepos commentRepos;
     private final RatingMangaRepos ratingMangaRepos;
     private final TransGroupRepos transGroupRepos;
     private final GenreRepos genreRepos;
@@ -79,7 +73,7 @@ public class UserService {
     @Autowired
     public UserService(MangaRepos mangaRepository, FollowingRepos followingRepos, UserRepos userRepos,
                        ReadingHistoryRepos readingHistoryRepos, ChapterRepos chapterRepos,
-                       MangaCommentsRepos mangaCommentsRepos, RatingMangaRepos ratingMangaRepos,
+                       CommentRepos commentRepos, RatingMangaRepos ratingMangaRepos,
                        TransGroupRepos transGroupRepos, GenreRepos genreRepos, MangaGenreRepos mangaGenreRepos,
                        AuthorRepos authorRepos, ImgChapterRepos imgChapterRepos, CommentRelationRepos commentRelationRepos,
                        CommentImageRepos commentImageRepos, PostRepos postRepos, CommentTagsRepos commentTagsRepos, CommentLikesRepos commentLikesRepos, NotificationRepos notificationRepos) {
@@ -88,7 +82,7 @@ public class UserService {
         this.userRepos = userRepos;
         this.readingHistoryRepos = readingHistoryRepos;
         this.chapterRepos = chapterRepos;
-        this.mangaCommentsRepos = mangaCommentsRepos;
+        this.commentRepos = commentRepos;
         this.ratingMangaRepos = ratingMangaRepos;
         this.transGroupRepos = transGroupRepos;
         this.genreRepos = genreRepos;
@@ -304,447 +298,6 @@ public class UserService {
     }
 
 
-    /////////////////////////////////////// COMMENT /////////////////////////////////
-    public ResponseEntity addCommentManga(List<Long> toUsersID, Long userID, Long mangaID, Long chapterID, Long postID,
-                                          String content, MultipartFile image, String stickerUrl,
-                                          Long parentID) throws IOException {
-        // Check variable
-        Calendar timeUpdated = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        Optional<Post> postOptional = postRepos.findById(postID);
-//        Optional<Chapter> chapterOptional = chapterRepos.findById(chapterID);
-        Optional<Manga> mangaOptional = mangaRepository.findById(mangaID);
-        Optional<User> userOptional = userRepos.findById(userID);
-
-        if (mangaOptional.isEmpty() && postOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("err", "Manga and post not found!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
-        }
-
-        Post post = null;
-        if (!postOptional.isEmpty()) {
-            post = postOptional.get();
-        }
-
-//        Chapter chapter = null;
-//        if (!chapterOptional.isEmpty()) {
-//            chapter = chapterOptional.get();
-//        }
-
-        Manga manga = null;
-        if (!mangaOptional.isEmpty()) {
-            manga = mangaOptional.get();
-        }
-
-        if (userOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("err", "User not found!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
-        }
-        User user = userOptional.get();
-        User toUser = user;
-
-        if (!toUsersID.isEmpty()) {
-            Optional<User> toUserOptional = userRepos.findById(toUsersID.get(0));
-
-            if (!toUserOptional.isEmpty()) toUser = toUserOptional.get();
-        } else {
-            toUsersID.add(toUser.getUser_id());
-        }
-
-        /*---------------------------------------------------------------------------------------------------------*/
-        /* Add comment */
-        MangaComments mangaComments = new MangaComments();
-        mangaComments.setManga(manga);
-//        mangaComments.setChapter(chapter);
-        mangaComments.setPost(post);// if chapter null >> set null
-        mangaComments.setUser(user);
-        mangaComments.setManga_comment_content(content);
-        mangaComments.setManga_comment_time(timeUpdated);
-        mangaComments.setIs_deprecated(false);
-        mangaCommentsRepos.saveAndFlush(mangaComments);
-
-        /**
-         * Add tags
-         */
-        // Declare off_set
-        int offSet = 0;
-        List<CommentTagsDTO> commentTags = new ArrayList<>();
-        for (int i = 0; i < toUsersID.size(); i++) {
-
-            Optional<User> userTagOptional = userRepos.findById(toUsersID.get(i));
-
-            if (!userTagOptional.isEmpty()) {
-                User userTag = userTagOptional.get();
-
-                CommentTags commentTag = new CommentTags();
-                commentTag.setManga_comment(mangaComments);
-                commentTag.setUser(userTag);
-                commentTag.setOff_set(offSet);
-
-                commentTagsRepos.saveAndFlush(commentTag);
-
-                // for export
-                CommentTagsDTO commentTagsDTO = new CommentTagsDTO();
-                commentTagsDTO.setManga_comment_id(mangaComments.getManga_comment_id());
-                commentTagsDTO.setManga_comment_tag_id(commentTag.getManga_comment_tag_id());
-                commentTagsDTO.setUser_id(commentTag.getUser().getUser_id());
-                commentTagsDTO.setUser_avatar(commentTag.getUser().getUser_avatar());
-                commentTagsDTO.setUser_name(commentTag.getUser().getUser_name());
-
-                commentTags.add(commentTagsDTO);
-                offSet++;
-            }
-        }
-        /**
-         *  Add comment images
-         */
-
-        String image_url = null;
-        System.err.println(image != null);
-        if (image != null) {
-            Map cloudinaryResponse = cloudinaryUploader.uploadImg(
-                    image.getBytes(),
-                    "",
-                    "user_comment_images",
-                    false
-
-            );
-            String securedUrl = (String) cloudinaryResponse.get("secure_url");
-
-            CommentImages commentImages = new CommentImages();
-            commentImages.setImage_url(securedUrl);
-            commentImages.setManga_comment(mangaComments);
-            commentImageRepos.saveAndFlush(commentImages);
-            image_url = securedUrl;
-        } else {
-            if (stickerUrl != null && !stickerUrl.isEmpty()) {
-
-                CommentImages commentImages = new CommentImages();
-                commentImages.setImage_url(stickerUrl);
-                commentImages.setManga_comment(mangaComments);
-                commentImageRepos.saveAndFlush(commentImages);
-                image_url = stickerUrl;
-            }
-        }
-
-        /**
-         * Add manga_comment_relations
-         */
-
-        if (parentID == 0L) {
-
-            parentID = mangaComments.getManga_comment_id();
-        }
-
-        Optional<MangaComments> parentOptional = mangaCommentsRepos.findById(parentID);
-        MangaComments parent = parentOptional.get();
-
-        // check level
-        String level = "0";
-        if (mangaComments.getManga_comment_id().equals(parent.getManga_comment_id())) level = "0";
-        else {
-            if (toUser.getUser_id().equals(parent.getUser().getUser_id())) level = "1";
-            else level = "2";
-        }
-
-        System.err.println("level " + level);
-        CommentRelations commentRelations = new CommentRelations();
-        commentRelations.setChild_id(mangaComments);
-        commentRelations.setParent_id(parent);
-        commentRelations.setLevel(level);
-        commentRelationRepos.save(commentRelations);
-
-
-        // Response
-        MangaCommentDTOs exportComment = new MangaCommentDTOs();
-
-        exportComment.setTo_users(commentTags);
-
-        exportComment.setUser_id(user.getUser_id());
-        exportComment.setUser_name(user.getUser_name());
-        exportComment.setUser_avatar(user.getUser_avatar());
-
-        if (post != null) {
-            exportComment.setPost_id(post.getPost_id());
-            exportComment.setPost_content(post.getContent());
-        }
-
-        if (manga != null) {
-            exportComment.setManga_id(manga.getManga_id());
-        }
-
-//        if (chapter != null) {
-//
-//            exportComment.setChapter_id(chapter.getChapter_id());
-//            exportComment.setChapter_name(chapter.getChapter_name());
-//            exportComment.setCreated_at(chapter.getCreated_at());
-//        }
-        if (!level.equals("0")) {
-            exportComment.setLevel(level);
-        }
-
-        exportComment.setManga_comment_id(mangaComments.getManga_comment_id());
-        exportComment.setManga_comment_time(mangaComments.getManga_comment_time());
-        exportComment.setManga_comment_content(mangaComments.getManga_comment_content());
-        exportComment.setLevel(level);
-
-        exportComment.setParent_id(parent.getManga_comment_id());
-
-        exportComment.setImage_url(image_url);
-
-
-        Map<String, Object> msg = Map.of(
-                "msg", "Add comment successfully!",
-                "comment_information", exportComment
-        );
-        return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
-    }
-
-
-    public ResponseEntity updateComment(Long userID, List<Long> toUsersID, Long commentID,
-                                        String commentContent, MultipartFile image) throws IOException {
-
-        /**
-         * Initialize variable
-         */
-        Optional<User> userOptional = userRepos.findById(userID);
-        Optional<MangaComments> mangaCommentsOptional = mangaCommentsRepos.findById(commentID);
-
-        if (userOptional.isEmpty() || mangaCommentsOptional.isEmpty()) {
-
-            Map<String, Object> msg = Map.of("err", "User or comment not found!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
-        }
-        MangaComments mangaComments = mangaCommentsOptional.get();
-        User user = userOptional.get();
-
-        // check allow
-        if (!user.getUser_id().equals(mangaComments.getUser().getUser_id())) {
-            Map<String, Object> msg = Map.of("err", "You don't have permission!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
-        }
-
-        // Get current image in this comment
-        Optional<CommentImages> commentImagesOptional = commentImageRepos.getCommentImagesByManga_comment(commentID);
-
-        String currentImageUrl = "";
-        CommentImages currentCommentImages = null;
-        if (!commentImagesOptional.isEmpty()) {
-
-            currentImageUrl = commentImagesOptional.get().getImage_url();
-            currentCommentImages = commentImagesOptional.get();
-        }
-
-        /**
-         * if commentContent && imagesUrl = ""
-         * update comment will become delete comment by set isDeprecated = true;
-         */
-        if (commentContent.equals("") && image.isEmpty()) {
-            mangaComments.setIs_deprecated(true);
-            mangaCommentsRepos.save(mangaComments);
-
-            Map<String, Object> msg = Map.of("msg", "Delete comment successfully!");
-            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-        }
-
-        //Check input tags
-        List<User> toUsersInput = new ArrayList<>();
-        for (int i = 0; i < toUsersID.size(); i++) {
-            Optional<User> userTagOptional = userRepos.findById(toUsersID.get(i));
-
-            if (!userTagOptional.isEmpty()) {
-                // Add user tags into list toUsersInput
-                User userTag = userTagOptional.get();
-                toUsersInput.add(userTag);
-
-            } else {
-                Map<String, Object> msg = Map.of("msg", "Invalid user tag!");
-                return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
-            }
-        }
-
-        // Check offSet is equal position's to_userID input
-        List<CommentTags> currentTags;
-
-        // Export tags
-        List<CommentTagsDTO> listExportTags = new ArrayList<>();
-        if (!toUsersInput.isEmpty()) {
-
-            currentTags = commentTagsRepos.getListCommentTags(commentID);
-
-            if (!currentTags.isEmpty()) {
-
-                // Check size between currenTags and inputTags
-                int length = 0;
-                if (toUsersInput.size() > currentTags.size()) {
-
-                    // Get length
-                    length = toUsersInput.size() - currentTags.size();
-                }
-
-                // Chang currentTags into inputTags
-                for (CommentTags currentTag : currentTags) {
-
-                    for (int i = 0; i < toUsersInput.size(); i++) {
-
-                        if (currentTag.getOff_set() == i) {
-
-                            if (!currentTag.getUser().getUser_id().equals(toUsersInput.get(i).getUser_id())) {
-
-                                currentTag.setUser(toUsersInput.get(i));
-                                commentTagsRepos.saveAndFlush(currentTag);
-
-                                listExportTags = exportTags(listExportTags, mangaComments, currentTag);
-                                break;
-                            }
-                        }
-                    }
-                }
-                // Add new tag if currentTags.size < inputTags.size
-                if (length > 0) {
-
-                    // Add new tags
-                    int offSet = 0;
-
-                    for (int i = length; i < toUsersInput.size(); i++) {
-
-                        CommentTags commentTag = new CommentTags();
-
-                        commentTag.setManga_comment(mangaComments);
-                        commentTag.setUser(toUsersInput.get(i));
-                        commentTag.setOff_set(offSet);
-
-                        commentTagsRepos.saveAndFlush(commentTag);
-
-                        // for export
-                        listExportTags = exportTags(listExportTags, mangaComments, commentTag);
-
-                        offSet++;
-                    }
-                }
-            }
-        }
-
-        // Check imagesUrl and set if it not as same as sub_imagesUrl
-        Manga manga = null;
-        String exportUrl = "";
-        if (mangaComments.getManga() != null) {
-            Optional<Manga> mangaOptional = mangaRepository.findById(mangaComments.getManga().getManga_id());
-
-
-            if (!mangaOptional.isEmpty()) {
-                manga = mangaOptional.get();
-            }
-        }
-        if (image != null) {
-            Map cloudinaryResponse = cloudinaryUploader.uploadImg(
-                    image.getBytes(),
-                    "",
-                    "user_comment_images",
-                    false
-            );
-
-            // Get cloudinary url
-            String securedUrl = (String) cloudinaryResponse.get("secure_url");
-
-            // For comment export
-            exportUrl = securedUrl;
-
-            // If current comment is exist, change current imageUrl into inputUrl( cloudinaryUrl)
-            if (currentCommentImages != null) {
-
-                currentCommentImages.setImage_url(securedUrl);
-                commentImageRepos.saveAndFlush(currentCommentImages);
-
-            } else {
-
-                CommentImages imagee = new CommentImages();
-
-                imagee.setImage_url(securedUrl);
-                commentImageRepos.saveAndFlush(imagee);
-            }
-
-        }
-
-        mangaComments.setManga_comment_content(commentContent);
-        mangaCommentsRepos.saveAndFlush(mangaComments);
-
-        Optional<MangaCommentDTOs> getLevelOptional = mangaCommentsRepos.findByCommentID(commentID);
-        String level = getLevelOptional.get().getLevel();
-
-        // Response
-        MangaCommentDTOs exportComment = new MangaCommentDTOs();
-
-        exportComment.setTo_users(listExportTags);
-
-        exportComment.setUser_id(user.getUser_id());
-        exportComment.setUser_name(user.getUser_name());
-        exportComment.setUser_avatar(user.getUser_avatar());
-        exportComment.setComments_level_01(getLevelOptional.get().getComments_level_01());
-
-        if (manga != null) {
-            exportComment.setManga_id(manga.getManga_id());
-        }
-        if (mangaComments.getChapter() != null) {
-
-            Optional<Chapter> chapterOptional = chapterRepos.findById(mangaComments.getChapter().getChapter_id());
-
-            Chapter chapter = !chapterOptional.isEmpty() ? chapterOptional.get() : null;
-
-            exportComment.setChapter_id(chapter.getChapter_id());
-            exportComment.setChapter_name(chapter.getChapter_name());
-            exportComment.setCreated_at(chapter.getCreated_at());
-        }
-        exportComment.setManga_comment_id(mangaComments.getManga_comment_id());
-        exportComment.setManga_comment_time(mangaComments.getManga_comment_time());
-        exportComment.setManga_comment_content(mangaComments.getManga_comment_content());
-        exportComment.setLevel(level);
-
-        exportComment.setImage_url(exportUrl);
-
-        Map<String, Object> msg = Map.of(
-                "msg", "Update comment successfully!",
-                "comment_info", exportComment
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
-
-
-    public ResponseEntity deleteComment(Long userID, Long commentID, List<MangaCommentDTOs> comments) {
-        Optional<User> userOptional = userRepos.findById(userID);
-        Optional<MangaComments> mangaCommentsOptional = mangaCommentsRepos.findById(commentID);
-
-        if (userOptional.isEmpty() || mangaCommentsOptional.isEmpty() || comments.isEmpty()) {
-            Map<String, Object> msg = Map.of("msg", "Empty user or comment or comments!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
-        }
-        MangaComments mangaComment = mangaCommentsOptional.get();
-        User user = userOptional.get();
-        System.err.println("line 722");
-
-        // Check if user is not the owner
-        if (!user.getUser_id().equals(mangaComment.getUser().getUser_id())) {
-            Map<String, Object> msg = Map.of("err", "You don't have permission!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
-        }
-
-        // Set deprecate this comment
-        mangaComment.setIs_deprecated(true);
-        mangaCommentsRepos.saveAndFlush(mangaComment);
-
-        System.err.println("line 734");
-        List<MangaCommentDTOs> responseListComments = filterComments(mangaComment.getManga_comment_id(), comments, 1);
-
-        System.err.println("line 736");
-        if (responseListComments.isEmpty()) {
-            Map<String, Object> msg = Map.of("err", "Get comments list failed!");
-            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
-        }
-        Map<String, Object> msg = Map.of(
-                "msg", "Delete comment successfully!",
-                "comments", responseListComments
-        );
-        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
-    }
 
 
     /////////////////////////////////////// INTERACTION /////////////////////////////////
@@ -1426,173 +979,6 @@ public class UserService {
 
 
     /////////////////////////////////////// HELPERS /////////////////////////////////
-    private List<CommentTagsDTO> exportTags(List<CommentTagsDTO> listTags, MangaComments mangaComment, CommentTags commentTag) {
-
-        CommentTagsDTO commentTagsDTO = new CommentTagsDTO();
-
-        commentTagsDTO.setManga_comment_id(mangaComment.getManga_comment_id());
-        commentTagsDTO.setManga_comment_tag_id(commentTag.getManga_comment_tag_id());
-
-        commentTagsDTO.setUser_id(commentTag.getUser().getUser_id());
-        commentTagsDTO.setUser_avatar(commentTag.getUser().getUser_avatar());
-        commentTagsDTO.setUser_name(commentTag.getUser().getUser_name());
-
-        listTags.add(commentTagsDTO);
-
-        return listTags;
-    }
-
-
-    protected List<MangaCommentDTOs> filterComments(Long inputCommentID, List<MangaCommentDTOs> comments, int key) {
-
-        // Declare variable
-        List<MangaCommentDTOs> cmtsToRes = comments;
-        Optional<MangaCommentDTOs> inputCommentOptional = mangaCommentsRepos.findByCommentID(inputCommentID);
-        if (inputCommentOptional.isEmpty()) {
-            return new ArrayList<>();
-        }
-        Pageable pageable = new OffsetBasedPageRequest(0, 10);
-
-        /// chỗ này
-        MangaCommentDTOs cmtLevel0 = inputCommentOptional.get();
-
-
-        CommentTreesDTO cmtLevelDeeper = new CommentTreesDTO();
-
-        if (!cmtLevel0.getLevel().equals("0")) {
-
-            cmtLevelDeeper.setTo_users(cmtLevel0.getTo_users());
-            cmtLevelDeeper.setUser_id(cmtLevel0.getUser_id());
-            cmtLevelDeeper.setUser_name(cmtLevel0.getUser_name());
-            cmtLevelDeeper.setUser_avatar(cmtLevel0.getUser_avatar());
-            cmtLevelDeeper.setManga_id(cmtLevel0.getManga_id());
-            cmtLevelDeeper.setPost_id(cmtLevel0.getPost_id());
-            cmtLevelDeeper.setChapter_id(cmtLevel0.getChapter_id());
-            cmtLevelDeeper.setChapter_name(cmtLevel0.getChapter_name());
-            cmtLevelDeeper.setCreated_at(cmtLevel0.getCreated_at());
-            cmtLevelDeeper.setManga_comment_id(cmtLevel0.getManga_comment_id());
-            cmtLevelDeeper.setManga_comment_time(cmtLevel0.getManga_comment_time());
-            cmtLevelDeeper.setManga_comment_content(cmtLevel0.getManga_comment_content());
-            cmtLevelDeeper.setParent_id(cmtLevel0.getParent_id());
-            cmtLevelDeeper.setLevel(cmtLevel0.getLevel());
-            cmtLevelDeeper.setImage_url(cmtLevel0.getImage_url());
-
-            cmtLevel0 = null;
-        }
-        Boolean flag = false;
-        if (!comments.isEmpty()) {
-            int isDeleted = 1;
-            int isUpdated = 2;
-            int isAdded = 3;
-
-            if (cmtLevel0 != null) {
-                System.err.println("this is level 0");
-                if (key == isAdded) {
-                    int index = comments.size() - 1;
-                    cmtsToRes.add(index, cmtLevel0);
-                } else {
-                    Long commentID = cmtLevel0.getManga_comment_id();
-                    if (inputCommentID != null) {
-                        commentID = inputCommentID;
-                    }
-                    for (int i = 0; i < comments.size(); i++) {
-                        if (comments.get(i).getManga_comment_id().equals(commentID)) {
-                            if (key == isUpdated) {
-                                cmtLevel0.setComments_level_01(comments.get(i).getComments_level_01());
-                                cmtsToRes.set(i, cmtLevel0);
-                                break;
-                            } else if (key == isDeleted) {
-                                cmtsToRes.remove(i);
-                                break;
-                            }
-                        }
-                    }
-                }
-                return cmtsToRes;
-            } else {
-                System.err.println("this is level deeper");
-                Long commentID = cmtLevelDeeper.getManga_comment_id();
-                Long parentCommentID = cmtLevelDeeper.getParent_id();
-                // Loop
-                int level0Size = comments.size();
-                if (flag.equals(false)) {
-                    for (int i = 0; i < level0Size; i++) {
-                        if (key == isAdded) {
-                            if (comments.get(i).getManga_comment_id().equals(parentCommentID) && cmtLevelDeeper.getLevel().equals("1")) {
-                                int index = comments.get(i).getComments_level_01().size();
-                                if (index > 1) {
-                                    index -= 1;
-                                }
-                                cmtsToRes.get(i).getComments_level_01().add(index, cmtLevelDeeper);
-                                break;
-                            }
-                        }
-                        int level1Size = comments.get(i).getComments_level_01().size();
-                        if (flag.equals(false)) {
-                            ///////////// 2nd loop, for adding, update, delete
-                            for (int j = 0; j < level1Size; j++) {
-                                Long cmt01Id = comments.get(i).getComments_level_01().get(j).getManga_comment_id();
-                                if (key == isAdded) {
-                                    if (comments.get(i).getManga_comment_id().equals(parentCommentID) && cmtLevelDeeper.getLevel().equals("2")) {
-                                        int index = comments.get(i).getComments_level_01().get(j).getComments_level_02().size();
-                                        if (index > 1) {
-                                            index -= 1;
-                                        }
-                                        cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().add(index, cmtLevelDeeper);
-                                        flag = true;
-                                        break;
-                                    }
-                                } else {
-                                    if (cmt01Id.equals(commentID)) {
-                                        if (key == isUpdated) {
-                                            cmtLevelDeeper.setComments_level_02(comments.get(i).getComments_level_01().get(j).getComments_level_02());
-                                            cmtsToRes.get(i).getComments_level_01().set(j, cmtLevelDeeper);
-
-                                            flag = true;
-                                            break;
-                                        }
-                                        if (key == isDeleted) {
-                                            cmtsToRes.get(i).getComments_level_01().remove(j);
-
-                                            flag = true;
-                                            break;
-                                        }
-                                    }
-                                    ////////// 3rd loop, for update, delete
-                                    if (flag.equals(false)) {
-                                        int level2Size = comments.get(i).getComments_level_01().get(j).getComments_level_02().size();
-                                        for (int k = 0; k < level2Size; k++) {
-                                            Long cmt02Id = comments.get(i).getComments_level_01().get(j).getComments_level_02().get(k).getManga_comment_id();
-                                            if (cmt02Id.equals(commentID)) {
-                                                if (key == isUpdated) {
-                                                    System.err.println("line 1516");
-                                                    System.err.println("cmt content " + cmtLevelDeeper.getManga_comment_content());
-                                                    cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().set(k, cmtLevelDeeper);
-                                                    flag = true;
-                                                    break;
-                                                }
-                                                if (key == isDeleted) {
-                                                    cmtsToRes.get(i).getComments_level_01().get(j).getComments_level_02().remove(k);
-                                                    flag = true;
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                }
-            }
-        }
-        if (cmtsToRes.isEmpty()) {
-            return new ArrayList<>();
-        }
-        return cmtsToRes;
-    }
-
 
 }
 
