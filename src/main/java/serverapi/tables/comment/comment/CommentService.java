@@ -267,6 +267,8 @@ public class CommentService {
 
     public ResponseEntity updateComment(Long userID, List<Long> toUsersID, Long commentID,
                                         String content, MultipartFile image, String stickerUrl) throws IOException {
+        Calendar timeUpdated = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+
         Optional<User> userOptional = userRepos.findById(userID);
         Optional<Comment> mangaCommentsOptional = commentRepos.findById(commentID);
         if (userOptional.isEmpty() || mangaCommentsOptional.isEmpty()) {
@@ -275,6 +277,7 @@ public class CommentService {
         }
         Comment comment = mangaCommentsOptional.get();
         User user = userOptional.get();
+
         // check allow
         if (!user.getUser_id().equals(comment.getUser().getUser_id())) {
             Map<String, Object> msg = Map.of("err", "You don't have permission!");
@@ -289,6 +292,7 @@ public class CommentService {
         }
         // comment table's part (update content)
         comment.setComment_content(content);
+        comment.setComment_time(timeUpdated);
         commentRepos.saveAndFlush(comment);
         // comment_image table's part (update image or stickerUrl)
         // check current image of comment
