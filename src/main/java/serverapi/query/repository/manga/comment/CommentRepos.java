@@ -9,6 +9,7 @@ import serverapi.query.dtos.features.CommentDTOs.CommentDTO;
 import serverapi.tables.comment.comment.Comment;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CommentRepos extends JpaRepository<Comment, Long> {
@@ -69,4 +70,18 @@ public interface CommentRepos extends JpaRepository<Comment, Long> {
             """)
     List<CommentDTO> getCommentsChild(@Param("comment_id") Long comment_id, Pageable pageable);
 
+
+    @Query("""
+            SELECT new serverapi.query.dtos.features.CommentDTOs.CommentDTO(
+                            us.user_id, us.user_name, us.user_avatar,
+                            cm.comment_id, cm.comment_time, cm.comment_content, cm.count_like, cm.is_deprecated,
+                            cr.parent_id.comment_id,
+                            ci.comment_image_id, ci.image_url)  
+            FROM Comment cm
+            JOIN CommentRelation cr ON cm.comment_id = cr.child_id.comment_id
+            LEFT JOIN cm.user us
+            LEFT JOIN cm.comment_image ci
+            WHERE cr.child_id.comment_id =(:comment_id) 
+            """)
+    Optional<CommentDTO> getCommentByID(@Param("comment_id") Long comment_id);
 }
