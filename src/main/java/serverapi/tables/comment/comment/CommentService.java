@@ -353,7 +353,7 @@ public class CommentService {
             responseCmt.ifPresent(this::setListTags);
             Map<String, Object> msg = Map.of(
                     "err", "Comment is already delete!",
-                    "comment", comment
+                    "comment", responseCmt
             );
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
         }
