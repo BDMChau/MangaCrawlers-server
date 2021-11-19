@@ -296,7 +296,6 @@ public class CommentService {
         commentRepos.saveAndFlush(comment);
         // comment_image table's part (update image or stickerUrl)
         // check current image of comment
-        String image_url = null;
         Optional<CommentImage> commentImageOptional = commentImageRepos.getCommentImageByCommentID(commentID);
 
         if (image != null) {
@@ -310,17 +309,14 @@ public class CommentService {
             CommentImage commentImage;
             commentImage = commentImageOptional.orElseGet(CommentImage::new);
             addCommentImage(commentImage, comment, securedUrl);
-            image_url = securedUrl;
         }
         if (!stickerUrl.equals("")) {
             CommentImage commentImage;
             commentImage = commentImageOptional.orElseGet(CommentImage::new);
             addCommentImage(commentImage, comment, stickerUrl);
-            image_url = stickerUrl;
         }
         // comment_tag table's part (update toUserID)
         int offSet = 0;
-        List<CommentTagsDTO> commentTags = new ArrayList<>();
         for (Long toUserID : toUsersID) {
             Optional<User> userTagOptional = userRepos.findById(toUserID);
             if (userTagOptional.isPresent()) {
@@ -330,34 +326,16 @@ public class CommentService {
                 commentTag.setUser(userTag);
                 commentTag.setOff_set(offSet);
                 commentTagsRepos.saveAndFlush(commentTag);
-
-                // for export
-                CommentTagsDTO commentTagsDTO = new CommentTagsDTO();
-                commentTagsDTO.setComment_id(comment.getComment_id());
-                commentTagsDTO.setComment_tag_id(commentTag.getComment_tag_id());
-                commentTagsDTO.setUser_id(commentTag.getUser().getUser_id());
-                commentTagsDTO.setUser_avatar(commentTag.getUser().getUser_avatar());
-                commentTagsDTO.setUser_name(commentTag.getUser().getUser_name());
-
-                commentTags.add(commentTagsDTO);
                 offSet++;
             }
         }
         // Response
-        CommentDTO exportComment = new CommentDTO();
-        exportComment.setTo_users(commentTags);
-        exportComment.setUser_id(user.getUser_id());
-        exportComment.setUser_name(user.getUser_name());
-        exportComment.setUser_avatar(user.getUser_avatar());
-        exportComment.setComment_id(comment.getComment_id());
-        exportComment.setComment_time(comment.getComment_time());
-        exportComment.setComment_content(comment.getComment_content());
-        exportComment.setCount_like(comment.getCount_like());
-        exportComment.setImage_url(image_url);
+        Optional<CommentDTO> responseCmt = commentRepos.getCommentByID(commentID);
+        responseCmt.ifPresent(this::setListTags);
 
         Map<String, Object> msg = Map.of(
                 "msg", "Update comment successfully!",
-                "comment_info", exportComment
+                "comment_info", responseCmt
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
@@ -371,9 +349,11 @@ public class CommentService {
         }
         Comment comment = commentOptional.get();
         if (comment.getIs_deprecated().equals(true)) {
+            Optional<CommentDTO> responseCmt = commentRepos.getCommentByID(commentID);
+            responseCmt.ifPresent(this::setListTags);
             Map<String, Object> msg = Map.of(
                     "err", "Comment is already delete!",
-                    "comment", comment
+                    "comment", responseCmt
             );
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
         }
@@ -385,9 +365,12 @@ public class CommentService {
         // Delete comment
         comment.setIs_deprecated(true);
         commentRepos.saveAndFlush(comment);
+        //Response
+        Optional<CommentDTO> responseCmt = commentRepos.getCommentByID(commentID);
+        responseCmt.ifPresent(this::setListTags);
         Map<String, Object> msg = Map.of(
                 "msg", "Delete comment successfully!",
-                "comment", comment
+                "comment", responseCmt
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
