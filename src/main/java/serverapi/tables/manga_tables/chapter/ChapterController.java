@@ -29,6 +29,13 @@ public class ChapterController {
         return chapterService.getAllChapter();
     }
 
+    @Cacheable(value = "total_chapters", key = "#mangaPOJO.getManga_id()")
+    @GetMapping("/get_total_chapters")
+    public ResponseEntity getTotalChapters(MangaPOJO mangaPOJO) {
+        Long mangaId = Long.parseLong(mangaPOJO.getManga_id());
+
+        return chapterService.getTotalChapters(mangaId);
+    }
 
 //    @GetMapping("/gettotalview")
 //    public ResponseEntity getTotalView(){
