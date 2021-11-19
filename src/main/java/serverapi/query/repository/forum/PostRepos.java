@@ -1,5 +1,6 @@
 package serverapi.query.repository.forum;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -53,7 +54,7 @@ public interface PostRepos extends JpaRepository<Post, Long>, JpaSpecificationEx
             JOIN User user ON user.user_id = post.user.user_id 
             ORDER BY post.created_at
             """)
-    List<PostUserDTO> getAllPostsAndUserInfo();
+    List<PostUserDTO> getAllPostsAndUserInfo(); // for admin
 
 
     @Query("""
@@ -66,7 +67,7 @@ public interface PostRepos extends JpaRepository<Post, Long>, JpaSpecificationEx
             WHERE user.user_id = ?1 AND post.is_deprecated = false AND post.is_approved = true
             ORDER BY post.created_at
             """)
-    List<PostUserDTO> getPostsByUserId(Long userId, Pageable pageable);
+    Page<PostUserDTO> getPostsByUserId(Long userId, Pageable pageable);
 
 
     @Query("""
@@ -80,22 +81,23 @@ public interface PostRepos extends JpaRepository<Post, Long>, JpaSpecificationEx
                       WHERE post_cate.category.category_id = ?1 AND post.is_deprecated = false AND post.is_approved = true
                       ORDER BY post.created_at
                       """)
-    List<PostUserDTO> getPostsByCategory(Long categoryId);
+    Page<PostUserDTO> getPostsByCategory(Long categoryId, Pageable pageable);
 
 
     @Query("""
             SELECT new serverapi.query.dtos.tables.PostUserDTO(
-                      post.post_id, post.title, post.content, COUNT(cmt.manga_comment_id), post.count_like, post.count_dislike, post.created_at,
+                      post.post_id, post.title, post.content, COUNT(cmt.comment_id), post.count_like, post.count_dislike, post.created_at,
                       user.user_id, user.user_name, user.user_email, user.user_avatar, user.user_isAdmin
                       )
                       FROM Post post
                       JOIN User user ON user.user_id = post.user.user_id
-                      JOIN MangaComments cmt ON cmt.post.post_id = post.post_id
+                      JOIN Comment cmt ON cmt.post.post_id = post.post_id
                       WHERE post.created_at >= (current_date - (:from_time)) AND post.created_at < (current_date - (:to_time)) 
+                      AND post.is_deprecated = false AND post.is_approved = true
                       GROUP BY post.post_id, post.title, post.content, post.count_like, post.count_dislike, post.created_at,
                                 user.user_id, user.user_name, user.user_email, user.user_avatar, user.user_isAdmin
-                      HAVING COUNT(cmt.manga_comment_id) > 0
-                      ORDER BY COUNT(cmt.manga_comment_id) DESC    
+                      HAVING COUNT(cmt.comment_id) > 0
+                      ORDER BY COUNT(cmt.comment_id) DESC    
             """)
     List<PostUserDTO> getTopPostsNumberOfCmts(Pageable pageable, @Param("from_time") int from_time, @Param("to_time") int to_time);
 
@@ -108,6 +110,7 @@ public interface PostRepos extends JpaRepository<Post, Long>, JpaSpecificationEx
                       FROM Post post
                       JOIN User user ON user.user_id = post.user.user_id
                       WHERE post.created_at >= (current_date - (:from_time)) AND post.created_at < (current_date - (:to_time)) AND post.count_like > 0
+                      AND post.is_deprecated = false AND post.is_approved = true
                       GROUP BY post.post_id, post.title, post.content, post.count_like, post.count_dislike, post.created_at,
                                 user.user_id, user.user_name, user.user_email, user.user_avatar, user.user_isAdmin
                       ORDER BY post.count_like DESC
@@ -123,6 +126,7 @@ public interface PostRepos extends JpaRepository<Post, Long>, JpaSpecificationEx
                       FROM Post post
                       JOIN User user ON user.user_id = post.user.user_id
                       WHERE post.created_at >= (current_date - (:from_time)) AND post.created_at < (current_date - (:to_time)) AND post.count_dislike > 0
+                      AND post.is_deprecated = false AND post.is_approved = true
                       GROUP BY post.post_id, post.title, post.content, post.count_like, post.count_dislike, post.created_at,
                                 user.user_id, user.user_name, user.user_email, user.user_avatar, user.user_isAdmin
                       ORDER BY post.count_dislike DESC

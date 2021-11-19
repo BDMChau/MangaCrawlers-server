@@ -1,11 +1,8 @@
 package serverapi.query.repository.manga;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import serverapi.query.dtos.features.MangaCommentDTOs.CommentTreesDTO;
-import serverapi.query.dtos.features.MangaCommentDTOs.MangaCommentDTOs;
 import serverapi.query.dtos.tables.ChapterDTO;
 import serverapi.tables.manga_tables.chapter.Chapter;
 
@@ -35,5 +32,11 @@ public interface ChapterRepos extends JpaRepository<Chapter, Long> {
     List<ChapterDTO> getAllChapter();
 
 
+    @Query("""
+            SELECT COUNT(c.chapter_id)
+            FROM Manga m JOIN m.chapters c ON m.manga_id = c.manga.manga_id
+            WHERE m.manga_id = ?1
+            """)
+    Long getTotalChaptersByMangaId(Long mangaId);
 
 }

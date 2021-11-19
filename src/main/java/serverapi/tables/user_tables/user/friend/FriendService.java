@@ -1,5 +1,6 @@
 package serverapi.tables.user_tables.user.friend;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,14 +60,18 @@ public class FriendService {
 
     public ResponseEntity getListFriends(Long userID, int from, int amount) {
         Pageable pageable = new OffsetBasedPageRequest(from, amount);
-        List<FriendDTO> getListFriends = friendRequestRepos.getListByUserId(userID, pageable);
+        Page<FriendDTO> friendsPage = friendRequestRepos.getListByUserId(userID, pageable);
+        List<FriendDTO> friends = friendsPage.getContent();
+        Long totalFriends = friendsPage.getTotalElements();
+
+
         Optional<User> userOptional = userRepos.findById(userID);
         if (userOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "User not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
 
-        if (getListFriends.isEmpty()) {
+        if (friends.isEmpty()) {
             Map<String, Object> err = Map.of(
                     "err", "List friends empty!",
                     "list_friends", new ArrayList<>()
@@ -82,7 +87,7 @@ public class FriendService {
         exportUser.setUser_email(user.getUser_email());
         exportUser.setStatus(true);
 
-        List<FriendDTO> exportListFriends = filterListFriends(getListFriends, userID);
+        List<FriendDTO> exportListFriends = filterListFriends(friends, userID);
         if (exportListFriends.isEmpty()) {
             Map<String, Object> err = Map.of(
                     "err", "List friends empty!",
@@ -96,7 +101,8 @@ public class FriendService {
                 "don't_use_these_param", "status, list_friends",
                 "from", from + amount,
                 "user_info", exportUser,
-                "list_friends", exportListFriends
+                "list_friends", exportListFriends,
+                "total_friends", totalFriends
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
@@ -325,9 +331,7 @@ public class FriendService {
         User user = userRepos.findById(userIdToCheck).get();
 
         UUID socketSessionId = user.getSocket_session_id();
-        if (socketSessionId == null) return false;
-
-        return true;
+        return socketSessionId != null;
     }
 
 

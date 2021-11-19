@@ -6,7 +6,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import serverapi.tables.manga_tables.manga.pojo.CommentPOJO;
 import serverapi.tables.manga_tables.manga.pojo.MangaPOJO;
 
 
@@ -47,20 +46,6 @@ public class ChapterController {
         Long mangaId = Long.parseLong(mangaPOJO.getManga_id());
 
         return chapterService.findImgByChapter(chapterId, mangaId);
-    }
-
-    @PostMapping("/getcommentschapter")
-    public ResponseEntity getCommentsChapter(@RequestBody CommentPOJO commentPOJO) {
-
-        Long chapter_id = Long.parseLong(commentPOJO.getChapter_id());
-
-        int from = commentPOJO.getFrom();
-        System.out.println("from_" + from);
-
-        int amount = commentPOJO.getAmount();
-        System.out.println("amount_" + amount);
-
-        return chapterService.getCommentsChapter(chapter_id, from, amount);
     }
 
 

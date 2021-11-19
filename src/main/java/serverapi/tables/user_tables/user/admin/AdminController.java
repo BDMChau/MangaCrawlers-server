@@ -166,6 +166,17 @@ public class AdminController {
         return adminService.deleteChapter(adminId, chapterId);
     }
 
+
+    @PutMapping("/deprecate_post")
+    public ResponseEntity deprecatePost(@RequestBody Map data, ServletRequest request) {
+        String strUserId = getUserAttribute(request).get("user_id").toString();
+        Long adminId = Long.parseLong(strUserId);
+
+        Long postId = Long.parseLong(String.valueOf(data.get("post_id")));
+
+        return adminService.deprecatePost(adminId, postId);
+    }
+
     /////////////////////////// chart report
     @GetMapping("/reporttransgroup")
     public ResponseEntity reportTransGroup(ServletRequest request) {
