@@ -64,13 +64,13 @@ public class CommentLikeService {
     public ResponseEntity addLike(Long userID, Long commentID) {
         Optional<Comment> mangaCommentsOptional = commentRepos.findById(commentID);
         Optional<User> userOptional = userRepos.findById(userID);
-        Optional<CommentLikes> commentLikesOptional = commentLikesRepos.getCommentLike(commentID, userID);
+        Optional<CommentLike> commentLikeOptional = commentLikesRepos.getCommentLike(commentID, userID);
         if (mangaCommentsOptional.isEmpty() || userOptional.isEmpty()) {
             Map<String, Object> msg = Map.of("err", "Comment or user is not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
 
-        if(!commentLikesOptional.isEmpty()){
+        if(!commentLikeOptional.isEmpty()){
             Map<String, Object> msg = Map.of("err", "user already liked!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, msg).toJSON(), HttpStatus.ACCEPTED);
         }
