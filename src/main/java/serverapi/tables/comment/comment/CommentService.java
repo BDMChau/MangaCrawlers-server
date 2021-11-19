@@ -349,6 +349,8 @@ public class CommentService {
         }
         Comment comment = commentOptional.get();
         if (comment.getIs_deprecated().equals(true)) {
+            Optional<CommentDTO> responseCmt = commentRepos.getCommentByID(commentID);
+            responseCmt.ifPresent(this::setListTags);
             Map<String, Object> msg = Map.of(
                     "err", "Comment is already delete!",
                     "comment", comment
