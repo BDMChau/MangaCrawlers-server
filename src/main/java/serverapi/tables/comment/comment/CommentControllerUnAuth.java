@@ -71,4 +71,15 @@ public class CommentControllerUnAuth {
     }
 
 
+    @GetMapping("/get_comment")
+    public ResponseEntity getComment(CommentPOJO commentPOJO) {
+        String comment_id = commentPOJO.getComment_id();
+
+        Long commentID = 0L;
+        if (!comment_id.equals("")) {
+            commentID = Long.parseLong(comment_id);
+        }
+        return commentService.getComment(commentID);
+    }
+
 }

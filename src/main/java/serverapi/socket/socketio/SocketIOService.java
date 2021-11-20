@@ -133,13 +133,19 @@ public class SocketIOService implements ISocketIOService {
         mySocketService.setAllClients(clients);
         mySocketService.setSenderClient(senderClient);
 
+        String targetTitle = (String) socketMessage.getObjData().get("target_title");
+
         if (socketMessage.getMessage().equals("notify_onl_off")) {
             mySocketService.notifyFriendsWhenUserOnline();
 
-        } else if (socketMessage.getObjData().get("target_title").equals("post_new")) {
+        } else if (targetTitle.contains("comment")) { // can be comment_post or comment_manga
+            mySocketService.notifyTaggedUsers();
+
+        } else if (targetTitle.equals("post_new")) {
             mySocketService.notifyFriends();
 
         } else {
+            // friend request
             mySocketService.pushMessageToUsersExceptSender();
         }
     }

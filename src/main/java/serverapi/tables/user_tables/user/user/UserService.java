@@ -413,6 +413,7 @@ public class UserService {
             @RequestParam(required = false) MultipartFile[] files
     ) throws IOException {
         cacheService.evictSingleCacheValue("transGroupInfo", userId.toString() + strTransGrId);
+        cacheService.evictSingleCacheValue("mangapage", mangaId.toString());
 
         Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
@@ -430,7 +431,7 @@ public class UserService {
         chapter.setManga(manga);
         chapterRepos.saveAndFlush(chapter);
 
-
+        System.err.println("ok01");
         String folderName = manga.getManga_name() + "/" + manga.getManga_name() + "_" + chapterName;
         for (MultipartFile file : files) {
             Map responseFromCloudinary = cloudinaryUploader.uploadImg(file.getBytes(), file.getOriginalFilename(), "/transgroup_upload/" + folderName, true);
@@ -451,7 +452,7 @@ public class UserService {
             imageChapter.setChapter(chapter);
             imgChapterRepos.saveAndFlush(imageChapter);
         }
-
+        System.err.println("ok02");
 
         Map<String, Object> msg = Map.of("msg", "Upload imgs successfully!");
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
