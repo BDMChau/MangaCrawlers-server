@@ -99,6 +99,9 @@ public class CommentService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
+    public ResponseEntity getComment(Long commentId){
+
+    }
 
     @Transactional
     public ResponseEntity getCommentsChild(int from, int amount, Long commentID, Long userID) {
