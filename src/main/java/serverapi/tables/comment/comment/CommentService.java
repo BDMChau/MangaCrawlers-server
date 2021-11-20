@@ -309,6 +309,9 @@ public class CommentService {
             CommentImage commentImage;
             commentImage = commentImageOptional.orElseGet(CommentImage::new);
             addCommentImage(commentImage, comment, securedUrl);
+        }else{
+            Optional<CommentImage> imageOptional = commentImageRepos.getCommentImageByCommentID(commentID);
+            imageOptional.ifPresent(commentImageRepos::delete);
         }
         if (!stickerUrl.equals("")) {
             CommentImage commentImage;
