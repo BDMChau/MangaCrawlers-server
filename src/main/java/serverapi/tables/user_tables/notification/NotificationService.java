@@ -172,17 +172,16 @@ public class NotificationService {
         notifications.setCreated_at(currentTime);
 
         // check isExisted
-        if (!socketMessage.getObjData().get("target_id").equals("") || !socketMessage.getObjData().get("target_title").equals("")) {
-            Long targetId = Long.parseLong(String.valueOf(socketMessage.getObjData().get("target_id")));
-            String targetTitle = String.valueOf(socketMessage.getObjData().get("target_title"));
-            Long toUserId = receiver.getUser_id();
+        Long targetId = Long.parseLong(String.valueOf(socketMessage.getObjData().get("target_id")));
+        String targetTitle = String.valueOf(socketMessage.getObjData().get("target_title"));
+        Long toUserId = receiver.getUser_id();
 
-            Boolean isExisted = checkIsExisted(targetTitle, targetId, toUserId, sender.getUser_id());
-            if (isExisted) return null;
+        Boolean isExisted = checkIsExisted(targetTitle, targetId, toUserId, sender.getUser_id());
+        if (isExisted) return null;
 
-            notifications.setTarget_id(targetId);
-            notifications.setTarget_title(targetTitle);
-        }
+        notifications.setTarget_id(targetId);
+        notifications.setTarget_title(targetTitle);
+
 
         notificationTypesRepos.saveAndFlush(notificationTypes);
         notificationRepos.saveAndFlush(notifications);
@@ -214,20 +213,35 @@ public class NotificationService {
 
     //////////////////// HELPERS ////////////////////
     public Boolean checkIsExisted(String targetTitle, Long targetId, Long toUserId, Long fromUserId) {
-        if (targetTitle.equals("user")) {
-            List<Notifications> isExisted = notificationRepos.findByTargetTitleUserAndNotInteract(targetId, fromUserId);
-            return !isExisted.isEmpty();
+        int a = 10;
+        List<Notifications> isExisted = new ArrayList<>();
+        switch (targetTitle) {
+            case "user":
+                isExisted = notificationRepos.findByTargetTitleUserAndNotInteract(targetId, fromUserId);
+                break;
 
-        } else if (targetTitle.equals("transgroup")) {
-            List<Notifications> isExisted = notificationRepos.findByTargetTitleTransGroupAndNotInteract(targetId, toUserId, fromUserId);
-            if (!isExisted.isEmpty()) return true;
+            case "transgroup":
+                isExisted = notificationRepos.findByTargetTitleTransGroupAndNotInteract(targetId, toUserId, fromUserId);
+                break;
 
-        } else if (targetTitle.equals("post_new")) {
-            List<Notifications> isExisted = notificationRepos.findByTargetTitleNewPost(targetId, toUserId, fromUserId);
-            if (!isExisted.isEmpty()) return true;
+            case "post_new":
+                isExisted = notificationRepos.findByTargetTitleNewPost(targetId, toUserId, fromUserId);
+                break;
+
+            case "comment_post":
+                isExisted = notificationRepos.findByTargetTitleCommentPost(targetId, toUserId, fromUserId);
+                break;
+
+            case "comment_manga":
+                isExisted = notificationRepos.findByTargetTitleCommentManga(targetId, toUserId, fromUserId);
+                break;
+
+            default:
+                break;
         }
 
 
+        if (!isExisted.isEmpty()) return true;
         return false;
     }
 
