@@ -84,4 +84,23 @@ public interface CommentRepos extends JpaRepository<Comment, Long> {
             WHERE cr.child_id.comment_id =(:comment_id) 
             """)
     Optional<CommentDTO> getCommentByID(@Param("comment_id") Long comment_id);
+
+
+    @Query("""
+            SELECT new serverapi.query.dtos.features.CommentDTOs.CommentDTO(
+                            us.user_id, us.user_name, us.user_avatar,
+                            ma.manga_id, po.post_id,
+                            cm.comment_id, cm.comment_time, cm.comment_content, cm.count_like, cm.is_deprecated,
+                            cr.parent_id.comment_id,
+                            ci.comment_image_id, ci.image_url
+                            )
+            FROM Comment cm
+            JOIN CommentRelation cr ON cm.comment_id = cr.child_id.comment_id
+            LEFT JOIN cm.user us
+            LEFT JOIN cm.manga ma
+            LEFT JOIN cm.post po
+            LEFT JOIN cm.comment_image ci
+            WHERE cr.child_id.comment_id =(:comment_id)
+            """)
+    Optional<CommentDTO> getCommentForNotification(@Param("comment_id") Long comment_id);
 }

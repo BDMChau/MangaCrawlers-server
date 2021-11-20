@@ -99,6 +99,19 @@ public class CommentService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
+    public ResponseEntity getComment(Long commentId) {
+        Optional<CommentDTO> commentOptional = commentRepos.getCommentForNotification(commentId);
+        if (commentOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "Invalid comment!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+
+        Map<String, Object> msg = Map.of(
+                "msg", "get cmt OK!",
+                "comment", commentOptional.get()
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
 
     @Transactional
     public ResponseEntity getCommentsChild(int from, int amount, Long commentID, Long userID) {
@@ -107,8 +120,8 @@ public class CommentService {
         Pageable pageable = new OffsetBasedPageRequest(from, amount);
         Optional<Comment> commentOptional = commentRepos.findById(commentID);
         if (commentOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("err", "Invalid comment!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
+            Map<String, Object> err = Map.of("err", "Invalid comment!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
         }
 
         List<CommentDTO> commentsChild = commentRepos.getCommentsChild(commentID, pageable);
@@ -309,6 +322,9 @@ public class CommentService {
             CommentImage commentImage;
             commentImage = commentImageOptional.orElseGet(CommentImage::new);
             addCommentImage(commentImage, comment, securedUrl);
+        }else{
+            Optional<CommentImage> imageOptional = commentImageRepos.getCommentImageByCommentID(commentID);
+            imageOptional.ifPresent(commentImageRepos::delete);
         }
         if (!stickerUrl.equals("")) {
             CommentImage commentImage;

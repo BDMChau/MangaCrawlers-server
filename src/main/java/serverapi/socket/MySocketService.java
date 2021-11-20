@@ -1,7 +1,6 @@
 package serverapi.socket;
 
 import com.corundumstudio.socketio.SocketIOClient;
-import com.corundumstudio.socketio.SocketIOServer;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import serverapi.query.repository.user.FriendRequestRepos;
 import serverapi.query.repository.user.UserRepos;
 import serverapi.socket.message.EventsName;
 import serverapi.socket.message.SocketMessage;
-import serverapi.tables.user_tables.friend_request_status.FriendRequestStatus;
 import serverapi.tables.user_tables.friend_request_status.FriendRequestStatusService;
 import serverapi.tables.user_tables.notification.NotificationService;
 import serverapi.tables.user_tables.user.User;
@@ -74,10 +72,7 @@ public class MySocketService {
             int notification_type = socketMessage.getType();
 
             User receiver = getReciever(identify_type, toUserVal);
-            if (receiver == null) {
-                senderClient.sendEvent(EVENTs_NAME.getSEND_FAILED(), "Failed!");
-                return;
-            }
+            if (receiver == null) return;
 
             Long senderId = socketMessage.getUserId();
             User sender = userRepos.findById(senderId).get();
@@ -99,7 +94,7 @@ public class MySocketService {
 
             NotificationDTO dataToSend = notificationService.saveNew(receiver, socketMessage);
             if (dataToSend == null) {
-                System.err.println("datasToSend null");
+                System.err.println("dataToSend null");
                 senderClient.sendEvent(EVENTs_NAME.getSEND_FAILED(), "failed");
                 return;
             }
@@ -133,6 +128,32 @@ public class MySocketService {
 
             sendToFriends(sender, friend, dataToSend);
         });
+    }
+
+    public void notifyTaggedUsers() {
+        List listToUser = socketMessage.getListTo();
+
+        for (int i = 0; i < listToUser.size(); i++) {
+            int userId = (int) listToUser.get(i);
+            int notification_type = socketMessage.getType();
+
+            User receiver = getReciever("java.lang.Integer", userId);
+            if (receiver == null) return;
+
+            Long senderId = socketMessage.getUserId();
+            User sender = userRepos.findById(senderId).get();
+
+
+            handleNotificationType(notification_type, receiver, sender);
+
+            NotificationDTO dataToSend = notificationService.saveNew(receiver, socketMessage);
+            if (dataToSend == null) {
+                System.err.println("dataToSend null");
+                continue;
+            }
+
+            sendToTaggedUsersExceptSender(dataToSend);
+        }
     }
 
 
@@ -180,7 +201,6 @@ public class MySocketService {
     }
 
 
-
     /////////////////////////////// sender ///////////////////////////////
     private void sendToUsersExceptSender(NotificationDTO dataToSend) {
         String receiverName = dataToSend.getReceiver_name();
@@ -197,6 +217,22 @@ public class MySocketService {
             }
 
             senderClient.sendEvent(EVENTs_NAME.getSEND_OK(), "send ok");
+        }
+    }
+
+
+    private void sendToTaggedUsersExceptSender(NotificationDTO dataToSend) {
+        String receiverName = dataToSend.getReceiver_name();
+
+        if (!receiverName.isEmpty()) {
+            UUID receiver_sessionId = dataToSend.getReceiver_socket_id();
+            for (SocketIOClient client : allClients) {
+                if (!client.getSessionId().equals(senderClient.getSessionId())) { // except sender
+                    if (client.getSessionId().equals(receiver_sessionId)) {
+                        client.sendEvent(EVENTs_NAME.getFROM_SERVER_TO_SPECIFIC_USERS(), dataToSend);
+                    }
+                }
+            }
         }
     }
 
