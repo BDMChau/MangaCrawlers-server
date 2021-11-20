@@ -99,7 +99,7 @@ public class GlobalConfig {
         registrationBean.addUrlPatterns("/api/manga/gettop");
         registrationBean.addUrlPatterns("/api/manga/getweekly");
         registrationBean.addUrlPatterns("/api/manga/getdaily");
-        registrationBean.addUrlPatterns("/api/manga/getmangapage");
+//        registrationBean.addUrlPatterns("/api/manga/getmangapage");
 
         //forum unauth
         registrationBean.addUrlPatterns("/api/forum_unauth/category/getall");
