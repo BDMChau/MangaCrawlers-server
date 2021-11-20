@@ -51,6 +51,7 @@ public class CommentDTO {
 
     private Long user_id_is_liked;
     private String is_liked;
+
     // For comment level 0
     public CommentDTO(Long count_comments_child,
                       Long user_id, String user_name, String user_avatar,
@@ -71,12 +72,19 @@ public class CommentDTO {
         this.image_url = image_url;
     }
 
+    public CommentDTO(Long user_id, Long manga_id, Long post_id, Long comment_id) {
+        this.user_id = user_id;
+        this.manga_id = manga_id;
+        this.post_id = post_id;
+        this.comment_id = comment_id;
+    }
+
     // For comments child
     public CommentDTO(
-                      Long user_id, String user_name, String user_avatar,
-                      Long comment_id, Calendar comment_time, String comment_content, int count_like, boolean is_deprecated,
-                      Long parent_id,
-                      Long comment_image_id, String image_url) {
+            Long user_id, String user_name, String user_avatar,
+            Long comment_id, Calendar comment_time, String comment_content, int count_like, boolean is_deprecated,
+            Long parent_id,
+            Long comment_image_id, String image_url) {
         this.user_id = user_id;
         this.user_name = user_name;
         this.user_avatar = user_avatar;

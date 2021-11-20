@@ -149,8 +149,7 @@ public class MySocketService {
             NotificationDTO dataToSend = notificationService.saveNew(receiver, socketMessage);
             if (dataToSend == null) {
                 System.err.println("dataToSend null");
-                senderClient.sendEvent(EVENTs_NAME.getSEND_FAILED(), "failed");
-                return;
+                continue;
             }
 
             sendToTaggedUsersExceptSender(dataToSend);
