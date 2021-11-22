@@ -144,7 +144,7 @@ public class UserService {
                 readingHistory.setChapter(chapter);
                 readingHistory.setReading_history_time(currentTime);
 
-                readingHistoryRepos.save(readingHistory);
+                readingHistoryRepos.saveAndFlush(readingHistory);
 
             }
         });
@@ -174,7 +174,7 @@ public class UserService {
         readingHistory.setChapter(chapter);
         readingHistory.setReading_history_time(currentTime);
 
-        readingHistoryRepos.save(readingHistory);
+        readingHistoryRepos.saveAndFlush(readingHistory);
 
         Map<String, Object> msg = Map.of(
                 "msg", "Add reading history successfully!"
@@ -219,7 +219,7 @@ public class UserService {
             followingManga.setUser(user);
             followingManga.setManga(manga);
 
-            followingRepos.save(followingManga);
+            followingRepos.saveAndFlush(followingManga);
 
             Map<String, Object> msg = Map.of(
                     "msg", "add Follow successfully!"
@@ -250,22 +250,16 @@ public class UserService {
                 followingManga.setUser(user);
                 followingManga.setManga(manga);
 
-                followingRepos.save(followingManga);
+                followingRepos.saveAndFlush(followingManga);
 
-                Map<String, Object> msg = Map.of(
-                        "msg", "add follow successfully!"
-                );
+                Map<String, Object> msg = Map.of("msg", "add follow successfully!");
                 return new ResponseEntity<>(new Response(201, HttpStatus.CREATED, msg).toJSON(), HttpStatus.CREATED);
-
             }
-
         }
     }
 
     public ResponseEntity deleteFollowManga(Long mangaId, Long userId) {
         List<FollowingDTO> Follow = followingRepos.findByUserId(userId);
-        System.out.println("mangaID" + mangaId);
-        System.out.println("userID" + userId);
 
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
         if (Follow.isEmpty()) {
@@ -275,8 +269,6 @@ public class UserService {
         } else {
 
             Follow.forEach(item -> {
-                System.out.println(item.getManga_id());
-                System.out.println(item.getManga_id().equals(mangaId));
                 if (item.getManga_id().equals(mangaId)) {
                     Long followId = item.getFollowId();
 
@@ -298,6 +290,22 @@ public class UserService {
     }
 
 
+    public ResponseEntity checkIsFollowingManga(Long userId, Long mangaId) {
+        Optional<FollowingManga> isExisted = followingRepos.checkIsFollowingManga(userId, mangaId);
+        if (isExisted.isEmpty()) {
+            Map<String, Object> msg = Map.of(
+                    "msg", "check is following manga OK",
+                    "is_following", false
+            );
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.CREATED);
+        }
+
+        Map<String, Object> msg = Map.of(
+                "msg", "check is following manga OK",
+                "is_following", true
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.CREATED);
+    }
 
 
     /////////////////////////////////////// INTERACTION /////////////////////////////////
@@ -333,13 +341,13 @@ public class UserService {
             roundedResult = new RoundNumber().roundRatingManga(averageResult);
 
             manga.setStars(roundedResult);
-            mangaRepository.save(manga);
+            mangaRepository.saveAndFlush(manga);
 
             RatingManga ratingManga = new RatingManga();
             ratingManga.setManga(manga);
             ratingManga.setUser(user);
             ratingManga.setValue(newValue);
-            ratingMangaRepos.save(ratingManga);
+            ratingMangaRepos.saveAndFlush(ratingManga);
 
         } else {
             Optional<RatingManga> existedRatingMangaOptionNal = ratingMangaRepos.findById(ratingMangaId);
@@ -359,7 +367,7 @@ public class UserService {
             roundedResult = new RoundNumber().roundRatingManga(averageResult);
 
             manga.setStars(roundedResult);
-            mangaRepository.save(manga);
+            mangaRepository.saveAndFlush(manga);
         }
 
         // evict single cache
@@ -514,7 +522,7 @@ public class UserService {
         transGroupRepos.saveAndFlush(transGroup);
 
         user.setTransgroup(transGroup);
-        userRepos.save(user);
+        userRepos.saveAndFlush(user);
 
         Map<String, Object> msg = Map.of(
                 "msg", "Register new translation group successfully",
@@ -740,11 +748,11 @@ public class UserService {
 
         mangaList.forEach(manga -> {
             manga.setTransgroup(null);
-            mangaRepository.save(manga);
+            mangaRepository.saveAndFlush(manga);
         });
 
         transGroup.setIs_deprecated(true);
-        transGroupRepos.save(transGroup);
+        transGroupRepos.saveAndFlush(transGroup);
 
         Map<String, Object> msg = Map.of("msg", "Delete trans team successfully!");
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
@@ -880,7 +888,7 @@ public class UserService {
         user.setAvatar_public_id_cloudinary((String) cloudinaryResponse.get("public_id"));
         user.setUser_avatar((String) cloudinaryResponse.get("secure_url")); // secure_url is https, url is http
 
-        userRepos.save(user);
+        userRepos.saveAndFlush(user);
 
         Map<String, Object> msg = Map.of(
                 "msg", "Update avatar successfully!",
@@ -918,7 +926,7 @@ public class UserService {
         }
         user.setAvatar_public_id_cloudinary(null);
 
-        userRepos.save(user);
+        userRepos.saveAndFlush(user);
 
         Map<String, Object> msg = Map.of(
                 "msg", "Remove avatar successfully!",
