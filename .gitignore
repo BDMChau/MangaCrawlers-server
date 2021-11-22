@@ -10,6 +10,8 @@ product.env
 manga_spring_execute_commands_on_ec2.sh
 deploy.sh
 
+dataSources
+
 ### test.propperties
 test-application.properties
 
@@ -28,7 +30,7 @@ test-application.properties
 *.iws
 *.iml
 *.ipr
-
+.ideaDataSources
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
