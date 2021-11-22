@@ -6,11 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import serverapi.query.dtos.tables.UserReadingHistoryDTO;
+import serverapi.tables.user_tables.following_manga.FollowingManga;
 import serverapi.tables.user_tables.reading_history.ReadingHistory;
 import serverapi.tables.user_tables.user.User;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ReadingHistoryRepos extends JpaRepository<ReadingHistory, Long> {
@@ -27,5 +29,10 @@ public interface ReadingHistoryRepos extends JpaRepository<ReadingHistory, Long>
     void deleteAllHistoryByUserId(@Param("user") User user);
 
 
+    @Query("""
+            SELECT his FROM ReadingHistory his
+            WHERE his.user.user_id = ?1 AND his.manga.manga_id = ?2
+            """)
+    Optional<ReadingHistory> removeItem(Long userId, Long mangaId);
 
 }

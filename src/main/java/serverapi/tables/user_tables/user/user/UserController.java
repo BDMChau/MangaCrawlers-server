@@ -66,6 +66,17 @@ public class UserController {
         return userService.updateReadingHistory(userId, mangaId, chapterId);
     }
 
+    @CacheEvict(value = {"historymangas"}, key = "#request.getAttribute(\"user\").get(\"user_id\")")
+    @PostMapping("/remove_history_manga")
+    public ResponseEntity removeHistoryManga(ServletRequest request, @RequestBody Map data) {
+        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+        Long mangaId = Long.parseLong(String.valueOf(data.get("manga_id")));
+
+        return userService.removeHistoryManga(userId, mangaId);
+    }
+
 
     @Cacheable(value = "followingmangas", key = "#request.getAttribute(\"user\").get(\"user_id\")")
     @GetMapping("/getfollowingmangas")

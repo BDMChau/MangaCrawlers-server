@@ -183,6 +183,21 @@ public class UserService {
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
+
+    public ResponseEntity removeHistoryManga(Long userId, Long mangaId){
+        Optional<ReadingHistory> item = readingHistoryRepos.removeItem(userId, mangaId);
+        if(item.isEmpty()){
+            Map<String, Object> err = Map.of("err", "does not exist!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+        }
+
+        readingHistoryRepos.deleteById(item.get().getReadingHistory_id());
+
+        Map<String, Object> msg = Map.of("msg", "remove history manga OK");
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+
     public ResponseEntity getFollowingMangas(Long UserId) {
 
         List<FollowingDTO> followingDTOList = followingRepos.findByUserId(UserId);
