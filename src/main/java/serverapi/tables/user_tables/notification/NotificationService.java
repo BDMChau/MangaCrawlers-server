@@ -38,7 +38,7 @@ public class NotificationService {
 
 
     @Transactional
-    protected ResponseEntity updateToViewed(Long userId) {
+    protected ResponseEntity updateAllToViewed(Long userId) {
         List<Notifications> notificationsList = notificationRepos.getAllByUserId(userId);
 
         notificationsList.forEach(notification -> {
@@ -63,6 +63,16 @@ public class NotificationService {
         notificationRepos.saveAndFlush(notification);
 
         Map<String, Object> msg = Map.of("msg", "updated interacted notification");
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    protected ResponseEntity updateToViewed(Long notificationId) {
+        Notifications notification = notificationRepos.findById(notificationId).get();
+
+        notification.setIs_viewed(true);
+        notificationRepos.saveAndFlush(notification);
+
+        Map<String, Object> msg = Map.of("msg", "updated viewed notification");
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }
 
