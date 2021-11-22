@@ -42,12 +42,19 @@ public class NotificationController {
     }
 
 
-    @PostMapping("/update_viewed")
-    public ResponseEntity updateToViewed(ServletRequest request) {
+    @PostMapping("/viewed_all")
+    public ResponseEntity updateAllToViewed(ServletRequest request) {
         String strUserId = getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(strUserId);
 
-        return notificationService.updateToViewed(userId);
+        return notificationService.updateAllToViewed(userId);
+    }
+
+    @PostMapping("/update_viewed")
+    public ResponseEntity updateToViewed(ServletRequest request,  @RequestBody Map data) {
+        Long notificationId = Long.parseLong(String.valueOf(data.get("notification_id")));
+
+        return notificationService.updateToViewed(notificationId);
     }
 
     @PostMapping("/update_interacted")
