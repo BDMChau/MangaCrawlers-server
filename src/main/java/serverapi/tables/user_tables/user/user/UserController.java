@@ -77,6 +77,7 @@ public class UserController {
     }
 
 
+
     ///Add manga to list user's follows
 //    @CacheEvict(allEntries = true, value = {"followingmangas"})
     @CacheEvict(value = {"followingmangas"}, key = "#request.getAttribute(\"user\").get(\"user_id\")")
@@ -101,6 +102,16 @@ public class UserController {
         Long mangaId = Long.parseLong(mangaPOJO.getManga_id());
 
         return userService.deleteFollowManga(mangaId, userId);
+    }
+
+    @PostMapping("/check_following_manga")
+    public ResponseEntity checkIsFollowingManga(ServletRequest request, @RequestBody Map data) {
+        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
+        Long userId = Long.parseLong(StrUserId);
+
+        Long mangaId = Long.parseLong(String.valueOf(data.get("manga_id")));
+
+        return userService.checkIsFollowingManga(userId, mangaId);
     }
 
     @CacheEvict(value = {"mangapage"}, key = "#ratingPOJO.getManga_id()")

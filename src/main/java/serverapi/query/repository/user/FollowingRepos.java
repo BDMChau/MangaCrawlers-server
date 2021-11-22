@@ -11,6 +11,7 @@ import serverapi.tables.user_tables.user.User;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -33,6 +34,13 @@ public interface FollowingRepos extends JpaRepository<FollowingManga, Long> {
     @Modifying
     @Query("DELETE FROM FollowingManga f WHERE f.user =:user")
     void deleteAllFollowByUserId(@Param("user") User user);
+
+
+    @Query("""
+            SELECT folManga FROM FollowingManga folManga
+            WHERE folManga.user.user_id = ?1 AND folManga.manga.manga_id = ?2
+            """)
+    Optional<FollowingManga> checkIsFollowingManga(Long userId, Long mangaId);
 
 
 //   "SELECT new serverapi.Query.DTO.MangaChapterGenreDTO(c.chapter_id, c.chapter_name, c.created_at, m" +
