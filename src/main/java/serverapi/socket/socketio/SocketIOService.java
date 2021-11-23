@@ -133,7 +133,8 @@ public class SocketIOService implements ISocketIOService {
         mySocketService.setAllClients(clients);
         mySocketService.setSenderClient(senderClient);
 
-        String targetTitle = (String) socketMessage.getObjData().get("target_title");
+        String targetTitle = "";
+        if (socketMessage.getObjData() != null) targetTitle = (String) socketMessage.getObjData().get("target_title");
 
         if (socketMessage.getMessage().equals("notify_onl_off")) {
             mySocketService.notifyFriendsWhenUserOnline();

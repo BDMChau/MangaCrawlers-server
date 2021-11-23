@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import serverapi.api.Response;
 import serverapi.helpers.OffsetBasedPageRequest;
 import serverapi.query.dtos.features.SearchCriteriaDTO;
@@ -15,12 +14,12 @@ import serverapi.query.repository.forum.*;
 import serverapi.query.repository.manga.comment.CommentRepos;
 import serverapi.query.repository.user.UserRepos;
 import serverapi.query.specification.Specificationn;
+import serverapi.tables.comment.comment.Comment;
 import serverapi.tables.forum.category.Category;
 import serverapi.tables.forum.post_category.PostCategory;
 import serverapi.tables.forum.post_dislike.PostDislike;
 import serverapi.tables.forum.post_like.PostLike;
 import serverapi.tables.manga_tables.manga.MangaService;
-import serverapi.tables.comment.comment.Comment;
 import serverapi.tables.user_tables.user.User;
 
 import java.util.*;
@@ -469,7 +468,7 @@ public class PostService {
         Optional<PostDislike> postDislikeOptional = postDislikeRepos.getPostDislike(postID, userID);
         Optional<Post> postOptional = postRepos.findById(postID);
         if (postDislikeOptional.isEmpty() || postOptional.isEmpty()) {
-            Map<String, Object> msg = Map.of("err", "Dislike is not found!");
+            Map<String, Object> msg = Map.of("err", "post not found!");
             return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, msg).toJSON(), HttpStatus.BAD_REQUEST);
         }
 
@@ -482,6 +481,25 @@ public class PostService {
                 "msg", "Undislike successfully!",
                 "likes", countLikes,
                 "dislikes", countDislikes
+        );
+        return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+    }
+
+    protected ResponseEntity removePost(Long postId) {
+        Optional<Post> postOptional = postRepos.findById(postId);
+        if (postOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "post not found!");
+            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+        }
+        Post post = postOptional.get();
+
+        post.setIs_deprecated(true);
+        postRepos.saveAndFlush(post);
+
+
+        Map<String, Object> msg = Map.of(
+                "msg", "remove post OK!",
+                "post", post
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
     }

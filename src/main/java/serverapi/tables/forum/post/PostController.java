@@ -4,7 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import serverapi.api.Response;
 import serverapi.tables.forum.post.pojo.PostPOJO;
 import serverapi.utils.UserHelpers;
@@ -30,17 +33,18 @@ public class PostController {
 
     @PostMapping("/create")
     public ResponseEntity createPost(ServletRequest request, @RequestBody PostPOJO postPOJO) {
-            Long userId = Long.parseLong(userHelpers.getUserAttribute(request).get("user_id").toString());
+        Long userId = Long.parseLong(userHelpers.getUserAttribute(request).get("user_id").toString());
 
-            String title = postPOJO.getTitle();
-            String content = postPOJO.getContent();
+        String title = postPOJO.getTitle();
+        String content = postPOJO.getContent();
 
-            List<Long> listCategoryId = new ArrayList<>();
-            postPOJO.getCategoriesId().forEach(id -> {
-                listCategoryId.add(Long.parseLong(id));
-            });
 
-            return postService.createPost(userId, title, content, listCategoryId);
+        List<Long> listCategoryId = new ArrayList<>();
+        postPOJO.getCategoriesId().forEach(id -> {
+            listCategoryId.add(Long.parseLong(id));
+        });
+
+        return postService.createPost(userId, title, content, listCategoryId);
     }
 
     @PostMapping("/check_user_like")
@@ -122,13 +126,19 @@ public class PostController {
         Long userID = 0L;
         Long postID = 0L;
         String sUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
-        if (!sUserId.isEmpty()) {
-            userID = Long.parseLong(sUserId);
-        }
-        if (!post_id.isEmpty()) {
-            postID = Long.parseLong(post_id);
-        }
+
+        if (!sUserId.isEmpty()) userID = Long.parseLong(sUserId);
+        if (!post_id.isEmpty()) postID = Long.parseLong(post_id);
 
         return postService.undislike(userID, postID);
+    }
+
+
+    @PostMapping("/remove")
+    public ResponseEntity removePost(@RequestBody Map data, ServletRequest request) {
+        Long postId = Long.parseLong(String.valueOf(data.get("post_id")));
+        Long userId = Long.parseLong(userHelpers.getUserAttribute(request).get("user_id").toString());
+
+        return postService.removePost(postId);
     }
 }

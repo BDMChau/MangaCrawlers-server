@@ -7,12 +7,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import serverapi.query.dtos.tables.AuthorMangaDTO;
-import serverapi.query.dtos.tables.MangaGenreDTO;
 import serverapi.query.dtos.tables.PostUserDTO;
 import serverapi.tables.forum.post.Post;
-import serverapi.tables.forum.post_category.PostCategory;
-import serverapi.tables.user_tables.user.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -59,12 +55,15 @@ public interface PostRepos extends JpaRepository<Post, Long>, JpaSpecificationEx
 
     @Query("""
             SELECT new serverapi.query.dtos.tables.PostUserDTO(
-            post.post_id, post.title, post.content, post.count_like, post.count_dislike, post.created_at,
+            post.post_id, post.title, post.content, COUNT(cmt.comment_id), post.count_like, post.count_dislike, post.created_at,
             user.user_id, user.user_name, user.user_email, user.user_avatar, user.user_isAdmin
             )
             FROM Post post
             JOIN User user ON user.user_id = post.user.user_id
+            JOIN Comment cmt ON cmt.post.post_id = post.post_id
             WHERE user.user_id = ?1 AND post.is_deprecated = false AND post.is_approved = true
+            GROUP BY post.post_id, post.title, post.content, post.count_like, post.count_dislike, post.created_at,
+                                user.user_id, user.user_name, user.user_email, user.user_avatar, user.user_isAdmin
             ORDER BY post.created_at
             """)
     Page<PostUserDTO> getPostsByUserId(Long userId, Pageable pageable);
