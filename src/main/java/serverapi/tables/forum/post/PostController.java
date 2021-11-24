@@ -30,17 +30,23 @@ public class PostController {
 
     @PostMapping("/create")
     public ResponseEntity createPost(ServletRequest request, @RequestBody PostPOJO postPOJO) {
-            Long userId = Long.parseLong(userHelpers.getUserAttribute(request).get("user_id").toString());
+        String parent_id = postPOJO.getParent_id();
+        Long parentId = null;
+        if (parent_id != null) {
+            parentId = Long.parseLong(postPOJO.getParent_id());
+        }
 
-            String title = postPOJO.getTitle();
-            String content = postPOJO.getContent();
+        Long userId = Long.parseLong(userHelpers.getUserAttribute(request).get("user_id").toString());
 
-            List<Long> listCategoryId = new ArrayList<>();
-            postPOJO.getCategoriesId().forEach(id -> {
-                listCategoryId.add(Long.parseLong(id));
-            });
+        String title = postPOJO.getTitle();
+        String content = postPOJO.getContent();
 
-            return postService.createPost(userId, title, content, listCategoryId);
+        List<Long> listCategoryId = new ArrayList<>();
+        postPOJO.getCategoriesId().forEach(id -> {
+            listCategoryId.add(Long.parseLong(id));
+        });
+
+        return postService.createPost(parentId, userId, title, content, listCategoryId);
     }
 
     @PostMapping("/check_user_like")
