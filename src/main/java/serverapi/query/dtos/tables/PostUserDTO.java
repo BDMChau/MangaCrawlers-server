@@ -73,6 +73,21 @@ public class PostUserDTO {
         this.user_isAdmin = user_isAdmin;
     }
 
+    public PostUserDTO(Long post_id, String title, String content, int likes, int dislikes,  Calendar created_at, Long user_id, String user_name, String user_email, String user_avatar, Boolean user_isAdmin) {
+        this.post_id = post_id;
+        this.title = title;
+        this.content = content;
+        this.likes = likes;
+        this.dislikes = dislikes;
+        this.created_at = created_at;
+
+        this.user_id = user_id;
+        this.user_name = user_name;
+        this.user_email = user_email;
+        this.user_avatar = user_avatar;
+        this.user_isAdmin = user_isAdmin;
+    }
+
     public PostUserDTO(Long post_id, String title, String content, Long comment_count, int likes, int dislikes, Calendar created_at, Long user_id, String user_name, String user_email, String user_avatar, Boolean user_isAdmin) {
         this.post_id = post_id;
         this.title = title;
