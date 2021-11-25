@@ -10,6 +10,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class PostPOJO {
+    String parent_id;
     String title;
     List<String> categoriesId;
     String content;

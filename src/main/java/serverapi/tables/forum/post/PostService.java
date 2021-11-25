@@ -19,6 +19,7 @@ import serverapi.tables.forum.category.Category;
 import serverapi.tables.forum.post_category.PostCategory;
 import serverapi.tables.forum.post_dislike.PostDislike;
 import serverapi.tables.forum.post_like.PostLike;
+import serverapi.tables.forum.post_relation.PostRelation;
 import serverapi.tables.manga_tables.manga.MangaService;
 import serverapi.tables.user_tables.user.User;
 
@@ -34,10 +35,11 @@ public class PostService {
     private final PostLikeRepos postLikeRepos;
     private final CommentRepos commentRepos;
     private final MangaService mangaService;
+    private final PostRelationRepos postRelationRepos;
     private final PostDislikeRepos postDislikeRepos;
 
     @Autowired
-    public PostService(UserRepos userRepos, PostRepos postRepos, PostCategoryRepos postCategoryRepos, CategoryRepos categoryRepos, PostLikeRepos postLikeRepos, CommentRepos commentRepos, MangaService mangaService, PostDislikeRepos postDislikeRepos) {
+    public PostService(UserRepos userRepos, PostRepos postRepos, PostCategoryRepos postCategoryRepos, CategoryRepos categoryRepos, PostLikeRepos postLikeRepos, CommentRepos commentRepos, MangaService mangaService, PostRelationRepos postRelationRepos, PostDislikeRepos postDislikeRepos) {
         this.userRepos = userRepos;
         this.postRepos = postRepos;
         this.postCategoryRepos = postCategoryRepos;
@@ -45,11 +47,12 @@ public class PostService {
         this.postLikeRepos = postLikeRepos;
         this.commentRepos = commentRepos;
         this.mangaService = mangaService;
+        this.postRelationRepos = postRelationRepos;
         this.postDislikeRepos = postDislikeRepos;
     }
 
 
-    protected ResponseEntity<HashMap> createPost(Long userId, String title, String content, List<Long> listCategoryId) {
+    protected ResponseEntity<HashMap> createPost(Long parentId, Long userId, String title, String content, List<Long> listCategoryId) {
         Calendar curTime = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
         Optional<User> userOptional = userRepos.findById(userId);
@@ -81,6 +84,17 @@ public class PostService {
             postCategory.setPost(newPost);
             postCategoryRepos.saveAndFlush(postCategory);
         });
+
+        // set relation
+        if (parentId != null) {
+            Optional<Post> parentOptional = postRepos.findById(parentId);
+            if (parentOptional.isPresent()) {
+                PostRelation postRelation = new PostRelation();
+                postRelation.setChild_id(newPost);
+                postRelation.setParent_id(parentOptional.get());
+                postRelationRepos.saveAndFlush(postRelation);
+            }
+        }
 
 
         // response
@@ -225,7 +239,7 @@ public class PostService {
 
         List<PostUserDTO> listToRes = new ArrayList();
         results.forEach(post -> {
-            PostUserDTO postUserDTO = new PostUserDTO(post.getPost_id(), post.getTitle(), null, post.getCount_like(), post.getCount_dislike(), post.getCreated_at(), null, null, null, null, null);
+            PostUserDTO postUserDTO = new PostUserDTO(null,post.getPost_id(), post.getTitle(), null, post.getCount_like(), post.getCount_dislike(), post.getCreated_at(), null, null, null, null, null);
 
             List<Category> categoryList = categoryRepos.getAllByPostId(post.getPost_id());
             postUserDTO.setCategoryList(categoryList);

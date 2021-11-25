@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import serverapi.tables.forum.post_relation.PostRelation;
 import serverapi.tables.forum.post_category.PostCategory;
 import serverapi.tables.forum.post_dislike.PostDislike;
 import serverapi.tables.forum.post_like.PostLike;
@@ -53,6 +54,14 @@ public class Post {
     @JsonBackReference
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private Collection<PostDislike> postDislikes;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "parent_id", cascade = CascadeType.ALL)
+    private Collection<PostRelation> post_parent;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "child_id", cascade = CascadeType.ALL)
+    private Collection<PostRelation> post_child;
 
     @JsonBackReference
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)

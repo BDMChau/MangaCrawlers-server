@@ -19,11 +19,12 @@ public interface PostRepos extends JpaRepository<Post, Long>, JpaSpecificationEx
 
 
     @Query("""
-            SELECT new serverapi.query.dtos.tables.PostUserDTO(
+            SELECT new serverapi.query.dtos.tables.PostUserDTO(pr.parent_id.post_id,
             post.post_id, post.title, post.content,post.count_like, post.count_dislike, post.created_at,
             user.user_id, user.user_name, user.user_email, user.user_avatar, user.user_isAdmin
             )
             FROM Post post
+            LEFT JOIN PostRelation pr on post.post_id = pr.child_id.post_id
             JOIN User user ON user.user_id = post.user.user_id
             WHERE post.post_id = ?1 AND post.is_deprecated = false AND post.is_approved = true
             """)
@@ -42,11 +43,12 @@ public interface PostRepos extends JpaRepository<Post, Long>, JpaSpecificationEx
     List<PostUserDTO> getPosts(Pageable pageable);
 
     @Query("""
-            SELECT new serverapi.query.dtos.tables.PostUserDTO(
+            SELECT new serverapi.query.dtos.tables.PostUserDTO(pr.parent_id.post_id,
             post.post_id, post.title, post.content, post.count_like, post.count_dislike, post.is_deprecated, post.is_approved, post.created_at,
             user.user_id, user.user_name, user.user_email, user.user_avatar, user.user_isAdmin
             )
             FROM Post post
+            LEFT JOIN PostRelation pr on post.post_id = pr.child_id.post_id
             JOIN User user ON user.user_id = post.user.user_id 
             ORDER BY post.created_at
             """)
@@ -54,11 +56,12 @@ public interface PostRepos extends JpaRepository<Post, Long>, JpaSpecificationEx
 
 
     @Query("""
-            SELECT new serverapi.query.dtos.tables.PostUserDTO(
-            post.post_id, post.title, post.content, COUNT(cmt.comment_id), post.count_like, post.count_dislike, post.created_at,
+            SELECT new serverapi.query.dtos.tables.PostUserDTO(pr.parent_id.post_id,
+            post.post_id, post.title, post.content, post.count_like, post.count_dislike, post.created_at,
             user.user_id, user.user_name, user.user_email, user.user_avatar, user.user_isAdmin
             )
             FROM Post post
+            LEFT JOIN PostRelation pr on post.post_id = pr.child_id.post_id
             JOIN User user ON user.user_id = post.user.user_id
             JOIN Comment cmt ON cmt.post.post_id = post.post_id
             WHERE user.user_id = ?1 AND post.is_deprecated = false AND post.is_approved = true
@@ -70,11 +73,12 @@ public interface PostRepos extends JpaRepository<Post, Long>, JpaSpecificationEx
 
 
     @Query("""
-            SELECT new serverapi.query.dtos.tables.PostUserDTO(
+            SELECT new serverapi.query.dtos.tables.PostUserDTO(pr.parent_id.post_id,
                       post.post_id, post.title, post.content, post.count_like, post.count_dislike, post.created_at,
                       user.user_id, user.user_name, user.user_email, user.user_avatar, user.user_isAdmin
                       )
                       FROM Post post
+                      LEFT JOIN PostRelation pr on post.post_id = pr.child_id.post_id
                       JOIN User user ON user.user_id = post.user.user_id
                       JOIN PostCategory post_cate ON post_cate.post.post_id = post.post_id
                       WHERE post_cate.category.category_id = ?1 AND post.is_deprecated = false AND post.is_approved = true
