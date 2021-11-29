@@ -144,22 +144,15 @@ public class PostService {
 
 
     protected ResponseEntity getSuggestion(int quantity) {
-        Long totalRows = postRepos.count();
+        Long totalRows = postRepos.countActivePosts();
         int randomPosition = (int) (Math.random() * totalRows);
         if (randomPosition >= (totalRows - quantity)) {
-            randomPosition -= quantity;
+            randomPosition = randomPosition - quantity;
 
-            if (randomPosition < 0) randomPosition = 0;
-        }
+        } else if (randomPosition < 0) randomPosition = 0;
 
         Pageable pageable = new OffsetBasedPageRequest(randomPosition, quantity);
         List<PostUserDTO> posts = postRepos.getPosts(pageable);
-
-        posts.forEach(post -> {
-            List<Category> categoryList = postCategoryRepos.getCategoriesByPostId(post.getPost_id());
-            post.setCategoryList(categoryList);
-        });
-
         if (posts.isEmpty()) {
             Map<String, Object> err = Map.of(
                     "err", "No suggestion posts!",
@@ -167,6 +160,12 @@ public class PostService {
             );
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
+
+        posts.forEach(post -> {
+            List<Category> categoryList = postCategoryRepos.getCategoriesByPostId(post.getPost_id());
+            post.setCategoryList(categoryList);
+        });
+
 
         Map<String, Object> msg = Map.of(
                 "err", "get suggestion posts OK!",
@@ -239,7 +238,7 @@ public class PostService {
 
         List<PostUserDTO> listToRes = new ArrayList();
         results.forEach(post -> {
-            PostUserDTO postUserDTO = new PostUserDTO(null,post.getPost_id(), post.getTitle(), null, post.getCount_like(), post.getCount_dislike(), post.getCreated_at(), null, null, null, null, null);
+            PostUserDTO postUserDTO = new PostUserDTO(null, post.getPost_id(), post.getTitle(), null, post.getCount_like(), post.getCount_dislike(), post.getCreated_at(), null, null, null, null, null);
 
             List<Category> categoryList = categoryRepos.getAllByPostId(post.getPost_id());
             postUserDTO.setCategoryList(categoryList);

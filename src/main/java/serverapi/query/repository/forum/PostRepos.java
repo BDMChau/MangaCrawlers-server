@@ -43,6 +43,13 @@ public interface PostRepos extends JpaRepository<Post, Long>, JpaSpecificationEx
     List<PostUserDTO> getPosts(Pageable pageable);
 
     @Query("""
+            SELECT COUNT(post.post_id)
+            FROM Post post
+            WHERE post.is_deprecated = false AND post.is_approved = true
+            """)
+    Long countActivePosts();
+
+    @Query("""
             SELECT new serverapi.query.dtos.tables.PostUserDTO(pr.parent_id.post_id,
             post.post_id, post.title, post.content, post.count_like, post.count_dislike, post.is_deprecated, post.is_approved, post.created_at,
             user.user_id, user.user_name, user.user_email, user.user_avatar, user.user_isAdmin
