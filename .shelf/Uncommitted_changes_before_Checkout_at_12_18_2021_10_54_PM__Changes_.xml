@@ -1,0 +1,24 @@
+<changelist name="Uncommitted_changes_before_Checkout_at_12_18_2021_10_54_PM_[Changes]" date="1639842869531" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.shelf/Uncommitted_changes_before_Checkout_at_12_18_2021_10_54_PM_[Changes]/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 12/18/2021 10:54 PM [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="dataSources/5a07adbc-775e-4842-8a5a-0caa771e60c9/entities/entities.dat" />
+    <option name="AFTER_PATH" value="dataSources/5a07adbc-775e-4842-8a5a-0caa771e60c9/entities/entities.dat" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.shelf/Uncommitted_changes_before_Checkout_at_12_18_2021_10_54_PM_[Changes]/entities.dat" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="dataSources/5a07adbc-775e-4842-8a5a-0caa771e60c9/entities/entities.dat_i" />
+    <option name="AFTER_PATH" value="dataSources/5a07adbc-775e-4842-8a5a-0caa771e60c9/entities/entities.dat_i" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.shelf/Uncommitted_changes_before_Checkout_at_12_18_2021_10_54_PM_[Changes]/entities.dat_i" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="dataSources/5a07adbc-775e-4842-8a5a-0caa771e60c9/entities/entities.dat.values" />
+    <option name="AFTER_PATH" value="dataSources/5a07adbc-775e-4842-8a5a-0caa771e60c9/entities/entities.dat.values" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.shelf/Uncommitted_changes_before_Checkout_at_12_18_2021_10_54_PM_[Changes]/entities.dat.values" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="dataSources/5a07adbc-775e-4842-8a5a-0caa771e60c9/entities/entities.dat.values.s" />
+    <option name="AFTER_PATH" value="dataSources/5a07adbc-775e-4842-8a5a-0caa771e60c9/entities/entities.dat.values.s" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.shelf/Uncommitted_changes_before_Checkout_at_12_18_2021_10_54_PM_[Changes]/entities.dat.values.s" />
+  </binary>
+</changelist>
