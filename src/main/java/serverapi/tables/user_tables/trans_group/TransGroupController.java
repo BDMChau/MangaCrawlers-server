@@ -1,13 +1,20 @@
 package serverapi.tables.user_tables.trans_group;
 
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import serverapi.api.Response;
+import serverapi.tables.manga_tables.chapter.Chapter;
+import serverapi.tables.manga_tables.manga.Manga;
 import serverapi.tables.manga_tables.manga.pojo.MangaInfoPOJO;
 import serverapi.utils.UserHelpers;
 
 import javax.servlet.ServletRequest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/trans_group")
@@ -24,9 +31,26 @@ public class TransGroupController {
 
     @PutMapping("/update_manga")
     public ResponseEntity updateManga(ServletRequest request ,@RequestBody MangaInfoPOJO mangaInfoPOJO) throws NoSuchAlgorithmException {
-        String StrUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
-        Long userId = Long.parseLong(StrUserId);
-        return transGroupService.updateManga(userId, mangaInfoPOJO);
+        if (userHelpers.getUserAttribute(request).get("user_transgroup_id") == null) {
+            Map<String, String> error = Map.of("err", "Login again before visit this page|");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(),
+                    HttpStatus.ACCEPTED);
+        }
+        return transGroupService.updateManga(mangaInfoPOJO);
+    }
+
+    @PutMapping("/update_chapter")
+    public ResponseEntity updateChapter(ServletRequest request ,@RequestBody Map data) throws NoSuchAlgorithmException {
+        if (userHelpers.getUserAttribute(request).get("user_transgroup_id") == null) {
+            Map<String, String> error = Map.of("err", "Login again before visit this page|");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(),
+                    HttpStatus.ACCEPTED);
+        }
+        Chapter chapter = (Chapter) data.get("chapter");
+        Manga manga = (Manga) data.get("manga");
+        List listImg = (List) data.get("list_img");
+
+        return transGroupService.updateChapter(chapter, manga, listImg);
     }
 
 

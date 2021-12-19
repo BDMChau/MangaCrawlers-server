@@ -15,5 +15,9 @@ public interface ImgChapterRepos extends JpaRepository<ImageChapter, Long> {
             ".imageChapters i WHERE c.chapter_id =?1 ")
     List<ChapterImgDTO> findImgsByChapterId(Long chapter_id);
 
+    @Query("SELECT ic FROM ImageChapter ic JOIN Chapter c" +
+           " ON ic.chapter.chapter_id = c.chapter_id WHERE c.chapter_id =?1 ")
+    void deleteImageChapterByChapterId(Long chapter_id);
+
 
 }

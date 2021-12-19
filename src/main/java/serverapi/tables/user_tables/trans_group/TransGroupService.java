@@ -5,16 +5,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import serverapi.api.Response;
+import serverapi.query.dtos.tables.ChapterImgDTO;
 import serverapi.query.repository.manga.AuthorRepos;
+import serverapi.query.repository.manga.ChapterRepos;
+import serverapi.query.repository.manga.ImgChapterRepos;
 import serverapi.query.repository.manga.MangaRepos;
 import serverapi.query.repository.user.TransGroupRepos;
 import serverapi.query.repository.user.UserRepos;
 import serverapi.tables.manga_tables.author.Author;
+import serverapi.tables.manga_tables.chapter.Chapter;
+import serverapi.tables.manga_tables.image_chapter.ImageChapter;
 import serverapi.tables.manga_tables.manga.Manga;
 import serverapi.tables.manga_tables.manga.pojo.MangaInfoPOJO;
-import serverapi.tables.user_tables.user.User;
 import serverapi.tables.user_tables.user.user.UserService;
 
+import javax.transaction.Transactional;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -25,24 +32,21 @@ public class TransGroupService {
     private final MangaRepos mangaRepos;
     private final AuthorRepos authorRepos;
     private final UserService userService;
+    private final ChapterRepos chapterRepos;
+    private final ImgChapterRepos imgChapterRepos;
 
     @Autowired
-    public TransGroupService(UserRepos userRepos, TransGroupRepos transGroupRepos, MangaRepos mangaRepos, AuthorRepos authorRepos, UserService userService) {
+    public TransGroupService(UserRepos userRepos, TransGroupRepos transGroupRepos, MangaRepos mangaRepos, AuthorRepos authorRepos, UserService userService, ChapterRepos chapterRepos, ImgChapterRepos imgChapterRepos) {
         this.userRepos = userRepos;
         this.transGroupRepos = transGroupRepos;
         this.mangaRepos = mangaRepos;
         this.authorRepos = authorRepos;
         this.userService = userService;
+        this.chapterRepos = chapterRepos;
+        this.imgChapterRepos = imgChapterRepos;
     }
 
-    public ResponseEntity updateManga(Long userId, MangaInfoPOJO mangaInfoPOJO) {
-        Optional<User> userOptional = userRepos.findById(userId);
-        if(userOptional.isPresent()){
-            if(!userOptional.get().getTransgroup().getTransgroup_id().equals(mangaInfoPOJO.getTransGroup().getTransgroup_id())){
-                Map<String, Object> err = Map.of("err", "You don't have permission!");
-                return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
-            }
-        }
+    public ResponseEntity updateManga(MangaInfoPOJO mangaInfoPOJO) {
         String mangaName = mangaInfoPOJO.getManga_name();
         String thumbnail = mangaInfoPOJO.getThumbnail();
         String description = mangaInfoPOJO.getDescription();
@@ -79,5 +83,38 @@ public class TransGroupService {
         mangaRepos.save(manga);
 
         return userService.getMangaInfoUploadPage(transGroupId, mangaId);
+    }
+
+    @Transactional
+    public ResponseEntity updateChapter(Chapter chapter, Manga manga, List listImg) {
+        if(chapter != null){
+            chapterRepos.saveAndFlush(chapter);
+        }
+        Boolean isExistedChapter = false;
+        List<Chapter> listChapter = manga.getChapters();
+        for (Chapter value : listChapter) {
+            assert chapter != null;
+            if (value.getChapter_id().equals(chapter.getChapter_id())) {
+                isExistedChapter = true;
+                break;
+            }
+        }
+        if(isExistedChapter){
+           imgChapterRepos.deleteImageChapterByChapterId(chapter.getChapter_id());
+            listImg.forEach(img ->{
+                HashMap image = (HashMap) img;
+                ImageChapter imageChapter = new ImageChapter();
+                imageChapter.setChapter(chapter);
+                imageChapter.setImgchapter_url((String) image.get("img_url"));
+                imgChapterRepos.saveAndFlush(imageChapter);
+            });
+            List<ChapterImgDTO> imageChapterList = imgChapterRepos.findImgsByChapterId(chapter.getChapter_id());
+            if(!imageChapterList.isEmpty()){
+                Map<String, Object> msg = Map.of("msg", "Update chapter successfully!");
+                return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+            }
+        }
+        Map<String, Object> err = Map.of("err", "Chapter not found!");
+        return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
     }
 }
