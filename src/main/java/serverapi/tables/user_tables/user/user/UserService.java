@@ -1,6 +1,7 @@
 package serverapi.tables.user_tables.user.user;
 
 
+import lombok.NoArgsConstructor;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;

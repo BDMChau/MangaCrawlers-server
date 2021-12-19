@@ -8,6 +8,7 @@ import serverapi.query.dtos.tables.AuthorMangaDTO;
 import serverapi.tables.manga_tables.author.Author;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AuthorRepos extends JpaRepository<Author, Long> {
@@ -26,5 +27,10 @@ public interface AuthorRepos extends JpaRepository<Author, Long> {
     <S extends Author> S save(S entity);
 
 
+    @Query("""
+                select au from Author au
+                where au.author_name like (:author_name)
+            """)
+    Optional<Author> findAuthorByName(String author_name);
 
 }
