@@ -215,7 +215,7 @@ public class UserController {
         }
 
         Long mangaId = Long.parseLong(String.valueOf(manga_id));
-        Long chapterId = Long.parseLong(String.valueOf(chapter_id));
+        Long chapterId = chapter_id != null ? Long.parseLong(String.valueOf(chapter_id)) : null;
         String chapterName = chapter_name;
         boolean isCreate = is_create;
 

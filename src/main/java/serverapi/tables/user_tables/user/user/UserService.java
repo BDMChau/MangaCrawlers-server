@@ -451,7 +451,7 @@ public class UserService {
         Manga manga = mangaOptional.get();
 
         Chapter chapter = null;
-        if(isCreate){
+        if(isCreate && chapterId == null){
             chapter = new Chapter();
             chapter.setChapter_name(chapterName);
             chapter.setCreated_at(currentTime);
@@ -611,7 +611,7 @@ public class UserService {
             }
         }
 
-        if (!isExistdManga) {
+        if (isExistdManga) {
             Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
             Manga manga = mangaOptional.get();
             String authorName = manga.getAuthor().getAuthor_name();
