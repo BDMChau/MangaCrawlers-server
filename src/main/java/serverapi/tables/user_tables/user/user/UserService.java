@@ -611,7 +611,7 @@ public class UserService {
             }
         }
 
-        if (isExistdManga) {
+        if (!isExistdManga) {
             Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
             Manga manga = mangaOptional.get();
             String authorName = manga.getAuthor().getAuthor_name();

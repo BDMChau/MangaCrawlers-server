@@ -14,9 +14,7 @@ import serverapi.query.repository.manga.comment.CommentRepos;
 import serverapi.tables.manga_tables.manga.Manga;
 import serverapi.tables.manga_tables.manga.MangaService;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ChapterService {
@@ -51,19 +49,38 @@ public class ChapterService {
 
 
     protected ResponseEntity findImgByChapter(Long chapterId, Long mangaId) {
-        Optional<Chapter> chapterInfo = chapterRepos.findById(chapterId);
-        if (chapterInfo.isEmpty()) {
-            Map<String, Object> err = Map.of("err", "No chapter to present!");
-            return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
+        Optional<Manga> mangaOptional = mangaRepository.findById(mangaId);
+        if ( mangaOptional.isEmpty()) {
+            Map<String, Object> err = Map.of("err", "No manga to present!");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
-        Chapter chapter = chapterInfo.get();
+        Manga manga = mangaOptional.get();
+        List<Chapter> chapterList = manga.getChapters();
 
-        List<ChapterImgDTO> listImgs = imgChapterRepos.findImgsByChapterId(chapterId);
+        Chapter chapter = null;
+        List<ChapterImgDTO> listImgs = new ArrayList<>();
+        for (int i = 0; i < chapterList.size(); i++) {
+            if(chapterList.get(i).getChapter_id().equals(chapterId)){
+                listImgs = imgChapterRepos.findImgsByChapterId(chapterId);
+                chapter = chapterList.get(i);
+                break;
+            }
+        }
 
+        if(listImgs.isEmpty()){
+            Map<String, Object> err = Map.of(
+                    "err", "No chapter to present, chapter is not in this manga!",
+                    "chapterInfo", new HashMap<>(),
+                    "manga", manga,
+                    "listImg", listImgs
+            );
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+        }
 
         Map<String, Object> msg = Map.of(
                 "msg", "Get all chapters successfully!",
                 "chapterInfo", chapter,
+                "manga", manga,
                 "listImg", listImgs
         );
         return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
