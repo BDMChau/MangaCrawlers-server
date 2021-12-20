@@ -7,12 +7,13 @@ import serverapi.tables.manga_tables.author.Author;
 import serverapi.tables.user_tables.trans_group.TransGroup;
 
 import java.util.Calendar;
+import java.util.Map;
 
 @NoArgsConstructor
 @Getter
 @Setter
 public class MangaInfoPOJO {
-    private Author author;
+    private Map author;
     private Calendar created_at;
     private String description;
     private String manga_authorName;
@@ -22,5 +23,5 @@ public class MangaInfoPOJO {
     private String status;
     private String thumbnail;
     private int views;
-    private TransGroup transGroup;
+    private Map transgroup;
 }

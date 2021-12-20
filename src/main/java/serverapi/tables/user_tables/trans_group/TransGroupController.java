@@ -37,7 +37,15 @@ public class TransGroupController {
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(),
                     HttpStatus.ACCEPTED);
         }
-        return transGroupService.updateManga(mangaInfoPOJO);
+        Map author = mangaInfoPOJO.getAuthor();
+        Map transGroup = mangaInfoPOJO.getTransgroup();
+        Long mangaId = Long.parseLong(mangaInfoPOJO.getManga_id());
+        String mangaName = mangaInfoPOJO.getManga_name();
+        String thumbnail = mangaInfoPOJO.getThumbnail();
+        String description = mangaInfoPOJO.getDescription();
+        String status = mangaInfoPOJO.getStatus();
+        String authorName = mangaInfoPOJO.getManga_authorName();
+        return transGroupService.updateManga(mangaId, author, transGroup, mangaName, thumbnail, description, status, authorName);
     }
 
     @PutMapping("/update_chapter")
@@ -54,5 +62,17 @@ public class TransGroupController {
         return transGroupService.updateChapter(chapter, mangaId, listImg);
     }
 
+    //imgchapter_id
+    @DeleteMapping("/delete_image")
+    public ResponseEntity deleteImage(ServletRequest request ,@RequestBody Map data) throws NoSuchAlgorithmException {
+        if (userHelpers.getUserAttribute(request).get("user_transgroup_id") == null) {
+            Map<String, String> error = Map.of("err", "Login again before visit this page|");
+            return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, error).toJSON(),
+                    HttpStatus.ACCEPTED);
+        }
+       Long imageId = Long.parseLong(String.valueOf(data.get("imgchapter_id")));
+
+        return transGroupService.deleteImage(imageId);
+    }
 
 }

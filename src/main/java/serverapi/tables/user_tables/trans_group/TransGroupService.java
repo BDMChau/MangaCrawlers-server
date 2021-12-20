@@ -46,18 +46,14 @@ public class TransGroupService {
         this.imgChapterRepos = imgChapterRepos;
     }
 
-    public ResponseEntity updateManga(MangaInfoPOJO mangaInfoPOJO) {
-        String mangaName = mangaInfoPOJO.getManga_name();
-        String thumbnail = mangaInfoPOJO.getThumbnail();
-        String description = mangaInfoPOJO.getDescription();
-        String status = mangaInfoPOJO.getStatus();
-        String authorName = mangaInfoPOJO.getManga_authorName();
-        if (!authorName.equals(mangaInfoPOJO.getAuthor().getAuthor_name())) {
+    public ResponseEntity updateManga(Long mangaId, Map author, Map transGroup,
+                                      String mangaName, String thumbnail, String description, String status, String authorName) {
+        if (!authorName.equals(String.valueOf(author.get("author_name")))) {
             Author newAuthor = new Author();
             newAuthor.setAuthor_name(authorName);
             authorRepos.saveAndFlush(newAuthor);
         } else {
-            authorName = mangaInfoPOJO.getAuthor().getAuthor_name();
+            authorName = String.valueOf(author.get("author_name"));
         }
         Optional<Author> authorOptional = authorRepos.findAuthorByName(authorName);
         if (mangaName.isEmpty() || thumbnail.isEmpty()
@@ -65,9 +61,9 @@ public class TransGroupService {
             Map<String, Object> err = Map.of("err", "Missing credential!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
-        Author author = authorOptional.get();
-        Long mangaId = Long.valueOf(mangaInfoPOJO.getManga_id());
-        Long transGroupId = mangaInfoPOJO.getTransGroup().getTransgroup_id();
+        Author newAuthor = authorOptional.get();
+        Long transGroupId = Long.parseLong(String.valueOf(transGroup.get("transgroup_id")));
+
         Optional<Manga> mangaOptional = transGroupRepos.findMangaByTransIdaAndMangaId(transGroupId, mangaId);
         if (mangaOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "Manga not found!");
@@ -75,7 +71,7 @@ public class TransGroupService {
         }
         ////////////////////////
         Manga manga = mangaOptional.get();
-        manga.setAuthor(author);
+        manga.setAuthor(newAuthor);
         manga.setThumbnail(thumbnail);
         manga.setManga_name(mangaName);
         manga.setDescription(description);
@@ -97,9 +93,9 @@ public class TransGroupService {
                 chapterRepos.saveAndFlush(updateChapter);
 
                 List<ImageChapter> imageChapterList = imgChapterRepos.findImagesByChapterId(chapterId);
-                if(!imageChapterList.isEmpty()){
+                if (!imageChapterList.isEmpty()) {
                     int i = 0;
-                    while (i <listImg.size()) {
+                    while (i < listImg.size()) {
                         for (ImageChapter image : imageChapterList) {
                             HashMap img = (HashMap) listImg.get(i);
                             image.setImgchapter_url((String) img.get("img_url"));
@@ -121,5 +117,17 @@ public class TransGroupService {
         }
         Map<String, Object> err = Map.of("err", "Chapter not found!");
         return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
+    }
+
+
+    public ResponseEntity deleteImage(Long imageId) {
+        Optional<ImageChapter> imageChapter = imgChapterRepos.findById(imageId);
+        if (imageChapter.isPresent()) {
+            imgChapterRepos.delete(imageChapter.get());
+            Map<String, Object> msg = Map.of("msg", "Delete image successfully!");
+            return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+        }
+        Map<String, Object> err = Map.of("err", "Image not found!");
+        return new ResponseEntity<>(new Response(400, HttpStatus.BAD_REQUEST, err).toJSON(), HttpStatus.BAD_REQUEST);
     }
 }
