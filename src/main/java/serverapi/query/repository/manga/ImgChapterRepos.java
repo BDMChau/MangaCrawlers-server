@@ -12,12 +12,17 @@ import java.util.List;
 public interface ImgChapterRepos extends JpaRepository<ImageChapter, Long> {
 
     @Query("SELECT new serverapi.query.dtos.tables.ChapterImgDTO(i.imgchapter_id, i.imgchapter_url) FROM Chapter c JOIN c" +
-            ".imageChapters i WHERE c.chapter_id =?1 ")
+           ".imageChapters i WHERE c.chapter_id =?1 ")
     List<ChapterImgDTO> findImgsByChapterId(Long chapter_id);
 
     @Query("SELECT ic FROM ImageChapter ic JOIN Chapter c" +
            " ON ic.chapter.chapter_id = c.chapter_id WHERE c.chapter_id =?1 ")
     void deleteImageChapterByChapterId(Long chapter_id);
 
+    @Query("""
+            SELECT ic FROM ImageChapter ic JOIN Chapter c ON ic.chapter.chapter_id = c.chapter_id
+            WHERE c.chapter_id = ?1
+                        """)
+    List<ImageChapter> findImagesByChapterId(Long chapter_id);
 
 }

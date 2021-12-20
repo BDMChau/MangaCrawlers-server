@@ -96,19 +96,24 @@ public class TransGroupService {
                 updateChapter.setChapter_name(newChapterName);
                 chapterRepos.saveAndFlush(updateChapter);
 
-                imgChapterRepos.deleteImageChapterByChapterId(chapterId);
-                listImg.forEach(img -> {
-                    HashMap image = (HashMap) img;
-                    ImageChapter imageChapter = new ImageChapter();
-                    imageChapter.setChapter(updateChapter);
-                    imageChapter.setImgchapter_url((String) image.get("img_url"));
-                    imgChapterRepos.saveAndFlush(imageChapter);
-                });
-                List<ChapterImgDTO> imageChapterList = imgChapterRepos.findImgsByChapterId(chapterId);
+                List<ImageChapter> imageChapterList = imgChapterRepos.findImagesByChapterId(chapterId);
+                if(!imageChapterList.isEmpty()){
+                    int i = 0;
+                    while (i <listImg.size()) {
+                        for (ImageChapter image : imageChapterList) {
+                            HashMap img = (HashMap) listImg.get(i);
+                            image.setImgchapter_url((String) img.get("img_url"));
+                            imgChapterRepos.saveAndFlush(image);
+                            i++;
+                            break;
+                        }
+                    }
+                }
+                List<ChapterImgDTO> exportImages = imgChapterRepos.findImgsByChapterId(chapterId);
                 if (!imageChapterList.isEmpty()) {
                     Map<String, Object> msg = Map.of(
                             "msg", "Update chapter successfully!",
-                            "list_img", imageChapterList
+                            "list_img", exportImages
                     );
                     return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
                 }
