@@ -1,6 +1,7 @@
 package serverapi.tables.user_tables.trans_group;
 
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +49,7 @@ public class TransGroupController {
         return transGroupService.updateManga(mangaId, author, transGroup, mangaName, thumbnail, description, status, authorName);
     }
 
+    @CacheEvict(value = {"getimgschapter"}, key = "#updateChapterPOJO.getChapter().get('chapter_id') + #updateChapterPOJO.getManga_id()")
     @PutMapping("/update_chapter")
     public ResponseEntity updateChapter(ServletRequest request ,@RequestBody UpdateChapterPOJO updateChapterPOJO) throws NoSuchAlgorithmException {
         if (userHelpers.getUserAttribute(request).get("user_transgroup_id") == null) {
