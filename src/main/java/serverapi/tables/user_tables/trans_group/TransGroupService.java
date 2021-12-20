@@ -61,7 +61,7 @@ public class TransGroupService {
         }
         Optional<Author> authorOptional = authorRepos.findAuthorByName(authorName);
         if (mangaName.isEmpty() || thumbnail.isEmpty()
-                || description.isEmpty() || status.isEmpty() || authorOptional.isEmpty()) {
+            || description.isEmpty() || status.isEmpty() || authorOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "Missing credential!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
@@ -86,36 +86,32 @@ public class TransGroupService {
     }
 
     @Transactional
-    public ResponseEntity updateChapter(Map chapter, Map manga, List listImg) {
-        Long chapterId = Long.parseLong(String.valueOf(chapter.get("chapter_id")));
-        String newChapterName = (String) chapter.get("chapter_name");
+    public ResponseEntity updateChapter(Map chapter, Long mangaId, List listImg) {
+        if (chapter != null && mangaId != null) {
+            Long chapterId = Long.parseLong(String.valueOf(chapter.get("chapter_id")));
+            String newChapterName = (String) chapter.get("chapter_name");
+            Optional<Chapter> chapterOptional = chapterRepos.findChapterByMangaIdAndChapterId(chapterId, mangaId);
+            if (chapterOptional.isPresent()) {
+                Chapter updateChapter = chapterOptional.get();
+                updateChapter.setChapter_name(newChapterName);
+                chapterRepos.saveAndFlush(updateChapter);
 
-
-        if (chapter != null) {
-            chapterRepos.saveAndFlush(chapter);
-        }
-        Boolean isExistedChapter = false;
-        List<Chapter> listChapter = manga.getChapters();
-        for (Chapter value : listChapter) {
-            assert chapter != null;
-            if (value.getChapter_id().equals(chapter.getChapter_id())) {
-                isExistedChapter = true;
-                break;
-            }
-        }
-        if (isExistedChapter) {
-            imgChapterRepos.deleteImageChapterByChapterId(chapter.getChapter_id());
-            listImg.forEach(img -> {
-                HashMap image = (HashMap) img;
-                ImageChapter imageChapter = new ImageChapter();
-                imageChapter.setChapter(chapter);
-                imageChapter.setImgchapter_url((String) image.get("img_url"));
-                imgChapterRepos.saveAndFlush(imageChapter);
-            });
-            List<ChapterImgDTO> imageChapterList = imgChapterRepos.findImgsByChapterId(chapter.getChapter_id());
-            if (!imageChapterList.isEmpty()) {
-                Map<String, Object> msg = Map.of("msg", "Update chapter successfully!");
-                return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+                imgChapterRepos.deleteImageChapterByChapterId(chapterId);
+                listImg.forEach(img -> {
+                    HashMap image = (HashMap) img;
+                    ImageChapter imageChapter = new ImageChapter();
+                    imageChapter.setChapter(updateChapter);
+                    imageChapter.setImgchapter_url((String) image.get("img_url"));
+                    imgChapterRepos.saveAndFlush(imageChapter);
+                });
+                List<ChapterImgDTO> imageChapterList = imgChapterRepos.findImgsByChapterId(chapterId);
+                if (!imageChapterList.isEmpty()) {
+                    Map<String, Object> msg = Map.of(
+                            "msg", "Update chapter successfully!",
+                            "list_img", imageChapterList
+                    );
+                    return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
+                }
             }
         }
         Map<String, Object> err = Map.of("err", "Chapter not found!");
