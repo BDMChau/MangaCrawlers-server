@@ -64,7 +64,7 @@ public class TransGroupController {
         return transGroupService.updateChapter(chapter, mangaId, listImg);
     }
 
-    //imgchapter_id
+    @CacheEvict(value = {"getimgschapter"}, key = "#data.get('chapter_id') + #data.get('manga_id')")
     @DeleteMapping("/delete_image")
     public ResponseEntity deleteImage(ServletRequest request ,@RequestBody Map data) throws NoSuchAlgorithmException {
         if (userHelpers.getUserAttribute(request).get("user_transgroup_id") == null) {

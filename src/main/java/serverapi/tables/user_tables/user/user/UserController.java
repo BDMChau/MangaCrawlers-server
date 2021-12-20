@@ -193,7 +193,7 @@ public class UserController {
     }
 
     ////////////////////////// Translation Group parts /////////////////////////////
-    @CacheEvict(value = {"getimgschapter"}, key = "{#chapter_id.toString() + #manga_id.toString()}")
+    @CacheEvict(value = {"getimgschapter"}, key = "#chapter_id.toString() + #manga_id.toString()")
     @PostMapping("/uploadchapterimgs")
     public ResponseEntity uploadChapterImgs(
             ServletRequest request,

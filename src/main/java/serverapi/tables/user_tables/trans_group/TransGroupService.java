@@ -124,7 +124,10 @@ public class TransGroupService {
         Optional<ImageChapter> imageChapter = imgChapterRepos.findById(imageId);
         if (imageChapter.isPresent()) {
             imgChapterRepos.delete(imageChapter.get());
-            Map<String, Object> msg = Map.of("msg", "Delete image successfully!");
+            Map<String, Object> msg = Map.of(
+                    "msg", "Delete image successfully!",
+                    "img_id", imageChapter.get().getImgchapter_id()
+            );
             return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
         }
         Map<String, Object> err = Map.of("err", "Image not found!");
