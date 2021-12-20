@@ -52,16 +52,16 @@ public class TransGroupService {
         String description = mangaInfoPOJO.getDescription();
         String status = mangaInfoPOJO.getStatus();
         String authorName = mangaInfoPOJO.getManga_authorName();
-        if(!authorName.equals(mangaInfoPOJO.getAuthor().getAuthor_name())){
+        if (!authorName.equals(mangaInfoPOJO.getAuthor().getAuthor_name())) {
             Author newAuthor = new Author();
             newAuthor.setAuthor_name(authorName);
             authorRepos.saveAndFlush(newAuthor);
-        }else {
+        } else {
             authorName = mangaInfoPOJO.getAuthor().getAuthor_name();
         }
         Optional<Author> authorOptional = authorRepos.findAuthorByName(authorName);
-        if(mangaName.isEmpty() || thumbnail.isEmpty()
-           || description.isEmpty() || status.isEmpty() || authorOptional.isEmpty()){
+        if (mangaName.isEmpty() || thumbnail.isEmpty()
+                || description.isEmpty() || status.isEmpty() || authorOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "Missing credential!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
@@ -69,7 +69,7 @@ public class TransGroupService {
         Long mangaId = Long.valueOf(mangaInfoPOJO.getManga_id());
         Long transGroupId = mangaInfoPOJO.getTransGroup().getTransgroup_id();
         Optional<Manga> mangaOptional = transGroupRepos.findMangaByTransIdaAndMangaId(transGroupId, mangaId);
-        if(mangaOptional.isEmpty()){
+        if (mangaOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "Manga not found!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
@@ -86,8 +86,12 @@ public class TransGroupService {
     }
 
     @Transactional
-    public ResponseEntity updateChapter(Chapter chapter, Manga manga, List listImg) {
-        if(chapter != null){
+    public ResponseEntity updateChapter(Map chapter, Map manga, List listImg) {
+        Long chapterId = Long.parseLong(String.valueOf(chapter.get("chapter_id")));
+        String newChapterName = (String) chapter.get("chapter_name");
+
+
+        if (chapter != null) {
             chapterRepos.saveAndFlush(chapter);
         }
         Boolean isExistedChapter = false;
@@ -99,9 +103,9 @@ public class TransGroupService {
                 break;
             }
         }
-        if(isExistedChapter){
-           imgChapterRepos.deleteImageChapterByChapterId(chapter.getChapter_id());
-            listImg.forEach(img ->{
+        if (isExistedChapter) {
+            imgChapterRepos.deleteImageChapterByChapterId(chapter.getChapter_id());
+            listImg.forEach(img -> {
                 HashMap image = (HashMap) img;
                 ImageChapter imageChapter = new ImageChapter();
                 imageChapter.setChapter(chapter);
@@ -109,7 +113,7 @@ public class TransGroupService {
                 imgChapterRepos.saveAndFlush(imageChapter);
             });
             List<ChapterImgDTO> imageChapterList = imgChapterRepos.findImgsByChapterId(chapter.getChapter_id());
-            if(!imageChapterList.isEmpty()){
+            if (!imageChapterList.isEmpty()) {
                 Map<String, Object> msg = Map.of("msg", "Update chapter successfully!");
                 return new ResponseEntity<>(new Response(200, HttpStatus.OK, msg).toJSON(), HttpStatus.OK);
             }
