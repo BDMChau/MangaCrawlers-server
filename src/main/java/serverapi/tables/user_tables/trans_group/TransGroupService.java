@@ -86,7 +86,7 @@ public class TransGroupService {
     }
 
     @Transactional
-    public ResponseEntity updateChapter(Map chapter, Map manga, List listImg) {
+    public ResponseEntity updateChapter(Map chapter, Long mangaId, List listImg) {
         Long chapterId = Long.parseLong(String.valueOf(chapter.get("chapter_id")));
         String newChapterName = (String) chapter.get("chapter_name");
 
