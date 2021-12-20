@@ -61,7 +61,7 @@ public class TransGroupService {
         }
         Optional<Author> authorOptional = authorRepos.findAuthorByName(authorName);
         if (mangaName.isEmpty() || thumbnail.isEmpty()
-            || description.isEmpty() || status.isEmpty() || authorOptional.isEmpty()) {
+                || description.isEmpty() || status.isEmpty() || authorOptional.isEmpty()) {
             Map<String, Object> err = Map.of("err", "Missing credential!");
             return new ResponseEntity<>(new Response(202, HttpStatus.ACCEPTED, err).toJSON(), HttpStatus.ACCEPTED);
         }
@@ -97,10 +97,10 @@ public class TransGroupService {
                 chapterRepos.saveAndFlush(updateChapter);
 
                 List<ImageChapter> imageChapterList = imgChapterRepos.findImagesByChapterId(chapterId);
-                if(!imageChapterList.isEmpty()){
+                if (!imageChapterList.isEmpty()) {
                     int i = 0;
-                    while (i <listImg.size()) {
-                        for (ImageChapter image : imageChapterList) {
+                    for (ImageChapter image : imageChapterList) {
+                        while (i < listImg.size()) {
                             HashMap img = (HashMap) listImg.get(i);
                             image.setImgchapter_url((String) img.get("img_url"));
                             imgChapterRepos.saveAndFlush(image);
