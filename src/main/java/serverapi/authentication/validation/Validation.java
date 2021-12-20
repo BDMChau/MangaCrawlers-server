@@ -14,7 +14,8 @@ import java.util.regex.Pattern;
 @NoArgsConstructor
 @Component
 public class Validation implements Validator {
-
+    private final String regexEmail = "^([\\w-\\.]+){1,64}@([\\w&&[^_]]+){2,255}.[a-z]{2,}$";
+    private final String regexPass = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$"; //passwordLength8Number1
 
 //    private String getRegexStr(String objKey) {
 //        ReadJSONFileAndGetValue readJSONFileAndGetValue = new ReadJSONFileAndGetValue("src/main/java/serverapi/security/regexString.json", objKey);
@@ -57,7 +58,7 @@ public class Validation implements Validator {
         ) {
 
             errors.rejectValue(null, "Missing credential!");
-        } else if (!Pattern.matches("^([\\w-\\.]+){1,64}@([\\w&&[^_]]+){2,255}.[a-z]{2,}$", signInPojo.getUser_email())) {
+        } else if (!Pattern.matches(regexEmail, signInPojo.getUser_email())) {
 
             errors.rejectValue(null, "Invalid format email!");
         }
@@ -77,12 +78,12 @@ public class Validation implements Validator {
 
             errors.rejectValue(null, "Missing credential!");
         } else if (!Pattern.matches(
-                "^([\\w-\\.]+){1,64}@([\\w&&[^_]]+){2,255}.[a-z]{2,}$",
+                regexEmail,
                 signUpPojo.getUser_email())) {
 
             errors.rejectValue(null, "Invalid format email!");
         } else if (!Pattern.matches(
-                "\"^(?=.*[A-Za-z])(?=.*\\\\d)[A-Za-z\\\\d]{8,}$\"",
+                regexPass,
                 signUpPojo.getUser_password()
         )) {
 
@@ -99,7 +100,7 @@ public class Validation implements Validator {
                 || changePassPojo.getUser_password().equals("")
                 || changePassPojo.getUser_change_pass_token() == null
                 || changePassPojo.getUser_change_pass_token().equals("")
-                || !Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", changePassPojo.getUser_password())
+                || !Pattern.matches(regexPass, changePassPojo.getUser_password())
         ) {
             errors.rejectValue(null, "Missing new password or token for changing!");
         }
