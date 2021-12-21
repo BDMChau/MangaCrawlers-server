@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import serverapi.tables.coin.coin_transaction_history.CoinTransactionHistory;
 import serverapi.tables.manga_tables.manga.Manga;
 import serverapi.tables.user_tables.user.User;
 
@@ -43,6 +44,9 @@ public class TransGroup {
         @OneToMany(mappedBy = "transgroup")
         private Collection<User> users;
 
+        @JsonBackReference
+        @OneToMany(mappedBy = "transGroup", cascade = CascadeType.ALL)
+        private Collection<CoinTransactionHistory> coinTransactionHistories;
 
         @Column(columnDefinition = "varchar(100)", nullable = false)
         private String transgroup_name;
@@ -63,6 +67,10 @@ public class TransGroup {
         )
         private Calendar created_at;
 
+        @Column(
+                columnDefinition = "bigint(20) default 0"
+        )
+        private Long count_coin;
 
 
 

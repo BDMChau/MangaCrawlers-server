@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import serverapi.tables.coin.coin_transaction_history.CoinTransactionHistory;
 import serverapi.tables.forum.post.Post;
 import serverapi.tables.forum.post_dislike.PostDislike;
 import serverapi.tables.forum.post_like.PostLike;
@@ -111,6 +112,10 @@ public class User {
     @OneToMany(mappedBy = "to_user", cascade = CascadeType.ALL)
     private Collection<FriendRequestStatus> to_friendRequestStatuses;
 
+    @JsonBackReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Collection<CoinTransactionHistory> coinTransactionHistories;
+
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "transgroup_id")
@@ -162,6 +167,11 @@ public class User {
             columnDefinition = "timestamp with time zone"
     )
     private Calendar created_at;
+
+    @Column(
+            columnDefinition = "bigint(20) default 100"
+    )
+    private Long count_coin;
 
     public User(String user_name, String user_email, String user_password, String user_avatar, Boolean user_isAdmin,
                 Calendar created_at) {
