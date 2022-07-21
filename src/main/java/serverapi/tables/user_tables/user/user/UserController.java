@@ -193,15 +193,15 @@ public class UserController {
     }
 
     ////////////////////////// Translation Group parts /////////////////////////////
-//    @CacheEvict(allEntries = true, value = {"allmangas", "transGroupInfo", "mangaInfoUploadPage"})
-//    @CacheEvict(allEntries = true, value = {"allmangas", "transGroupInfo", "mangaInfoUploadPage"})
-//    @CacheEvict(value = {"mangaInfoUploadPage"}, key = "{#request.getAttribute(\"user\").get(\"user_id\"), #manga_id}")
+    @CacheEvict(value = {"getimgschapter"}, key = "#chapter_id.toString() + #manga_id.toString()")
     @PostMapping("/uploadchapterimgs")
     public ResponseEntity uploadChapterImgs(
             ServletRequest request,
             @RequestParam(required = false) MultipartFile[] files,
             @RequestParam(required = false) Integer manga_id,
-            @RequestParam(required = false) String chapter_name
+            @RequestParam(required = false) Integer chapter_id,
+            @RequestParam(required = false) String chapter_name,
+            @RequestParam(required = false) boolean is_create
     ) throws IOException, ParseException {
         String strUserId = userHelpers.getUserAttribute(request).get("user_id").toString();
         Long userId = Long.parseLong(strUserId);
@@ -213,9 +213,11 @@ public class UserController {
         }
 
         Long mangaId = Long.parseLong(String.valueOf(manga_id));
+        Long chapterId = chapter_id != null ? Long.parseLong(String.valueOf(chapter_id)) : null;
         String chapterName = chapter_name;
+        boolean isCreate = is_create;
 
-        return userService.uploadChapterImgs(userId, strTransGrId, mangaId, chapterName, files);
+        return userService.uploadChapterImgs(userId, strTransGrId, mangaId, chapterId, chapterName, files, isCreate);
     }
 
     @CacheEvict(allEntries = true, value = {"transGroupInfo"})

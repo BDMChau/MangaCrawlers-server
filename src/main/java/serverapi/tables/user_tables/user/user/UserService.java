@@ -432,8 +432,10 @@ public class UserService {
             Long userId,
             String strTransGrId,
             Long mangaId,
+            Long chapterId,
             String chapterName,
-            @RequestParam(required = false) MultipartFile[] files
+            @RequestParam(required = false) MultipartFile[] files,
+            boolean isCreate
     ) throws IOException {
         cacheService.evictSingleCacheValue("transGroupInfo", userId.toString() + strTransGrId);
         cacheService.evictSingleCacheValue("mangapage", mangaId.toString());
@@ -448,11 +450,16 @@ public class UserService {
         }
         Manga manga = mangaOptional.get();
 
-        Chapter chapter = new Chapter();
-        chapter.setChapter_name(chapterName);
-        chapter.setCreated_at(currentTime);
-        chapter.setManga(manga);
-        chapterRepos.saveAndFlush(chapter);
+        Chapter chapter = null;
+        if(isCreate && chapterId == null){
+            chapter = new Chapter();
+            chapter.setChapter_name(chapterName);
+            chapter.setCreated_at(currentTime);
+            chapter.setManga(manga);
+            chapterRepos.saveAndFlush(chapter);
+        } else {
+            chapter = chapterRepos.findById(chapterId).get();
+        }
 
         System.err.println("ok01");
         String folderName = manga.getManga_name() + "/" + manga.getManga_name() + "_" + chapterName;

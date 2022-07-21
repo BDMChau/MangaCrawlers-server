@@ -95,3 +95,31 @@ public class TokenVerification implements Filter {
 
 
 }
+
+
+abstract class ClassA {
+    int property1;
+
+    ClassA(int number){
+        this.property1 = number;
+    }
+
+    abstract public void function1();
+}
+
+class ClassAExtends extends ClassA {
+
+    ClassAExtends(){super(0);};
+
+    @Override
+    public void function1() {
+
+    }
+}
+
+class MainSub {
+    void main() {
+        var a = new ClassAExtends();
+        var b= a.property1;
+    }
+}

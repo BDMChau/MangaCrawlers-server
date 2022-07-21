@@ -112,9 +112,9 @@ public interface MangaRepos extends JpaRepository<Manga, Long>, JpaSpecification
 
 
     @Query("SELECT new serverapi.query.dtos.tables.AuthorMangaDTO( a.author_id, a.author_name," +
-            "m.manga_id, m.manga_name, m.status, m.description, m.stars, " +
+            "gr.transgroup_id, gr.transgroup_name ,m.manga_id, m.manga_name, m.status, m.description, m.stars, " +
             "m.views, m.thumbnail, m.date_publications, m.created_at)" +
-            " FROM Author a JOIN a.mangas m WHERE m.manga_id = ?1")
+            " FROM Author a JOIN a.mangas m LEFT JOIN TransGroup gr ON gr.transgroup_id = m.transgroup.transgroup_id WHERE m.manga_id = ?1")
     Optional<AuthorMangaDTO> getMangaInfoByMangaID(Long manga_id);
 
 
